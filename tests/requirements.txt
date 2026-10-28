@@ -1,0 +1,2 @@
+# PDF extraction for the campaign integration test; not a runtime dependency.
+pypdf==6.10.0

@@ -31,6 +31,11 @@ jobs:
         run: pnpm check
       - name: Tester les calculs, les imports et la référence scientifique
         run: pnpm test
+      - name: Installer le lecteur PDF des tests dans un environnement isolé
+        run: |
+          python3 -m venv .ci-python
+          .ci-python/bin/python -m pip install --disable-pip-version-check -r tests/requirements.txt
+          echo "$GITHUB_WORKSPACE/.ci-python/bin" >> "$GITHUB_PATH"
       - name: Tester les routes et la persistance
         run: pnpm test:integration
       - name: Tester les dernières corrections d’autorisations

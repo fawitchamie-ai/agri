@@ -10,11 +10,12 @@ Le code, les migrations et la pipeline sont présents et testables localement. L
 
 ## Installation et essais locaux
 
-Node.js 24 et pnpm 11.25.0 sont requis. Depuis ce dossier :
+Node.js 24 et pnpm 11.25.0 sont requis. Python 3 et `pypdf` servent uniquement aux tests de contenu du PDF; l’application déployée n’en dépend pas. Depuis ce dossier :
 
 ```bash
 npm install --global pnpm@11.25.0
 pnpm install --frozen-lockfile
+python -m pip install -r tests/requirements.txt
 cp .dev.vars.example .dev.vars
 pnpm check
 pnpm test
