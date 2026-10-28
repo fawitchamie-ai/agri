@@ -1,0 +1,31 @@
+{
+  "runtime": "v24.22.1",
+  "scope": "Microbenchmark calculs en mémoire et lecture JSON local, pas mesure navigateur/réseau/D1",
+  "bundleBytes": 2507049,
+  "results": [
+    {
+      "name": "MAE/RMSE/biais",
+      "records": 100000,
+      "medianMs": 11.36,
+      "maxMs": 35.3
+    },
+    {
+      "name": "Colonnes collecte",
+      "records": 100000,
+      "medianMs": 13.03,
+      "maxMs": 14.68
+    },
+    {
+      "name": "Rendement agrégé",
+      "records": 100000,
+      "medianMs": 4.11,
+      "maxMs": 5.34
+    },
+    {
+      "name": "Décodage JSON scientifique",
+      "records": 3244,
+      "medianMs": 6.46,
+      "maxMs": 8.49
+    }
+  ]
+}

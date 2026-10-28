@@ -1,0 +1,37 @@
+{
+  "scope": {
+    "migrations": [
+      "0000_worried_zarda.sql",
+      "0001_married_jetstream.sql",
+      "0002_illegal_baron_strucker.sql"
+    ],
+    "transport": "Node SQLite file with D1 adapter; actual API handlers; controlled ChatGPT identity stub"
+  },
+  "results": [
+    {
+      "name": "Correction récolte: changement de producteur refusé, provenance préservée",
+      "status": "PASS",
+      "ms": 1.27
+    },
+    {
+      "name": "Correction collecte: changement de producteur refusé",
+      "status": "PASS",
+      "ms": 1.08
+    },
+    {
+      "name": "Récolte liée: culture, campagne et territoire ne rendent pas la liaison incompatible",
+      "status": "PASS",
+      "ms": 2.07
+    },
+    {
+      "name": "Producteur: les corrections refusées ne révèlent pas un autre membre",
+      "status": "PASS",
+      "ms": 2.26
+    },
+    {
+      "name": "CSV observations: diagnostic X/E et statut principal conservés",
+      "status": "PASS",
+      "ms": 2.19
+    }
+  ]
+}

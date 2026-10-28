@@ -1,0 +1,7 @@
+# Direction arrêtée avant développement
+Le coordinateur retient les six destinations dans un espace de travail commun. L’UX propose les filtres persistants et les actions de passage à l’étape suivante. Le relecteur scientifique impose la distinction entre reconstitution du calcul v22, comparaison rétrospective et prévision opérationnelle non validée. Ces réserves sont retenues.
+Architecture : monolithe TypeScript React/Vinext (API compatible Next.js), SQLite D1 durable sur Workers. Cette équivalence à PostgreSQL facilite l’exécution hébergée sans serveur externe; migrations Drizzle, même séparation logique des entités. Authentification ChatGPT pour identité réelle; sessions de démonstration signées côté serveur, explicitement séparées. Pas de prévision inventée.
+Propriété des fichiers : coordinateur lib/contracts.ts, app/layout.tsx, configuration et intégration; scientifique scripts/extract-notebook.py, public/scientific-data.json, docs/SCIENCE.md; backend db/*, drizzle/*, app/api/*, lib/server*, lib/calculations.ts; frontend app/page.tsx et components/agri/*; UX app/globals.css; qualité tests/*, docs/REVIEW.md. Contrat HTTP dans lib/contracts.ts.
+
+## Référence finale
+Après recherche des références disponibles, la v24 exécutée a été retrouvée et son protocole exact reproduit. Son CSV de 1092 prévisions possède le SHA-256 original. Ce socle remplace la reconstitution v22 provisoire comme source principale. La comparaison nationale porte sur les 28 paires admissibles de 2016–2022.

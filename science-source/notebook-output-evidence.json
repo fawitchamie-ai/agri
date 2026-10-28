@@ -1,0 +1,178 @@
+{
+  "50": {
+    "execution_count": 28,
+    "outputs": [
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "{\"selected_rows\": 2014, \"source_shas\": {\"hvstat_africa_data_v1.2.csv\": \"a95e71bbc6a996e8d44c49fdb74a552aa629fa8b3be3396dbf25736cfac5f225\", \"crop_data.csv\": \"136108b33867355a5ac012e1e587981ecc6dfcdc11f1b343fa940623c9883f35\"}, \"crops\": {\"Cowpea\": {\"rows\": 104, \"first_year\": 2010, \"last_year\": 2018, \"prefectures\": 12}, \"Maize\": {\"rows\": 772, \"first_year\": 1995, \"last_year\": 2019, \"prefectures\": 34}, \"Millet\": {\"rows\": 288, \"first_year\": 1995, \"last_year\": 2019, \"prefectures\": 25}, \"Rice\": {\"rows\": 187, \"first_year\": 2005, \"last_year\": 2019, \"prefectures\": 28}, \"Sorghum\": {\"rows\": 592, \"first_year\": 1995, \"last_year\": 2019, \"prefectures\": 32}, \"Soybean\": {\"rows\": 71, \"first_year\": 2012, \"last_year\": 2019, \"prefectures\": 21}}, \"area_note\": \"HV area semantics unresolved; FEWS yield related to planted area, not harvested area\", \"boundary_note\": \"post2015 FNID links are diagnostic until geometry verified; no fabricated crosswalk\"}\n"
+        ]
+      },
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "         observations  prefectures  derniere_annee\n",
+          "crop                                              \n",
+          "Cowpea            104           12            2018\n",
+          "Maize             772           34            2019\n",
+          "Millet            288           25            2019\n",
+          "Rice              187           28            2019\n",
+          "Sorghum           592           32            2019\n",
+          "Soybean            71           21            2019\n",
+          "{'landsat_rows': 350, 'width_counts': {36: 175, 31: 175}, 'invalid_full_width': 23}\n"
+        ]
+      }
+    ]
+  },
+  "58": {
+    "execution_count": 32,
+    "outputs": [
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "{'final_rows': 456, 'series': 152, 'min_label_age': 6, 'max_label_age': 22, 'intervals': 0, 'operationally_validated': 0}\n",
+          "harvest_year  scientific_status                                \n",
+          "2025          EXPLORATORY_REFERENCE_NOT_OPERATIONALLY_VALIDATED    152\n",
+          "2026          EXPLORATORY_REFERENCE_NOT_OPERATIONALLY_VALIDATED    152\n",
+          "2027          EXPLORATORY_REFERENCE_NOT_OPERATIONALLY_VALIDATED    152\n"
+        ]
+      },
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "{'paired_uncertainty_rows': 1178, 'final_intervals_produced': 0}\n"
+        ]
+      }
+    ]
+  },
+  "62": {
+    "execution_count": 34,
+    "outputs": [
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "{\n",
+          "  \"all_checks_passed\": true,\n",
+          "  \"checks\": [\n",
+          "    {\n",
+          "      \"check\": \"unique_positive_panel_with_explicit_units\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 2014\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"identical_target_keys_across_candidates\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 37930\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"raw_truth_and_temporal_cutoffs\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 37930\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"nested_selection_and_export_identity\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 3793\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"coverage_denominators\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 450\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"metrics_recalculated_from_predictions\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 41723\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"selected_system_detailed_and_paired_coverage\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 3793\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"ablation_on_main_protocol_targets\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 3700\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"final_model_lineage_status_and_constant_reference\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 456\n",
+          "    },\n",
+          "    {\n",
+          "      \"check\": \"optional_stage_claims_match_execution\",\n",
+          "      \"status\": \"PASS\",\n",
+          "      \"checked_records\": 2\n",
+          "    }\n",
+          "  ],\n",
+          "  \"claim_limit\": \"Checked contracts only; not an exhaustive proof of correctness or scientific validity\",\n",
+          "  \"final_intervals\": 0,\n",
+          "  \"blind_test\": false\n",
+          "}\n"
+        ]
+      }
+    ]
+  },
+  "64": {
+    "execution_count": 35,
+    "outputs": [
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "{\n",
+          "  \"version\": \"v22\",\n",
+          "  \"generated_utc\": \"2026-10-16T07:51:45.779228+00:00\",\n",
+          "  \"snapshot_sha256\": \"47c87676a0dc1ae57d3c9da627930e47b43f4e2547ccdd3d66eeea450ed6c3c5\",\n",
+          "  \"gee\": {\n",
+          "    \"enabled\": false,\n",
+          "    \"status\": \"NOT_EXECUTED_AUTHENTICATION_AND_HISTORIC_MASKS_REQUIRED\",\n",
+          "    \"landsat_years_requiring_regeneration\": [\n",
+          "      1991,\n",
+          "      1992,\n",
+          "      1993,\n",
+          "      1996,\n",
+          "      1997,\n",
+          "      1999\n",
+          "    ],\n",
+          "    \"landsat_years_remaining\": [\n",
+          "      1991,\n",
+          "      1992,\n",
+          "      1993,\n",
+          "      1996,\n",
+          "      1997,\n",
+          "      1999\n",
+          "    ],\n",
+          "    \"required_landsat_structural_regeneration_complete\": false,\n",
+          "    \"covariates_repaired\": false,\n",
+          "    \"operational_availability_verified\": false\n",
+          "  },\n",
+          "  \"spam\": {\n",
+          "    \"status\": \"NOT_EXECUTED_RAW_SPAM_RASTERS_NOT_IN_EMBEDDED_SNAPSHOT\",\n",
+          "    \"independent_validation\": false\n",
+          "  },\n",
+          "  \"blind_test\": false,\n",
+          "  \"final_intervals\": 0,\n",
+          "  \"final_rows\": 456,\n",
+          "  \"required_offline_stages_completed\": true,\n",
+          "  \"spatial_diagnostics_enabled\": true,\n",
+          "  \"covariate_ablations_enabled\": true,\n",
+          "  \"consistency_checks_passed\": true\n",
+          "}\n"
+        ]
+      },
+      {
+        "name": "stdout",
+        "output_type": "stream",
+        "text": [
+          "Archive : /workspace/scratch/ad713c627c4f/togo_v22/execution_livraison_resultats.zip\n"
+        ]
+      }
+    ]
+  }
+}

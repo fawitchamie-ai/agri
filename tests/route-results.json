@@ -1,0 +1,82 @@
+{
+  "scope": {
+    "migrations": [
+      "0000_worried_zarda.sql",
+      "0001_married_jetstream.sql",
+      "0002_illegal_baron_strucker.sql"
+    ],
+    "transport": "Node SQLite file with D1 adapter; actual API handlers; controlled ChatGPT identity stub"
+  },
+  "results": [
+    {
+      "name": "Anonyme: accès aux données privées refusé",
+      "status": "PASS",
+      "ms": 4.18
+    },
+    {
+      "name": "Démonstration: ouverture et prévisions traçables",
+      "status": "PASS",
+      "ms": 30.55
+    },
+    {
+      "name": "Simulation: persistance et instantané source immuable",
+      "status": "PASS",
+      "ms": 12.26
+    },
+    {
+      "name": "Récolte responsable: normalisation, correction et historique",
+      "status": "PASS",
+      "ms": 8.2
+    },
+    {
+      "name": "Collecte: quatre catégories et doublon bloqué",
+      "status": "PASS",
+      "ms": 3.56
+    },
+    {
+      "name": "Coopératives: isolation lecture et écriture",
+      "status": "PASS",
+      "ms": 9
+    },
+    {
+      "name": "Producteur: ses données, récolte pour son compte et restrictions",
+      "status": "PASS",
+      "ms": 1.76
+    },
+    {
+      "name": "Export: filtres et confidentialité",
+      "status": "PASS",
+      "ms": 1.79
+    },
+    {
+      "name": "Import: aperçu invalide, version neuve, confirmation et réimport idempotent",
+      "status": "PASS",
+      "ms": 32.33
+    },
+    {
+      "name": "Origine étrangère: mutation refusée",
+      "status": "PASS",
+      "ms": 1.05
+    },
+    {
+      "name": "Persistance après fermeture et réouverture SQLite",
+      "status": "PASS",
+      "ms": 1.01
+    },
+    {
+      "name": "Comptes réels: invitation ciblée, changement confirmé et propriété producteur",
+      "status": "PASS",
+      "ms": 34.54
+    },
+    {
+      "name": "Concurrence: double confirmation import et collecte sans doublons",
+      "status": "PASS",
+      "ms": 48.69
+    },
+    {
+      "name": "PDF campagne: filtres canoniques et version active préservés",
+      "status": "PASS",
+      "ms": 150.65
+    }
+  ]
+}

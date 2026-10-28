@@ -1,0 +1,56 @@
+{
+  "forecast_sha256_before_evaluation": "aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d",
+  "forecast_sha256_after_evaluation": "aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d",
+  "primary_pairs_selected": 28,
+  "diagnostic_pairs_selected": 8,
+  "models_same_cohort": {
+    "national": [
+      "ar1",
+      "damped_logtrend",
+      "extratrees",
+      "last_observation",
+      "loglinear_ridge",
+      "prefecture_climatology",
+      "random_forest",
+      "recent_mean5",
+      "ridge_log_alpha10",
+      "ridge_log_alpha100",
+      "selected_system"
+    ],
+    "prefecture": [
+      "ar1",
+      "damped_logtrend",
+      "extratrees",
+      "hierarchical_damped",
+      "last_observation",
+      "loglinear_ridge",
+      "national_only",
+      "national_pref_shrink",
+      "prefecture_climatology",
+      "random_forest",
+      "recent_mean5",
+      "regional_shrink",
+      "ridge_log_alpha10",
+      "ridge_log_alpha100",
+      "selected_system"
+    ]
+  },
+  "n_common_targets": 28,
+  "primary_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "prefecture_primary_pairs": 0,
+  "excluded_unverified_pairs": 3660,
+  "excluded_unverified_unique_observations": 244,
+  "invalid_prediction_rows": 0,
+  "missing_observation_rows": 12132,
+  "relative_error_min_yield_t_ha": 0.1,
+  "errors_sign": "prediction minus observation",
+  "score_is_retrospective_not_blind": true
+}
