@@ -9,3 +9,5 @@ declare namespace Cloudflare {
     ADMIN_EMAILS?: string;
   }
 }
+
+interface ImportMeta { readonly env?: {readonly DEV?:boolean} }

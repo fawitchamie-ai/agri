@@ -1,0 +1,1 @@
+[{"crop": "Maize", "rmse_system": "0.2978067254562315", "mae_system": "0.22338742090838057", "n": "140", "n_test_years": "5"}, {"crop": "Millet", "rmse_system": "1.0629509665972983", "mae_system": "0.5036540782623058", "n": "60", "n_test_years": "5"}, {"crop": "Sorghum", "rmse_system": "0.29672617796865014", "mae_system": "0.24794664524390786", "n": "95", "n_test_years": "5"}]

@@ -73,3 +73,8 @@ test('Access: contexte identité isolé entre requêtes concurrentes et nettoyé
  const identities=await Promise.all([a,b].map(identity=>runWithAccessIdentity(identity,async()=>{await Promise.resolve();return currentAccessIdentity()?.userId;})));
  assert.deepEqual(identities,['cf:a','cf:b']);assert.equal(currentAccessIdentity(),null);
 });
+
+test('Access: l’hôte de prévisualisation ne donne pas de session hors compilation DEV',async()=>{
+ const result=await authorizeAccessRequest(new Request('https://terminal.local/'),{AUTH_DEMO_ONLY:'true'});
+ assert.ok(result instanceof Response);assert.equal(result.status,503);
+});

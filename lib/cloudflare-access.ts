@@ -52,7 +52,7 @@ export function sanitizedRequest(request:Request):Request {
 function denied(message:string,status:number){return new Response(message,{status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
 export async function authorizeAccessRequest(request:Request,env:AccessEnvironment,keyResolver?:JWTVerifyGetKey):Promise<Response|{request:Request;identity:AccessIdentity|null}> {
   const url=new URL(request.url),clean=sanitizedRequest(request);
-  if(env.AUTH_DEMO_ONLY==='true'&&localHosts.has(url.hostname)&&localPaths.has(url.pathname))
+  if(env.AUTH_DEMO_ONLY==='true'&&(localHosts.has(url.hostname)||(import.meta.env?.DEV===true&&url.hostname==='terminal.local'))&&localPaths.has(url.pathname))
     return {request:clean,identity:null};
   let config:AccessConfiguration;
   try{config=accessConfiguration(env);}catch{return denied('Authentification Cloudflare Access non configurée.',503);}

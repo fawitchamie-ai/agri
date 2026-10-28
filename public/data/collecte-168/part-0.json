@@ -1,0 +1,1 @@
+[{"culture": "Maize", "test": "holdout préfectoral 2016-2018", "n": "87", "RMSE_t_ha": "0.1627", "erreur_mediane_pct": "5.92", "dans_20_pct": "74.7"}, {"culture": "Sorghum", "test": "holdout préfectoral 2016-2018", "n": "65", "RMSE_t_ha": "0.2086", "erreur_mediane_pct": "11.12", "dans_20_pct": "64.6"}]

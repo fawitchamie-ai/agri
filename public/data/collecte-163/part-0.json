@@ -1,0 +1,1 @@
+[{"reference": "PANEL_EXTRAPOLE", "rmse_reference": "0.5511", "rmse_systeme": "0.5125", "skill_pct": "7.0"}, {"reference": "ANCRE_SEULE", "rmse_reference": "0.5245", "rmse_systeme": "0.5125", "skill_pct": "2.3"}]
