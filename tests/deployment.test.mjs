@@ -8,7 +8,7 @@ import { healthEndpoint, smokeCloudflare } from '../scripts/smoke-cloudflare.mjs
 
 const databaseId = '12345678-1234-4123-8123-123456789abc';
 const env = { CLOUDFLARE_API_TOKEN: 'test-only-token', CLOUDFLARE_ACCOUNT_ID: 'a'.repeat(32), CLOUDFLARE_DATABASE_ID: databaseId, CF_ACCESS_TEAM_DOMAIN: 'https://test.cloudflareaccess.com', CF_ACCESS_AUD: 'test-audience' };
-const config = () => ({ name: 'agriprevision-togo', vars: { CF_ACCESS_TEAM_DOMAIN: env.CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD: env.CF_ACCESS_AUD }, d1_databases: [{ binding: 'DB', database_id: databaseId }] });
+const config = () => ({ name: 'agri', vars: { CF_ACCESS_TEAM_DOMAIN: env.CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD: env.CF_ACCESS_AUD }, d1_databases: [{ binding: 'DB', database_id: databaseId }] });
 const goodHealth = { status: 'ok', database: 'ok', scientific: { forecastCount: 1092, notebookSha256: '0834a25e6a8da5f1daa075f0f0fdef26c16b6d810139aaefc511a3cd81693428', predictionCsvSha256: 'aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d' } };
 const access = { APP_URL: 'https://agri.example.workers.dev', CF_ACCESS_CLIENT_ID: 'test-client', CF_ACCESS_CLIENT_SECRET: 'test-secret' };
 

@@ -4,6 +4,12 @@ Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole r
 
 Cette version remplace la passerelle ChatGPT Sites par **Cloudflare Access**. Le Worker vérifie la signature et les claims du JWT avant d’ouvrir les routes. Elle ne doit pas être déployée sur l’ancien projet Sites.
 
+## Nom du Worker et publication
+
+Le Worker Cloudflare cible est **`agri`**, celui protégé par votre application Access. Le dépôt est `fawitchamie-ai/agri`; le nom du produit reste AgriPrévision Togo. La base conserve son nom `agriprevision-db` et son binding `DB`. `APP_URL` doit contenir l’adresse HTTPS réelle de ce Worker `agri`. L’audience `CF_ACCESS_AUD` doit venir de l’application Access qui protège ce même Worker.
+
+La publication utilise GitHub Actions. Désactiver la publication Git automatique Workers Builds sur ce Worker : un simple `vite build` suivi de `wrangler deploy` utiliserait la configuration de test, avec son UUID factice et ses paramètres Access vides. Le workflow GitHub génère la configuration réelle avant la compilation et applique les migrations avant publication.
+
 ## État de préparation
 
 Le code, les migrations et la pipeline sont présents et testables localement. Les valeurs réelles du compte Cloudflare et les secrets GitHub ne sont pas intégrés à l’archive. La publication est désactivée jusqu’à la configuration explicite de `CLOUDFLARE_DEPLOY_ENABLED=true`. Une compilation réussie n’est pas une preuve de connexion au fournisseur.
