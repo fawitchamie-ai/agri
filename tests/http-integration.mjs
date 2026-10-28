@@ -1,3 +1,4 @@
+import {methodLabel} from '../lib/presentation.ts';
 /** Execute against an explicitly authorized local preview; does not touch real workspaces. */
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -55,7 +56,7 @@ if(harness){
   const params=new URLSearchParams({crop:forecast.crop,year:String(forecast.year),territory:forecast.territory,level:forecast.level==='National'?'national':'prefecture_historique',version:forecast.version});
   const response=await fetchRoute(new URL('/api/report?'+params,base),{headers:{cookie}});assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),'application/pdf');const bytes=Buffer.from(await response.arrayBuffer());assert.equal(bytes.subarray(0,8).toString(),'%PDF-1.4');
   const extract='import sys,io,json;from pypdf import PdfReader;r=PdfReader(io.BytesIO(sys.stdin.buffer.read()));print(json.dumps({"pages":len(r.pages),"text":"\\n".join(p.extract_text() or "" for p in r.pages)}))';
-  const pdf=JSON.parse(execFileSync('python',['-c',extract],{input:bytes,encoding:'utf8'}));assert.ok(pdf.pages>=1);assert.ok(pdf.text.includes(forecast.version));assert.ok(pdf.text.includes(forecast.model));assert.ok(!pdf.text.includes('Aucune prévision disponible pour ces filtres'));assert.ok(pdf.text.includes('Engagé'));assert.ok(pdf.text.includes('récoltée'));assert.ok(pdf.text.includes('EXPLORATOIRES'));
+  const pdf=JSON.parse(execFileSync('python',['-c',extract],{input:bytes,encoding:'utf8'}));assert.ok(pdf.pages>=1);assert.ok(pdf.text.includes(forecast.version.startsWith('v24')?'origine 2015':forecast.version));assert.ok(pdf.text.includes(methodLabel(forecast.model)));assert.ok(!pdf.text.includes('Aucune prévision disponible pour ces filtres'));assert.ok(pdf.text.includes('Engagé'));assert.ok(pdf.text.includes('récoltée'));assert.ok(pdf.text.includes('INDICATIVES'));assert.ok(!pdf.text.includes('Notebook'));
  });
  console.log(JSON.stringify({scope:harness.harnessScope,results},null,2));harness.closeHarness();
 }
