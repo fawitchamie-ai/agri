@@ -1,79 +1,85 @@
-# AgriPrévision Togo
+# AgriPrévision Togo — export Cloudflare autonome
 
-Application web du mémoire de Fidèle AWIDAMANOSSI. Elle prolonge le notebook v24 : 1 092 prévisions 2016–2027 reproduites avec le code et les paramètres existants. Le CSV obtenu possède exactement le SHA-256 conservé dans le notebook exécuté. Aucun nouveau modèle n’est inventé; consulter l’application ne relance aucun entraînement.
+Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.
 
-## Démarrage local
+Cette version remplace la passerelle ChatGPT Sites par **Cloudflare Access**. Le Worker vérifie la signature et les claims du JWT avant d’ouvrir les routes. Elle ne doit pas être déployée sur l’ancien projet Sites.
 
-Prérequis : Node.js 24 et pnpm 11.25.0. Les résultats scientifiques gelés sont déjà inclus; Python n’est pas nécessaire pour utiliser l’application.
+## État de préparation
+
+Le code, les migrations et la pipeline sont présents et testables localement. Les valeurs réelles du compte Cloudflare et les secrets GitHub ne sont pas intégrés à l’archive. La publication est désactivée jusqu’à la configuration explicite de `CLOUDFLARE_DEPLOY_ENABLED=true`. Une compilation réussie n’est pas une preuve de connexion au fournisseur.
+
+## Installation et essais locaux
+
+Node.js 24 et pnpm 11.25.0 sont requis. Depuis ce dossier :
 
 ```bash
-corepack enable
+npm install --global pnpm@11.25.0
 pnpm install --frozen-lockfile
-pnpm build
-```
-
-Sur une nouvelle base locale uniquement, appliquer chaque migration dans l’ordre :
-
-```bash
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_worried_zarda.sql
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_married_jetstream.sql
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0002_illegal_baron_strucker.sql
-pnpm start
-```
-
-Ouvrir l’URL indiquée par le serveur. Les migrations ne doivent pas être rejouées sur une base où elles sont déjà appliquées. La base persistante se trouve dans `.wrangler/state`. Ne pas supprimer ce dossier pour conserver les saisies. Pour développer : `pnpm dev` après préparation de la base.
-
-La consultation scientifique est accessible sans session. Pour les essais métier, ouvrir l’espace de démonstration : ses coopératives et membres fictifs sont créés par le serveur et séparés des espaces réels. Les rôles de démonstration ne permettent jamais de rejoindre une coopérative réelle.
-
-## Configuration et accès réels
-
-L’hébergement privé utilise l’identité ChatGPT fournie par la plateforme. Un nouveau compte obtient son propre espace responsable; les responsables peuvent générer un code d’invitation ciblé pour un agent ou un producteur. Aucun email n’est envoyé automatiquement. Une invitation expire après sept jours et s’utilise une seule fois. Les agents sont limités à la coopérative attribuée; les producteurs à leurs données. La désignation d’un administrateur technique utilise `ADMIN_USER_IDS`, côté serveur uniquement, suivant `.env.example` (à copier en `.dev.vars` localement si nécessaire).
-
-Le mode local de démonstration fonctionne sans compte externe. Les invitations réelles demandent une identité ChatGPT; elles sont testées avec une identité contrôlée dans les tests d’intégration. Ne pas exposer directement le serveur local sur Internet : l’identité hébergée doit provenir de la passerelle de confiance.
-
-## Six fonctions
-
-1. Prévisions : culture, campagne, échelle, territoire et version; graphique, tableau et provenance.
-2. Comparaison : paires compatibles, erreurs, MAE, RMSE, biais, période et effectif.
-3. Simulation : rendement × hectares; variantes personnelles, kg, sacs et hypothèses conservées.
-4. Collecte : membres, points, créneaux, catégories distinctes, stockage et transport par créneau.
-5. Récoltes : saisie par étapes, normalisation, brouillon/soumis/validé et historique.
-6. Fiche : bilan filtré, CSV, PDF téléchargé et impression.
-
-## Imports scientifiques
-
-L’administrateur ouvre « Sources et import ». Il charge un CSV en t/ha, examine les erreurs et l’aperçu, puis confirme. Le lot entier est refusé si une ligne est invalide. Les réimportations et doublons de clé sont signalés; une nouvelle version est ajoutée sans remplacer les snapshots utilisés dans les simulations. Le rapport identifie les lignes rejetées. Un export réel sert de modèle et se réimporte sans perte de précision.
-
-Colonnes : `crop,year,territory,level,yield,model,version,issuedAt,status,source,areaDefinition`. La colonne `id` d’un export est facultative. Niveaux : `national`, `region`, `prefecture_historique` (alias français acceptés). Cultures et territoires doivent appartenir au référentiel actuel; leur extension nécessite une mise à jour explicite du référentiel. La date d’émission est au format ISO avec fuseau, ou vide si inconnue.
-
-## Vérifications
-
-```bash
+cp .dev.vars.example .dev.vars
 pnpm check
 pnpm test
 pnpm test:integration
-node --experimental-strip-types tests/performance.mjs
+pnpm test:regressions
+pnpm build
 ```
 
-Les tests d’intégration appellent les véritables routes et migrations avec SQLite sur disque et un adaptateur D1; l’identité ChatGPT est contrôlée. Ils ne simulent pas un test du fournisseur distant. Le rapport détaillé, les corrections et les limites se trouvent dans `docs/REVIEW.md`.
-
-## Documents
-
-- `docs/SCIENCE.md` : sources, méthode, filiation, statut et limites scientifiques.
-- `docs/ARCHITECTURE.md` : architecture et calculs.
-- `docs/DEMONSTRATION.md` : parcours de soutenance en six étapes.
-- `docs/REVIEW.md` : contrôles réellement exécutés et problèmes corrigés.
-- `science-source/v24-results/` : CSV vérifiés, protocole, choix des modèles et filiation.
-- `scripts/reproduce-v24.py` : reproduction optionnelle depuis les notebooks sources; versions Python exactes requises et contrôlées.
-
-## Limites
-
-Les prévisions sont rétrospectives, à origine fixe 2015; elles ne sont pas actualisées par les récoltes récentes. Seules 28 paires nationales 2016–2022 sont admises aux scores principaux. Les huit diagnostics nationaux 2023–2024 et les observations préfectorales à géographie non vérifiée en sont séparés. Aucune carte opérationnelle n’est ajoutée sans géométries qualifiées. La pièce justificative est une référence ou un lien, sans hébergement de fichiers dans cette version. La saisie reste disponible après une erreur; la synchronisation automatique hors connexion n’est pas implémentée. Une validation agronomique et des tests auprès de vrais utilisateurs restent nécessaires.
-
-Contrôles de non-régression de la revue finale :
+Pour la première base locale seulement, appliquer les migrations une fois chacune :
 
 ```bash
-node --experimental-transform-types tests/final-regressions.mjs
+pnpm exec wrangler d1 migrations apply DB --local --config wrangler.jsonc
+pnpm dev
 ```
 
-Ils vérifient les changements de membre refusés, la cohérence d’une récolte liée à une collecte et la conservation des statuts scientifiques dans les CSV. Voir `docs/FINAL_REVIEW.md`.
+Ouvrir l’URL localhost affichée. Le mode `AUTH_DEMO_ONLY=true` permet uniquement une identité absente dans le contexte local : on ouvre ensuite un espace métier de démonstration, qui ne donne aucun accès aux espaces réels. Les sessions et données sont conservées dans l’état local Wrangler. `pnpm start` utilise la version compilée et une base locale; après changement de configuration, recompiler.
+
+## Préparer Cloudflare une fois
+
+1. Conserver un compte Workers Free, créer une base D1 nommée `agriprevision-db` et noter son UUID et l’identifiant du compte. Aucune base de la version Sites n’est transférée automatiquement.
+2. Préparer une application Cloudflare Access pour l’adresse exacte du Worker; ajouter les adresses des utilisateurs autorisés. Noter le domaine d’équipe (`https://votre-equipe.cloudflareaccess.com`) et l’Application Audience Tag.
+3. Configurer GitHub selon le tableau ci-dessous. Le jeton API doit être limité au compte concerné et aux opérations Workers et D1 nécessaires. Ne jamais le coller dans un message, un fichier suivi ou un journal public.
+4. Pousser le code sur `main`, vérifier le job `checks`, puis activer `CLOUDFLARE_DEPLOY_ENABLED=true` et lancer manuellement le workflow pour la première publication.
+5. Renseigner `APP_URL` avec l’URL réelle obtenue. Vérifier le parcours humain. Pour automatiser le contrôle distant, créer un Access Service Token, autorisé par une politique Access adaptée, et renseigner les deux secrets de service. Ce service ne peut appeler que GET `/api/health`, sans compte humain ni données privées.
+
+| Nom | Emplacement GitHub | Contenu |
+|---|---|---|
+| `CLOUDFLARE_API_TOKEN` | Secret du dépôt | Jeton Cloudflare limité au compte Workers/D1 |
+| `CLOUDFLARE_ACCOUNT_ID` | Secret du dépôt | Identifiant du compte |
+| `CLOUDFLARE_DATABASE_ID` | Variable du dépôt | UUID réel de la base D1 |
+| `CF_ACCESS_TEAM_DOMAIN` | Variable du dépôt | Origine HTTPS de l’équipe Access |
+| `CF_ACCESS_AUD` | Variable du dépôt | Audience Access, 64 caractères hexadécimaux |
+| `ADMIN_EMAILS` | Secret du dépôt, facultatif | Emails administrateurs séparés par virgules; ils doivent venir du JWT vérifié |
+| `APP_URL` | Variable du dépôt | Origine HTTPS de l’application publiée |
+| `CF_ACCESS_CLIENT_ID` | Secret facultatif | Identifiant du service de contrôle |
+| `CF_ACCESS_CLIENT_SECRET` | Secret facultatif | Secret du service de contrôle |
+| `CLOUDFLARE_DEPLOY_ENABLED` | Variable du dépôt | `true` seulement quand la configuration est prête |
+
+La configuration source `wrangler.jsonc` contient un UUID factice pour permettre les builds de test sans compte. `pnpm configure:cloudflare` refuse cet UUID et les paramètres Access manquants, puis génère `.cloudflare/wrangler.json`. Les builds de production prennent cette configuration générée; le script de publication vérifie que l’UUID et les paramètres du build concordent avec le compte cible. La démo distante sans identité est interdite.
+
+## Publication manuelle dans un terminal autorisé
+
+Renseigner les variables réelles dans l’environnement du terminal, sans modifier les fichiers suivis, puis :
+
+```bash
+pnpm exec wrangler login
+pnpm configure:cloudflare
+pnpm build
+pnpm deploy:cloudflare
+```
+
+Le script automatique requiert `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID` pour obtenir un point de restauration avant les migrations. La connexion interactive seule ne suffit pas pour ce script. Les secrets doivent être saisis dans le terminal ou le gestionnaire de secrets, sans passer par le chat.
+
+## Mises à jour et retour arrière
+
+Le workflow `.github/workflows/ci.yml` vérifie types, tests, référence scientifique et compilation sur chaque proposition. Sur `main`, la publication activée effectue une nouvelle compilation avec les vrais paramètres, vérifie un point de restauration D1, applique uniquement les migrations en attente, publie et tente le contrôle de santé. Les déploiements sont sérialisés et un commit dépassé est refusé. Aucune donnée D1 n’est exportée dans les artifacts publics GitHub.
+
+Les migrations déjà appliquées sont immuables; ajouter des migrations compatibles plutôt que supprimer des colonnes utilisées par la version précédente. Revenir au code précédent ne restaure pas la base. Time Travel couvre la période de rétention du fournisseur, pas deux mois complets d’archives; conserver séparément des exports privés réguliers si cette durée est nécessaire.
+
+```bash
+pnpm exec wrangler d1 export agriprevision-db --remote --config .cloudflare/wrangler.json --output sauvegarde-privee.sql
+```
+
+Ne jamais commiter ou publier la sauvegarde. Les enregistrements communautaires contiennent des données de membres. Désactiver Workers Builds si GitHub Actions assure déjà la publication, pour éviter deux pipelines concurrents.
+
+## Vérifications et limites
+
+Voir `docs/CLOUDFLARE_REVIEW.md`, `docs/AUTH_CLOUDFLARE.md`, `docs/PIPELINE.md` et `docs/SCIENCE.md`. Les tests SQL utilisent de véritables routes et migrations avec SQLite local adapté à D1; les tests JWT vérifient de vraies signatures avec des clés de test. Ces tests ne prouvent pas une authentification réelle dans votre compte Cloudflare. Les résultats restent exploratoires et rétrospectifs à origine 2015. Une qualification des limites CPU du forfait gratuit sur le service distant et une vérification humaine finale sont nécessaires. Carte opérationnelle, téléversement de justificatifs et synchronisation hors ligne automatique ne sont pas inclus.

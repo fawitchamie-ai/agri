@@ -5,33 +5,33 @@
       "0001_married_jetstream.sql",
       "0002_illegal_baron_strucker.sql"
     ],
-    "transport": "Node SQLite file with D1 adapter; actual API handlers; controlled ChatGPT identity stub"
+    "transport": "Node SQLite file with D1 adapter; actual API handlers; controlled verified-identity stub"
   },
   "results": [
     {
       "name": "Correction récolte: changement de producteur refusé, provenance préservée",
       "status": "PASS",
-      "ms": 1.27
+      "ms": 1.33
     },
     {
       "name": "Correction collecte: changement de producteur refusé",
       "status": "PASS",
-      "ms": 1.08
+      "ms": 1.18
     },
     {
       "name": "Récolte liée: culture, campagne et territoire ne rendent pas la liaison incompatible",
       "status": "PASS",
-      "ms": 2.07
+      "ms": 2.16
     },
     {
       "name": "Producteur: les corrections refusées ne révèlent pas un autre membre",
       "status": "PASS",
-      "ms": 2.26
+      "ms": 2.83
     },
     {
       "name": "CSV observations: diagnostic X/E et statut principal conservés",
       "status": "PASS",
-      "ms": 2.19
+      "ms": 2.48
     }
   ]
 }

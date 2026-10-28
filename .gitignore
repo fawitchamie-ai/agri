@@ -47,3 +47,13 @@ yarn-error.log*
 !/.env.example
 /tmp/
 **/__pycache__/
+
+/.cloudflare/
+/deploy-backups/
+
+!/.dev.vars.example
+
+# Private database exports and Windows download metadata
+/sauvegarde*.sql
+/backup*.sql
+*:Zone.Identifier

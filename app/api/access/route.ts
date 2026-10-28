@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         if (b.action === 'accept') {
             const user = await getChatGPTUser();
             if (!user)
-                throw new HttpError(401, 'Connectez-vous avec votre compte ChatGPT pour rejoindre une coopérative.');
+                throw new HttpError(401, 'Connectez-vous avec votre compte Cloudflare Access pour rejoindre une coopérative.');
             if (typeof b.code !== 'string' || b.code.length > 200)
                 throw new HttpError(400, 'Code d’invitation invalide.');
             const invite = await db.prepare('SELECT * FROM invitations WHERE token_hash=? AND accepted_at IS NULL AND expires_at>?').bind(await digest(b.code.trim()), new Date().toISOString()).first<any>();

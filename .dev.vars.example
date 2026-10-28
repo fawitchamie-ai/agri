@@ -1,0 +1,2 @@
+# Développement uniquement sur localhost/127.0.0.1. Jamais déployé en production.
+AUTH_DEMO_ONLY="true"

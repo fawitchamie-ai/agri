@@ -19,13 +19,14 @@ export async function session(req: Request): Promise<ServerSession> {
     const adminIds = ((env as unknown as {
         ADMIN_USER_IDS?: string;
     }).ADMIN_USER_IDS || '').split(',').map(s => s.trim());
+    const adminEmails = (env.ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     let account = await db.prepare('SELECT * FROM accounts WHERE id=?').bind(user.userId).first<any>();
     if (!account) {
         const now = new Date().toISOString();
         await db.prepare('INSERT OR IGNORE INTO accounts (id,name,role,coop_id,created_at) VALUES (?,?,?,?,?)').bind(user.userId, user.displayName, 'responsable', 'real-' + user.userId, now).run();
         account = await db.prepare('SELECT * FROM accounts WHERE id=?').bind(user.userId).first<any>();
     }
-    return { userId: user.userId, name: user.displayName, role: adminIds.includes(user.userId) ? 'admin' : account.role as Role, coopId: account.coop_id, demo: false };
+    return { userId: user.userId, name: user.displayName, role: (adminIds.includes(user.userId) || adminEmails.includes(user.email.toLowerCase())) ? 'admin' : account.role as Role, coopId: account.coop_id, demo: false };
 }
 export function canManage(s: Session) { return s.role === 'admin' || s.role === 'responsable' || s.role === 'agent'; }
 export function assertManage(s: Session) { if (!canManage(s))

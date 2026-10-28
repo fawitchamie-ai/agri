@@ -1,0 +1,96 @@
+name: Vérifier et publier AgriPrévision
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: TypeScript, tests et compilation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Official checkout v7.0.1, pinned to the verified release commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Installer pnpm et les dépendances verrouillées
+        run: |
+          npm install --global pnpm@11.25.0
+          pnpm install --frozen-lockfile
+      - name: Vérifier les types
+        run: pnpm check
+      - name: Tester les calculs, les imports et la référence scientifique
+        run: pnpm test
+      - name: Tester les routes et la persistance
+        run: pnpm test:integration
+      - name: Tester les dernières corrections d’autorisations
+        run: pnpm test:regressions
+      - name: Compiler sans secrets ni base de production
+        run: pnpm build
+      - name: Signaler la publication non activée
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY_ENABLED != 'true'
+        run: echo '::notice::Code vérifié. Publication désactivée tant que CLOUDFLARE_DEPLOY_ENABLED ne vaut pas true.'
+
+  deploy:
+    name: Publier en production
+    needs: checks
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Never interrupt a migration because a new commit was pushed.
+    concurrency:
+      group: agriprevision-cloudflare-production
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_DATABASE_ID: ${{ vars.CLOUDFLARE_DATABASE_ID }}
+      CF_ACCESS_TEAM_DOMAIN: ${{ vars.CF_ACCESS_TEAM_DOMAIN }}
+      CF_ACCESS_AUD: ${{ vars.CF_ACCESS_AUD }}
+      ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Installer les mêmes dépendances
+        run: |
+          npm install --global pnpm@11.25.0
+          pnpm install --frozen-lockfile
+      - name: Refuser de publier un commit main devenu obsolète
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          deployment_head_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha')"
+          if [ "$deployment_head_sha" != "$GITHUB_SHA" ]; then
+            echo '::error::Un commit plus récent est présent sur main. Cette ancienne publication est arrêtée.'
+            exit 1
+          fi
+      - name: Préparer la configuration du compte
+        run: pnpm configure:cloudflare
+      - name: Compiler la version de production
+        run: pnpm build
+      - name: Vérifier le point de restauration, migrer et publier
+        run: node scripts/deploy-cloudflare.mjs
+      - name: Contrôler la santé avec une identité Access de service
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: node scripts/smoke-cloudflare.mjs
+      - name: Effacer les fichiers éphémères du runner
+        if: always()
+        run: rm -rf .cloudflare
