@@ -1,4 +1,8 @@
-# AgriPrévision Togo — export Cloudflare autonome
+# AgriPrévision — campagnes, irrigation et rendements
+
+Le parcours « Préparer et suivre ma culture » permet de calculer et suivre un plan d’irrigation conditionnel du semis à la récolte, conserver les observations et leurs révisions, comparer des scénarios et vérifier un bilan d’engrais documenté. Six pays sont configurables ; la validation agronomique locale reste à conduire. Voir [le fonctionnement et les limites du module](docs/IRRIGATION.md) et le [notebook du moteur partagé](science-source/seasonal/planification_saisonniere.ipynb).
+
+## Socle Cloudflare existant
 
 Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.
 
