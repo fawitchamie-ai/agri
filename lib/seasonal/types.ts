@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.0.0';
+export const ENGINE_VERSION = 'water-balance-1.1.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -24,6 +24,10 @@ export type WaterEvent = {
 };
 export type SeasonalConfig = {
   country: Country; name: string; territory: string; crop: string; variety: string;
+  cropProfile?: { id: string; version: string; mode: 'reference' | 'custom' };
+  adjustDepletionToEtc?: boolean;
+  soilAnalyses?: import('./chemistry.ts').SoilAnalysis[];
+  nutritionReference?: {id:string;contextNote:string;alreadyKgHa:(number|null)[]};
   sowingDate: string; asOfDate: string; areaM2: number | null;
   latitude: number | null; longitude: number | null;
   soil: { source: string; layers: SoilLayer[]; infiltrationMmDay: number | null };
@@ -57,6 +61,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  nutrition?: ReturnType<typeof import('./nutrition.ts').referenceQuantities>;
   engineVersion: string; levelOfEvidence: 'simulation_non_validee'; status: 'conditional' | 'blocked';
   complete: boolean; horizonEnd: string; assumptions: string[]; missing: string[];
   days: WaterDay[]; weeks: WaterPeriod[]; decades: WaterPeriod[]; stages: WaterPeriod[];

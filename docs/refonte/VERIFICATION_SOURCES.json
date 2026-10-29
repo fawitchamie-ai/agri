@@ -1,0 +1,150 @@
+{
+  "method": "SHA256 of previously acquired local primary documents; not a new network acquisition",
+  "checks": [
+    {
+      "source": "fao56-kc",
+      "sha256": "cad0afe7873296b2a91c1a70b0d1fdf4cb37b5ee94a892521a478b2b1a4a2e3c",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "fao56-root",
+      "sha256": "f7eabb739742734c411a8d31527b709fba004a943e373ed406587017b3be0e98",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-maize",
+      "sha256": "285c1b1cc3522c5e34ddc552ec46306a364a7c44897421e421e1657bb8194bb0",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-sorghum",
+      "sha256": "1e678358a049b1701fe5b685e646e5ee48e97ff064393905ea9b186e560a1fd9",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-millet",
+      "sha256": "64ddb7f15d3cdce553ca67ab7a7578f125d8e5517b6d3b53257b82522cce6704",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-cowpea",
+      "sha256": "1853361aeab018c36333496dc44d2468e8c94dfe79644cb3c3efdab2bcd2e46f",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-soybean",
+      "sha256": "a78789773709a0c3ba7789365bd399b8b84027b54bce17479535257d97bf8094",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-groundnut",
+      "sha256": "fc99ce99d40be5ef2b89d5c391e740fde7501ef68ae0ed3e14e54da782e07956",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-cassava",
+      "sha256": "e1a2578d133fffbb64fa38844cfd53ae9d3909aead708d07a0a4708e5fc35dd2",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-sweet-potato",
+      "sha256": "205285c1bc6bedc3053dafd2dd06b968a98e03d7900ed438586fc71f1af0e592",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-rice",
+      "sha256": "73e150aaf5c203a6b4c55e95d87284cfd3b5c70a425b888c9c436bb74b217e6c",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-okra",
+      "sha256": "0a1e6b0577b3157e569ad78b783f6e146f079841c25aff775107e8b9729f494e",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-tomato",
+      "sha256": "d2502bb87e491bf5e4a09f96ae942b35f04454e5ac0664b3d6dfd8aa1052aa7d",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-onion",
+      "sha256": "6f215c4fbf4a972985820e78f0199a9a66e3b816908bf1d645f31da74e317d70",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-bell-pepper",
+      "sha256": "46ad22b842af7f043705ce9db512250dca5552d24e30ad716ad50dcef3f41ce8",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-watermelon",
+      "sha256": "00a3225373c05afc5ad8894f38b4af769b65ba11f8f160b7f1c7e577599f790c",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-cucumber",
+      "sha256": "9b78b4074f8c33a0c73ddc50d372714c34bcb627269111778bd3c2c36e232d98",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-sesame",
+      "sha256": "0e56e837107dfc2f7bc21d3bd4236ae6efc6cfc831877a0a5197ece19cafb5f7",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-yam",
+      "sha256": "bd3871c0d7b4912cc18ecfb74bf892797d9af4a037ca7040d7367dd838ca1e96",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-bambara",
+      "sha256": "fd27a31642d3011585d6732715ece96774c2f6d4264d822f79ac0501b22b751f",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-cabbage",
+      "sha256": "6ed3b24f1e33bcf408965bbdc16e805e41dd8e11f76cdb34f10613acdd479b9d",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-eggplant",
+      "sha256": "7fdb756e67cc70c0c2ed1b0d990bcd261208e9c099b89a28a3776a5e16e7047e",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ecocrop-fonio",
+      "sha256": "d7d2c512d249ca67bd8469762863a05f8220f8710e0253340e40539b45eea891",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "fertitogo-kozah",
+      "sha256": "30d5804e9b9b3d60afe14ff6d788ff6a8f8817107e52008c9af34de29c1f5303",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "feserwam-civ-fmb",
+      "sha256": "2de599c4660b9c6870e510d038a8d7ec279b2b6aa897a06227b27de5c1d1b5c7",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "ghana-maize-2025",
+      "sha256": "94e143e9bfb8b0485a22f0e30fa2f616cf577f4bf5b857179e948f541e9ae37d",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "cnra-soybean",
+      "sha256": "6d061a3e3f6f13d0125bb55d3bf7f7efeb69e5646e4b1d6c2c5f5bdfca4d6e05",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "cnra-okra",
+      "sha256": "1fd529ce2b46e21c1f87e8ed6802796c3841f8c0ef220f051b74eb1239ae4ae1",
+      "matchedLocalBytes": true
+    },
+    {
+      "source": "cnra-rice-upland",
+      "sha256": "2d76ebc55093a8f14d63684ec7a80272489ae5908d24d65a93fa185a7c3612aa",
+      "matchedLocalBytes": true
+    }
+  ]
+}

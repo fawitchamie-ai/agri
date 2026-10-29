@@ -87,3 +87,6 @@ La livraison ne fournit pas d’analyses de sol, essais de réponse à la fertil
 À conduire : acquisition et qualification des données, paramètres locaux/variétaux, couplage avec un simulateur agronomique calibré, validation des méthodes de pluie/stockage et de la météo, comparaison indépendante avec références agronomiques adaptées, pilote prospectif avec mesures de sol, compteurs, interventions et récoltes. Le support anglais, une carte de contour parcellaire, les alertes et la collecte automatique de capteurs ne sont pas livrés dans cette version.
 
 Sources méthodologiques consultées : [FAO 56, chapitre 6](https://www.fao.org/4/X0490E/x0490e0b.htm), [chapitre 8](https://www.fao.org/4/X0490E/x0490e0e.htm), [efficacités d’irrigation](https://www.fao.org/4/t7202e/t7202e08.htm), [documentation Open-Meteo](https://open-meteo.com/en/docs). Ces références ne certifient pas les coefficients fictifs de l’exemple.
+# Fiches culturales et chimie
+
+Les paramètres propres aux cultures, analyses de sol et scénarios de fertilisation sont documentés dans [AGRONOMY.md](AGRONOMY.md). Le moteur est passé en version `water-balance-1.1.0` ; les campagnes existantes sans fiche gardent le comportement précédent. Les nouvelles fiches activent explicitement l’ajustement de p à ETc lorsqu’elles sont appliquées. Aucun état de validation agronomique n’est rehaussé.
