@@ -1,0 +1,95 @@
+{
+  "config": {
+    "country": "TGO",
+    "name": "Parcelle de démonstration",
+    "territory": "Localité fictive",
+    "crop": "Maïs",
+    "variety": "Non renseignée — démonstration",
+    "sowingDate": "2026-10-29",
+    "asOfDate": "2026-10-29",
+    "areaM2": 1000,
+    "latitude": null,
+    "longitude": null,
+    "soil": {
+      "source": "Profil synthétique de démonstration, aucune analyse réelle",
+      "layers": [
+        {
+          "thicknessM": 1.2,
+          "thetaFC": 0.3,
+          "thetaWP": 0.15,
+          "initialTheta": 0.24
+        }
+      ],
+      "infiltrationMmDay": 30
+    },
+    "parameterSource": "Hypothèses de démonstration inspirées de la structure FAO 56 ; durées et coefficients non calibrés localement",
+    "stages": [
+      {
+        "name": "Implantation",
+        "days": 20,
+        "kcStart": 0.3,
+        "kcEnd": 0.3,
+        "rootStartM": 0.2,
+        "rootEndM": 0.3,
+        "depletionFraction": 0.5
+      },
+      {
+        "name": "Croissance",
+        "days": 35,
+        "kcStart": 0.3,
+        "kcEnd": 1.2,
+        "rootStartM": 0.3,
+        "rootEndM": 0.9,
+        "depletionFraction": 0.5
+      },
+      {
+        "name": "Floraison et formation du grain",
+        "days": 40,
+        "kcStart": 1.2,
+        "kcEnd": 1.2,
+        "rootStartM": 0.9,
+        "rootEndM": 0.9,
+        "depletionFraction": 0.5
+      },
+      {
+        "name": "Maturation",
+        "days": 30,
+        "kcStart": 1.2,
+        "kcEnd": 0.6,
+        "rootStartM": 0.9,
+        "rootEndM": 0.9,
+        "depletionFraction": 0.5
+      }
+    ],
+    "system": {
+      "name": "Installation de démonstration",
+      "source": "Hypothèses synthétiques à remplacer par les caractéristiques réelles",
+      "applicationEfficiency": 0.75,
+      "transportEfficiency": 1,
+      "sourceFlowM3h": 4,
+      "hoursPerDay": 6,
+      "sourceBudgetM3": 900,
+      "maxNetMmPerDay": 25,
+      "minIntervalDays": 1,
+      "allowedWeekdays": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "targetDepletionFraction": 0.1,
+      "dailySourceLimits": []
+    },
+    "weather": [],
+    "fallback": {
+      "label": "Scénario sec hypothétique, sans pluie ; aucune prévision météo",
+      "et0MmDay": 5,
+      "rainMmDay": 0
+    },
+    "systemDomain": "upland"
+  },
+  "events": []
+}

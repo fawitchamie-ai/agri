@@ -7,7 +7,7 @@ type AccessConfiguration = { issuer:string; audience:string };
 const identityContext = new AsyncLocalStorage<AccessIdentity|null>();
 const keySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 const localHosts = new Set(['localhost','127.0.0.1','[::1]','::1']);
-const localPaths = new Set(['/','/api/health','/api/science','/api/demo','/api/workspace','/api/export','/api/import','/api/report','/api/session','/api/access']);
+const localPaths = new Set(['/','/api/health','/api/seasonal','/api/science','/api/demo','/api/workspace','/api/export','/api/import','/api/report','/api/session','/api/access']);
 
 export function runWithAccessIdentity<T>(identity:AccessIdentity|null, callback:()=>T):T {
   return identityContext.run(identity, callback);
