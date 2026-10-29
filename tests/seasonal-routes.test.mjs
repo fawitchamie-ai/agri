@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {localFetch,setIdentity,closeHarness} from './support/local-route-harness.mjs';
 const {exampleCampaign}=await import('../lib/seasonal/example.ts');
 const {planWater}=await import('../lib/seasonal/engine.ts');
+const {applyCropProfile}=await import('../lib/seasonal/catalog.ts');
+const {seasonalCapabilities}=await import('../lib/seasonal/capabilities.ts');
 const base='http://agri.test';
 async function req(path,body,status=200){const res=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const json=await res.json();assert.equal(res.status,status,JSON.stringify(json).slice(0,250));return json;}
 test('Campagnes : routes, persistance, révisions, idempotence, accès et corrections tardives',async()=>{
@@ -10,6 +12,11 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     await req('/api/seasonal',undefined,401);
     const owner={userId:'water-owner',displayName:'Owner',email:'owner@example.test'};
     setIdentity(owner);
+    for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN']){
+      assert.deepEqual(await req('/api/seasonal',{action:'capabilities',country,cropId:'maize'}),seasonalCapabilities(country,'maize'));
+    }
+    await req('/api/seasonal',{action:'capabilities',country:'XXX'},400);
+    await req('/api/seasonal',{action:'capabilities',country:'TGO',cropId:'unknown'},400);
     const config=exampleCampaign(new Date().toISOString().slice(0,10));
     const save=await req('/api/seasonal',{action:'save',id:'campaign-1',expectedRevision:0,config},201);
     assert.deepEqual(save.campaign.plan,planWater(config));assert.equal(save.campaign.revision,1);
@@ -31,5 +38,19 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     const keep=await req('/api/seasonal',{action:'save',id:'campaign-1',expectedRevision:4,config:after.campaign.config,events:[]});assert.equal(keep.campaign.events.length,1);
     const imported=await req('/api/seasonal',{action:'save',id:'imported',expectedRevision:0,config:keep.campaign.config,events:keep.campaign.events},201);assert.deepEqual(imported.campaign.events,keep.campaign.events);
     await req('/api/seasonal',{action:'simulate',config:{...config,areaM2:-3}},400);
+    const chemical=applyCropProfile(config,'maize');chemical.territory='Kozah';
+    chemical.soilAnalyses=[{source:'Laboratoire fictif de test',date:chemical.asOfDate,availableOn:chemical.asOfDate,topCm:0,bottomCm:20,status:'measured',measurements:[{parameter:'availableP',value:8,unit:'mg/kg',method:'Olsen-Dabin'}]}];
+    chemical.nutritionReference={id:'tgo-kozah-maize',contextNote:'Exemple de référence Kozah à vérifier localement ; non prescriptif.',alreadyKgHa:[50,null]};
+    const expected=planWater(chemical);
+    assert.deepEqual((await req('/api/seasonal',{action:'simulate',config:chemical})).plan,expected);
+    const savedChemical=await req('/api/seasonal',{action:'save',id:'chemical-test',expectedRevision:0,config:chemical},201);
+    const loadedChemical=await req('/api/seasonal?id=chemical-test');
+    assert.deepEqual(loadedChemical.campaign.config.soilAnalyses,chemical.soilAnalyses);
+    assert.deepEqual(loadedChemical.campaign.plan.nutrition,expected.nutrition);
+    const historical=await req('/api/seasonal?id=chemical-test&revision=1');
+    assert.deepEqual(historical.plan.nutrition,savedChemical.campaign.plan.nutrition);
+    await req('/api/seasonal',{action:'simulate',config:{...chemical,country:'BEN'}},400);
+    const invalidChemical=structuredClone(chemical);invalidChemical.soilAnalyses[0].measurements[0].unit='kg/ha';
+    await req('/api/seasonal',{action:'simulate',config:invalidChemical},400);
   }finally{closeHarness();}
 });

@@ -4,6 +4,8 @@ import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
 import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
 import { loadForecast } from '@/lib/seasonal/weather';
+import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
+import { cropById } from '@/lib/seasonal/catalog';
 
 function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: JSON.parse(row.config), events: JSON.parse(row.events), plan: JSON.parse(row.plan), updatedAt: row.updated_at, demo: !!row.demo }; }
 async function readable(id: string, request: Request) {
@@ -33,6 +35,11 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request), db = database();
+  if (b.action === 'capabilities') {
+    if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
+    if (b.cropId !== undefined && (typeof b.cropId !== 'string' || !cropById(b.cropId))) throw new InputError('Culture inconnue.');
+    return json(seasonalCapabilities(b.country as keyof typeof COUNTRIES, b.cropId));
+  }
   if (b.action === 'weather') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));

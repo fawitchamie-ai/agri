@@ -1,5 +1,8 @@
 import { ENGINE_VERSION, type SeasonalConfig, type WaterEvent, type Volumes, type WaterDay, type WaterPeriod, type WaterPlan } from './types.ts';
 import { addDays, validateConfig, validateEvents } from './validation.ts';
+import { cropById, depletionAtDemand } from './catalog.ts';
+import { referenceQuantities } from './nutrition.ts';
+import { chemistryGuidance } from './chemistry.ts';
 
 /** Aggregate application efficiency already includes expected application losses.
  * Only overflow above field capacity is charged as additional root-zone drainage.
@@ -31,7 +34,13 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
     `Sol : ${c.soil.source}. Culture : ${c.parameterSource}. Installation : ${c.system.source}.`,
   ];
   if (c.fallback) assumptions.push(`Jours sans météo complète : scénario explicite « ${c.fallback.label} », ET0 ${c.fallback.et0MmDay} mm/j et pluie ${c.fallback.rainMmDay} mm/j. Il ne s’agit pas d’une prévision saisonnière calibrée.`);
-  if (c.systemDomain !== 'upland') missing.push('Ce module ne prend pas en charge les rizières submergées ni les nappes proches. Un bilan spécifique est nécessaire.');
+  const crop = c.cropProfile ? cropById(c.cropProfile.id) : undefined;
+  if(crop){
+    assumptions.push(`Fiche ${crop.name}, ${c.cropProfile!.version}. ${crop.notes.join(' ')}`,...chemistryGuidance(crop.id,c.soilAnalyses));
+    if(c.cropProfile!.mode==='reference' && !crop.water)missing.push('Paramètres hydriques manquants pour cette culture : renseignez une référence locale et ses stades en mode personnalisé.');
+  }
+  if(c.adjustDepletionToEtc)assumptions.push('Seuil hydrique p ajusté chaque jour à la demande ETc selon FAO56, équation 83 (bornes 0,10–0,80).');
+  if (c.systemDomain !== 'upland' || crop?.id==='rice-flooded') missing.push('Ce module ne prend pas en charge les rizières submergées ni les nappes proches. Un bilan spécifique est nécessaire.');
   if (c.soil.layers.some(l => l.initialTheta === null)) missing.push('Humidité initiale de chaque horizon (ou scénario initial explicite).');
   if (c.areaM2 === null) assumptions.push('Surface inconnue : les lames en mm restent calculables, les volumes ne le sont pas.');
   if (c.system.applicationEfficiency === null) assumptions.push('Efficacité d’application inconnue : apport net théorique seulement, volumes bruts et faisabilité non établis.');
@@ -62,7 +71,7 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
     let rootGainMm = 0;
     for (let i = 0; i < activeWater.length; i++) { const gain = 1000 * (newDepths[i] - activeDepths[i]) * (theta[i] - c.soil.layers[i].thetaWP); activeWater[i] += gain; rootGainMm += gain; }
     activeDepths = newDepths; 
-    const tawMm = capacity(rootM), rawMm = stage.depletionFraction * tawMm;
+    const tawMm = capacity(rootM);
     const todayEvents = eventsByDate.get(date) ?? [];
     let assimilationMm = 0;
     const measurement = todayEvents.find(e => e.kind === 'soil');
@@ -75,7 +84,8 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
     const rainMm = rainObservation?.amount ?? weather?.rainMm ?? c.fallback?.rainMmDay;
     const et0 = weather?.et0Mm ?? c.fallback?.et0MmDay;
     if (rainMm === undefined || et0 === undefined) { missing.push(`Météo incomplète le ${date} : ${rainMm === undefined ? 'pluie' : 'ET0'} et scénario de repli manquants. Le bilan ne peut pas être prolongé.`); break; }
-    const demandMm = kc * et0, rainInfiltrated = Math.min(rainMm, c.soil.infiltrationMmDay ?? rainMm);
+    const demandMm = kc * et0, p = c.adjustDepletionToEtc ? depletionAtDemand(stage.depletionFraction,demandMm) : stage.depletionFraction, rawMm=p*tawMm;
+    const rainInfiltrated = Math.min(rainMm, c.soil.infiltrationMmDay ?? rainMm);
     const runoffMm = rainMm - rainInfiltrated, rainDrain = addWater(rainInfiltrated), rainRetainedMm = rainInfiltrated - rainDrain;
     const storedAfterRain = activeWater.reduce((a,b)=>a+b,0);
     const requiredNetMm = Math.max(0, tawMm - rawMm + demandMm - storedAfterRain);
@@ -138,6 +148,7 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
   if (days.some(d => d.unmetEtMm > .01)) assumptions.push('Des jours de stress hydrique subsistent : examiner le déficit et les contraintes. Le rendement n’est pas recalculé par ce module.');
   if (c.system.sourceBudgetM3 !== null && usedSourceM3 > c.system.sourceBudgetM3 + 1e-8) assumptions.push('Les apports déjà réalisés dépassent le quota déclaré. Le réalisé est conservé et aucun quota supplémentaire n’est inventé.');
   return {
+    ...(c.nutritionReference?{nutrition:referenceQuantities(c.nutritionReference.id,c,c.nutritionReference.contextNote,c.nutritionReference.alreadyKgHa)}:{}),
     engineVersion: ENGINE_VERSION, levelOfEvidence: 'simulation_non_validee', status: missing.length ? 'blocked' : 'conditional', complete, horizonEnd, assumptions, missing,
     days, weeks: periods(days, 7), decades: periods(days, 10), stages: c.stages.map((s, i) => { const rows = days.filter(d => d.stageIndex === i); return rows.length ? period(s.name, rows) : null; }).filter((x): x is WaterPeriod => x !== null),
     nextWindows: positive.slice(0, 8).map(d => ({ from: d.date, to: d.date, conditional: true, volume: d.intervention!, reasons: d.intervention!.reasons })),

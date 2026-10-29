@@ -1,0 +1,12 @@
+{
+  "schema": "seasonal-input-audit-1.0.0",
+  "country_notebooks": 4,
+  "other_notebooks": 2,
+  "seasonal_yield_model_executed": false,
+  "notebook_cells_executed": false,
+  "wall_seconds": 1.803,
+  "peak_rss_mib": 170.92,
+  "limits": "Linux ru_maxrss for this process; excludes separate v24 reproduction and browser",
+  "raw_data_written_outside_notebook": true,
+  "full_fews_dataframe_loaded": false
+}

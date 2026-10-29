@@ -3,7 +3,8 @@
     "migrations": [
       "0000_worried_zarda.sql",
       "0001_married_jetstream.sql",
-      "0002_illegal_baron_strucker.sql"
+      "0002_illegal_baron_strucker.sql",
+      "0003_seasonal_campaigns.sql"
     ],
     "transport": "Node SQLite file with D1 adapter; actual API handlers; controlled verified-identity stub"
   },
@@ -11,27 +12,27 @@
     {
       "name": "Correction récolte: changement de producteur refusé, provenance préservée",
       "status": "PASS",
-      "ms": 1.33
+      "ms": 1.43
     },
     {
       "name": "Correction collecte: changement de producteur refusé",
       "status": "PASS",
-      "ms": 1.18
+      "ms": 1.3
     },
     {
       "name": "Récolte liée: culture, campagne et territoire ne rendent pas la liaison incompatible",
       "status": "PASS",
-      "ms": 2.16
+      "ms": 2.19
     },
     {
       "name": "Producteur: les corrections refusées ne révèlent pas un autre membre",
       "status": "PASS",
-      "ms": 2.83
+      "ms": 4.82
     },
     {
       "name": "CSV observations: diagnostic X/E et statut principal conservés",
       "status": "PASS",
-      "ms": 2.48
+      "ms": 3.41
     }
   ]
 }

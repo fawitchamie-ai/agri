@@ -1,4 +1,7 @@
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
+import { referenceQuantities } from './nutrition.ts';
+import { CATALOG_VERSION, cropById } from './catalog.ts';
+import { SOIL_PARAMETERS, type SoilAnalysis, type SoilParameter } from './chemistry.ts';
 
 export class InputError extends Error {}
 export function isoDate(value: unknown, label = 'Date'): string {
@@ -61,7 +64,36 @@ export function validateConfig(input: unknown): SeasonalConfig {
     et0MmDay: number(c.fallback.et0MmDay, 'ET0 du scénario', 0, 30),
     rainMmDay: number(c.fallback.rainMmDay, 'Pluie du scénario', 0, 2000),
   };
-  return {
+  let cropProfile: SeasonalConfig['cropProfile'];
+  if(c.cropProfile!==undefined){
+    const p=obj(c.cropProfile), profile=cropById(p.id);
+    if(!profile || p.version!==CATALOG_VERSION || !['reference','custom'].includes(p.mode))throw new InputError('Référence culturale inconnue ou version non prise en charge.');
+    if(profile.name!==c.crop)throw new InputError('La culture a changé : choisissez et appliquez sa propre fiche avant de calculer.');
+    cropProfile={id:profile.id,version:p.version,mode:p.mode};
+  }
+  if(c.adjustDepletionToEtc!==undefined && typeof c.adjustDepletionToEtc!=='boolean')throw new InputError('Option d’ajustement du seuil hydrique invalide.');
+  const soilAnalyses:SoilAnalysis[] = c.soilAnalyses===undefined?[]:array(c.soilAnalyses,'Analyses de sol',12).map(v=>{
+    const a=obj(v),date=isoDate(a.date,'Date de l’analyse'),topCm=number(a.topCm,'Début de l’horizon analysé',0,500),bottomCm=number(a.bottomCm,'Fin de l’horizon analysé',.1,500);
+    const availableOn=isoDate(a.availableOn,'Date de disponibilité des résultats d’analyse');
+    if(bottomCm<=topCm || date>asOfDate || availableOn<date || availableOn>asOfDate)throw new InputError('Profondeur ou dates de l’analyse incompatibles avec le conseil : les résultats doivent être disponibles après la mesure et au plus tard à la date du conseil.');
+    if(!['measured','declared','estimated'].includes(a.status))throw new InputError('Statut d’analyse invalide.');
+    const measurements=array(a.measurements,'Mesures chimiques',16).map(v=>{
+      const m=obj(v), parameter=m.parameter as SoilParameter;
+      if(!Object.hasOwn(SOIL_PARAMETERS,parameter))throw new InputError('Paramètre chimique inconnu.');
+      const spec=SOIL_PARAMETERS[parameter];
+      if(!(spec.units as readonly string[]).includes(m.unit))throw new InputError('Unité incompatible avec le paramètre chimique.');
+      const method=str(m.method,'Méthode d’analyse',100);
+      if(spec.methods.length && !(spec.methods as readonly string[]).includes(method) && !((spec.methods as readonly string[]).includes('other')&&method.startsWith('other:')&&method.slice(6).trim().length>=3))throw new InputError('Méthode d’analyse non reconnue pour ce paramètre.');
+      if(method==='other')throw new InputError('Précisez la méthode exacte du laboratoire après other: ; une méthode inconnue n’est pas une mesure comparable.');
+      const concentration=['organicC','organicMatter','totalN'].includes(parameter);
+      const value=number(m.value,spec.label,0,parameter==='pH'?14:m.unit==='%'?100:concentration&&m.unit==='g/kg'?1000:1e6);
+      return {parameter,value,unit:m.unit as string,method};
+    });
+    if(!measurements.length || new Set(measurements.map(m=>m.parameter)).size!==measurements.length)throw new InputError('Une analyse doit contenir des paramètres distincts.');
+    return {source:str(a.source,'Laboratoire ou source',600),date,availableOn,topCm,bottomCm,status:a.status,measurements};
+  });
+  const validated:SeasonalConfig = {
+    ...(cropProfile?{cropProfile}:{}),...(c.adjustDepletionToEtc===undefined?{}:{adjustDepletionToEtc:c.adjustDepletionToEtc}),...(c.soilAnalyses===undefined?{}:{soilAnalyses}),
     country: c.country, systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
     areaM2: optional(c.areaM2, 'Surface en m²', .01, 1e9), latitude: optional(c.latitude, 'Latitude', -90, 90), longitude: optional(c.longitude, 'Longitude', -180, 180),
     parameterSource: str(c.parameterSource, 'Source des paramètres culturaux', 600),
@@ -70,6 +102,13 @@ export function validateConfig(input: unknown): SeasonalConfig {
       applicationEfficiency: optional(system.applicationEfficiency, 'Efficacité d’application (fraction)', .01, 1), transportEfficiency: optional(system.transportEfficiency, 'Efficacité de transport (fraction)', .01, 1), sourceFlowM3h: optional(system.sourceFlowM3h, 'Débit à la source', .001, 1e6), hoursPerDay: optional(system.hoursPerDay, 'Heures d’accès par jour', 0, 24), sourceBudgetM3: optional(system.sourceBudgetM3, 'Quota sur tout le cycle', 0, 1e10), maxNetMmPerDay: optional(system.maxNetMmPerDay, 'Apport net maximal par jour', 0, 2000), minIntervalDays, allowedWeekdays: weekdays, targetDepletionFraction, dailySourceLimits },
     weather, fallback,
   };
+  if(c.nutritionReference!==undefined){
+    const n=obj(c.nutritionReference),id=str(n.id,'Référence de fertilisation',100),contextNote=str(n.contextNote,'Contexte de la fertilisation',1200);
+    const alreadyKgHa=array(n.alreadyKgHa,'Apports des produits',20).map(v=>v===null?null:number(v,'Masse déjà appliquée (kg/ha)',0,1e6));
+    try{referenceQuantities(id,validated,contextNote,alreadyKgHa);}catch(e){throw new InputError((e as Error).message);}
+    validated.nutritionReference={id,contextNote,alreadyKgHa};
+  }
+  return validated;
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {
   const end = addDays(c.sowingDate, c.stages.reduce((s, x) => s + x.days, 0) - 1);

@@ -1,0 +1,312 @@
+[
+  {
+    "name": "01-memoire_togo_v22_complet_execute.ipynb",
+    "bytes": 26752832,
+    "sha256": "8eddb3efac74903936cc31c3fd1c0f4eafcca71cbfcc4e93600e68f243355982",
+    "cells": 66,
+    "code_cells": 35,
+    "saved_execution_counts": 35,
+    "saved_errors": 0,
+    "executed_during_audit": false
+  },
+  {
+    "name": "memoire_togo_v24_integral_2016_2027.ipynb",
+    "bytes": 1719174,
+    "sha256": "0834a25e6a8da5f1daa075f0f0fdef26c16b6d810139aaefc511a3cd81693428",
+    "cells": 383,
+    "code_cells": 151,
+    "saved_execution_counts": 151,
+    "saved_errors": 0,
+    "executed_during_audit": false
+  },
+  {
+    "name": "previsions_benin_autonome.ipynb",
+    "bytes": 19933383,
+    "sha256": "81f069505c62d7c3ddcf9ce0accd638a7f7d0b2f320dc5c93846bd29dc3b637a",
+    "cells": 37,
+    "code_cells": 17,
+    "saved_execution_counts": 17,
+    "saved_errors": 0,
+    "executed_during_audit": false,
+    "country": "BEN",
+    "members": [
+      {
+        "path": "data/.fews_raw.csv.qQ5cc6",
+        "bytes": 109314048,
+        "sha256": "c853372fba35ac70a70de0a4d5e31ac281c3ced3c643c37187123ae054a1d6cf",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/harveststat.csv",
+        "bytes": 3740256,
+        "sha256": "4f299bacba63e5df4e4c719c09db5d6cf18bba47670f4d890169bab1351134cb",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/fews_raw.csv",
+        "bytes": 265729037,
+        "sha256": "8ba4ad608fda4dccc52e37ab439c9d16ca5858369b1f49f13654a9afe1b7e6b2",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/faostat.csv",
+        "bytes": 1390104,
+        "sha256": "7bf7481b416b8704aa3d4d6b903b2c92b00b448ac0e268f896c43dcd5178c11c",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/boundaries.geojson",
+        "bytes": 241696,
+        "sha256": "87a73280a9396088733631629c5a4da3cd2fd58cdffcfaf13082d160d2135d80",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/protocol.json",
+        "bytes": 2046,
+        "sha256": "d8e575f6e14b47191951708f8e79bdfdb13c7f986d83907fb868954b8b9f387f",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/country.json",
+        "bytes": 641,
+        "sha256": "570a4e1cec92b44411e7643adcd0d1b0aa5d9813219ab4a331e060078cb37009",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "documents/input_manifest.json",
+        "bytes": 1034,
+        "sha256": "2a15c973e08f89405a1c27f0ff307e221aae42fea1adadbac8d8fc189edfe23a",
+        "manifest_verified": false,
+        "retained": false
+      },
+      {
+        "path": "documents/SOURCES.md",
+        "bytes": 3466,
+        "sha256": "ff90e520c25b0368d14b1ec122cb31032ffb7616c2d598f0d3691c8c34c5837d",
+        "manifest_verified": false,
+        "retained": true
+      }
+    ]
+  },
+  {
+    "name": "previsions_burkina_faso_autonome.ipynb",
+    "bytes": 5022216,
+    "sha256": "45f454cb7c4ecdfd133cc018357137add99d26476b0c8982986c78059abd792f",
+    "cells": 36,
+    "code_cells": 17,
+    "saved_execution_counts": 17,
+    "saved_errors": 0,
+    "executed_during_audit": false,
+    "country": "BFA",
+    "members": [
+      {
+        "path": "data/harveststat.csv",
+        "bytes": 2262049,
+        "sha256": "31c91230b94b7ddf3a2fc2df71d4c810da985ebd917936ed2107b1d45e9ebe0d",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/fews_raw.csv",
+        "bytes": 64197059,
+        "sha256": "37eb6fcf92986eeeb72d613bb1e062b5cd347067b039ff4554649467652cd0c3",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/faostat.csv",
+        "bytes": 1570483,
+        "sha256": "8ca2df9d66c2b6db6f3156cc87bd7ed3be3f75dd08a7dc1c52eb77db22d7f1fc",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/boundaries.geojson",
+        "bytes": 791207,
+        "sha256": "d7c20918476b06719cfccaceb8c1c9ed1ffb4b52f8513c2e43d1f315c89d6ac8",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/protocol.json",
+        "bytes": 1915,
+        "sha256": "702417af99c49de7231c022f4c1625858a4355930cecb6f4dbb7ac9c60d7488e",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/country.json",
+        "bytes": 428,
+        "sha256": "dced0a18e1289a9d1c280d42bfd749398ccce36544cb23238af025dda098f355",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "documents/input_manifest.json",
+        "bytes": 878,
+        "sha256": "13b1f41e6cad6480ee9057f8ca3b513fde36c53d7652c1300a9fe5904902a9df",
+        "manifest_verified": false,
+        "retained": false
+      },
+      {
+        "path": "documents/SOURCES.md",
+        "bytes": 3214,
+        "sha256": "fc8498c15e8aeefde9d7deb9b90d60b6bf78058e5c4f6ed6408b89f5df66b842",
+        "manifest_verified": false,
+        "retained": true
+      }
+    ]
+  },
+  {
+    "name": "previsions_ghana_autonome.ipynb",
+    "bytes": 1494383,
+    "sha256": "2842871418447c47c3cb0a422107510b068e0ff467518e76e9dd2f2076add56e",
+    "cells": 36,
+    "code_cells": 17,
+    "saved_execution_counts": 17,
+    "saved_errors": 0,
+    "executed_during_audit": false,
+    "country": "GHA",
+    "members": [
+      {
+        "path": "data/harveststat.csv",
+        "bytes": 329942,
+        "sha256": "42360b284335f8cdbc87d61cc0a83a106aa63e09f0b1361688abe40778fd611f",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/fews_raw.csv",
+        "bytes": 10878916,
+        "sha256": "053543b96a614d651772c3a4c6f23926da97723b78728218d76a6006a9556dde",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/faostat.csv",
+        "bytes": 1442955,
+        "sha256": "79304faf941a04db1cb0f24e9d225cb0812a2e248735e561364167f517e288a4",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/boundaries.geojson",
+        "bytes": 438570,
+        "sha256": "5fec234c5db11913c95ce5cc3465d77d2f1829b452fa52da4b7c5e3869d45ffa",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/protocol.json",
+        "bytes": 1915,
+        "sha256": "702417af99c49de7231c022f4c1625858a4355930cecb6f4dbb7ac9c60d7488e",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/country.json",
+        "bytes": 413,
+        "sha256": "43e432b8ff334242590eef59543743e9dec2fa6c3a9e8decf6a13002c9132e5d",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "documents/input_manifest.json",
+        "bytes": 877,
+        "sha256": "b8709dbdfd95edcfce8050c0ce9deefb3a7738f80147df264681fec82499f4af",
+        "manifest_verified": false,
+        "retained": false
+      },
+      {
+        "path": "documents/SOURCES.md",
+        "bytes": 3214,
+        "sha256": "fc8498c15e8aeefde9d7deb9b90d60b6bf78058e5c4f6ed6408b89f5df66b842",
+        "manifest_verified": false,
+        "retained": true
+      }
+    ]
+  },
+  {
+    "name": "previsions_senegal_autonome.ipynb",
+    "bytes": 2845267,
+    "sha256": "a6f5e7a51bd487bf0858fd8a2b08201a628b56278d82b45a05d37d58d4cc477b",
+    "cells": 37,
+    "code_cells": 17,
+    "saved_execution_counts": 17,
+    "saved_errors": 0,
+    "executed_during_audit": false,
+    "country": "SEN",
+    "members": [
+      {
+        "path": "data/harveststat.csv",
+        "bytes": 1185692,
+        "sha256": "8820bdff7a5a5170a82145125018dc616c42bf394b8d01dea52ac7c9063377b9",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/fews_raw.csv",
+        "bytes": 22425315,
+        "sha256": "a7446b0e404ca33e0c0d34d1db0bbeff18212ca720dac5ec1dd7325f4a69e20f",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/.fews_raw.csv.TPForf",
+        "bytes": 9175040,
+        "sha256": "d1b514337fe240d581ee3180e86f651b3fb217332c9481f9cdcac66b9427372d",
+        "manifest_verified": true,
+        "retained": false
+      },
+      {
+        "path": "data/faostat.csv",
+        "bytes": 1521300,
+        "sha256": "33307793fae76b7ae88401946733fab43bccf5eecb6ec0c84661f83ef68e6399",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "data/boundaries.geojson",
+        "bytes": 372816,
+        "sha256": "d3da62e2b9e988c018d944470f40989e2717d7886ddd0f038a9e553894dfb20f",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/protocol.json",
+        "bytes": 2046,
+        "sha256": "d8e575f6e14b47191951708f8e79bdfdb13c7f986d83907fb868954b8b9f387f",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "config/country.json",
+        "bytes": 649,
+        "sha256": "2a60b232dc1765db0c1eecf7415465bd1f8affef1d86e6161dbbddee82556e8b",
+        "manifest_verified": true,
+        "retained": true
+      },
+      {
+        "path": "documents/input_manifest.json",
+        "bytes": 1031,
+        "sha256": "4df39ef2d10d4dfb34c38df95d1deb39bf916a38262cbc2b019fce9da1cca020",
+        "manifest_verified": false,
+        "retained": false
+      },
+      {
+        "path": "documents/SOURCES.md",
+        "bytes": 3466,
+        "sha256": "ff90e520c25b0368d14b1ec122cb31032ffb7616c2d598f0d3691c8c34c5837d",
+        "manifest_verified": false,
+        "retained": true
+      }
+    ]
+  }
+]

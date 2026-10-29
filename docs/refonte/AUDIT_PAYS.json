@@ -1,0 +1,74 @@
+[
+  {
+    "country": "BEN",
+    "rows_raw": 31704,
+    "rows_selected": 11412,
+    "first_year": 1995,
+    "last_year": 2023,
+    "selected_territories": 77,
+    "boundary_units": 77,
+    "exclusions": {
+      "outside_configured_crops": 20170,
+      "selected": 11412,
+      "source_qc_flag": 116,
+      "invalid_yield": 6
+    },
+    "canonical_panel_sha256": "a27a8f95ee54e3d8eb088af97e6e9fa4a178eb9775fb96ba2c1a74dd94089941"
+  },
+  {
+    "country": "BFA",
+    "rows_raw": 17338,
+    "rows_selected": 9313,
+    "first_year": 1984,
+    "last_year": 2023,
+    "selected_territories": 45,
+    "boundary_units": 45,
+    "exclusions": {
+      "selected": 9313,
+      "outside_configured_crops": 7781,
+      "invalid_yield": 195,
+      "source_qc_flag": 49
+    },
+    "canonical_panel_sha256": "14b623df86b476f48375f376d20559ebdd9027c76bf64da480cb08924206b497"
+  },
+  {
+    "country": "GHA",
+    "rows_raw": 2989,
+    "rows_selected": 1025,
+    "first_year": 1997,
+    "last_year": 2022,
+    "selected_territories": 16,
+    "boundary_units": 16,
+    "exclusions": {
+      "outside_configured_crops": 1472,
+      "selected": 1025,
+      "source_qc_flag": 431,
+      "invalid_yield": 61
+    },
+    "canonical_panel_sha256": "16bc28da755d329c7470d4fcbff8ad7df308161fff2d0371aadb0e126631beef"
+  },
+  {
+    "country": "SEN",
+    "rows_raw": 9979,
+    "rows_selected": 9317,
+    "first_year": 1960,
+    "last_year": 2015,
+    "selected_territories": 43,
+    "boundary_units": 45,
+    "exclusions": {
+      "selected": 9317,
+      "outside_configured_crops": 496,
+      "source_qc_flag": 83,
+      "invalid_yield": 83
+    },
+    "canonical_panel_sha256": "a975ac1bfe1ffb10406931338af1badb8a5f714ceb49c01d9c9f54912d48975e"
+  },
+  {
+    "country": "TGO",
+    "rows_selected": 2014,
+    "selected_territories": 34,
+    "first_year": 1995,
+    "last_year": 2019,
+    "canonical_panel_sha256": "73628bd8758fe78b1f08cd9f6aceac4bdf2f649d68bb2f60956b6af4fc7ff2cc"
+  }
+]

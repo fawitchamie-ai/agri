@@ -1,0 +1,49 @@
+country,crop,system,season,spatial_support,geography_vintage,first_year,last_year,observations,territories,unit,source,area_definition,publication_vintages_verified,parcel_observations
+BEN,Cowpea,All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,2170,77,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Groundnuts (In Shell),All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,2175,77,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Maize,All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,2204,77,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Millet,All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2021,680,36,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Rice,All (PS),Annual,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,1723,74,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Sorghum,All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,1167,43,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BEN,Soybean,All (PS),Main,commune,HarvestStat harmonized FNID; current boundaries unverified,1995,2023,1293,68,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Cowpea,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1984,2023,1485,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Maize,All (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1984,2020,1235,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Maize,Plaine/Bas-fond irrigated (PS),Annual,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2022,117,27,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Maize,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2023,387,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Millet,All (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1984,2020,1269,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Millet,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2023,389,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Rice,All (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1984,2014,1165,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Rice,Bas-fonds rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2022,318,44,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Rice,Plaine/Bas-fond irrigated (PS),Annual,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2023,384,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Rice,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2022,187,37,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Sorghum,All (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1984,2020,1255,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Sorghum,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2023,389,45,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Soybean,All (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,1985,2017,483,35,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+BFA,Soybean,Rainfed (PS),Main,province,HarvestStat harmonized FNID; current boundaries unverified,2015,2023,250,37,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Cowpea,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,1997,2022,113,11,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Maize,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,1997,2022,321,16,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Millet,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,1997,2022,98,5,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Rice,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,1997,2022,308,16,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Sorghum,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,1997,2022,135,9,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+GHA,Soybean,All (PS),Main,région,HarvestStat harmonized FNID; current boundaries unverified,2004,2022,50,6,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Cowpea,none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1962,2015,1514,43,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Cowpea,recessional (PS),Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2008,2008,2,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Groundnuts (In Shell),irrigated,Main-off,département historique,HarvestStat harmonized FNID; current boundaries unverified,2002,2006,7,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Groundnuts (In Shell),none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1960,2015,2043,42,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Maize,irrigated,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2000,2013,24,5,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Maize,irrigated,Main-off,département historique,HarvestStat harmonized FNID; current boundaries unverified,2000,2011,13,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Maize,none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1960,2015,1415,41,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Maize,recessional (PS),Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2008,2012,3,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Millet,none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1960,2015,2001,43,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Rice,irrigated,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2015,2015,1,1,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Rice,irrigated,Main-off,département historique,HarvestStat harmonized FNID; current boundaries unverified,2000,2011,16,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Rice,none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1960,2015,1209,37,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Sorghum,irrigated,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2008,2010,3,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Sorghum,none,Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,1982,2015,1064,42,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+SEN,Sorghum,recessional (PS),Main,département historique,HarvestStat harmonized FNID; current boundaries unverified,2008,2008,2,2,t/ha,HarvestStat v1.2,reported; harvested-area semantics unverified,False,False
+TGO,Cowpea,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,2010,2018,104,12,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False
+TGO,Maize,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,1995,2019,772,34,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False
+TGO,Millet,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,1995,2019,288,25,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False
+TGO,Rice,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,2005,2019,187,28,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False
+TGO,Sorghum,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,1995,2019,592,32,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False
+TGO,Soybean,unspecified,unspecified,prefecture historique,post-2015 FNID unverified,2012,2019,71,21,t/ha,v24 reconstructed,reported; harvested-area semantics unverified,False,False

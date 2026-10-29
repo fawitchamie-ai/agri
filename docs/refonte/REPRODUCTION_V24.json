@@ -1,0 +1,16 @@
+{
+  "notebook": "memoire_togo_v24_integral_2016_2027.ipynb",
+  "notebookSha256": "0834a25e6a8da5f1daa075f0f0fdef26c16b6d810139aaefc511a3cd81693428",
+  "rows": 1092,
+  "sha256": "aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d",
+  "expectedSha256": "aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d",
+  "exactMatch": true,
+  "elapsedSeconds": 49.37301010800002,
+  "generatedAt": "2026-10-29T21:27:08.027547+00:00",
+  "versions": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "sklearn": "1.8.0"
+  },
+  "supplementINSEED": "absent; supplemental diagnostics incomplete; excluded from fitting and primary scores"
+}
