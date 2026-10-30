@@ -21,6 +21,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   const c = obj(input), soil = obj(c.soil), system = obj(c.system);
   if (!Object.hasOwn(COUNTRIES, c.country)) throw new InputError('Pays non pris en charge.');
   if (!['upland', 'flooded_rice', 'shallow_water_table'].includes(c.systemDomain)) throw new InputError('Système cultural invalide.');
+  if(c.waterCondition!==undefined && !['unknown','drained','waterlogged','submerged'].includes(c.waterCondition))throw new InputError('État d’excès d’eau invalide.');
   const layers = array(soil.layers, 'Horizons de sol', 12).map((v) => {
     const l = obj(v), fc = number(l.thetaFC, 'Capacité au champ', .001, .8), wp = number(l.thetaWP, 'Flétrissement', 0, .7);
     if (fc <= wp) throw new InputError('La capacité au champ doit dépasser le point de flétrissement.');
@@ -95,7 +96,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   });
   const validated:SeasonalConfig = {
     ...(cropProfile?{cropProfile}:{}),...(c.adjustDepletionToEtc===undefined?{}:{adjustDepletionToEtc:c.adjustDepletionToEtc}),...(c.soilAnalyses===undefined?{}:{soilAnalyses}),
-    country: c.country, systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
+    country: c.country, ...(c.waterCondition!==undefined?{waterCondition:c.waterCondition}:{}), systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
     areaM2: optional(c.areaM2, 'Surface en m²', .01, 1e9), latitude: optional(c.latitude, 'Latitude', -90, 90), longitude: optional(c.longitude, 'Longitude', -180, 180),
     parameterSource: str(c.parameterSource, 'Source des paramètres culturaux', 600),
     soil: { source: str(soil.source, 'Source du sol', 600), layers, infiltrationMmDay: optional(soil.infiltrationMmDay, 'Infiltration journalière', .01, 2000) }, stages,

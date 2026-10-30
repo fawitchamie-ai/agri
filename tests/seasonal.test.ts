@@ -101,3 +101,20 @@ test('Météo : transport simulé, unités et null préservés, jamais qualifié
   let called='';const fetcher=async(input:any)=>{called=String(input);return Response.json({daily_units:{precipitation_sum:'mm',et0_fao_evapotranspiration:'mm'},daily:{time:['2026-10-01'],precipitation_sum:[null],et0_fao_evapotranspiration:[5]}});};
   const r=await loadForecast(6.1,1.2,'Africa/Lome',fetcher as typeof fetch,'2026-10-01T00:00:00Z');assert.ok(called.startsWith('https://api.open-meteo.com/'));assert.equal(r.weather[0].rainMm,null);assert.equal(r.weather[0].status,'forecast');assert.equal(r.weather[0].availableAt,'2026-10-01T00:00:00Z');
 });
+
+test('Excès d’eau : engorgement ou submersion bloque tout calendrier sans inventer de mortalité',()=>{
+ for(const waterCondition of ['waterlogged','submerged'] as const){
+  const c={...config(),waterCondition};const p=planWater(c);
+  assert.equal(p.status,'blocked');assert.equal(p.complete,false);assert.equal(p.days.length,0);assert.deepEqual(p.nextWindows,[]);
+  assert.equal(p.totals.fieldM3,null);assert.equal(p.totals.sourceM3,null);
+  assert.ok(p.missing.some(m=>m.includes('suspendu')));
+  assert.equal(validateConfig(c).waterCondition,waterCondition);
+ }
+ assert.equal(planWater({...config(),waterCondition:'drained'}).complete,true);
+ assert.throws(()=>validateConfig({...config(),waterCondition:'safe'}));
+});
+test('Excès calculé : aucune déduction de drainage réel ni de rendement',()=>{
+ const c=oneDay();c.fallback={label:'Pluie forte de test',rainMmDay:150,et0MmDay:0};
+ c.soil.infiltrationMmDay=200;const p=planWater(c);assert.ok(p.days[0].drainageMm>0);assert.ok(p.assumptions.some(a=>a.includes('ne prouve pas')));
+ assert.ok(p.assumptions.some(a=>a.includes('mortalité')));
+});

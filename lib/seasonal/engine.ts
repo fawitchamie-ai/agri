@@ -41,6 +41,9 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
   }
   if(c.adjustDepletionToEtc)assumptions.push('Seuil hydrique p ajusté chaque jour à la demande ETc selon FAO56, équation 83 (bornes 0,10–0,80).');
   if (c.systemDomain !== 'upland' || crop?.id==='rice-flooded') missing.push('Ce module ne prend pas en charge les rizières submergées ni les nappes proches. Un bilan spécifique est nécessaire.');
+  assumptions.push('Le drainage calculé suppose une évacuation libre : aucune stagnation, asphyxie racinaire, submersion, mortalité ni perte de rendement par excès d’eau n’est simulée.');
+  if(!c.waterCondition||c.waterCondition==='unknown')assumptions.push('État d’engorgement inconnu : vérifiez que le sol évacue l’eau avant d’utiliser ce calendrier.');
+  if(c.waterCondition==='waterlogged'||c.waterCondition==='submerged')missing.push('Parcelle '+(c.waterCondition==='submerged'?'inondée avec plantes submergées':'engorgée avec eau stagnante')+' : calendrier d’irrigation suspendu. Les pertes et la survie ne sont pas calculées ; renseignez durée, hauteur d’eau, stade et variété pour un diagnostic local.');
   if (c.soil.layers.some(l => l.initialTheta === null)) missing.push('Humidité initiale de chaque horizon (ou scénario initial explicite).');
   if (c.areaM2 === null) assumptions.push('Surface inconnue : les lames en mm restent calculables, les volumes ne le sont pas.');
   if (c.system.applicationEfficiency === null) assumptions.push('Efficacité d’application inconnue : apport net théorique seulement, volumes bruts et faisabilité non établis.');
@@ -146,6 +149,7 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
   const intervals = positive.slice(1).map((d, i) => (Date.parse(d.date) - Date.parse(positive[i].date)) / 86400000);
   const recordedSourceM3 = sumKnown(recorded.map(d => d.intervention!.sourceM3)), remainingSourceM3 = complete ? sumKnown(future.map(d => d.intervention!.sourceM3)) : null;
   if (days.some(d => d.unmetEtMm > .01)) assumptions.push('Des jours de stress hydrique subsistent : examiner le déficit et les contraintes. Le rendement n’est pas recalculé par ce module.');
+  if(days.some(d=>d.drainageMm>.01||d.runoffMm>.01))assumptions.push('Excédent d’eau calculé : ce bilan ne prouve pas que l’eau s’est évacuée du champ. Vérifiez la stagnation et renseignez un engorgement ou une submersion si observé.');
   if (c.system.sourceBudgetM3 !== null && usedSourceM3 > c.system.sourceBudgetM3 + 1e-8) assumptions.push('Les apports déjà réalisés dépassent le quota déclaré. Le réalisé est conservé et aucun quota supplémentaire n’est inventé.');
   return {
     ...(c.nutritionReference?{nutrition:referenceQuantities(c.nutritionReference.id,c,c.nutritionReference.contextNote,c.nutritionReference.alreadyKgHa)}:{}),
