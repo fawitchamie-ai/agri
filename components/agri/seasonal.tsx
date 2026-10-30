@@ -12,6 +12,8 @@ import { CropReference } from './crop-reference';
 import ParcelExplorer, {MapIcon} from './parcel-explorer';
 import {parcelMetrics,type ParcelPolygon} from '../../lib/seasonal/parcel';
 import {applyCropProfile,cropById,CATALOG_VERSION} from '../../lib/seasonal/catalog';
+import QuickSimulation from './quick-simulation';
+import {automaticCampaign} from '../../lib/seasonal/automatic';
 import { seasonalCapabilities } from '../../lib/seasonal/capabilities';
 
 const fmt = (v: number | null | undefined, digits = 1) => v === null || v === undefined ? 'Indisponible' : new Intl.NumberFormat('fr-FR', { maximumFractionDigits: digits }).format(v);
@@ -32,7 +34,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
   const [list,setList] = useState<{id:string;name:string;country:keyof typeof COUNTRIES;crop:string;revision:number}[]>([]);
   const [history,setHistory] = useState<{revision:number;reason:string;created_at:string}[]>([]);
-  const [tab,setTab] = useState('carte');
+  const [tab,setTab] = useState('simulation');
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
   const [planStale,setPlanStale]=useState(true);
   const [parcelDraft,setParcelDraft]=useState(false);
@@ -49,6 +51,12 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [nutrients,setNutrients]=useState({source:'',target:['','',''],already:['','',''],name:'',dose:'',composition:['','','']});
   const [nutrientResult,setNutrientResult]=useState<ReturnType<typeof nutrientBalance>|null>(null);
   const capabilities = seasonalCapabilities(config.country, config.cropProfile?.id);
+  useEffect(()=>{
+    if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);return;}
+    setPlanStale(true);
+    const timer=setTimeout(()=>{try{setPlan(planWater(config,events));setPlanStale(false);setError('');}catch(e){setPlan(null);setPlanStale(true);setError((e as Error).message);}},220);
+    return()=>clearTimeout(timer);
+  },[config,events,parcelDraft]);
 
   useEffect(()=>{
     setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');
@@ -86,7 +94,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       setNotice('Observations synchronisées et calendriers recalculés.');
     }catch(e){setError((e as Error).message+' Les saisies restantes sont conservées sur cet appareil ; rechargez et examinez les conflits avant de les reprendre.');}finally{setBusy(false);}
   }
-  function newCampaign() {setDraftId(newId());setActive(null);setConfig(emptyCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setComparisons([]);setTab('carte');}
+  function newCampaign() {setDraftId(newId());setActive(null);setConfig(emptyCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setComparisons([]);setTab('simulation');}
   function loadExample() {setDraftId(newId());setActive(null);setConfig(exampleCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setTab('carte');setNotice('Exemple synthétique chargé. Remplacez les hypothèses avant un usage sur votre champ.');}
   function restoreDraft() {try{const d=JSON.parse(localStorage.getItem(draftKey)||'null');if(!d)throw new Error('Aucun brouillon enregistré sur cet appareil.');setConfig(d.config);setEvents(d.events);setActive(d.active);setPlan(null);setDirty(true);setNotice('Brouillon restauré : recalculez puis vérifiez la révision avant enregistrement.');}catch(e){setError((e as Error).message);}}
   function importWeather() {try {
@@ -107,13 +115,12 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   }catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function defineParcel(shape:ParcelPolygon|null,country:SeasonalConfig['country']) {
     const metrics=shape?parcelMetrics(shape):null;
-    edit({...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],nutritionReference:undefined});
+    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],nutritionReference:undefined};
+    edit(shape?automaticCampaign(next):next);
+    if(shape){setParcelDraft(false);setTab('simulation');}
   }
   function prepareParcel(cropId:string,date:string) {
-    const selected=cropById(cropId);if(!selected)return;
-    const next={...config,sowingDate:date};
-    edit(config.cropProfile?.id===cropId?next:{...next,crop:selected.name,cropProfile:{id:cropId,version:CATALOG_VERSION,mode:'reference'},nutritionReference:undefined,stages:[],parameterSource:'Fiche choisie ; paramètres à appliquer ou à renseigner avec une référence locale.',systemDomain:cropId==='rice-flooded'?'flooded_rice':'upland'});
-    setTab('parcelle');
+    try{edit(automaticCampaign(config,cropId,date));setTab('simulation');setError('');}catch(e){setError((e as Error).message);}
   }
   function exploreScenario(cropId:string,date:string) {
     setError('');try{
@@ -129,21 +136,19 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
 
   if(loadedScope!==scope)return <div className="card" role="status">Chargement de votre espace de campagne…</div>;
   return <div className="seasonal-tool">
-    <section className="field-welcome">
-      <div><span className="field-kicker"><span/>LE BON DÉPART POUR VOTRE SAISON</span><h1>Un champ. Des idées.<br/><em>Une saison à préparer.</em></h1><p>Retrouvez votre terre sur la carte, dessinez votre parcelle<br className="desktop-break"/> et préparez la suite, à votre rythme.</p></div>
-      <div className="field-welcome-right"><div className="field-sun" aria-hidden="true"><MapIcon name="leaf" size={40}/></div><span>Votre terre, votre prochaine histoire.</span><div><button className="btn secondary" onClick={newCampaign}><MapIcon name="plus" size={16}/>Nouveau champ</button><button className="btn secondary" onClick={loadExample}>Découvrir un exemple</button></div></div>
-    </section>
+    {tab!=='simulation'&&<div className="qs-compact-title"><button className="qs-back" onClick={()=>setTab('simulation')}>← Ma simulation</button><h1>{tab==='carte'?'Mon champ':'Réglages et suivi'}</h1></div>}
+    {tab==='simulation'&&<QuickSimulation config={config} plan={plan} stale={planStale} onChange={edit} onMap={()=>setTab('carte')} onAdvanced={setTab} onSave={save} canSave={!!workspace&&!busy}/>}
     {error&&<div className="notice warning" role="alert">{error}</div>}
     {notice&&<div className="notice info" role="status">{notice}</div>}
     {queue.length>0&&<div className="notice warning no-print"><div><strong>{queue.length} saisie(s) en attente sur cet appareil</strong><p>Les conflits de révision interrompent la synchronisation pour préserver les corrections faites ailleurs.</p><button className="btn secondary" disabled={busy} onClick={synchronize}>Synchroniser</button>{active&&queue.some(q=>q.campaignId===active.id&&q.expectedRevision!==active.revision)&&<button className="btn secondary" onClick={()=>{persistQueue(queue.map(q=>q.campaignId===active.id?{...q,expectedRevision:active.revision}:q));setNotice('Saisies en attente reprises sur la révision affichée. Vérifiez leurs quantités avant de synchroniser.');}}>Reprendre les saisies sur cette révision après examen</button>}<button className="btn secondary" onClick={()=>download('observations-en-attente.json',JSON.stringify(queue,null,2),'application/json')}>Exporter les saisies en attente</button></div></div>}
-    <details className="field-saved-campaigns no-print"><summary>Mes campagnes enregistrées <span>{list.length} campagne{list.length>1?'s':''}</span></summary><div className="seasonal-toolbar">
+    <details className="field-saved-campaigns no-print"><summary>Mes simulations enregistrées <span>{list.length} simulation{list.length>1?'s':''}</span></summary><div className="seasonal-toolbar">
       <Field label="Reprendre une campagne"><select value={active?.id||''} onChange={e=>{if(e.target.value)open(e.target.value)}}><option value="">Choisir une campagne enregistrée</option>{list.map(c=><option key={c.id} value={c.id}>{c.name} · {COUNTRIES[c.country]?.name} · {c.crop}</option>)}</select></Field>
       <div><span className="badge">{active?`Révision ${active.revision}`:'Brouillon'}{dirty?' · paramètres modifiés':''}</span><div className="form-actions"><button className="btn secondary" onClick={restoreDraft}>Restaurer le brouillon local</button><button className="btn primary" disabled={busy||!workspace} onClick={save}>Enregistrer la campagne</button></div></div>
     </div><label className="seasonal-check"><input type="checkbox" checked={keepDraft} onChange={e=>{setKeepDraft(e.target.checked);if(!e.target.checked)localStorage.removeItem(draftKey)}}/>Conserver un brouillon sur cet appareil (éviter sur un appareil partagé)</label>
     {!workspace&&<p>Le calcul et les exports sont disponibles ici. Ouvrez votre espace de travail ci-dessus pour conserver les campagnes et les observations.</p>}</details>
-    <div className="field-journey no-print" role="tablist" aria-label="Préparation de campagne">{[['carte','Mon champ','globe'],['parcelle','Ma culture','leaf'],['sol','Mon sol & mon eau','drop'],['meteo','La météo','globe'],['plan','Ma simulation','calendar'],['suivi','Mon carnet','leaf'],['conseils','Mes repères','leaf']].map(([id,label,icon],i)=><button key={id} id={'seasonal-tab-'+id} role="tab" aria-selected={tab===id} aria-controls={'seasonal-panel-'+id} onClick={()=>setTab(id)}><span className="journey-number">{i+1}</span><MapIcon name={icon} size={17}/>{label}{id==='carte'&&config.parcelGeometry&&<MapIcon name="check" size={15}/>}</button>)}</div>
-    <div hidden={tab!=='carte'} role="tabpanel" id="seasonal-panel-carte" aria-labelledby="seasonal-tab-carte"><ParcelExplorer key={'map-'+(active?.id??draftId)} config={config} plan={planStale?null:plan} locked={events.some(e=>['measured','declared'].includes(e.status))} canSearch={!!workspace} onParcel={defineParcel} onPrepare={prepareParcel} onScenario={exploreScenario} onCalendar={()=>setTab('plan')} onName={name=>change('name',name)} onDirty={setParcelDraft} onWaterCondition={value=>change('waterCondition',value)}/></div>
-    {tab!=='carte'&&config.parcelGeometry&&<div className="field-parcel-summary"><span><MapIcon name="draw"/>{config.name||'Mon champ'} <b>{fmt(config.areaM2! /10000,3)} ha</b> · {COUNTRIES[config.country].name}</span><button onClick={()=>setTab('carte')}>Revoir ma parcelle <MapIcon name="arrow" size={15}/></button></div>}
+    {tab!=='simulation'&&tab!=='carte'&&<div className="qs-secondary-nav no-print" role="tablist" aria-label="Réglages et suivi">{[['parcelle','Culture'],['sol','Sol et eau'],['meteo','Météo'],['plan','Calendrier'],['suivi','Carnet']].map(([id,label])=><button key={id} id={'seasonal-tab-'+id} role="tab" aria-selected={tab===id} aria-controls={'seasonal-panel-'+id} onClick={()=>setTab(id)}>{label}</button>)}</div>}
+    <div hidden={tab!=='carte'} role="tabpanel" id="seasonal-panel-carte" aria-label="Mon champ sur la carte"><ParcelExplorer key={'map-'+(active?.id??draftId)} config={config} plan={planStale?null:plan} locked={events.some(e=>['measured','declared'].includes(e.status))} canSearch={!!workspace} onParcel={defineParcel} onPrepare={prepareParcel} onScenario={exploreScenario} onCalendar={()=>setTab('simulation')} onName={name=>change('name',name)} onDirty={setParcelDraft} onWaterCondition={value=>change('waterCondition',value)}/></div>
+    {tab!=='simulation'&&tab!=='carte'&&config.parcelGeometry&&<div className="field-parcel-summary"><span><MapIcon name="draw"/>{config.name||'Mon champ'} <b>{fmt(config.areaM2! /10000,3)} ha</b> · {COUNTRIES[config.country].name}</span><button onClick={()=>setTab('carte')}>Revoir ma parcelle <MapIcon name="arrow" size={15}/></button></div>}
 
     {tab==='parcelle'&&<><CropReference mode="crop" config={config} onChange={edit}/><section className="card" role="tabpanel" id="seasonal-panel-parcelle" aria-labelledby="seasonal-tab-parcelle"><h2>Identifier la parcelle et le cycle</h2><div className="form-grid">
       <Field label="Nom de la parcelle"><input value={config.name} maxLength={120} onChange={e=>change('name',e.target.value)}/></Field>
@@ -229,7 +234,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     {nutrientResult&&<div className="notice info"><div><p>{nutrientResult.quantities.map(p=>`${p.name} : ${fmt(p.kg,2)} kg pour la parcelle`).join(' ; ')}</p><p>Éléments restant à couvrir (kg/ha, N–P₂O₅–K₂O) : {nutrientResult.remainingKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>Excédents (kg/ha) : {nutrientResult.excessKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>{nutrientResult.caveat}</p></div></div>}
     </section><section className="card"><h2>Ravageurs et traitements</h2><p>Enregistrez le stade, les symptômes et leur fréquence, puis faites confirmer le diagnostic et le seuil d’intervention par un conseiller. Prévention, observation et lutte intégrée précèdent le choix d’un produit.</p><p>Le dépôt ne contient pas de registre phytosanitaire courant qualifié pour les six pays. Aucun pesticide ni dose de traitement n’est donc généré automatiquement. Un produit exige une autorisation actuelle pour le pays, la culture et l’usage, ainsi qu’une étiquette vérifiée.</p></section></div>}
 
-    {tab!=='carte'&&<section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(p);setPlanStale(false);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>}
+    {tab!=='simulation'&&tab!=='carte'&&<section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(p);setPlanStale(false);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>}
   </div>;
 }
 
