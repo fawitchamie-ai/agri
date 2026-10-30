@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.1.0';
+export const ENGINE_VERSION = 'water-balance-1.2.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -43,6 +43,7 @@ export type SeasonalConfig = {
   };
   weather: WeatherDay[];
   fallback: { label: string; et0MmDay: number; rainMmDay: number } | null;
+  waterCondition?: 'unknown' | 'drained' | 'waterlogged' | 'submerged';
   systemDomain: 'upland' | 'flooded_rice' | 'shallow_water_table';
 };
 export type Volumes = { netMm: number; fieldMm: number | null; netLitres: number | null; netM3: number | null; fieldLitres: number | null; fieldM3: number | null; sourceM3: number | null; durationHours: number | null };

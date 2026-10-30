@@ -1,93 +1,34 @@
-# Parcelles sur carte — refonte du 30 octobre 2026
+# Parcelles — tracé guidé et limites
 
-## Parcours
+Le parcours s’organise en trois étapes : trouver le terrain, poser ses coins, confirmer la surface. La confirmation est possible après « Terminer », pour un contour valide situé dans un pays de simulation. La géométrie reste la source des surfaces et coordonnées côté serveur.
 
-L’accueil saisonnier commence par « Mon champ ». On choisit un pays africain,
-cherche une ville, se rapproche du terrain, puis pose ses coins. Les sommets
-restent déplaçables avant confirmation. La surface, le périmètre et un point
-représentatif sont calculés à partir du contour. Une liste GPS permet la saisie
-au clavier ainsi que l’import et l’export GeoJSON.
+## Utilisation
 
-La carte propose la vue Terre, un plan détaillé et un affichage agrandi. MapLibre
-affiche un globe lorsque WebGL est disponible ; Leaflet prend automatiquement
-le relais si sa création échoue. Le plan Leaflet décode les tuiles vectorielles
-OpenMapTiles dans Canvas, sans WebGL. Seules les tuiles visibles et leur petite
-marge sont demandées ; aucun téléchargement de région ni proxy de tuiles.
+1. Choisir le pays, rechercher une localité ou utiliser sa position GPS avec l’autorisation du navigateur.
+2. Choisir Satellite pour repérer les limites, Plan pour les routes. Le changement de fond conserve les coins. Les images peuvent être anciennes ou décalées.
+3. Activer « Dessiner mon champ ». Le mode par défaut affiche un repère fixe au centre : déplacer la carte sous ce repère et appuyer sur « Poser le coin ». Les mouvements de carte ne créent aucun coin. À faible zoom, le bouton rapproche la carte ; le tracé requiert le zoom 14 au minimum.
+4. Poser au moins trois coins dans l’ordre. Annuler retire le dernier ; les repères peuvent être déplacés pendant l’édition. Le mode « Clic sur la carte » reste disponible. La fermeture exige « Terminer » ; aucune fermeture automatique à proximité du premier coin.
+5. Vérifier la surface en m² et hectares, puis confirmer. Choisir une culture et préparer ses données ou un scénario explicitement hypothétique.
 
-L’exploration et l’export couvrent les pays et territoires africains du fond
-Natural Earth. Le moteur saisonnier conserve sa couverture existante : Togo,
-Bénin, Ghana, Burkina Faso, Côte d’Ivoire et Sénégal. Les autres pays sont
-signalés comme exploration seule. Les 23 profils de culture, la chimie du sol,
-les données météo et le moteur hydrique existants sont conservés.
+Les coordonnées GPS, l’import et l’export d’un contour restent disponibles en alternative. Le continent peut être exploré ; les simulations proposées restent limitées aux six pays et aux paramètres disponibles. Un contour cartographique ne suffit pas à valider une prévision parcellaire.
 
-Après confirmation, l’agriculteur peut préparer sa campagne avec ses données ou
-accepter explicitement les hypothèses d’un scénario pédagogique. Ce dernier
-emploie un sol fictif, ET0 de 5 mm/j, pluie nulle, efficacité d’application de
-75 %, transport sans perte et eau supposée disponible. Il produit un bilan
-hydrique et un calendrier, sans prévision de rendement ni prescription chimique
-déduite du tracé. Débit, durée de pompage et quota restent inconnus.
+## Fluidité
 
-## Géométrie et persistance
+- Carte Leaflet 2D unique, sans initialisation WebGL ni bascule automatique entre moteurs.
+- Satellite en tuiles, chargé à la demande pour la zone visible. Le module du plan vectoriel et ses métadonnées ne sont chargés qu’après sélection de Plan.
+- Géométrie et repères conservés et mis à jour en place ; aucune suppression/recréation globale à chaque coin.
+- Aucun import asynchrone lors de l’ajout d’un coin ; les clics ne dépendent pas du chargement des fonds.
+- Géométrie validée et pays détecté uniquement après modification des points, pas pendant les mouvements de carte. État React du viewport transmis à l’arrêt du mouvement.
+- Rendu vectoriel du plan découpé avec des pauses pour laisser traiter les interactions ; requêtes des tuiles sorties de la vue annulées.
+- Les contours des pays sont non interactifs et masqués au zoom du terrain. Ils ne capturent pas les clics.
+- Cibles de 44 à 48 pixels pour les commandes principales et les poignées. Aucune promesse de délai identique sur tous les appareils et réseaux.
 
-- GeoJSON WGS84 : coordonnées `[longitude, latitude]`, un Polygon fermé sans trou.
-- De 3 à 200 sommets distincts ; coordonnées finies ; latitude entre −85 et 85°.
-- Rejet des intersections, des sommets alignés consécutifs et d’une emprise de
-  plus de 2° ; surface entre 1 m² et 100 000 ha.
-- Aire sphérique avec rayon moyen terrestre de 6 371 008,8 m ; périmètre par
-  distances de grand cercle. Centroïde local comme point représentatif ; pour
-  un contour concave dont le centroïde sort, recours au premier sommet.
-- La validation côté serveur recalcule surface et coordonnées représentatives :
-  les champs déclarés par le client ne les remplacent pas.
-- Géométrie enregistrée dans la configuration JSON existante, conservée dans les
-  révisions et les exports ; aucune migration de base nécessaire.
-- Une campagne portant des observations mesurées ou déclarées conserve son
-  contour. Un autre champ exige une nouvelle campagne.
+## Excès d’eau
 
-Les frontières Natural Earth sont approximatives : le pays suggéré demande une
-confirmation lorsque le contour est proche d’une frontière ou sans correspondance.
-Le dessin fournit une estimation, sans valeur cadastrale. Blue Marble est une
-image de repérage à l’échelle du continent, pas une photographie récente du champ.
-Le plan prend son relais au fort zoom. La qualité agronomique des données n’est
-pas améliorée par le nombre de décimales des coordonnées.
+La surface du contour adapte les volumes hydriques. Le moteur ne prédit pas le rendement parcellaire ni la mortalité après engorgement. Déclarer un sol engorgé ou des plantes submergées bloque le calendrier entier et laisse les volumes totaux inconnus, sans transformer ce blocage en perte de rendement chiffrée. Une forte pluie déclenche un avertissement sur l’hypothèse de drainage libre ; elle ne prouve pas une inondation.
 
-## Sources et licences
+Pour quantifier une perte, il faut un modèle approprié et calibré : drainage réel, saturation et nappe, durée et profondeur de submersion, culture, variété, stade, température, reprise et rendements observés. Le chapitre 3 de la documentation FAO AquaCrop distingue le stress d’aération et sa durée : https://www.fao.org/fileadmin/user_upload/faowater/docs/AquaCropV40Chapter3.pdf. Ces paramètres ne sont pas remplacés par un pourcentage universel.
 
-Sources récupérées et documentation consultée le 30 octobre 2026 :
+## Vérification de cette révision
 
-| Élément | Source | Conditions et transformation |
-| --- | --- | --- |
-| Pays | [Natural Earth 1:50m Admin 0](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_admin_0_countries.geojson) | [Domaine public](https://www.naturalearthdata.com/about/terms-of-use/). Filtre Afrique, complété de Maurice et des Seychelles ; 56 entités. Propriétés réduites, coordonnées majoritairement arrondies à 5 décimales. |
-| Villes | [GeoNames cities15000](https://download.geonames.org/export/dump/) | [CC BY](https://www.geonames.org/export/) : attribution GeoNames. Filtre des codes pays africains, 4 051 villes ; nom, nom ASCII, pays, latitude, longitude, population. |
-| Recherche complémentaire | [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) | Requête seulement après soumission explicite si le répertoire local ne répond pas ; 6 résultats maximum, délai 10 s. |
-| Plan | [OpenFreeMap](https://openfreemap.org/quick_start/) | Style Liberty et métadonnées officielles ; attributions OpenFreeMap, OpenMapTiles, © OpenStreetMap visibles. Aucun appel au serveur raster tile.openstreetmap.org. |
-| Vue Terre | [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/access-basics/) | BlueMarble_ShadedRelief_Bathymetry, EPSG:3857, niveau natif maximal 8 ; attribution NASA visible. |
-
-SHA-256 des sources brutes :
-
-- Natural Earth : `3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb`.
-- Archive GeoNames cities15000.zip : `c89ba6601c29c98a717ef8ad021cdebe47f0de3f1c2ebe0a66f5fe7d60cdc352`.
-
-Les tuiles externes révèlent au fournisseur l’emprise de carte affichée. Le
-contour n’est pas envoyé à ces fournisseurs. La recherche transmet uniquement
-le texte soumis au géocodeur complémentaire. « Me situer » demande l’autorisation
-de géolocalisation du navigateur uniquement au clic ; aucune localisation au
-chargement. Les campagnes continuent d’utiliser l’authentification, les espaces,
-la base et les droits de l’application existante. Le brouillon local reste opt-in.
-
-## Vérifications
-
-- 93 tests automatisés réussis : surface comparée à une référence sphérique
-  indépendante, sens du contour, concavité, géométries invalides, autorité du
-  serveur sur la surface, proportionnalité des volumes, recherche locale Tsévié,
-  persistance/révisions et verrouillage après observations.
-- 14 contrôles d’intégration et 5 contrôles de régression réussis.
-- TypeScript et compilation de production réussis.
-- Vérification dans le navigateur de bureau : recherche Tsévié, plan détaillé,
-  agrandissement, placement de quatre points fictifs, déplacement d’un sommet,
-  confirmation, scénario explicitement accepté et calendrier généré.
-- WebGL indisponible dans le navigateur de vérification : parcours Leaflet testé ;
-  globe 3D non vérifié visuellement ici. Mise en page mobile implémentée, sans
-  vérification sur appareil physique.
-- Le contrôle de santé de production dépend des identifiants Cloudflare Access
-  de service existants ; un contrôle ignoré faute d’identité ne constitue pas une
-  preuve de santé authentifiée.
+Contrôle TypeScript ; tests des géométries, surfaces et volumes ; tests de blocage par engorgement/submersion et d’avertissement après excédent ; tests des routes et autorisations. Vérification navigateur sur un contour fictif : recherche de localité, déplacement sans coin accidentel, quatre coins, fermeture et confirmation. Les essais dans le navigateur ne remplacent pas un test tactile sur le téléphone de l’utilisateur ou une validation agronomique au champ.
