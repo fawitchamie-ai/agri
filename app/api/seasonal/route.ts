@@ -3,6 +3,7 @@ import { session, canSee } from '@/lib/server-auth';
 import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
 import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
+import { loadEnvironment } from '@/lib/seasonal/environment';
 import { loadForecast } from '@/lib/seasonal/weather';
 import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
 import { cropById } from '@/lib/seasonal/catalog';
@@ -36,6 +37,7 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request), db = database();
+  if(b.action==='environment')return json(await loadEnvironment(b.latitude,b.longitude,b.country,b.start,b.days));
   if(b.action==='places')return json({places:await searchPlaces(b.query),attribution:'GeoNames, répertoire local ; Open-Meteo Geocoding en complément'});
   if (b.action === 'capabilities') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');

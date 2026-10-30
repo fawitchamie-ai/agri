@@ -12,7 +12,7 @@ export type Country = keyof typeof COUNTRIES;
 export type SoilLayer = { thicknessM: number; thetaFC: number; thetaWP: number; initialTheta: number | null };
 export type Stage = { name: string; days: number; kcStart: number; kcEnd: number; rootStartM: number; rootEndM: number; depletionFraction: number };
 export type WeatherDay = {
-  date: string; rainMm: number | null; et0Mm: number | null;
+  date: string; rainMm: number | null; et0Mm: number | null; temperatureMeanC?: number | null;
   status: 'observed' | 'forecast' | 'scenario'; source: string; availableAt: string;
 };
 export type WaterEvent = {

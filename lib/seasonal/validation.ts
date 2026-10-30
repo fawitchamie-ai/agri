@@ -50,7 +50,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
     if (date < sowingDate || date > end) throw new InputError('La météo doit appartenir au cycle.');
     if (availableAt.slice(0, 10) > asOfDate) throw new InputError('Une donnée météo indisponible à la date du conseil ne peut pas être utilisée.');
     if (w.status === 'observed' && date > asOfDate) throw new InputError('Une observation météo ne peut pas être future.');
-    return { date, rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
+    return { date,...(w.temperatureMeanC===undefined?{}:{temperatureMeanC:optional(w.temperatureMeanC,'Température moyenne',-60,60)}), rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
   });
   if (new Set(weather.map(w => w.date)).size !== weather.length) throw new InputError('Une seule météo par date : choisissez la source prioritaire.');
   const weekdays = array(system.allowedWeekdays, 'Jours d’accès', 7).map(v => number(v, 'Jour de semaine', 0, 6));
