@@ -23,6 +23,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  parcelGeometry?: import('./parcel.ts').ParcelPolygon;
   country: Country; name: string; territory: string; crop: string; variety: string;
   cropProfile?: { id: string; version: string; mode: 'reference' | 'custom' };
   adjustDepletionToEtc?: boolean;

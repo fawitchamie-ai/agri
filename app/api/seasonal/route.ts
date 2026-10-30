@@ -6,6 +6,7 @@ import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
 import { loadForecast } from '@/lib/seasonal/weather';
 import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
 import { cropById } from '@/lib/seasonal/catalog';
+import { searchPlaces } from '@/lib/seasonal/places';
 
 function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: JSON.parse(row.config), events: JSON.parse(row.events), plan: JSON.parse(row.plan), updatedAt: row.updated_at, demo: !!row.demo }; }
 async function readable(id: string, request: Request) {
@@ -35,6 +36,7 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request), db = database();
+  if(b.action==='places')return json({places:await searchPlaces(b.query),attribution:'GeoNames, répertoire local ; Open-Meteo Geocoding en complément'});
   if (b.action === 'capabilities') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     if (b.cropId !== undefined && (typeof b.cropId !== 'string' || !cropById(b.cropId))) throw new InputError('Culture inconnue.');
@@ -58,6 +60,7 @@ export async function POST(request: Request) { try {
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? JSON.parse(old.config) : b.config);
+  if(old&&b.action==='save'&&JSON.parse(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(JSON.parse(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
   if (config.asOfDate > new Date().toISOString().slice(0,10)) throw new InputError('La date du conseil ne peut pas être future. Une date de semis future reste possible avec un scénario.');
   let events = old ? JSON.parse(old.events) : b.events ?? [];
   if (b.action === 'event') {

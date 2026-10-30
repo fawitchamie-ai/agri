@@ -1,4 +1,5 @@
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
+import { validateParcel, parcelMetrics } from './parcel.ts';
 import { referenceQuantities } from './nutrition.ts';
 import { CATALOG_VERSION, cropById } from './catalog.ts';
 import { SOIL_PARAMETERS, type SoilAnalysis, type SoilParameter } from './chemistry.ts';
@@ -102,6 +103,14 @@ export function validateConfig(input: unknown): SeasonalConfig {
       applicationEfficiency: optional(system.applicationEfficiency, 'Efficacité d’application (fraction)', .01, 1), transportEfficiency: optional(system.transportEfficiency, 'Efficacité de transport (fraction)', .01, 1), sourceFlowM3h: optional(system.sourceFlowM3h, 'Débit à la source', .001, 1e6), hoursPerDay: optional(system.hoursPerDay, 'Heures d’accès par jour', 0, 24), sourceBudgetM3: optional(system.sourceBudgetM3, 'Quota sur tout le cycle', 0, 1e10), maxNetMmPerDay: optional(system.maxNetMmPerDay, 'Apport net maximal par jour', 0, 2000), minIntervalDays, allowedWeekdays: weekdays, targetDepletionFraction, dailySourceLimits },
     weather, fallback,
   };
+  if(c.parcelGeometry!==undefined){
+    try{
+      const shape=validateParcel(c.parcelGeometry),m=parcelMetrics(shape);
+      // Geometry is authoritative: never trust a client-supplied area or swapped coordinates.
+      validated.parcelGeometry=shape;validated.areaM2=m.areaM2;
+      validated.longitude=m.point[0];validated.latitude=m.point[1];
+    }catch(e){throw new InputError((e as Error).message);}
+  }
   if(c.nutritionReference!==undefined){
     const n=obj(c.nutritionReference),id=str(n.id,'Référence de fertilisation',100),contextNote=str(n.contextNote,'Contexte de la fertilisation',1200);
     const alreadyKgHa=array(n.alreadyKgHa,'Apports des produits',20).map(v=>v===null?null:number(v,'Masse déjà appliquée (kg/ha)',0,1e6));

@@ -1,4 +1,5 @@
 'use client';
+import './parcel-experience.css';
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type Campaign, type WaterPeriod } from '../../lib/seasonal/types';
@@ -8,6 +9,9 @@ import { nutrientBalance } from '../../lib/seasonal/agronomy';
 import { addDays } from '../../lib/seasonal/validation';
 import type { Bootstrap, Science } from '../../lib/contracts';
 import { CropReference } from './crop-reference';
+import ParcelExplorer, {MapIcon} from './parcel-explorer';
+import {parcelMetrics,type ParcelPolygon} from '../../lib/seasonal/parcel';
+import {applyCropProfile,cropById,CATALOG_VERSION} from '../../lib/seasonal/catalog';
 import { seasonalCapabilities } from '../../lib/seasonal/capabilities';
 
 const fmt = (v: number | null | undefined, digits = 1) => v === null || v === undefined ? 'Indisponible' : new Intl.NumberFormat('fr-FR', { maximumFractionDigits: digits }).format(v);
@@ -28,9 +32,10 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
   const [list,setList] = useState<{id:string;name:string;country:keyof typeof COUNTRIES;crop:string;revision:number}[]>([]);
   const [history,setHistory] = useState<{revision:number;reason:string;created_at:string}[]>([]);
-  const [tab,setTab] = useState('parcelle');
+  const [tab,setTab] = useState('carte');
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
   const [planStale,setPlanStale]=useState(true);
+  const [parcelDraft,setParcelDraft]=useState(false);
   const [period,setPeriod]=useState('weeks'), [allDays,setAllDays]=useState(false);
   const [weatherText,setWeatherText]=useState('');
   const [event,setEvent]=useState<WaterEvent>(()=>({id:newId(),date:today(),kind:'rain',amount:0,unit:'mm',point:'field',status:'measured',source:'',recordedAt:new Date().toISOString()}));
@@ -56,8 +61,8 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   function sys<K extends keyof SeasonalConfig['system']>(key:K,value:SeasonalConfig['system'][K]) { edit({...config,system:{...config.system,[key]:value}}); }
   function adopt(c:Campaign) { setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(c.config);setEvents(c.events);setPlan(c.plan);setDirty(false);setPlanStale(false);setComparisons([]); }
   async function open(id:string) { setBusy(true);setError('');try {const r=await api('/api/seasonal?id='+encodeURIComponent(id));adopt(r.campaign);setHistory(r.history);setNotice('Campagne chargée.');}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
-  function compute() { setError('');try {setPlan(planWater(config,events));setPlanStale(false);setTab('plan');}catch(e){setError((e as Error).message);} }
-  async function save() {setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');setList((await api('/api/seasonal')).campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
+  function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}try {setPlan(planWater(config,events));setPlanStale(false);setTab('plan');}catch(e){setError((e as Error).message);} }
+  async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');setList((await api('/api/seasonal')).campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function persistQueue(next: QueueItem[]) { localStorage.setItem(queueKey,JSON.stringify(next));setQueue(next); }
   async function recordEvent(e:WaterEvent) {
     setError('');
@@ -81,8 +86,8 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       setNotice('Observations synchronisées et calendriers recalculés.');
     }catch(e){setError((e as Error).message+' Les saisies restantes sont conservées sur cet appareil ; rechargez et examinez les conflits avant de les reprendre.');}finally{setBusy(false);}
   }
-  function newCampaign() {setDraftId(newId());setActive(null);setConfig(emptyCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setComparisons([]);setTab('parcelle');}
-  function loadExample() {setDraftId(newId());setActive(null);setConfig(exampleCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setTab('parcelle');setNotice('Exemple synthétique chargé. Remplacez les hypothèses avant un usage sur votre champ.');}
+  function newCampaign() {setDraftId(newId());setActive(null);setConfig(emptyCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setComparisons([]);setTab('carte');}
+  function loadExample() {setDraftId(newId());setActive(null);setConfig(exampleCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setTab('carte');setNotice('Exemple synthétique chargé. Remplacez les hypothèses avant un usage sur votre champ.');}
   function restoreDraft() {try{const d=JSON.parse(localStorage.getItem(draftKey)||'null');if(!d)throw new Error('Aucun brouillon enregistré sur cet appareil.');setConfig(d.config);setEvents(d.events);setActive(d.active);setPlan(null);setDirty(true);setNotice('Brouillon restauré : recalculez puis vérifiez la révision avant enregistrement.');}catch(e){setError((e as Error).message);}}
   function importWeather() {try {
     const rows=weatherText.trim().split(/\r?\n/).filter(Boolean).map((l,i)=>{
@@ -100,25 +105,45 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     for(const w of r.weather)if(w.date>=config.sowingDate&&w.date<=end&&merged.get(w.date)?.status!=='observed')merged.set(w.date,w);
     edit({...config,asOfDate:today(),weather:[...merged.values()].sort((a,b)=>a.date.localeCompare(b.date))});setNotice(r.attribution+' Recalculez le plan.');
   }catch(e){setError((e as Error).message);}finally{setBusy(false);} }
+  function defineParcel(shape:ParcelPolygon|null,country:SeasonalConfig['country']) {
+    const metrics=shape?parcelMetrics(shape):null;
+    edit({...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],nutritionReference:undefined});
+  }
+  function prepareParcel(cropId:string,date:string) {
+    const selected=cropById(cropId);if(!selected)return;
+    const next={...config,sowingDate:date};
+    edit(config.cropProfile?.id===cropId?next:{...next,crop:selected.name,cropProfile:{id:cropId,version:CATALOG_VERSION,mode:'reference'},nutritionReference:undefined,stages:[],parameterSource:'Fiche choisie ; paramètres à appliquer ou à renseigner avec une référence locale.',systemDomain:cropId==='rice-flooded'?'flooded_rice':'upland'});
+    setTab('parcelle');
+  }
+  function exploreScenario(cropId:string,date:string) {
+    setError('');try{
+      if(!config.parcelGeometry)throw new Error('Confirmez la parcelle avant de simuler.');
+      const base=exampleCampaign(today());
+      const scenario=applyCropProfile({...base,country:config.country,parcelGeometry:config.parcelGeometry,name:config.name.trim()||'Mon champ — scénario',territory:config.territory.trim()||'Localité à confirmer',sowingDate:date,areaM2:config.areaM2,latitude:config.latitude,longitude:config.longitude,system:{...base.system,name:'Installation hypothétique du scénario',source:'Efficacité 75 %, transport sans perte ; débit et disponibilité non mesurés',sourceFlowM3h:null,hoursPerDay:null,sourceBudgetM3:null}},cropId);
+      const result=planWater(scenario,[]);setConfig(scenario);setPlan(result);setEvents([]);if(active)setDraftId(newId());setActive(null);setHistory([]);setDirty(true);setPlanStale(false);setComparisons([]);setNotice('Scénario exploratoire créé sur votre contour. Le sol et la météo utilisés sont des exemples, pas des mesures de votre champ.');
+    }catch(e){setError((e as Error).message);}
+  }
   const groups = plan ? plan[period as 'weeks'|'decades'|'stages'] : [];
   const forecasts = config.country === 'TGO' ? science?.forecasts.filter(f=>f.territory===config.territory&&f.crop===({Maïs:'Maize',Riz:'Rice',Mil:'Millet',Sorgho:'Sorghum'} as Record<string,string>)[config.crop]&&f.year===new Date(config.sowingDate).getUTCFullYear()) ?? [] : [];
   const duration=config.stages.reduce((s,x)=>s+x.days,0);
 
   if(loadedScope!==scope)return <div className="card" role="status">Chargement de votre espace de campagne…</div>;
   return <div className="seasonal-tool">
-    <section className="seasonal-hero card">
-      <div><span className="eyebrow">DU SEMIS À LA RÉCOLTE</span><h2>Préparer l’eau, suivre la campagne</h2><p>Votre sol, votre culture et l’eau réellement disponible déterminent le calendrier. Chaque nouvelle observation permet de revoir la suite du cycle.</p><span className="badge warning">Simulation conditionnelle · validation locale nécessaire</span></div>
-      <div className="form-actions no-print"><button className="btn primary" onClick={newCampaign}>Nouvelle campagne</button><button className="btn secondary" onClick={loadExample}>Essayer un exemple fictif</button></div>
+    <section className="field-welcome">
+      <div><span className="field-kicker"><span/>LE BON DÉPART POUR VOTRE SAISON</span><h1>Un champ. Des idées.<br/><em>Une saison à préparer.</em></h1><p>Retrouvez votre terre sur la carte, dessinez votre parcelle<br className="desktop-break"/> et préparez la suite, à votre rythme.</p></div>
+      <div className="field-welcome-right"><div className="field-sun" aria-hidden="true"><MapIcon name="leaf" size={40}/></div><span>Votre terre, votre prochaine histoire.</span><div><button className="btn secondary" onClick={newCampaign}><MapIcon name="plus" size={16}/>Nouveau champ</button><button className="btn secondary" onClick={loadExample}>Découvrir un exemple</button></div></div>
     </section>
     {error&&<div className="notice warning" role="alert">{error}</div>}
     {notice&&<div className="notice info" role="status">{notice}</div>}
     {queue.length>0&&<div className="notice warning no-print"><div><strong>{queue.length} saisie(s) en attente sur cet appareil</strong><p>Les conflits de révision interrompent la synchronisation pour préserver les corrections faites ailleurs.</p><button className="btn secondary" disabled={busy} onClick={synchronize}>Synchroniser</button>{active&&queue.some(q=>q.campaignId===active.id&&q.expectedRevision!==active.revision)&&<button className="btn secondary" onClick={()=>{persistQueue(queue.map(q=>q.campaignId===active.id?{...q,expectedRevision:active.revision}:q));setNotice('Saisies en attente reprises sur la révision affichée. Vérifiez leurs quantités avant de synchroniser.');}}>Reprendre les saisies sur cette révision après examen</button>}<button className="btn secondary" onClick={()=>download('observations-en-attente.json',JSON.stringify(queue,null,2),'application/json')}>Exporter les saisies en attente</button></div></div>}
-    <section className="card no-print"><div className="seasonal-toolbar">
+    <details className="field-saved-campaigns no-print"><summary>Mes campagnes enregistrées <span>{list.length} campagne{list.length>1?'s':''}</span></summary><div className="seasonal-toolbar">
       <Field label="Reprendre une campagne"><select value={active?.id||''} onChange={e=>{if(e.target.value)open(e.target.value)}}><option value="">Choisir une campagne enregistrée</option>{list.map(c=><option key={c.id} value={c.id}>{c.name} · {COUNTRIES[c.country]?.name} · {c.crop}</option>)}</select></Field>
       <div><span className="badge">{active?`Révision ${active.revision}`:'Brouillon'}{dirty?' · paramètres modifiés':''}</span><div className="form-actions"><button className="btn secondary" onClick={restoreDraft}>Restaurer le brouillon local</button><button className="btn primary" disabled={busy||!workspace} onClick={save}>Enregistrer la campagne</button></div></div>
     </div><label className="seasonal-check"><input type="checkbox" checked={keepDraft} onChange={e=>{setKeepDraft(e.target.checked);if(!e.target.checked)localStorage.removeItem(draftKey)}}/>Conserver un brouillon sur cet appareil (éviter sur un appareil partagé)</label>
-    {!workspace&&<p>Le calcul et les exports sont disponibles ici. Ouvrez votre espace de travail ci-dessus pour conserver les campagnes et les observations.</p>}</section>
-    <div className="seasonal-tabs no-print" role="tablist" aria-label="Préparation de campagne">{[['parcelle','1 · Parcelle et culture'],['sol','2 · Sol et accès à l’eau'],['meteo','3 · Météo et hypothèses'],['plan','4 · Plan et calendrier'],['suivi','5 · Observations'],['conseils','6 · Autres décisions']].map(([id,label])=><button key={id} id={'seasonal-tab-'+id} role="tab" aria-selected={tab===id} aria-controls={'seasonal-panel-'+id} className={'btn '+(tab===id?'primary':'secondary')} onClick={()=>setTab(id)}>{label}</button>)}</div>
+    {!workspace&&<p>Le calcul et les exports sont disponibles ici. Ouvrez votre espace de travail ci-dessus pour conserver les campagnes et les observations.</p>}</details>
+    <div className="field-journey no-print" role="tablist" aria-label="Préparation de campagne">{[['carte','Mon champ','globe'],['parcelle','Ma culture','leaf'],['sol','Mon sol & mon eau','drop'],['meteo','La météo','globe'],['plan','Ma simulation','calendar'],['suivi','Mon carnet','leaf'],['conseils','Mes repères','leaf']].map(([id,label,icon],i)=><button key={id} id={'seasonal-tab-'+id} role="tab" aria-selected={tab===id} aria-controls={'seasonal-panel-'+id} onClick={()=>setTab(id)}><span className="journey-number">{i+1}</span><MapIcon name={icon} size={17}/>{label}{id==='carte'&&config.parcelGeometry&&<MapIcon name="check" size={15}/>}</button>)}</div>
+    <div hidden={tab!=='carte'} role="tabpanel" id="seasonal-panel-carte" aria-labelledby="seasonal-tab-carte"><ParcelExplorer key={'map-'+(active?.id??draftId)} config={config} plan={planStale?null:plan} locked={events.some(e=>['measured','declared'].includes(e.status))} canSearch={!!workspace} onParcel={defineParcel} onPrepare={prepareParcel} onScenario={exploreScenario} onCalendar={()=>setTab('plan')} onName={name=>change('name',name)} onDirty={setParcelDraft}/></div>
+    {tab!=='carte'&&config.parcelGeometry&&<div className="field-parcel-summary"><span><MapIcon name="draw"/>{config.name||'Mon champ'} <b>{fmt(config.areaM2! /10000,3)} ha</b> · {COUNTRIES[config.country].name}</span><button onClick={()=>setTab('carte')}>Revoir ma parcelle <MapIcon name="arrow" size={15}/></button></div>}
 
     {tab==='parcelle'&&<><CropReference mode="crop" config={config} onChange={edit}/><section className="card" role="tabpanel" id="seasonal-panel-parcelle" aria-labelledby="seasonal-tab-parcelle"><h2>Identifier la parcelle et le cycle</h2><div className="form-grid">
       <Field label="Nom de la parcelle"><input value={config.name} maxLength={120} onChange={e=>change('name',e.target.value)}/></Field>
@@ -126,11 +151,10 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       <Field label="Commune / préfecture / localité"><input value={config.territory} onChange={e=>change('territory',e.target.value)}/></Field>
       <Field label="Culture"><input value={config.crop} readOnly={!!config.cropProfile} onChange={e=>change('crop',e.target.value)}/></Field>
       <Field label="Variété"><input value={config.variety} onChange={e=>change('variety',e.target.value)}/></Field>
-      <NumberField label="Surface effectivement arrosée (m²)" value={config.areaM2} onChange={v=>change('areaM2',v)} hint="Laissez vide si inconnue : les mm restent calculables, les volumes seront indisponibles."/>
+      {config.parcelGeometry?<Field label="Surface du contour (m²)"><input readOnly value={fmt(config.areaM2,2)}/><small>Le calcul couvre tout le contour dessiné. Pour un secteur arrosé séparément, dessinez ce secteur dans une autre campagne.</small></Field>:<NumberField label="Surface effectivement arrosée (m²)" value={config.areaM2} onChange={v=>change('areaM2',v)} hint="Dessinez votre champ sur la carte pour calculer sa surface automatiquement."/>}
       <Field label="Date du semis"><input type="date" value={config.sowingDate} onChange={e=>change('sowingDate',e.target.value)}/></Field>
       <Field label="Date du conseil"><input type="date" value={config.asOfDate} onChange={e=>change('asOfDate',e.target.value)}/></Field>
-      <NumberField label="Latitude (facultative)" value={config.latitude} min={-90} max={90} onChange={v=>change('latitude',v)}/>
-      <NumberField label="Longitude (facultative)" value={config.longitude} min={-180} max={180} onChange={v=>change('longitude',v)}/>
+      {config.parcelGeometry?<><Field label="Latitude de la parcelle"><input readOnly value={fmt(config.latitude,6)}/></Field><Field label="Longitude de la parcelle"><input readOnly value={fmt(config.longitude,6)}/><small>Point représentatif calculé depuis le contour. Modifiez ses sommets dans « Mon champ ».</small></Field></>:<><NumberField label="Latitude (facultative)" value={config.latitude} min={-90} max={90} onChange={v=>change('latitude',v)}/><NumberField label="Longitude (facultative)" value={config.longitude} min={-180} max={180} onChange={v=>change('longitude',v)}/></>}
       <Field label="Système cultural"><select value={config.systemDomain} onChange={e=>change('systemDomain',e.target.value as SeasonalConfig['systemDomain'])}><option value="upland">Sol non submergé, nappe profonde</option><option value="flooded_rice">Rizière submergée — module spécifique requis</option><option value="shallow_water_table">Nappe proche — module spécifique requis</option></select></Field>
     </div><details><summary>Données et conseils disponibles pour {capabilities.countryName}</summary><p>{capabilities.historicalData.observations === null ? capabilities.historicalData.note : `${fmt(capabilities.historicalData.observations,0)} observations territoriales retenues dans les archives auditées, toutes cultures retenues confondues ; dernière année ${capabilities.historicalData.lastYear}. ${capabilities.historicalData.note}`}</p><p>{capabilities.nutritionReferences.count} référence(s) de fertilisation à examiner dans le domaine choisi. {capabilities.nutritionReferences.reason}</p><p>La prévision saisonnière de rendement et la dose d’engrais personnalisée nécessitent encore des données et une validation locale. Les informations historiques ne mesurent pas le rendement de votre parcelle.</p></details><p className="notice info">Choisissez la fiche de votre culture puis appliquez ses hypothèses, ou renseignez des paramètres locaux sourcés. Toute modification de culture exige ses propres paramètres.</p>
     <details><summary>Paramètres culturaux avancés : stades, coefficients et enracinement</summary><p>{duration} jours jusqu’à la récolte estimée. Adaptez les durées à la variété et aux stades observés. Racines en mètres ; coefficients sans unité.</p>
@@ -204,7 +228,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     {nutrientResult&&<div className="notice info"><div><p>{nutrientResult.quantities.map(p=>`${p.name} : ${fmt(p.kg,2)} kg pour la parcelle`).join(' ; ')}</p><p>Éléments restant à couvrir (kg/ha, N–P₂O₅–K₂O) : {nutrientResult.remainingKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>Excédents (kg/ha) : {nutrientResult.excessKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>{nutrientResult.caveat}</p></div></div>}
     </section><section className="card"><h2>Ravageurs et traitements</h2><p>Enregistrez le stade, les symptômes et leur fréquence, puis faites confirmer le diagnostic et le seuil d’intervention par un conseiller. Prévention, observation et lutte intégrée précèdent le choix d’un produit.</p><p>Le dépôt ne contient pas de registre phytosanitaire courant qualifié pour les six pays. Aucun pesticide ni dose de traitement n’est donc généré automatiquement. Un produit exige une autorisation actuelle pour le pays, la culture et l’usage, ainsi qu’une étiquette vérifiée.</p></section></div>}
 
-    <section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(p);setPlanStale(false);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>
+    {tab!=='carte'&&<section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(p);setPlanStale(false);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>}
   </div>;
 }
 
