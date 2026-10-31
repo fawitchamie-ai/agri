@@ -25,12 +25,13 @@ function period(label: string, rows: WaterDay[]): WaterPeriod {
 }
 function periods(rows: WaterDay[], width: number): WaterPeriod[] { const result = []; for (let i = 0; i < rows.length; i += width) result.push(period(`${width === 7 ? 'Semaine' : 'Décade'} ${Math.floor(i / width) + 1}`, rows.slice(i, i + width))); return result; }
 
-export function planWater(input: unknown, inputEvents: unknown = [], options:{requireGeometry?:boolean}={}): WaterPlan {
+export function planWater(input: unknown, inputEvents: unknown = [], options:{requireGeometry?:boolean;irrigationMode?:'rainfed'|'recorded'|'proposed';unitAreaM2?:number;unitGeometry?:NonNullable<WaterPlan['calculationArea']>['geometry']}={}): WaterPlan {
   const c = validateConfig(input), events = validateEvents(inputEvents, c);
   const horizon = c.stages.reduce((s, x) => s + x.days, 0), horizonEnd = addDays(c.sowingDate, horizon - 1);
   const eventProvenance=events.flatMap(e=>e.provenance?[e.provenance]:[]);
   const selected=c.landSelection==='potentialLand',a=c.landAssessment;
   const calculationArea:NonNullable<WaterPlan['calculationArea']>={selection:selected?'potentialLand':'whole',areaM2:selected?a?.candidateAreaM2??null:c.areaM2,geometry:selected?a?.fractions.potentialLand.geometry??null:c.parcelGeometry?{type:'MultiPolygon',coordinates:[c.parcelGeometry.coordinates]}:null};
+  if(options.unitAreaM2!==undefined){calculationArea.areaM2=options.unitAreaM2;calculationArea.geometry=options.unitGeometry??calculationArea.geometry;}
   const eventScopeWarning=events.some(e=>['measured','declared'].includes(e.status)&&(e.landSelection??'whole')!==(c.landSelection??'whole'))?'Observations liées à une autre surface de calcul : corrigez leur portée avant de les utiliser.':null;
   const gate=[eventScopeWarning,options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...inputWarnings(c)].filter((x):x is string=>!!x);
   if(gate.length)return {calculationArea,engineVersion:ENGINE_VERSION,levelOfEvidence:'simulation_non_validee',status:'blocked',complete:false,horizonEnd,assumptions:[],missing:gate,days:[],weeks:[],decades:[],stages:[],nextWindows:[],intervalDays:null,totals:{demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null},...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{})};
@@ -121,7 +122,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
       const source = sumKnown(volumes.map(v => v.sourceM3));
       if (source === null) sourceVolumeKnown = false; else usedSourceM3 += source;
       lastIrrigation = day;
-    } else if (date >= c.asOfDate && tawMm - activeWater.reduce((a, b) => a + b, 0) + demandMm >= rawMm) {
+    } else if ((options.irrigationMode??'proposed')==='proposed' && date >= c.asOfDate && tawMm - activeWater.reduce((a, b) => a + b, 0) + demandMm >= rawMm) {
       const stored = activeWater.reduce((a, b) => a + b, 0);
       const requested = Math.min(tawMm-stored, Math.max(requiredNetMm,tawMm * (1-c.system.targetDepletionFraction) - stored));
       const reasons: string[] = [];

@@ -85,6 +85,8 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
   }
   const fractions={} as LandAssessment['fractions'];
   for(const k of LAND_CLASSES){const area=multiArea(parts[k]);fractions[k]={areaM2:area,fraction:area/areaM2,geometry:{type:'MultiPolygon',coordinates:parts[k]}};}
+  const reconciled=LAND_CLASSES.reduce((n,k)=>n+fractions[k].areaM2,0);
+  if(Math.abs(reconciled-areaM2)>Math.max(.001,areaM2*1e-7))throw new Error('Partition des surfaces incohérente : analyse suspendue.');
   const excludedAreaM2=fractions.permanentWater.areaM2+fractions.incompatible.areaM2;
   const candidateAreaM2=fractions.potentialLand.areaM2;
   const unknownAreaM2=fractions.unknown.areaM2;

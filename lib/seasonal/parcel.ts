@@ -19,7 +19,7 @@ export function containsPoint(ring:Position[],p:Position):boolean{
  return inside;
 }
 export function distanceM(a:Position,b:Position){const dlat=(b[1]-a[1])*rad,dlon=(b[0]-a[0])*rad;const h=Math.sin(dlat/2)**2+Math.cos(a[1]*rad)*Math.cos(b[1]*rad)*Math.sin(dlon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));}
-export function parcelMetrics(shape:ParcelPolygon){
+export function parcelMetrics(shape:ParcelPolygon):{areaM2:number;perimeterM:number;point:Position;pointIsCentroid:boolean}{
  const ring=shape.coordinates[0],pts=ring.slice(0,-1);let sum=0,perimeterM=0,crossSum=0,cx=0,cy=0;
  // Shift to local origin before calculating a centroid, to retain precision at m² scale.
  const origin=pts[0];
@@ -28,13 +28,14 @@ export function parcelMetrics(shape:ParcelPolygon){
   const ax=a[0]-origin[0],ay=a[1]-origin[1],bx=b[0]-origin[0],by=b[1]-origin[1],c=ax*by-bx*ay;crossSum+=c;cx+=(ax+bx)*c;cy+=(ay+by)*c;
  }
  const centroid:Position=crossSum?[origin[0]+cx/(3*crossSum),origin[1]+cy/(3*crossSum)]:origin;
- const point=containsPoint(ring,centroid)?centroid:[...origin] as Position;
- return {areaM2:Math.abs(sum)*R*R/2,perimeterM,point,pointIsCentroid:equal(point,centroid)};
+ const point=containsPoint(ring,centroid)&&!shape.coordinates.slice(1).some(h=>containsPoint(h,centroid))?centroid:[...origin] as Position;
+ const holes=shape.coordinates.slice(1).map(h=>parcelMetrics({type:"Polygon",coordinates:[h]}));
+ return {areaM2:Math.abs(sum)*R*R/2-holes.reduce((n,h)=>n+h.areaM2,0),perimeterM:perimeterM+holes.reduce((n,h)=>n+h.perimeterM,0),point,pointIsCentroid:equal(point,centroid)};
 }
 export function polygonFromPoints(points:Position[]):ParcelPolygon{
  return validateParcel({type:'Polygon',coordinates:[[...points,points[0]]]});
 }
-export function validateParcel(value:unknown):ParcelPolygon{
+function validateSingle(value:unknown):ParcelPolygon{
  const v=value as ParcelPolygon;
  if(!v||v.type!=='Polygon'||!Array.isArray(v.coordinates)||v.coordinates.length!==1)throw new Error('Un seul contour GeoJSON Polygon, sans trou, est attendu.');
  const ring=v.coordinates[0];
@@ -54,6 +55,23 @@ export function validateParcel(value:unknown):ParcelPolygon{
  const polygon:ParcelPolygon={type:'Polygon',coordinates:[clean]},m=parcelMetrics(polygon);
  if(m.areaM2<1||m.areaM2>1e9)throw new Error('La surface doit être comprise entre 1 m² et 100 000 hectares.');
  return polygon;
+}
+/** Holes are preserved; touching, crossing, nested or exterior holes are rejected. */
+export function validateParcel(value:unknown):ParcelPolygon{
+ const v=value as ParcelPolygon;
+ if(!v||v.type!=='Polygon'||!Array.isArray(v.coordinates)||!v.coordinates.length||v.coordinates.length>21)throw new Error('GeoJSON Polygon attendu, avec au plus 20 trous.');
+ const rings=v.coordinates.map(r=>validateSingle({type:'Polygon',coordinates:[r]}).coordinates[0]);
+ if(rings.reduce((n,r)=>n+r.length,0)>500)throw new Error('Contour trop détaillé : 500 sommets maximum.');
+ for(let i=1;i<rings.length;i++){
+  if(!containsPoint(rings[0],rings[i][0]))throw new Error('Trou hors du contour.');
+  for(let j=0;j<i;j++){
+   if(j>0&&(containsPoint(rings[j],rings[i][0])||containsPoint(rings[i],rings[j][0])))throw new Error('Trous imbriqués ou superposés.');
+   for(let a=0;a<rings[i].length-1;a++)for(let b=0;b<rings[j].length-1;b++)if(intersects(rings[i][a],rings[i][a+1],rings[j][b],rings[j][b+1]))throw new Error('Les limites des trous se touchent ou se croisent.');
+  }
+ }
+ const shape:ParcelPolygon={type:'Polygon',coordinates:rings};
+ if(parcelMetrics(shape).areaM2<1)throw new Error('Surface nette inférieure à 1 m².');
+ return shape;
 }
 export const COUNTRY_VIEWS={
  TGO:{center:[1.1,8.65] as Position,zoom:6.6,iso2:'TG'},BEN:{center:[2.3,9.3] as Position,zoom:6.3,iso2:'BJ'},

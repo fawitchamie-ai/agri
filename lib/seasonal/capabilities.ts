@@ -1,3 +1,4 @@
+import {SEASONAL_KY,YIELD_VERSION} from './yield.ts';
 /** Capabilities derived from the audited archives and the active engine.
  * These states remain independent: a working calculator is not a validated
  * forecast, and an informational crop sheet is not a fertilizer prescription.
@@ -31,6 +32,7 @@ export function seasonalCapabilities(country: Country, cropId?: string) {
     nutritionReferences: {status: references.length ? 'conditional_reference' : 'missing', count: references.length,
       reason: references.length ? 'Périmètre de chaque fiche à vérifier : pays, territoire, variété et système. Les analyses saisies ne personnalisent pas la dose.' : 'Aucune recette chiffrée qualifiée pour ce pays et cette culture.'},
     personalizedFertilization: {status: 'blocked', reason: 'Relation locale sol–culture, fournitures, eau, apports antérieurs et réponse aux nutriments à qualifier.'},
+    conditionalYieldSimulation:{status:cropId&&SEASONAL_KY[cropId]!==undefined?'requires_reference':'declared_scenario_only',version:YIELD_VERSION,reason:'Surface semée et référence explicites ; approximation FAO limitée aux cultures paramétrées, cycle complet et Ym indépendant. Aucune validation parcellaire.'},
     seasonalYieldForecast: {status: 'blocked', reason: 'Jeu disponible à date, paramètres et évaluation saisonnière/parcellaire absents.'},
     chemicalCropProtection: {status: 'blocked', reason: 'Diagnostic et autorisations/étiquettes qualifiés pour le pays, l’usage et la date absents.'},
     prospectiveValidation: {status: 'not_started', reason: 'Observations de terrain et récoltes prospectives requises.'},

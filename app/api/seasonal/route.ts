@@ -1,9 +1,11 @@
+import {authoritativeLand,startLandJob,stepLandJob,landJobStatus} from '@/lib/seasonal/land-jobs';
+import {planSeason,yieldCsv} from '@/lib/seasonal/yield';
 import {loadLandAssessment} from '@/lib/seasonal/land-provider';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
 import { body, database, failure, HttpError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
-import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
+import { upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
 import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
 import {terrestrialSoilPoint} from '@/lib/seasonal/land';
@@ -32,10 +34,11 @@ export async function GET(request: Request) { try {
       if (!snapshot) throw new HttpError(404,'Révision introuvable.');
       return json({ id,revision:snapshot.revision,config:JSON.parse(snapshot.config),events:JSON.parse(snapshot.events),plan:JSON.parse(snapshot.plan),reason:snapshot.reason,createdAt:snapshot.created_at },200,{'Content-Disposition':`attachment; filename="campagne-revision-${snapshot.revision}.json"`});
     }
-    if (url.searchParams.get('format') === 'csv') {
+    if(url.searchParams.get('format')==='yield-csv'){const snapshot=JSON.parse(row.plan).yieldEstimation;if(!snapshot)throw new HttpError(409,'Rendement non paramétré dans cette révision.');return new Response(yieldCsv(snapshot),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename=estimation-rendement-revision-${row.revision}.csv`,'Cache-Control':'no-store'}});}
+    if (url.searchParams.get('format')==='csv') {
       const config=validateConfig(migrateInputs(JSON.parse(row.config)));
-      if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);
-      const plan=planWater(config,JSON.parse(row.events),{requireGeometry:true});
+      if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));
+      const plan=planSeason(config,JSON.parse(row.events),{requireGeometry:true});
       if(plan.status==='blocked')throw new HttpError(409,'Export du calendrier suspendu : '+plan.missing[0]);
       return new Response(waterPlanCsv(plan), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="plan-irrigation.csv"', 'Cache-Control': 'no-store' } });
     }
@@ -47,15 +50,18 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request), db = database();
+  if(b.action==='land-job-start')return json(await startLandJob(b.geometry,s));
+  if(b.action==='land-job-step')return json(await stepLandJob(b.id,s));
+  if(b.action==='land-job-status')return json(await landJobStatus(b.id,s));
   if(b.action==='environment'){
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);
     const now=new Date().toISOString();
-    const landAssessment=await loadLandAssessment(geometry,fetch,now,b.refresh===true);
+    const landAssessment=m.areaM2>=1_000_000?await authoritativeLand(geometry,s):await loadLandAssessment(geometry,fetch,now,b.refresh===true);
     const environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,terrestrialSoilPoint(landAssessment));
     return json({...environment,landAssessment});
   }
-  if(b.action==='land'){try{return json({assessment:await loadLandAssessment(validateParcel(b.geometry))});}catch(e){throw new InputError((e as Error).message);}}
+  if(b.action==='land'){try{return json({assessment:await authoritativeLand(validateParcel(b.geometry),s)});}catch(e){throw new InputError((e as Error).message);}}
   if(b.action==='places')return json({places:await searchPlaces(b.query),attribution:'GeoNames, répertoire local ; Open-Meteo Geocoding en complément'});
   if (b.action === 'capabilities') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
@@ -66,7 +72,7 @@ export async function POST(request: Request) { try {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
-  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);return json({plan:planWater(config,b.events??[],{requireGeometry:true}),config});}
+  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));return json({plan:planSeason(config,b.events??[],{requireGeometry:true}),config});}
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
@@ -76,10 +82,11 @@ export async function POST(request: Request) { try {
   if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
   if (old && b.action === 'event') {
     const previous = JSON.parse(old.events).find((e: any) => e.id === b.event?.id);
-    if (previous && (previous.landSelection??'whole')===(JSON.parse(old.config).landSelection??'whole') && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && (previous.landSelection??'whole')===(JSON.parse(old.config).landSelection??'whole') && ['date','kind','amount','unit','point','status','source','unitId'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? JSON.parse(old.config) : b.config);
+  if(old&&b.action==='save'&&JSON.parse(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(JSON.parse(old.config).yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
   if(old&&b.action==='save'&&JSON.parse(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(JSON.parse(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
   if (config.asOfDate > new Date().toISOString().slice(0,10)) throw new InputError('La date du conseil ne peut pas être future. Une date de semis future reste possible avec un scénario.');
   let events = old ? JSON.parse(old.events) : b.events ?? [];
@@ -90,13 +97,13 @@ export async function POST(request: Request) { try {
     const event = validateEvents([{ ...b.event, landSelection:config.landSelection??'whole',recordedAt: new Date().toISOString() }], config)[0];
     const next = upsertEvent(events,event);
     const previous = events.find((e: any) => e.id === event.id);
-    if (previous && ['date','kind','amount','unit','point','status','source','landSelection'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && ['date','kind','amount','unit','point','status','source','landSelection','unitId'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
     events = next;
   }
   // save never replaces the event log supplied by another client.
   events = validateEvents(events, config);
-  if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);
-  const plan = planWater(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
+  if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));
+  const plan = planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
   const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : 'Paramètres et scénario de campagne actualisés.';
   if (!old) {
     await db.batch([

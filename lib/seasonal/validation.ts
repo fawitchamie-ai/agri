@@ -1,3 +1,4 @@
+import {parseYieldInput} from './yield.ts';
 import {migrateInputs,parseInputLedger,valueEvidence} from './provenance.ts';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
 import { validateParcel, parcelMetrics } from './parcel.ts';
@@ -124,12 +125,14 @@ export function validateConfig(input: unknown): SeasonalConfig {
   try{validated.inputs=parseInputLedger(c.inputs);}catch(e){throw new InputError((e as Error).message);}
   if(c.inputPolicy!==undefined){if(typeof c.inputPolicy?.allowAssumptions!=='boolean'||typeof c.inputPolicy?.allowStale!=='boolean')throw new InputError('Politique des données invalide.');validated.inputPolicy={allowAssumptions:c.inputPolicy.allowAssumptions,allowStale:c.inputPolicy.allowStale};}
   if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
+  validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
   return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {
   const end = addDays(c.sowingDate, c.stages.reduce((s, x) => s + x.days, 0) - 1);
   const events = array(input, 'Observations', 1500).map(v => {
     const e = obj(v), date = isoDate(e.date), id = str(e.id, 'Identifiant événement', 100);
+    if(e.unitId!==undefined&&(typeof e.unitId!=='string'||!c.yieldEstimation?.units.some(u=>u.id===e.unitId)))throw new InputError('Unité de l’observation inconnue.');
     if(e.landSelection!==undefined&&!['whole','potentialLand'].includes(e.landSelection))throw new InputError('Portée de l’observation invalide.');
     if(c.parcelGeometry&&e.provenance?.scopeId&&e.provenance.scopeId!==c.inputs?.scope.id)throw new InputError('Observation liée à un autre contour : elle ne peut pas être transférée automatiquement.');
     if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new InputError('Identifiant événement invalide.');
@@ -142,7 +145,7 @@ export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] 
     if (!Number.isFinite(Date.parse(recordedAt)) || recordedAt.slice(0, 10) > c.asOfDate) throw new InputError('Horodatage indisponible à la date du conseil.');
     const amount = number(e.amount, 'Quantité', 0, e.unit === 'fraction' ? .8 : 1e10);
     if (e.kind === 'soil' && c.soil.layers.some(l => amount < l.thetaWP || amount > l.thetaFC)) throw new InputError('Humidité hors des limites du profil.');
-    return { ...(e.landSelection?{landSelection:e.landSelection}:{}),id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt,provenance:valueEvidence(e.status==='cancelled'?null:amount,e.unit,c.inputs?.scope.id??'unlocated',{origin:'manual',status:e.status==='cancelled'?'missing':e.status==='measured'?'measured':'scenario',provider:e.source,method:`${e.kind} au point ${e.point} ; ${e.status}`,interval:{from:date,to:date},observedAt:['measured','declared'].includes(e.status)?date:null,acquiredAt:recordedAt,replacementReason:'Observation ou apport saisi ; pas de preuve instrumentale automatiquement vérifiée.'}) };
+    return { ...(e.unitId?{unitId:e.unitId}:{}),...(e.landSelection?{landSelection:e.landSelection}:{}),id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt,provenance:valueEvidence(e.status==='cancelled'?null:amount,e.unit,c.inputs?.scope.id??'unlocated',{origin:'manual',status:e.status==='cancelled'?'missing':e.status==='measured'?'measured':'scenario',provider:e.source,method:`${e.kind} au point ${e.point} ; ${e.status}`,interval:{from:date,to:date},observedAt:['measured','declared'].includes(e.status)?date:null,acquiredAt:recordedAt,replacementReason:'Observation ou apport saisi ; pas de preuve instrumentale automatiquement vérifiée.'}) };
   });
   if (new Set(events.map(e => e.id)).size !== events.length) throw new InputError('Événement dupliqué : corrigez sa version au lieu de l’ajouter.');
   const rain = events.filter(e => e.kind === 'rain' && ['declared', 'measured'].includes(e.status));
