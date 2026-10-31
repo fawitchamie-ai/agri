@@ -12,6 +12,7 @@ export type Country = keyof typeof COUNTRIES;
 export type SoilLayer = { thicknessM: number; thetaFC: number; thetaWP: number; initialTheta: number | null };
 export type Stage = { name: string; days: number; kcStart: number; kcEnd: number; rootStartM: number; rootEndM: number; depletionFraction: number };
 export type WeatherDay = {
+ temperatureMinC?:number|null;temperatureMaxC?:number|null;humidityPercent?:number|null;wind2mMs?:number|null;radiationMj?:number|null;
   date: string; rainMm: number | null; et0Mm: number | null; temperatureMeanC?: number | null;
   status: 'observed' | 'estimated' | 'forecast' | 'scenario'; source: string; availableAt: string;
   provenance?: Record<string,import('./provenance.ts').InputValue>;
@@ -27,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  salinity?: import('./salinity.ts').SalinityInput;
   agronomic?: import('./agronomic.ts').AgronomicConfig;
   yieldEstimation?: import('./yield.ts').YieldInput;
   inputs?: import('./provenance.ts').InputLedger;
@@ -73,6 +75,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  salinity?: {status:'unavailable';missing:string[]}|ReturnType<typeof import('./salinity.ts').salinityScenario>;
   yieldEstimation?: import('./yield.ts').YieldEstimate;
   calculationArea?: {selection:'whole'|'potentialLand';areaM2:number|null;geometry:import('./land.ts').MultiShape|null};
   eventProvenance?: import('./provenance.ts').InputValue[];

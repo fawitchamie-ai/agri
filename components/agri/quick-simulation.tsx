@@ -5,6 +5,7 @@ import {automaticCampaign,mergeEnvironment,phSuitability} from '../../lib/season
 import type {Environment} from '../../lib/seasonal/environment';
 import type {SeasonalConfig,WaterPlan,WaterEvent} from '../../lib/seasonal/types';
 import './quick-simulation.css';
+import DataCompletion from './data-completion';
 import AgronomicPanel from './agronomic-panel';
 import YieldSummary from './yield-summary';
 import InputStatus from './input-status';
@@ -73,6 +74,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   {error&&<div className="notice warning" role="alert">{error}<button className="btn secondary small" onClick={()=>setRetry(x=>x+1)}>Réessayer</button></div>}
   {!config.parcelGeometry?<section className="qs-start"><div className="qs-start-visual" aria-hidden="true"><svg viewBox="0 0 220 180"><path d="m25 80 100-55 75 35-15 85-110-5Z" fill="#c8de9c"/><path d="m25 80 50 60 110 5 15-85-75-35Z" fill="none" stroke="#347b4c" strokeWidth="3"/>{[[25,80],[125,25],[200,60],[185,145],[75,140]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="7" fill="#fff" stroke="#347b4c" strokeWidth="3"/>)}<path d="m60 80 95 35m-70-50 90 31m-76-47 81 28" stroke="#86b962" strokeWidth="6"/></svg></div><h2>Commençons par votre champ</h2><p>Dessinez ses contours. Nous préparons les paramètres et le bilan d’eau.</p><button className="btn primary" onClick={onMap}>Choisir mon champ sur la carte →</button><small>Aucun formulaire de sol à remplir pour commencer.</small></section>:<>
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
+  <DataCompletion config={config} events={events} onChange={onChange}/>
   <AgronomicPanel config={config} events={events} onChange={onChange}/>
   <InputStatus config={config} onChange={onChange}/>
   <div className="qs-kpis"><article><span>EAU À APPORTER</span><strong>{usable?fmt(plan.totals.fieldM3):'—'}<small> m³</small></strong><p>{usable?`${fmt(plan.totals.netMm)} mm utiles sur ${plan.days.length} jours`:unavailableLabel}</p></article><article><span>PROCHAIN ARROSAGE</span><strong className="qs-date">{usable&&plan.nextWindows[0]?date(plan.nextWindows[0].from):usable?'Aucun proposé':'—'}</strong><p>{usable&&plan.nextWindows[0]?`${fmt(plan.nextWindows[0].volume.fieldM3)} m³ au champ`:'Selon le sol et la pluie simulés'}</p></article><article><span>FIN DE CYCLE</span><strong className="qs-date">{usable?date(plan.horizonEnd):'—'}</strong><p>{duration?`${duration} jours · durée de référence`:'Durée à compléter pour cette culture'}</p></article></div>

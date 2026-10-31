@@ -2,6 +2,7 @@ import {parseAgronomic} from './agronomic.ts';
 import {parseYieldInput} from './yield.ts';
 import {migrateInputs,parseInputLedger,valueEvidence} from './provenance.ts';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
+import {parseSalinityInput} from './salinity.ts';
 import { validateParcel, parcelMetrics } from './parcel.ts';
 import { referenceQuantities } from './nutrition.ts';
 import { CATALOG_VERSION, cropById } from './catalog.ts';
@@ -55,7 +56,8 @@ export function validateConfig(input: unknown): SeasonalConfig {
     if (availableAt.slice(0, 10) > asOfDate) throw new InputError('Une donnée météo indisponible à la date du conseil ne peut pas être utilisée.');
     if (w.status === 'observed' && date > asOfDate) throw new InputError('Une observation météo ne peut pas être future.');
     if(w.provenance){try{const entries=Object.values(w.provenance);const id=(entries[0] as {scopeId?:string})?.scopeId;parseInputLedger({version:'inputs-1',scope:{id,geometry:null,point:null},values:w.provenance,migratedFrom:null});}catch(e){throw new InputError((e as Error).message);}}
-    return { ...(w.provenance?{provenance:w.provenance}:{}),date,...(w.temperatureMeanC===undefined?{}:{temperatureMeanC:optional(w.temperatureMeanC,'Température moyenne',-60,60)}), rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
+    const extra:Record<string,number|null>={};for(const [k,min,max] of [['temperatureMinC',-60,60],['temperatureMaxC',-60,60],['humidityPercent',0,100],['wind2mMs',0,60],['radiationMj',0,60]] as const)if(w[k]!==undefined)extra[k]=optional(w[k],k,min,max);if(extra.temperatureMinC!=null&&extra.temperatureMaxC!=null&&extra.temperatureMinC>extra.temperatureMaxC)throw new InputError('Températures extrêmes incohérentes.');
+    return { ...extra,...(w.provenance?{provenance:w.provenance}:{}),date,...(w.temperatureMeanC===undefined?{}:{temperatureMeanC:optional(w.temperatureMeanC,'Température moyenne',-60,60)}), rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
   });
   if (new Set(weather.map(w => w.date)).size !== weather.length) throw new InputError('Une seule météo par date : choisissez la source prioritaire.');
   const weekdays = array(system.allowedWeekdays, 'Jours d’accès', 7).map(v => number(v, 'Jour de semaine', 0, 6));
@@ -128,6 +130,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
   validated.agronomic=parseAgronomic(c.agronomic,validated);
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
+  validated.salinity=parseSalinityInput(c.salinity);
   return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {

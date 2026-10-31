@@ -62,7 +62,7 @@ export function parseInputLedger(input:unknown):InputLedger|undefined {
   }
   return structuredClone(v);
 }
-const unitFor=(key:string)=>key==='thetaFC'||key==='thetaWP'||key==='initialTheta'?'m³/m³':key==='thicknessM'||key.startsWith('root')?'m':key.endsWith('Mm')||key==='infiltrationMmDay'?'mm':key.endsWith('M3')?'m³':key==='areaM2'?'m²':key.endsWith('M3h')?'m³/h':key.includes('Efficiency')||key.includes('Fraction')?'fraction':key==='temperatureMeanC'?'°C':key==='days'||key==='minIntervalDays'?'day':key==='hoursPerDay'?'h/day':'1';
+const unitFor=(key:string)=>key==='thetaFC'||key==='thetaWP'||key==='initialTheta'?'m³/m³':key==='thicknessM'||key.startsWith('root')?'m':key.endsWith('Mm')||key==='infiltrationMmDay'?'mm':key.endsWith('M3')?'m³':key==='areaM2'?'m²':key.endsWith('M3h')?'m³/h':key.includes('Efficiency')||key.includes('Fraction')?'fraction':key.startsWith('temperature')?'°C':key==='humidityPercent'?'%':key==='wind2mMs'?'m/s':key==='radiationMj'?'MJ/m²/j':key==='days'||key==='minIntervalDays'?'day':key==='hoursPerDay'?'h/day':'1';
 export function inputInventory(c:SeasonalConfig):{path:string;value:InputValue['value'];unit:string}[] {
   const result:{path:string;value:InputValue['value'];unit:string}[]=[];
   const add=(path:string,value:InputValue['value']|undefined,unit=unitFor(path.split('.').at(-1)!))=>result.push({path,value:value??null,unit});
@@ -73,7 +73,7 @@ export function inputInventory(c:SeasonalConfig):{path:string;value:InputValue['
   add('soil.infiltrationMmDay',c.soil.infiltrationMmDay,'mm/day');
   Object.entries(c.system).forEach(([k,v])=>{if(k==='source'||k==='name')return;if(k==='dailySourceLimits'){c.system.dailySourceLimits.forEach((l,i)=>{add(`system.dailySourceLimits.${i}.date`,l.date,'date');add(`system.dailySourceLimits.${i}.m3`,l.m3,'m³');});}else add(`system.${k}`,v as InputValue['value']);});
   c.stages.forEach((s,i)=>Object.entries(s).forEach(([k,v])=>add(`stages.${i}.${k}`,v)));
-  c.weather.forEach(w=>{for(const k of ['rainMm','et0Mm','temperatureMeanC'] as const)add(`weather.${w.date}.${k}`,w[k]);});
+  c.weather.forEach(w=>{for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const)if(['rainMm','et0Mm','temperatureMeanC'].includes(k)||w[k]!=null)add(`weather.${w.date}.${k}`,w[k]);});
   c.soilAnalyses?.forEach((a,i)=>a.measurements.forEach((m,j)=>add(`soilAnalyses.${i}.measurements.${j}.value`,m.value,m.unit)));
   if(c.fallback){add('fallback.rainMmDay',c.fallback.rainMmDay,'mm/day');add('fallback.et0MmDay',c.fallback.et0MmDay,'mm/day');}
   for(const [path,v] of Object.entries(c.inputs?.values??{}))if(path.startsWith('source.soil.'))add(path,v.value,v.unit);
@@ -109,7 +109,8 @@ export function migrateInputs(c:SeasonalConfig):SeasonalConfig {
     return a.status==='estimated'?{...a,date:null}:a;
   });
   c.weather.forEach(w=>{
-    for(const k of ['rainMm','et0Mm','temperatureMeanC'] as const){
+    for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const){
+      if(!['rainMm','et0Mm','temperatureMeanC'].includes(k)&&w[k]==null)continue;
       const path=`weather.${w.date}.${k}`,old=matching?previous.values[path]:undefined;
       if(old&&sameValue(old.value,w[k]??null))continue;
       values[path]=w.provenance?.[k]&&sameValue(w.provenance[k].value,w[k]??null)?{...w.provenance[k],scopeId:id}:valueEvidence(w[k]??null,unitFor(k),id,{
@@ -155,7 +156,7 @@ export function reconcileInputs(previous:SeasonalConfig,next:SeasonalConfig,now=
 
 export function invalidateParcel(c:SeasonalConfig):SeasonalConfig {
   // Historical and manual inputs remain in archived revisions, not the new field.
-  const next={...c,agronomic:undefined,inputs:undefined,landAssessment:undefined,weather:[],soilAnalyses:[],inputPolicy:{allowAssumptions:false,allowStale:false},
+  const next={...c,salinity:undefined,agronomic:undefined,inputs:undefined,landAssessment:undefined,weather:[],soilAnalyses:[],inputPolicy:{allowAssumptions:false,allowStale:false},
     soil:{...c.soil,layers:c.soil.layers.map(l=>({...l,initialTheta:null}))}};
   return migrateInputs(next);
 }
@@ -169,7 +170,7 @@ export function missingEvidence(old:InputValue|undefined,unit:string,scope:strin
 export function inputWarnings(c:SeasonalConfig):string[] {
   const ledger=migrateInputs(c).inputs!;
   const assumed=Object.entries(ledger.values).filter(([,v])=>v.status==='assumed');
-  const missing=Object.entries(ledger.values).filter(([k,v])=>v.status==='missing'&&(k.startsWith('soil.layers.')||k.startsWith('weather.')&&!k.endsWith('temperatureMeanC')));
+  const missing=Object.entries(ledger.values).filter(([k,v])=>v.status==='missing'&&(k.startsWith('soil.layers.')||k.startsWith('weather.')&&/\.(rainMm|et0Mm)$/.test(k)));
   return [...(!c.inputPolicy?.allowAssumptions&&assumed.length?['Les paramètres hypothétiques doivent être acceptés explicitement : sol initial, infiltration, irrigation et calendrier.']:[]),
     ...missing.map(([k])=>`Entrée indisponible : ${k}.`)];
 }

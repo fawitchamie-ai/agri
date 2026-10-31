@@ -1,4 +1,5 @@
 import {cropById} from './catalog.ts';
+import {salinityScenario} from './salinity.ts';
 import clipping from 'polygon-clipping';
 import {multiArea,landBlockReason,type MultiShape} from './land.ts';
 import {validateParcel} from './parcel.ts';
@@ -7,11 +8,11 @@ import {validateConfig,validateEvents,InputError} from './validation.ts';
 import {planWater} from './engine.ts';
 import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
 
-export const YIELD_VERSION='conditional-yield-1.0.0';
-export const KY_VERSION='FAO56-table24-seasonal-1';
+export const YIELD_VERSION='conditional-yield-1.1.0';
+export const KY_VERSION='FAO56-table24-seasonal-2';
 export const FAO_SOURCE='https://www.fao.org/4/x0490e/x0490e0e.htm';
 /** Whole-cycle values only. No interpolation to unlisted crops, no stage products. */
-export const SEASONAL_KY:Record<string,number>={maize:1.25,sorghum:.9,soybean:.85,groundnut:.7,tomato:1.05,cabbage:.95,watermelon:1.1};
+export const SEASONAL_KY:Record<string,number>={maize:1.25,sorghum:.9,soybean:.85,groundnut:.7,tomato:1.05,cabbage:.95,watermelon:1.1,onion:1.1,'bell-pepper':1.1};
 export type YieldReference={
   kind:'scenario'|'attainable';kgHa:number;denominator:'sown'|'harvested';source:string;
   availableOn:string;context:string;cropId:string;
@@ -154,11 +155,19 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
   if(estimate.coverage.complete&&estimate.surface.sownM2!>0&&c.yieldEstimation.units.length===1){
    const conditions=c.yieldEstimation.units[0].conditions;
    const scoped=planWater(conditions?validateConfig({...c,...conditions,inputs:undefined}):c,events, {...options,unitAreaM2:estimate.surface.sownM2!,unitGeometry:c.yieldEstimation.units[0].geometry??plan.calculationArea?.geometry});
-   scoped.yieldEstimation=estimate;return scoped;
+   scoped.yieldEstimation=estimate;return attachSalinity(scoped,c);
   }
   plan.yieldEstimation=estimate;
   if(multi||estimate.surface.sownM2===0){plan.status='blocked';plan.complete=false;plan.days=[];plan.weeks=[];plan.decades=[];plan.stages=[];plan.nextWindows=[];plan.totals={demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null};plan.missing.push(multi?'Calendrier global multi-unités indisponible : les bilans de rendement sont calculés par unité ; allocation partagée de l’eau à définir.':'Aucune surface semée : aucun arrosage proposé.');}
  }
+ return attachSalinity(plan,c);
+}
+function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
+ if(!c.salinity)return plan;
+ // Reuse only spatial coverage checks; salinity is not a second water penalty.
+ const spatial=estimateYield({...c,yieldEstimation:c.yieldEstimation?{...c.yieldEstimation,method:'declared-scenario'}:undefined},[],plan);
+ if(!spatial.coverage.complete){plan.salinity={status:'unavailable',missing:spatial.missing};return plan;}
+ try{plan.salinity=salinityScenario(c,c.salinity);}catch(e){if(!(e instanceof InputError))throw e;plan.salinity={status:'unavailable',missing:[e.message]};}
  return plan;
 }
 export function yieldCsv(e:YieldEstimate):string{
