@@ -1,3 +1,4 @@
+import {parseAgronomic} from './agronomic.ts';
 import {parseYieldInput} from './yield.ts';
 import {migrateInputs,parseInputLedger,valueEvidence} from './provenance.ts';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
@@ -125,6 +126,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   try{validated.inputs=parseInputLedger(c.inputs);}catch(e){throw new InputError((e as Error).message);}
   if(c.inputPolicy!==undefined){if(typeof c.inputPolicy?.allowAssumptions!=='boolean'||typeof c.inputPolicy?.allowStale!=='boolean')throw new InputError('Politique des données invalide.');validated.inputPolicy={allowAssumptions:c.inputPolicy.allowAssumptions,allowStale:c.inputPolicy.allowStale};}
   if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
+  validated.agronomic=parseAgronomic(c.agronomic,validated);
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
   return migrateInputs(validated);
 }

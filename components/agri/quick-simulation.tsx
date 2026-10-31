@@ -3,15 +3,16 @@ import {useEffect,useRef,useState} from 'react';
 import {CROPS,cropById} from '../../lib/seasonal/catalog';
 import {automaticCampaign,mergeEnvironment,phSuitability} from '../../lib/seasonal/automatic';
 import type {Environment} from '../../lib/seasonal/environment';
-import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
+import type {SeasonalConfig,WaterPlan,WaterEvent} from '../../lib/seasonal/types';
 import './quick-simulation.css';
+import AgronomicPanel from './agronomic-panel';
 import YieldSummary from './yield-summary';
 import InputStatus from './input-status';
 import {geometryIdentity,environmentContext} from '../../lib/seasonal/provenance';
 const fmt=(v:number|null|undefined,d=0)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 const date=(s:string)=>new Date(s+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean};
-export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave}:Props){
+type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[]};
+export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events}:Props){
  const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[adjust,setAdjust]=useState(false),[sectorJob,setSectorJob]=useState<any>(null),[sectorRunning,setSectorRunning]=useState(false);
  const jobRun=useRef(false);
  const latest=useRef(config);latest.current=config;
@@ -72,6 +73,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   {error&&<div className="notice warning" role="alert">{error}<button className="btn secondary small" onClick={()=>setRetry(x=>x+1)}>Réessayer</button></div>}
   {!config.parcelGeometry?<section className="qs-start"><div className="qs-start-visual" aria-hidden="true"><svg viewBox="0 0 220 180"><path d="m25 80 100-55 75 35-15 85-110-5Z" fill="#c8de9c"/><path d="m25 80 50 60 110 5 15-85-75-35Z" fill="none" stroke="#347b4c" strokeWidth="3"/>{[[25,80],[125,25],[200,60],[185,145],[75,140]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="7" fill="#fff" stroke="#347b4c" strokeWidth="3"/>)}<path d="m60 80 95 35m-70-50 90 31m-76-47 81 28" stroke="#86b962" strokeWidth="6"/></svg></div><h2>Commençons par votre champ</h2><p>Dessinez ses contours. Nous préparons les paramètres et le bilan d’eau.</p><button className="btn primary" onClick={onMap}>Choisir mon champ sur la carte →</button><small>Aucun formulaire de sol à remplir pour commencer.</small></section>:<>
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
+  <AgronomicPanel config={config} events={events} onChange={onChange}/>
   <InputStatus config={config} onChange={onChange}/>
   <div className="qs-kpis"><article><span>EAU À APPORTER</span><strong>{usable?fmt(plan.totals.fieldM3):'—'}<small> m³</small></strong><p>{usable?`${fmt(plan.totals.netMm)} mm utiles sur ${plan.days.length} jours`:unavailableLabel}</p></article><article><span>PROCHAIN ARROSAGE</span><strong className="qs-date">{usable&&plan.nextWindows[0]?date(plan.nextWindows[0].from):usable?'Aucun proposé':'—'}</strong><p>{usable&&plan.nextWindows[0]?`${fmt(plan.nextWindows[0].volume.fieldM3)} m³ au champ`:'Selon le sol et la pluie simulés'}</p></article><article><span>FIN DE CYCLE</span><strong className="qs-date">{usable?date(plan.horizonEnd):'—'}</strong><p>{duration?`${duration} jours · durée de référence`:'Durée à compléter pour cette culture'}</p></article></div>
   <div className="qs-visuals"><section className="qs-card qs-radar-card"><div className="qs-card-heading"><div><span className="qs-eyebrow">LES CONDITIONS DE MA CULTURE</span><h2>Les points à surveiller</h2></div><span className="qs-tag">Scénario</span></div><Radar values={radar}/><div className="qs-radar-key"><span><i/>Plus loin du centre = indicateur plus élevé</span><span>○ Donnée absente</span></div><details><summary>Comprendre les indicateurs</summary><p>Eau : consommation satisfaite après arrosages proposés. pH : proximité du repère écologique de la culture, méthode indicative. Température : part des jours dans la plage optimale. Météo : part du cycle renseignée. Réserve : fraction initiale d’eau disponible, hypothétique.</p><p>Ces axes ne forment pas un score global ni une prévision de rendement. Le pH ne modifie pas le bilan d’eau.</p></details></section>
