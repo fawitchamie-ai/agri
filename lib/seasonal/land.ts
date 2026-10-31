@@ -101,13 +101,14 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
     candidateAreaM2,excludedAreaM2,unknownAreaM2,messages,boundaryUncertaintyM:null,legalStatus:'not_assessed'};
 }
 
-export function landBlockReason(c:{parcelGeometry?:ParcelPolygon;landAssessment?:LandAssessment}):string|null {
-  if(!c.parcelGeometry)return null; // Explicit non-geographic reference scenarios remain possible.
+export function landBlockReason(c:{parcelGeometry?:ParcelPolygon;landAssessment?:LandAssessment;landSelection?:'whole'|'potentialLand'}):string|null {
+  if(!c.parcelGeometry)return c.landSelection==='potentialLand'?'Contour et analyse terrestre requis pour sélectionner une partie du champ.':null; // Explicit non-geographic reference scenarios remain possible.
   const a=c.landAssessment;
   if(!a||a.version!==LAND_VERSION||a.scopeId!==scopeId(c.parcelGeometry)||geometryIdentity(a.geometry)!==geometryIdentity(c.parcelGeometry))return 'Analyse du contour non disponible : vérifier eau, zones humides et surface terrestre avant de calculer.';
   if(!Number.isFinite(Date.parse(a.assessedAt))||Date.now()-Date.parse(a.assessedAt)>86400000)return 'Analyse du contour à actualiser avant le calcul.';
+  if(c.landSelection==='potentialLand')return a.candidateAreaM2>Math.max(.001,a.areaM2*1e-7)?null:'Aucune partie terrestre cartographiée disponible pour le calcul.';
   if(a.status==='excluded')return 'Parcelle située sur une surface en eau permanente ou incompatible : calcul terrestre suspendu.';
-  if(a.excludedAreaM2>Math.max(.001,a.areaM2*1e-7))return 'Contour mixte : redessinez un secteur admissible parmi les parties affichées avant de calculer. La surface totale ne sera pas traitée comme cultivée.';
+  if(a.excludedAreaM2>Math.max(.001,a.areaM2*1e-7))return 'Contour mixte : sélectionnez la partie terrestre cartographiée pour calculer, ou redessinez un secteur admissible. La surface totale ne sera pas traitée comme cultivée.';
   if(a.unknownAreaM2>Math.max(.001,a.areaM2*1e-7))return 'Une partie du contour reste inconnue : vérification nécessaire avant un calcul sur toute la parcelle.';
   if(a.fractions.wetland.areaM2+a.fractions.seasonalWater.areaM2>Math.max(.001,a.areaM2*1e-7))return 'Zone humide ou eau saisonnière : le module terrestre générique est suspendu. Un diagnostic spécifique, notamment pour le riz, est nécessaire.';
   return null;

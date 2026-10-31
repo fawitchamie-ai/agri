@@ -1,0 +1,720 @@
+{
+  "generatedAt": "2026-10-31T14:30:19.324Z",
+  "scope": "Read-only live source integration checks on one sample per country, plus one larger Togo contour. BFA and the larger contour use an explicitly selected mapped terrestrial subset. These are conditional water calculations, not independent ground truth or validated crop-yield forecasts. WOfS/InputQuality were unavailable in this test network. Initial transient weather/hydraulic failures in Senegal recovered on a later acquisition.",
+  "results": [
+    {
+      "country": "TGO",
+      "point": [
+        1.2,
+        9.5
+      ],
+      "land": "conditional",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.3,
+        "organicC": 10.3,
+        "totalN": 0.83,
+        "cec": 13.1,
+        "sand": 59.5,
+        "clay": 18.7,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.238,
+            "thetaWP": 0.105,
+            "initialTheta": 0.1848
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.24,
+            "thetaWP": 0.108,
+            "initialTheta": 0.1872
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.238,
+            "thetaWP": 0.134,
+            "initialTheta": 0.19640000000000002
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.258,
+            "thetaWP": 0.174,
+            "initialTheta": 0.2244
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.274,
+            "thetaWP": 0.193,
+            "initialTheta": 0.2416
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.299,
+            "thetaWP": 0.196,
+            "initialTheta": 0.25780000000000003
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 6140.435351945057
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    },
+    {
+      "country": "BEN",
+      "point": [
+        2.4,
+        9.3
+      ],
+      "land": "conditional",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.2,
+        "organicC": 9.9,
+        "totalN": 0.78,
+        "cec": 9.1,
+        "sand": 59.3,
+        "clay": 18.8,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.202,
+            "thetaWP": 0.089,
+            "initialTheta": 0.1568
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.203,
+            "thetaWP": 0.089,
+            "initialTheta": 0.15739999999999998
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.205,
+            "thetaWP": 0.09,
+            "initialTheta": 0.159
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.233,
+            "thetaWP": 0.153,
+            "initialTheta": 0.201
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.255,
+            "thetaWP": 0.184,
+            "initialTheta": 0.2266
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.279,
+            "thetaWP": 0.192,
+            "initialTheta": 0.2442
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 5899.670433708998
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    },
+    {
+      "country": "BFA",
+      "point": [
+        -1.6002833333333335,
+        12.300341666666668
+      ],
+      "selection": "potentialLand",
+      "calculationAreaM2": 473.153491909365,
+      "wholeContourStatus": "blocked",
+      "land": "mixed",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0.9388021579195918,
+        "potentialLand": 0.06119784207484958,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.4,
+        "organicC": 7,
+        "totalN": 0.47,
+        "cec": 6.8,
+        "sand": 61.1,
+        "clay": 15.7,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.203,
+            "thetaWP": 0.072,
+            "initialTheta": 0.15059999999999998
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.2,
+            "thetaWP": 0.078,
+            "initialTheta": 0.1512
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.233,
+            "thetaWP": 0.11,
+            "initialTheta": 0.1838
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.248,
+            "thetaWP": 0.15,
+            "initialTheta": 0.20879999999999999
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.26,
+            "thetaWP": 0.159,
+            "initialTheta": 0.2196
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.272,
+            "thetaWP": 0.165,
+            "initialTheta": 0.22920000000000001
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 402.1922388536888
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    },
+    {
+      "country": "GHA",
+      "point": [
+        -1.1,
+        8
+      ],
+      "land": "conditional",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.3,
+        "organicC": 15.7,
+        "totalN": 1.1,
+        "cec": 17.2,
+        "sand": 50.7,
+        "clay": 21.6,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.201,
+            "thetaWP": 0.114,
+            "initialTheta": 0.16620000000000001
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.208,
+            "thetaWP": 0.099,
+            "initialTheta": 0.1644
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.207,
+            "thetaWP": 0.111,
+            "initialTheta": 0.1686
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.227,
+            "thetaWP": 0.13,
+            "initialTheta": 0.1882
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.25,
+            "thetaWP": 0.154,
+            "initialTheta": 0.21159999999999998
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.269,
+            "thetaWP": 0.168,
+            "initialTheta": 0.2286
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 5087.732509062299
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    },
+    {
+      "country": "CIV",
+      "point": [
+        -5.5,
+        7.5
+      ],
+      "land": "conditional",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.2,
+        "organicC": 17.5,
+        "totalN": 1.58,
+        "cec": 13.6,
+        "sand": 58.2,
+        "clay": 18.8,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.254,
+            "thetaWP": 0.119,
+            "initialTheta": 0.2
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.248,
+            "thetaWP": 0.112,
+            "initialTheta": 0.1936
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.246,
+            "thetaWP": 0.12,
+            "initialTheta": 0.1956
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.266,
+            "thetaWP": 0.125,
+            "initialTheta": 0.2096
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.293,
+            "thetaWP": 0.143,
+            "initialTheta": 0.23299999999999998
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.304,
+            "thetaWP": 0.153,
+            "initialTheta": 0.24359999999999998
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 3922.741496042311
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    },
+    {
+      "country": "SEN",
+      "point": [
+        -14.5,
+        14.4
+      ],
+      "land": "conditional",
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ]
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "reason": "",
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "limitations": []
+        }
+      ],
+      "soil": {
+        "ph": 6.3,
+        "organicC": 5.6,
+        "totalN": 0.48,
+        "cec": 8.4,
+        "sand": 63.2,
+        "clay": 19.9,
+        "hydraulicLayers": [
+          {
+            "thicknessM": 0.05,
+            "thetaFC": 0.154,
+            "thetaWP": 0.077,
+            "initialTheta": 0.1232
+          },
+          {
+            "thicknessM": 0.1,
+            "thetaFC": 0.151,
+            "thetaWP": 0.08,
+            "initialTheta": 0.1226
+          },
+          {
+            "thicknessM": 0.15,
+            "thetaFC": 0.169,
+            "thetaWP": 0.087,
+            "initialTheta": 0.1362
+          },
+          {
+            "thicknessM": 0.3,
+            "thetaFC": 0.196,
+            "thetaWP": 0.125,
+            "initialTheta": 0.1676
+          },
+          {
+            "thicknessM": 0.4,
+            "thetaFC": 0.213,
+            "thetaWP": 0.126,
+            "initialTheta": 0.1782
+          },
+          {
+            "thicknessM": 1,
+            "thetaFC": 0.221,
+            "thetaWP": 0.129,
+            "initialTheta": 0.1842
+          }
+        ]
+      },
+      "weatherDays": 125,
+      "plan": {
+        "status": "conditional",
+        "complete": true,
+        "days": 125,
+        "missing": [],
+        "fieldM3": 7472.931461066761
+      },
+      "warnings": [
+        "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+      ]
+    }
+  ],
+  "largeContour": {
+    "country": "TGO",
+    "point": [
+      1.2,
+      9.5
+    ],
+    "drawnAreaM2": 1756047.7843037653,
+    "selection": "potentialLand",
+    "calculationAreaM2": 1736146.7304781335,
+    "wholeContourStatus": "blocked",
+    "land": "mixed",
+    "fractions": {
+      "permanentWater": 0,
+      "seasonalWater": 0,
+      "wetland": 0,
+      "incompatible": 0.011332865770131598,
+      "potentialLand": 0.9886671342297658,
+      "unknown": 0
+    },
+    "sources": [
+      {
+        "id": "worldcover",
+        "status": "available",
+        "reason": "",
+        "limitations": [
+          "Occupation du sol 2021, pas observation actuelle.",
+          "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+          "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+        ]
+      },
+      {
+        "id": "jrc",
+        "status": "available",
+        "reason": "",
+        "limitations": [
+          "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+          "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+          "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+        ]
+      },
+      {
+        "id": "recent",
+        "status": "missing",
+        "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+        "limitations": []
+      }
+    ],
+    "soil": {
+      "ph": 6.3,
+      "organicC": 10.3,
+      "totalN": 0.83,
+      "cec": 13.1,
+      "sand": 59.5,
+      "clay": 18.7,
+      "hydraulicLayers": [
+        {
+          "thicknessM": 0.05,
+          "thetaFC": 0.238,
+          "thetaWP": 0.105,
+          "initialTheta": 0.1848
+        },
+        {
+          "thicknessM": 0.1,
+          "thetaFC": 0.24,
+          "thetaWP": 0.108,
+          "initialTheta": 0.1872
+        },
+        {
+          "thicknessM": 0.15,
+          "thetaFC": 0.238,
+          "thetaWP": 0.134,
+          "initialTheta": 0.19640000000000002
+        },
+        {
+          "thicknessM": 0.3,
+          "thetaFC": 0.258,
+          "thetaWP": 0.174,
+          "initialTheta": 0.2244
+        },
+        {
+          "thicknessM": 0.4,
+          "thetaFC": 0.274,
+          "thetaWP": 0.193,
+          "initialTheta": 0.2416
+        },
+        {
+          "thicknessM": 1,
+          "thetaFC": 0.299,
+          "thetaWP": 0.196,
+          "initialTheta": 0.25780000000000003
+        }
+      ]
+    },
+    "weatherDays": 125,
+    "plan": {
+      "status": "conditional",
+      "complete": true,
+      "days": 125,
+      "missing": [],
+      "fieldM3": 1365940.4875422097
+    },
+    "warnings": [
+      "Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour."
+    ]
+  }
+}

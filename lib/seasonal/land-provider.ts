@@ -23,12 +23,12 @@ async function staticLayer(id:'worldcover'|'jrc',shape:ParcelPolygon,fetcher:typ
   const base:LandLayer={...missingLandLayer(id,'',now),status:'available',referencePeriod:{from:id==='worldcover'?'2021-01-01':'2024-01-01',to:id==='worldcover'?'2021-12-31':'2024-12-31'},
     resolutionM:id==='worldcover'?10:30,crs:'EPSG:4326',limitations:id==='worldcover'?['Occupation du sol 2021, pas observation actuelle.','Erreur de classification et pixels mixtes ; qualité InputQuality non acquise, à vérifier au terrain.']:['Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.','Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.','La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée.']};
   base.assets=id==='worldcover'?worldCoverAssets(shape):jrcAssets(shape);
-  const results=await Promise.allSettled(base.assets.map(u=>readRasterWindow(u,shape,fetcher)));
+  const results=await Promise.allSettled(base.assets.map(u=>readRasterWindow(u,shape,fetcher,AbortSignal.timeout(50000),[0],true)));
   for(const r of results)if(r.status==='fulfilled')base.cells.push(...r.value.cells);else base.limitations.push(String(r.reason?.message??r.reason));
   base.cells=base.cells.map(c=>({...c,rawValue:c.value,value:c.value!==null&&(id==='worldcover'?[10,20,30,40,50,60,70,80,90,95,100].includes(c.value):Number.isInteger(c.value)&&c.value>=0&&c.value<=12)?c.value:null}));
   if(id==='worldcover'&&base.cells.some(c=>c.value!==null)){
     const assets=base.assets.map(u=>u.replace('/map/','/inputquality/').replace('_Map.tif','_InputQuality.tif'));
-    const quality=await Promise.allSettled(assets.map(u=>readRasterWindow(u,shape,fetcher,AbortSignal.timeout(15000),[0,1,2])));
+    const quality=await Promise.allSettled(assets.map(u=>readRasterWindow(u,shape,fetcher,AbortSignal.timeout(15000),[0,1,2],true)));
     const windows=quality.flatMap(r=>r.status==='fulfilled'?[r.value]:[]);
     const cells=windows.flatMap(w=>w.cells).filter(c=>c.bands?.length===3&&c.value!==null);
     base.quality={status:cells.length?'available':'missing',resolutionM:windows[0]?.resolutionM??null,coveredAreaM2:cells.reduce((n,c)=>n+multiArea(clipToParcel(shape,c.geometry).coordinates),0),assets,reason:cells.length?null:'InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.',observations:cells.map(c=>({cell:c.id,s1:c.bands![0],s2:c.bands![1],invalidS2Percent:c.bands![2]}))};
@@ -58,7 +58,7 @@ async function recentLayer(shape:ParcelPolygon,fetcher:typeof fetch,now:string):
       const href=item.assets?.water?.href;if(typeof href!=='string')continue;
       const asset=href.startsWith('s3://deafrica-services/')?href.replace('s3://deafrica-services/','https://deafrica-services.s3.af-south-1.amazonaws.com/'):href;
       try{
-        const raster=await readRasterWindow(asset,shape,fetcher);
+        const raster=await readRasterWindow(asset,shape,fetcher,AbortSignal.timeout(50000),[0],true);
         const clear=raster.cells.filter(c=>c.value===0||c.value===128);
         if(!clear.length)continue;
         return {...empty,status:'available',version:item.id??'item non versionné',observedAt:item.properties!.datetime!,referencePeriod:{from:item.properties!.datetime!,to:item.properties!.datetime!},resolutionM:raster.resolutionM,crs:raster.crs,cells:raster.cells,assets:[asset],reason:null,limitations:['Pixels avec drapeaux de nuage, ombre, pente ou absence de donnée : inconnus.','Une observation sèche ne prouve pas le drainage, ni l’absence d’eau sous végétation.','Dernière scène disponible parmi les cinq résultats du catalogue ; pas une couverture quotidienne.']};
@@ -78,10 +78,10 @@ export async function loadLandAssessment(input:unknown,fetcher:typeof fetch=fetc
     const ids=['worldcover','jrc','recent'] as const;
     const layers=results.map((r,i)=>r.status==='fulfilled'?r.value:missingLandLayer(ids[i],String(r.reason?.message??r.reason),now));
     const result=assessLandGeometry(shape,layers,now);
-    if(fetcher===fetch){if(cache.size>=16)cache.delete(cache.keys().next().value!);cache.set(key,{until:Date.now()+(result.status==='unknown'?60000:1800000),value:result});}
+    if(fetcher===fetch){if(cache.size>=16)cache.delete(cache.keys().next().value!);cache.set(key,{until:Date.now()+(layers.some(l=>l.id==='worldcover'&&l.status==='missing')?60000:1800000),value:result});}
     return result;
   })();
   if(fetcher===fetch)inflight.set(key,task);
   try{return structuredClone(await task);}finally{if(fetcher===fetch)inflight.delete(key);}
 }
-const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days';
+const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days+nativeRectangles2';

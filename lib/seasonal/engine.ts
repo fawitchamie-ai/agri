@@ -29,8 +29,14 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   const c = validateConfig(input), events = validateEvents(inputEvents, c);
   const horizon = c.stages.reduce((s, x) => s + x.days, 0), horizonEnd = addDays(c.sowingDate, horizon - 1);
   const eventProvenance=events.flatMap(e=>e.provenance?[e.provenance]:[]);
-  const gate=[options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...inputWarnings(c)].filter((x):x is string=>!!x);
-  if(gate.length)return {engineVersion:ENGINE_VERSION,levelOfEvidence:'simulation_non_validee',status:'blocked',complete:false,horizonEnd,assumptions:[],missing:gate,days:[],weeks:[],decades:[],stages:[],nextWindows:[],intervalDays:null,totals:{demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null},...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{})};
+  const selected=c.landSelection==='potentialLand',a=c.landAssessment;
+  const calculationArea:NonNullable<WaterPlan['calculationArea']>={selection:selected?'potentialLand':'whole',areaM2:selected?a?.candidateAreaM2??null:c.areaM2,geometry:selected?a?.fractions.potentialLand.geometry??null:c.parcelGeometry?{type:'MultiPolygon',coordinates:[c.parcelGeometry.coordinates]}:null};
+  const eventScopeWarning=events.some(e=>['measured','declared'].includes(e.status)&&(e.landSelection??'whole')!==(c.landSelection??'whole'))?'Observations liées à une autre surface de calcul : corrigez leur portée avant de les utiliser.':null;
+  const gate=[eventScopeWarning,options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...inputWarnings(c)].filter((x):x is string=>!!x);
+  if(gate.length)return {calculationArea,engineVersion:ENGINE_VERSION,levelOfEvidence:'simulation_non_validee',status:'blocked',complete:false,horizonEnd,assumptions:[],missing:gate,days:[],weeks:[],decades:[],stages:[],nextWindows:[],intervalDays:null,totals:{demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null},...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{})};
+  // Keep the drawn area in the input ledger; only volume/nutrient calculations
+  // use the explicitly selected mapped terrestrial area.
+  c.areaM2=calculationArea.areaM2;
   const missing: string[] = [], assumptions = [
     'Simulation conditionnelle non validée au champ ; coefficients, sols et accès à l’eau à confirmer localement.',
     'Bilan journalier : croissance des racines, correction d’humidité, pluie et drainage, irrigation et drainage, puis évapotranspiration.',
@@ -38,6 +44,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     'Les fenêtres futures supposent le suivi du plan. Aucune irrigation passée n’est présumée réalisée.',
     `Sol : ${c.soil.source}. Culture : ${c.parameterSource}. Installation : ${c.system.source}.`,
   ];
+  if(selected)assumptions.push(`Calcul limité à ${calculationArea.areaM2?.toFixed(1)} m² de terre potentielle cartographiée. Eau, zones humides, bâti et inconnus exclus ; aptitude et homogénéité du sol à vérifier.`);
   if (c.fallback) assumptions.push(`Jours sans météo complète : scénario explicite « ${c.fallback.label} », ET0 ${c.fallback.et0MmDay} mm/j et pluie ${c.fallback.rainMmDay} mm/j. Il ne s’agit pas d’une prévision saisonnière calibrée.`);
   const crop = c.cropProfile ? cropById(c.cropProfile.id) : undefined;
   if(crop){
@@ -157,6 +164,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   if(days.some(d=>d.drainageMm>.01||d.runoffMm>.01))assumptions.push('Excédent d’eau calculé : ce bilan ne prouve pas que l’eau s’est évacuée du champ. Vérifiez la stagnation et renseignez un engorgement ou une submersion si observé.');
   if (c.system.sourceBudgetM3 !== null && usedSourceM3 > c.system.sourceBudgetM3 + 1e-8) assumptions.push('Les apports déjà réalisés dépassent le quota déclaré. Le réalisé est conservé et aucun quota supplémentaire n’est inventé.');
   return {
+    calculationArea,
     ...(c.nutritionReference?{nutrition:referenceQuantities(c.nutritionReference.id,c,c.nutritionReference.contextNote,c.nutritionReference.alreadyKgHa)}:{}),
     ...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{}),
     engineVersion: ENGINE_VERSION, levelOfEvidence: 'simulation_non_validee', status: missing.length ? 'blocked' : 'conditional', complete, horizonEnd, assumptions, missing,
@@ -171,7 +179,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
 export function upsertEvent(events: WaterEvent[], event: WaterEvent): WaterEvent[] { return [...events.filter(e => e.id !== event.id), event].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)); }
 
 export function waterPlanCsv(plan: WaterPlan): string {
-  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo'];
+  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo','surface_calcul_m2','partie_du_contour'];
   const quote = (v: unknown) => { const text=typeof v==='number'?String(v):String(v??'').replace(/^[\s]*[=+@-]/,"'$&");return `"${text.replaceAll('"','""')}"`; };
-  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus])].map(row => row.map(quote).join(';')).join('\r\n');
+  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus,plan.calculationArea?.areaM2,plan.calculationArea?.selection])].map(row => row.map(quote).join(';')).join('\r\n');
 }

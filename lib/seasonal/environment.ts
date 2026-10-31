@@ -29,11 +29,22 @@ export async function readSoilPixel(buffer:ArrayBuffer):Promise<number|null> {
  const raw=tags.get(339)===2?pixels.getInt16(at,le):pixels.getUint16(at,le);
  return raw===nodata||raw<0||raw===65535?null:raw;
 }
+// One bounded retry for provider throttling, transient failure or a timeout.
+// Invalid units and explicit no-data stay missing instead of becoming defaults.
+async function providerRead<T>(url:URL,fetcher:typeof fetch,timeout:number,parse:(response:Response)=>Promise<T>):Promise<T>{
+ for(let attempt=0;attempt<2;attempt++){
+  try{
+   const response=await fetcher(url,{signal:AbortSignal.timeout(timeout)});
+   if(!response.ok){await response.body?.cancel();if(attempt===0&&(response.status===429||response.status>=500)){await new Promise(r=>setTimeout(r,200));continue;}throw Object.assign(new Error(`Source indisponible (HTTP ${response.status})`),{retryable:response.status===429||response.status>=500});}
+   return await parse(response);
+  }catch(e){if(attempt===1||(e as {retryable?:boolean}).retryable===false)throw e;await new Promise(r=>setTimeout(r,200));}
+ }
+ throw new Error('Source indisponible');
+}
 async function soilValue(property:string,depth:string,latitude:number,longitude:number,fetcher:typeof fetch,statistic='mean'):Promise<number|null>{
  const url=new URL('https://maps.isric.org/mapserv');
  url.search=new URLSearchParams({map:`/map/${property}.map`,SERVICE:'WCS',VERSION:'1.0.0',REQUEST:'GetCoverage',COVERAGE:`${property}_${depth}cm_${statistic}`,CRS:'EPSG:4326',BBOX:`${longitude-.0001},${latitude-.0001},${longitude+.0001},${latitude+.0001}`,WIDTH:'1',HEIGHT:'1',FORMAT:'GEOTIFF_INT16'}).toString();
- try{const response=await fetcher(url,{signal:AbortSignal.timeout(10000)});
- return response.ok?await readSoilPixel(await response.arrayBuffer()):null;}catch{return null;}
+ try{return await providerRead(url,fetcher,15000,async response=>readSoilPixel(await response.arrayBuffer()));}catch{return null;}
 }
 export async function loadSoil(latitude:number,longitude:number,fetcher:typeof fetch=fetch,now=new Date().toISOString()):Promise<SoilEstimate>{
  const specs=[['ph','phh2o',10,0,14],['organicC','soc',10,0,1000],['totalN','nitrogen',100,0,1000],['cec','cec',10,0,1000],['sand','sand',10,0,100],['clay','clay',10,0,100]] as const;
@@ -66,7 +77,7 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
 
  return result;
 }
-async function weatherJson(url:URL,fetcher:typeof fetch){const r=await fetcher(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error('Météo indisponible');const d=await r.json() as any;if(!Array.isArray(d?.daily?.time)||d.daily.time.length>1200||d.daily_units?.precipitation_sum!=='mm'||d.daily_units?.et0_fao_evapotranspiration!=='mm'||d.daily_units?.temperature_2m_mean!=='°C')throw new Error('Unités météo inconnues');return {...d.daily,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};}
+async function weatherJson(url:URL,fetcher:typeof fetch){const d=await providerRead(url,fetcher,15000,async r=>r.json()) as any;if(!Array.isArray(d?.daily?.time)||d.daily.time.length>1200||d.daily_units?.precipitation_sum!=='mm'||d.daily_units?.et0_fao_evapotranspiration!=='mm'||d.daily_units?.temperature_2m_mean!=='°C')throw new Error('Unités météo inconnues');return {...d.daily,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};}
 async function acquireEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),soilPoint?:Position|null):Promise<Environment>{
  if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>85||Math.abs(longitude)>180||!Object.hasOwn(COUNTRIES,country))throw new InputError('Localisation invalide.');
  isoDate(start,'Date du semis');if(!Number.isInteger(days)||days<1||days>366)throw new InputError('Cycle invalide.');

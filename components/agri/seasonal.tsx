@@ -218,6 +218,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     </div>}
 
     {tab==='suivi'&&<section className="card" role="tabpanel" id="seasonal-panel-suivi" aria-labelledby="seasonal-tab-suivi"><h2>Ce qui s’est réellement passé</h2><p>Une pluie remplace la valeur météo du même jour. Un arrosage n’entre au bilan que s’il est déclaré ou mesuré. Une correction d’humidité ajuste le stock sans inventer une pluie. Les quantités d’irrigation concernent toute la surface arrosée renseignée.</p><form onSubmit={e=>{e.preventDefault();recordEvent(event)}}><div className="form-grid">
+      {config.landSelection==='potentialLand'&&<p>Cette observation concerne uniquement la partie terrestre sélectionnée, hors eau et surfaces inconnues.</p>}
       <Field label="Type d’observation"><select value={event.kind} onChange={e=>setEvent({...event,kind:e.target.value as WaterEvent['kind'],unit:e.target.value==='soil'?'fraction':'mm'})}><option value="rain">Pluie quotidienne</option><option value="irrigation">Irrigation</option><option value="soil">Humidité de toute la zone racinaire</option></select></Field>
       <Field label="Date réelle de l’événement"><input type="date" required min={config.sowingDate} max={today()} value={event.date} onChange={e=>setEvent({...event,date:e.target.value})}/></Field>
       <NumberField label={event.kind==='soil'?'Humidité volumique (fraction)':'Quantité'} value={event.amount} onChange={v=>setEvent({...event,amount:v??NaN})}/>

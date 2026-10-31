@@ -6,10 +6,10 @@ import type {ParcelPolygon,Position} from './parcel.ts';
 
 const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com']);
 // Bound total geometry work separately from each decoder window.
-export const MAX_NATIVE_PIXELS=24000;
+export const MAX_NATIVE_PIXELS=16000000;
 const WINDOW_SIDE=100;
 export function rasterWindows(x0:number,y0:number,x1:number,y1:number):[number,number,number,number][]{
-  if((x1-x0)*(y1-y0)>MAX_NATIVE_PIXELS)throw new Error('Contour trop étendu pour une analyse native complète (24 000 pixels) : découpez-le en secteurs.');
+  if((x1-x0)*(y1-y0)>MAX_NATIVE_PIXELS)throw new Error('Contour trop étendu pour une analyse native complète (16 millions de pixels) : découpez-le en secteurs.');
   const windows:[number,number,number,number][]=[];
   for(let y=y0;y<y1;y+=WINDOW_SIDE)for(let x=x0;x<x1;x+=WINDOW_SIDE)windows.push([x,y,Math.min(x+WINDOW_SIDE,x1),Math.min(y+WINDOW_SIDE,y1)]);
   return windows;
@@ -46,7 +46,7 @@ class RangeClient extends BaseClient {
   private budget={bytes:0};private requests=0;
   constructor(url:string,private fetcher:typeof fetch,private deadline:AbortSignal){super(url);if(!ALLOWED_HOSTS.has(new URL(url).hostname)||new URL(url).protocol!=='https:')throw new Error('Hôte raster non autorisé.');}
   async request(options:RequestInit={}){
-    if(++this.requests>80)throw new Error('Trop de blocs raster pour ce contour.');
+    if(++this.requests>256)throw new Error('Trop de blocs raster pour ce contour.');
     // Workers rejects redirect:'error' before sending the request. Manual mode
     // preserves the host allowlist: a redirect is rejected by the 206 check.
     // Call the native function without the RangeClient as its receiver.
@@ -67,7 +67,7 @@ function transformFor(epsg:number){
 }
 
 /** Native pixels only. No overview or RGB values used for the classification. */
-export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:typeof fetch=fetch,signal=AbortSignal.timeout(50000),samples=[0]):Promise<RasterWindow>{
+export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:typeof fetch=fetch,signal=AbortSignal.timeout(50000),samples=[0],compact=false):Promise<RasterWindow>{
   const options={allowFullFile:false,maxRanges:0,blockSize:65536,cacheSize:32};
   const tiff=await fromCustomClient(new RangeClient(url,fetcher,signal),options,signal);
   try{
@@ -87,6 +87,30 @@ export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:ty
     for(const window of windows){
       const [left,top,right,bottom]=window,w=right-left;
       const values=await image.readRasters({window,samples,interleave:true,signal});
+      if(compact){
+        // Exact native-grid rectangles: merge equal adjacent pixels, never
+        // interpolate or turn an overview/RGB sample into a land class.
+        type Run={left:number;right:number;top:number;bottom:number;raw:number[]};
+        const runs:Run[]=[],last=new Map<string,Run>();
+        for(let y=top;y<bottom;y++){
+          let x=left;
+          while(x<right){
+            const start=x,offset=((y-top)*w+x-left)*samples.length;
+            const raw=samples.map((_,i)=>Number(values[offset+i]));x++;
+            while(x<right&&raw.every((v,i)=>Object.is(v,Number(values[((y-top)*w+x-left)*samples.length+i]))))x++;
+            const key=JSON.stringify([start,x,raw]),previous=last.get(key);
+            if(previous?.bottom===y)previous.bottom=y+1;
+            else {const run={left:start,right:x,top:y,bottom:y+1,raw};runs.push(run);last.set(key,run);}
+            if(runs.length+cells.length>24000)throw new Error('Occupation du sol trop fragmentée pour une analyse synchrone complète : découpez le contour.');
+          }
+        }
+        for(const r of runs){
+          const corners=[[r.left,r.top],[r.right,r.top],[r.right,r.bottom],[r.left,r.bottom],[r.left,r.top]].map(([px,py])=>toLonLat([origin[0]+px*res[0],origin[1]+py*res[1]]));
+          const b=bbox({type:'Polygon',coordinates:[corners]});if(b[2]<bounds[0]||b[0]>bounds[2]||b[3]<bounds[1]||b[1]>bounds[3])continue;
+          cells.push({id:`${r.left}:${r.top}:${r.right}:${r.bottom}`,geometry:{type:'Polygon',coordinates:[corners]},value:!Number.isFinite(r.raw[0])||r.raw[0]===noData?null:r.raw[0],...(samples.length>1?{bands:r.raw}:{})});
+        }
+        continue;
+      }
       for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){
         const corners=[[x,y],[x+1,y],[x+1,y+1],[x,y+1],[x,y]].map(([px,py])=>toLonLat([origin[0]+px*res[0],origin[1]+py*res[1]]));
         const b=bbox({type:'Polygon',coordinates:[corners]});if(b[2]<bounds[0]||b[0]>bounds[2]||b[3]<bounds[1]||b[1]>bounds[3])continue;

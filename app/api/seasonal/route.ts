@@ -76,7 +76,7 @@ export async function POST(request: Request) { try {
   if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
   if (old && b.action === 'event') {
     const previous = JSON.parse(old.events).find((e: any) => e.id === b.event?.id);
-    if (previous && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && (previous.landSelection??'whole')===(JSON.parse(old.config).landSelection??'whole') && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? JSON.parse(old.config) : b.config);
@@ -87,10 +87,10 @@ export async function POST(request: Request) { try {
     // Client supplies stable ID but receipt time is server-owned. Past plans stay
     // immutable; a delayed observation is replayed in the newly issued plan.
     config.asOfDate = new Date().toISOString().slice(0,10);
-    const event = validateEvents([{ ...b.event, recordedAt: new Date().toISOString() }], config)[0];
+    const event = validateEvents([{ ...b.event, landSelection:config.landSelection??'whole',recordedAt: new Date().toISOString() }], config)[0];
     const next = upsertEvent(events,event);
     const previous = events.find((e: any) => e.id === event.id);
-    if (previous && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && ['date','kind','amount','unit','point','status','source','landSelection'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
     events = next;
   }
   // save never replaces the event log supplied by another client.
