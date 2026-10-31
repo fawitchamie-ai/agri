@@ -55,8 +55,13 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   useEffect(()=>{
     if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);return;}
     setPlanStale(true);
-    const timer=setTimeout(()=>{try{setPlan(planWater(config,events));setPlanStale(false);setError('');}catch(e){setPlan(null);setPlanStale(true);setError((e as Error).message);}},220);
-    return()=>clearTimeout(timer);
+    const controller=new AbortController();let alive=true;
+    const timer=setTimeout(async()=>{try{
+      const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'simulate',config,events})});
+      const result=await response.json() as any;if(!response.ok)throw new Error(result.error||'Calcul indisponible');
+      if(alive){setPlan(result.plan);setPlanStale(false);setError('');}
+    }catch(e){if(alive){setPlan(null);setPlanStale(true);setError((e as Error).message);}}},350);
+    return()=>{alive=false;clearTimeout(timer);controller.abort();};
   },[config,events,parcelDraft]);
 
   useEffect(()=>{
@@ -70,7 +75,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   function sys<K extends keyof SeasonalConfig['system']>(key:K,value:SeasonalConfig['system'][K]) { edit({...config,system:{...config.system,[key]:value}}); }
   function adopt(c:Campaign) { setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(migrateInputs(c.config));setEvents(c.events);setPlan(null);setDirty(false);setPlanStale(true);setComparisons([]); }
   async function open(id:string) { setBusy(true);setError('');try {const r=await api('/api/seasonal?id='+encodeURIComponent(id));adopt(r.campaign);setHistory(r.history);setNotice('Campagne chargée.');}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
-  function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}try {setPlan(planWater(config,events));setPlanStale(false);setTab('plan');}catch(e){setError((e as Error).message);} }
+  function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}setTab('plan');edit({...config}); }
   async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');setList((await api('/api/seasonal')).campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function persistQueue(next: QueueItem[]) { localStorage.setItem(queueKey,JSON.stringify(next));setQueue(next); }
   async function recordEvent(e:WaterEvent) {
@@ -132,7 +137,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       if(!config.parcelGeometry)throw new Error('Confirmez la parcelle avant de simuler.');
       const base=exampleCampaign(today());
       const scenario=applyCropProfile({...base,waterCondition:config.waterCondition,country:config.country,parcelGeometry:config.parcelGeometry,name:config.name.trim()||'Mon champ — scénario',territory:config.territory.trim()||'Localité à confirmer',sowingDate:date,areaM2:config.areaM2,latitude:config.latitude,longitude:config.longitude,system:{...base.system,name:'Installation hypothétique du scénario',source:'Efficacité 75 %, transport sans perte ; débit et disponibilité non mesurés',sourceFlowM3h:null,hoursPerDay:null,sourceBudgetM3:null}},cropId);
-      const result=planWater(scenario,[]);setConfig(scenario);setPlan(result);setEvents([]);if(active)setDraftId(newId());setActive(null);setHistory([]);setDirty(true);setPlanStale(false);setComparisons([]);setNotice('Scénario exploratoire créé sur votre contour. Le sol et la météo utilisés sont des exemples, pas des mesures de votre champ.');
+      const result=planWater(scenario,[]);setConfig(scenario);setPlan(result);setEvents([]);if(active)setDraftId(newId());setActive(null);setHistory([]);setDirty(true);setPlanStale(true);setComparisons([]);setNotice('Scénario exploratoire créé sur votre contour. Le sol et la météo utilisés sont des exemples, pas des mesures de votre champ.');
     }catch(e){setError((e as Error).message);}
   }
   const groups = plan ? plan[period as 'weeks'|'decades'|'stages'] : [];
@@ -240,7 +245,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     {nutrientResult&&<div className="notice info"><div><p>{nutrientResult.quantities.map(p=>`${p.name} : ${fmt(p.kg,2)} kg pour la parcelle`).join(' ; ')}</p><p>Éléments restant à couvrir (kg/ha, N–P₂O₅–K₂O) : {nutrientResult.remainingKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>Excédents (kg/ha) : {nutrientResult.excessKgHa.map(x=>fmt(x)).join(' / ')}.</p><p>{nutrientResult.caveat}</p></div></div>}
     </section><section className="card"><h2>Ravageurs et traitements</h2><p>Enregistrez le stade, les symptômes et leur fréquence, puis faites confirmer le diagnostic et le seuil d’intervention par un conseiller. Prévention, observation et lutte intégrée précèdent le choix d’un produit.</p><p>Le dépôt ne contient pas de registre phytosanitaire courant qualifié pour les six pays. Aucun pesticide ni dose de traitement n’est donc généré automatiquement. Un produit exige une autorisation actuelle pour le pays, la culture et l’usage, ainsi qu’une étiquette vérifiée.</p></section></div>}
 
-    {tab!=='simulation'&&tab!=='carte'&&<section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(p);setPlanStale(false);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>}
+    {tab!=='simulation'&&tab!=='carte'&&<section className="seasonal-bottom no-print"><button className="btn primary" disabled={busy} onClick={compute}>Calculer / actualiser le plan d’irrigation</button><span>Le calcul reprend tout le bilan à partir des entrées ; aucune ancienne intervention prévue n’est comptée comme réalisée.</span><Field label="Importer une campagne exportée"><input type="file" accept=".json,application/json" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw new Error('Fichier trop volumineux.');const data=JSON.parse(await file.text());const p=planWater(data.config,data.events??[]);setConfig(data.config);setEvents(data.events??[]);setPlan(null);setPlanStale(true);setDraftId(newId());setActive(null);setDirty(true);setHistory([]);setNotice('Campagne importée localement. Enregistrez pour créer une nouvelle campagne.');}catch(err){setError((err as Error).message);}}}/></Field></section>}
   </div>;
 }
 

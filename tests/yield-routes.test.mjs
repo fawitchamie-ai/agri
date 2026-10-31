@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {localFetch,setIdentity,closeHarness,restartDatabase} from './support/local-route-harness.mjs';
+import {testParcel,landFixture} from './support/land-fixtures.mjs';
+import {exampleCampaign} from '../lib/seasonal/example.ts';
+import {applyCropProfile} from '../lib/seasonal/catalog.ts';
+import {geometryIdentity} from '../lib/seasonal/provenance.ts';
+const {splitLandSectors,combineLandSectors}=await import('../lib/seasonal/land-jobs.ts');
+import {parcelMetrics} from '../lib/seasonal/parcel.ts';
+const base='https://agri.test';
+async function req(body,status=200,path='/api/seasonal'){const r=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const data=await r.json();assert.equal(r.status,status,JSON.stringify(data).slice(0,500));return data;}
+test('server recalculates yield, retains revisions/permissions, resumes durable sector analysis',async()=>{try{
+ setIdentity({userId:'yield-owner',email:'owner@example.test',displayName:'Owner'});
+ const c=applyCropProfile(exampleCampaign(),'maize');c.parcelGeometry=testParcel;c.landSelection='potentialLand';
+ c.yieldEstimation={version:'yield-input-1',method:'declared-scenario',scopeGeometryId:geometryIdentity(testParcel),homogeneityAssumption:'Synthetic field',units:[{id:'field',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Synthetic scenario',availableOn:c.asOfDate,context:'Test only',cropId:'maize',independentYm:false}}]};
+ const forged={...c,areaM2:1e8,landAssessment:landFixture(testParcel)};
+ forged.landAssessment.candidateAreaM2=1e8;
+ const computed=await req({action:'simulate',config:forged,plan:{yieldEstimation:{productionKg:999999}}});assert.equal(computed.plan.yieldEstimation.scenarios[0].totals.productionKg,400);assert.ok(computed.config.areaM2<1e8);
+ const huge=structuredClone(forged);huge.yieldEstimation.units[0].sownAreaM2=1e8;await req({action:'simulate',config:huge},400);
+ const saved=await req({action:'save',id:'yield-campaign',expectedRevision:0,config:c},201);assert.equal(saved.campaign.plan.yieldEstimation.scenarios[0].totals.productionKg,400);
+ c.yieldEstimation.units[0].reference.kgHa=2000;await req({action:'save',id:'yield-campaign',expectedRevision:1,config:c});
+ const old=await req(undefined,200,'/api/seasonal?id=yield-campaign&revision=1');assert.equal(old.plan.yieldEstimation.scenarios[0].totals.productionKg,400);
+ const csv=await localFetch(base+'/api/seasonal?id=yield-campaign&format=yield-csv');assert.equal(csv.status,200);assert.match(await csv.text(),/production_kg_ha_contour/);
+ await req({action:'event',id:'yield-campaign',expectedRevision:2,event:{id:'actual',date:c.asOfDate,kind:'irrigation',amount:2,unit:'mm',point:'net',status:'declared',source:'Synthetic'}});
+ c.yieldEstimation.units[0].sownAreaM2=500;await req({action:'save',id:'yield-campaign',expectedRevision:3,config:c},400);
+ const g={type:'Polygon',coordinates:[[[1,8],[1.011,8],[1.011,8.011],[1,8.011],[1,8]]]};
+ const parts=splitLandSectors(g);assert.equal(parts.length,9);const combined=combineLandSectors(g,parts.map(p=>landFixture(p)),new Date().toISOString());assert.ok(Math.abs(combined.candidateAreaM2-parcelMetrics(g).areaM2)<.01);assert.throws(()=>combineLandSectors(g,[landFixture(parts[0])],new Date().toISOString()),/incomplète/);
+ const big={...c,parcelGeometry:g,yieldEstimation:undefined};await req({action:'simulate',config:big},409);
+ let job=await req({action:'land-job-start',geometry:g});assert.equal(job.total,9);assert.equal(job.processedM2,0);
+ job=await req({action:'land-job-step',id:job.id});assert.equal(job.completed,1);
+ restartDatabase();const resume=await req({action:'land-job-start',geometry:g});assert.equal(resume.id,job.id);assert.equal(resume.completed,1);
+ while(job.status!=='complete')job=await req({action:'land-job-step',id:job.id});assert.equal(job.completed,9);assert.ok(job.assessment);assert.equal((await req({action:'simulate',config:big})).plan.land.areaM2,parcelMetrics(g).areaM2);
+ setIdentity({userId:'yield-outsider',email:'outsider@example.test',displayName:'Other'});await req({action:'land-job-status',id:job.id},404);await req(undefined,404,'/api/seasonal?id=yield-campaign');
+}finally{closeHarness();}});

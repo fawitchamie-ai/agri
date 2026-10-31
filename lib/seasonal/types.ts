@@ -17,6 +17,7 @@ export type WeatherDay = {
   provenance?: Record<string,import('./provenance.ts').InputValue>;
 };
 export type WaterEvent = {
+  unitId?: string;
   landSelection?: 'whole' | 'potentialLand';
   provenance?: import('./provenance.ts').InputValue;
   id: string; date: string; kind: 'rain' | 'irrigation' | 'soil';
@@ -26,6 +27,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  yieldEstimation?: import('./yield.ts').YieldInput;
   inputs?: import('./provenance.ts').InputLedger;
   inputPolicy?: {allowAssumptions:boolean;allowStale:boolean};
   landSelection?: 'whole' | 'potentialLand';
@@ -70,6 +72,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  yieldEstimation?: import('./yield.ts').YieldEstimate;
   calculationArea?: {selection:'whole'|'potentialLand';areaM2:number|null;geometry:import('./land.ts').MultiShape|null};
   eventProvenance?: import('./provenance.ts').InputValue[];
   land?: import('./land.ts').LandAssessment;
