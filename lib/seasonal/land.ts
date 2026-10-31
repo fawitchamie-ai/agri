@@ -112,3 +112,22 @@ export function landBlockReason(c:{parcelGeometry?:ParcelPolygon;landAssessment?
   if(a.fractions.wetland.areaM2+a.fractions.seasonalWater.areaM2>Math.max(.001,a.areaM2*1e-7))return 'Zone humide ou eau saisonnière : le module terrestre générique est suspendu. Un diagnostic spécifique, notamment pour le riz, est nécessaire.';
   return null;
 }
+
+/** Sample inside mapped potential land, including concavities and holes. */
+export function terrestrialSoilPoint(a:LandAssessment):Position|null {
+  const polygons=a.fractions.potentialLand.geometry.coordinates;
+  if(!polygons.length)return null;
+  const polygon=polygons.reduce((best,p)=>multiArea([p])>multiArea([best])?p:best);
+  const ys=polygon[0].map(p=>p[1]),south=Math.min(...ys),north=Math.max(...ys);
+  let best:Position|null=null,width=0;
+  for(const fraction of [.5,.25,.75]){
+    const y=south+(north-south)*fraction,xs:number[]=[];
+    for(const ring of polygon)for(let i=0;i<ring.length-1;i++){
+      const p=ring[i],q=ring[i+1];
+      if((p[1]>y)!==(q[1]>y))xs.push(p[0]+(y-p[1])*(q[0]-p[0])/(q[1]-p[1]));
+    }
+    xs.sort((x,y)=>x-y);
+    for(let i=0;i+1<xs.length;i+=2)if(xs[i+1]-xs[i]>width){width=xs[i+1]-xs[i];best=[(xs[i]+xs[i+1])/2,y];}
+  }
+  return best;
+}

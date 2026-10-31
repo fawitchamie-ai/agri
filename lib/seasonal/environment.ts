@@ -1,6 +1,6 @@
 import {COUNTRIES,type Country,type WeatherDay,type SoilLayer} from './types.ts';
 import {scopeId,valueEvidence,type InputValue} from './provenance.ts';
-import type {ParcelPolygon} from './parcel.ts';
+import type {Position,ParcelPolygon} from './parcel.ts';
 import type {LandAssessment} from './land.ts';
 import {addDays,InputError,isoDate} from './validation.ts';
 
@@ -67,15 +67,17 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
  return result;
 }
 async function weatherJson(url:URL,fetcher:typeof fetch){const r=await fetcher(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error('Météo indisponible');const d=await r.json() as any;if(!Array.isArray(d?.daily?.time)||d.daily.time.length>1200||d.daily_units?.precipitation_sum!=='mm'||d.daily_units?.et0_fao_evapotranspiration!=='mm'||d.daily_units?.temperature_2m_mean!=='°C')throw new Error('Unités météo inconnues');return {...d.daily,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};}
-async function acquireEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString()):Promise<Environment>{
+async function acquireEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),soilPoint?:Position|null):Promise<Environment>{
  if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>85||Math.abs(longitude)>180||!Object.hasOwn(COUNTRIES,country))throw new InputError('Localisation invalide.');
  isoDate(start,'Date du semis');if(!Number.isInteger(days)||days<1||days>366)throw new InputError('Cycle invalide.');
  const year=Number(now.slice(0,4)),common={latitude:String(latitude),longitude:String(longitude),timezone:COUNTRIES[country].timezone,daily:'precipitation_sum,et0_fao_evapotranspiration,temperature_2m_mean'};
  const forecastUrl=new URL('https://api.open-meteo.com/v1/forecast');forecastUrl.search=new URLSearchParams({...common,forecast_days:'16',past_days:'92'}).toString();
  const historyUrl=new URL('https://archive-api.open-meteo.com/v1/archive');historyUrl.search=new URLSearchParams({...common,start_date:`${year-3}-01-01`,end_date:`${year-1}-12-31`}).toString();
- const [soil,forecast,history]=await Promise.allSettled([loadSoil(latitude,longitude,fetcher,now),weatherJson(forecastUrl,fetcher),weatherJson(historyUrl,fetcher)]);
+ const [soil,forecast,history]=await Promise.allSettled([soilPoint===null?Promise.resolve({ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'Aucun point terrestre cartographié disponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now} as SoilEstimate):loadSoil(soilPoint?.[1]??latitude,soilPoint?.[0]??longitude,fetcher,now),weatherJson(forecastUrl,fetcher),weatherJson(historyUrl,fetcher)]);
  const empty:SoilEstimate={ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'Sol indisponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now};
  const s=soil.status==='fulfilled'?soil.value:empty,warnings:string[]=[],weather:WeatherDay[]=[],temperatures:Environment['temperatures']=[];
+ if(soilPoint===null)warnings.push('Sol non interrogé : aucune partie terrestre cartographiée exploitable.');
+ if(soilPoint)warnings.push('Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour.');
  if(s.ph===null)warnings.push('pH non récupéré : aucune valeur inventée.');
  if(forecast.status==='rejected')warnings.push('Prévisions météo indisponibles ; repère historique seulement si disponible.');
  if(history.status==='rejected')warnings.push('Historique météo indisponible : le cycle peut rester incomplet.');
@@ -101,11 +103,11 @@ async function acquireEnvironment(latitude:number,longitude:number,country:Count
 
 // Public gridded estimates only, no account identifiers. Bounded per-isolate cache.
 const environmentCache=new Map<string,{until:number;value:Environment}>();
-export async function loadEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),geometry?:ParcelPolygon,refresh=false):Promise<Environment>{
- const key=JSON.stringify([geometry??null,latitude,longitude,country,start,days,now.slice(0,10)]);
+export async function loadEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),geometry?:ParcelPolygon,refresh=false,soilPoint?:Position|null):Promise<Environment>{
+ const key=JSON.stringify([geometry??null,latitude,longitude,country,start,days,now.slice(0,10),soilPoint]);
  const cached=fetcher===fetch?environmentCache.get(key):undefined;
  if(!refresh&&cached&&cached.until>Date.now())return {...structuredClone(cached.value),scope:{id:scopeId(geometry,[longitude,latitude]),geometry:geometry??null},context:JSON.stringify([geometry??null,country,start,days])};
- const value=await acquireEnvironment(latitude,longitude,country,start,days,fetcher,now);
+ const value=await acquireEnvironment(latitude,longitude,country,start,days,fetcher,now,soilPoint);
  if(fetcher===fetch&&value.weather.length===days&&value.soil.ph!==null&&value.soil.hydraulicLayers){
   if(environmentCache.size>=24)environmentCache.delete(environmentCache.keys().next().value!);
   environmentCache.set(key,{until:Date.now()+3600000,value});

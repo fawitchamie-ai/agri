@@ -5,6 +5,15 @@ import {bbox,type RasterCell} from './land.ts';
 import type {ParcelPolygon,Position} from './parcel.ts';
 
 const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com']);
+// Bound total geometry work separately from each decoder window.
+export const MAX_NATIVE_PIXELS=24000;
+const WINDOW_SIDE=100;
+export function rasterWindows(x0:number,y0:number,x1:number,y1:number):[number,number,number,number][]{
+  if((x1-x0)*(y1-y0)>MAX_NATIVE_PIXELS)throw new Error('Contour trop étendu pour une analyse native complète (24 000 pixels) : découpez-le en secteurs.');
+  const windows:[number,number,number,number][]=[];
+  for(let y=y0;y<y1;y+=WINDOW_SIDE)for(let x=x0;x<x1;x+=WINDOW_SIDE)windows.push([x,y,Math.min(x+WINDOW_SIDE,x1),Math.min(y+WINDOW_SIDE,y1)]);
+  return windows;
+}
 export type RasterWindow={cells:RasterCell[];resolutionM:number;crs:string};
 // JRC seasonality uses Zstandard. The default GeoTIFF decoder compiles Wasm
 // bytes at runtime, which Workers forbids. Keep GeoTIFF's predictor handling
@@ -71,14 +80,19 @@ export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:ty
     const native=shape.coordinates.flat().map(toNative),xs=native.map(p=>(p[0]-origin[0])/res[0]),ys=native.map(p=>(p[1]-origin[1])/res[1]);
     const x0=Math.max(0,Math.floor(Math.min(...xs))-1),y0=Math.max(0,Math.floor(Math.min(...ys))-1),x1=Math.min(image.getWidth(),Math.ceil(Math.max(...xs))+1),y1=Math.min(image.getHeight(),Math.ceil(Math.max(...ys))+1);
     if(x1<=x0||y1<=y0)return {cells:[],resolutionM:epsg===4326?Math.abs(res[0])*111320:Math.abs(res[0]),crs:`EPSG:${epsg}`};
-    if((x1-x0)*(y1-y0)>10000)throw new Error('Plus de 10 000 pixels natifs : découpez la parcelle en secteurs.');
-    const values=await image.readRasters({window:[x0,y0,x1,y1],samples,interleave:true,signal});
-    const noData=image.getGDALNoData(),cells:RasterCell[]=[],bounds=bbox(shape),w=x1-x0;
-    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
-      const corners=[[x,y],[x+1,y],[x+1,y+1],[x,y+1],[x,y]].map(([px,py])=>toLonLat([origin[0]+px*res[0],origin[1]+py*res[1]]));
-      const b=bbox({type:'Polygon',coordinates:[corners]});if(b[2]<bounds[0]||b[0]>bounds[2]||b[3]<bounds[1]||b[1]>bounds[3])continue;
-      const offset=((y-y0)*w+x-x0)*samples.length,v=Number(values[offset]);
-      cells.push({id:`${x}:${y}`,geometry:{type:'Polygon',coordinates:[corners]},value:!Number.isFinite(v)||v===noData?null:v,...(samples.length>1?{bands:samples.map((_,i)=>Number(values[offset+i]))}:{})});
+    const windows=rasterWindows(x0,y0,x1,y1);
+    const noData=image.getGDALNoData(),cells:RasterCell[]=[],bounds=bbox(shape);
+    // Sequential bounded windows preserve every native pixel, without resampling
+    // or concurrent decoder allocations on the Worker.
+    for(const window of windows){
+      const [left,top,right,bottom]=window,w=right-left;
+      const values=await image.readRasters({window,samples,interleave:true,signal});
+      for(let y=top;y<bottom;y++)for(let x=left;x<right;x++){
+        const corners=[[x,y],[x+1,y],[x+1,y+1],[x,y+1],[x,y]].map(([px,py])=>toLonLat([origin[0]+px*res[0],origin[1]+py*res[1]]));
+        const b=bbox({type:'Polygon',coordinates:[corners]});if(b[2]<bounds[0]||b[0]>bounds[2]||b[3]<bounds[1]||b[1]>bounds[3])continue;
+        const offset=((y-top)*w+x-left)*samples.length,v=Number(values[offset]);
+        cells.push({id:`${x}:${y}`,geometry:{type:'Polygon',coordinates:[corners]},value:!Number.isFinite(v)||v===noData?null:v,...(samples.length>1?{bands:samples.map((_,i)=>Number(values[offset+i]))}:{})});
+      }
     }
     return {cells,resolutionM:epsg===4326?Math.abs(res[0])*111320:Math.abs(res[0]),crs:`EPSG:${epsg}`};
   }finally{await tiff.close();}

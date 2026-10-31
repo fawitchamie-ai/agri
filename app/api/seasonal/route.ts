@@ -6,6 +6,7 @@ import { session, canSee } from '@/lib/server-auth';
 import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
 import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
+import {terrestrialSoilPoint} from '@/lib/seasonal/land';
 import { loadEnvironment } from '@/lib/seasonal/environment';
 import { loadForecast } from '@/lib/seasonal/weather';
 import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
@@ -49,7 +50,9 @@ export async function POST(request: Request) { try {
   if(b.action==='environment'){
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);
-    const [environment,landAssessment]=await Promise.all([loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,new Date().toISOString(),geometry,b.refresh===true),loadLandAssessment(geometry,fetch,new Date().toISOString(),b.refresh===true)]);
+    const now=new Date().toISOString();
+    const landAssessment=await loadLandAssessment(geometry,fetch,now,b.refresh===true);
+    const environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,terrestrialSoilPoint(landAssessment));
     return json({...environment,landAssessment});
   }
   if(b.action==='land'){try{return json({assessment:await loadLandAssessment(validateParcel(b.geometry))});}catch(e){throw new InputError((e as Error).message);}}
