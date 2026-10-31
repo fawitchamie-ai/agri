@@ -1,0 +1,575 @@
+{
+  "generatedAt": "2026-10-31T10:42:35.813Z",
+  "scope": "Live public raster requests forwarded through the host network; application land provider, native GeoTIFF decoder and geometry analysis run in local Cloudflare workerd. Not a production-authenticated check, independent ground truth or field validation.",
+  "fieldValidation": false,
+  "results": [
+    {
+      "country": "TGO",
+      "lon": 1.43,
+      "lat": 6.24,
+      "status": "excluded",
+      "areaM2": 1966.5745798497508,
+      "fractions": {
+        "permanentWater": 1,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 0,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.237Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.237Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.237Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    },
+    {
+      "country": "BEN",
+      "lon": 2.45,
+      "lat": 6.433333,
+      "status": "excluded",
+      "areaM2": 1965.8378186178115,
+      "fractions": {
+        "permanentWater": 1,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 0,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.239Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.239Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:39.239Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    },
+    {
+      "country": "BFA",
+      "lon": -0.55,
+      "lat": 11.55,
+      "status": "conditional",
+      "areaM2": 1938.2355510508914,
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.809Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N09W003_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N09W003_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.809Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_20N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.809Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    },
+    {
+      "country": "GHA",
+      "lon": 0,
+      "lat": 7,
+      "status": "conditional",
+      "areaM2": 1963.5494253252475,
+      "fractions": {
+        "permanentWater": 0,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 1,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.811Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06W003_Map.tif",
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06W003_InputQuality.tif",
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.811Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_10N_v1_5_2024.tif",
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:42:44.811Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    },
+    {
+      "country": "SEN",
+      "lon": -15.85,
+      "lat": 16.25,
+      "status": "excluded",
+      "areaM2": 1899.262151972107,
+      "fractions": {
+        "permanentWater": 1,
+        "seasonalWater": 0,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 0,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.768Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N15W018_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N15W018_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.768Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_20W_20N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.768Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    },
+    {
+      "country": "CIV",
+      "lon": -5.48,
+      "lat": 7.17,
+      "status": "mixed",
+      "areaM2": 1962.8254444897352,
+      "fractions": {
+        "permanentWater": 0.7500000549739784,
+        "seasonalWater": 0.2499999450260216,
+        "wetland": 0,
+        "incompatible": 0,
+        "potentialLand": 0,
+        "unknown": 0
+      },
+      "sources": [
+        {
+          "id": "worldcover",
+          "status": "available",
+          "provider": "ESA",
+          "product": "WorldCover",
+          "version": "2021-v200",
+          "referencePeriod": {
+            "from": "2021-01-01",
+            "to": "2021-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.767Z",
+          "resolutionM": 10,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06W006_Map.tif"
+          ],
+          "limitations": [
+            "Occupation du sol 2021, pas observation actuelle.",
+            "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+            "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+          ],
+          "quality": {
+            "status": "missing",
+            "resolutionM": null,
+            "coveredAreaM2": 0,
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06W006_InputQuality.tif"
+            ],
+            "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+            "observations": []
+          },
+          "qualityMask": {
+            "type": "MultiPolygon",
+            "coordinates": []
+          }
+        },
+        {
+          "id": "jrc",
+          "status": "available",
+          "provider": "EC JRC / Google",
+          "product": "Global Surface Water",
+          "version": "1.5-2024",
+          "referencePeriod": {
+            "from": "2024-01-01",
+            "to": "2024-12-31"
+          },
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.767Z",
+          "resolutionM": 30,
+          "crs": "EPSG:4326",
+          "reason": "",
+          "assets": [
+            "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_10N_v1_5_2024.tif"
+          ],
+          "limitations": [
+            "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+            "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+            "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+          ]
+        },
+        {
+          "id": "recent",
+          "status": "missing",
+          "provider": "Digital Earth Africa",
+          "product": "WOfS",
+          "version": "unknown",
+          "referencePeriod": null,
+          "observedAt": null,
+          "acquiredAt": "2026-10-31T10:43:08.767Z",
+          "resolutionM": null,
+          "crs": null,
+          "reason": "Catalogue WOfS indisponible (HTTP 403) ou réponse non JSON ; aucune redirection suivie.",
+          "assets": [],
+          "limitations": []
+        }
+      ]
+    }
+  ],
+  "subrequests": 48
+}
