@@ -27,6 +27,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  agronomic?: import('./agronomic.ts').AgronomicConfig;
   yieldEstimation?: import('./yield.ts').YieldInput;
   inputs?: import('./provenance.ts').InputLedger;
   inputPolicy?: {allowAssumptions:boolean;allowStale:boolean};

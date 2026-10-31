@@ -85,7 +85,7 @@ export function migrateInputs(c:SeasonalConfig):SeasonalConfig {
   const id=scopeId(c.parcelGeometry,point),previous=c.inputs;
   const matching=previous?.version===PROVENANCE_VERSION&&previous.scope.id===id&&geometryIdentity(previous.scope.geometry)===geometryIdentity(c.parcelGeometry);
   if(previous?.version===PROVENANCE_VERSION&&!matching&&(previous.scope.geometry||previous.scope.point)){
-    c={...c,soilAnalyses:[],weather:[],landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},inputs:{...previous,values:Object.fromEntries(Object.entries(previous.values).filter(([k])=>!k.startsWith('source.soil.')))}};
+    c={...c,agronomic:undefined,soilAnalyses:[],weather:[],landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},inputs:{...previous,values:Object.fromEntries(Object.entries(previous.values).filter(([k])=>!k.startsWith('source.soil.')))}};
   }
   const values:Record<string,InputValue>={};
   for(const item of inputInventory(c)){
@@ -155,7 +155,7 @@ export function reconcileInputs(previous:SeasonalConfig,next:SeasonalConfig,now=
 
 export function invalidateParcel(c:SeasonalConfig):SeasonalConfig {
   // Historical and manual inputs remain in archived revisions, not the new field.
-  const next={...c,inputs:undefined,landAssessment:undefined,weather:[],soilAnalyses:[],inputPolicy:{allowAssumptions:false,allowStale:false},
+  const next={...c,agronomic:undefined,inputs:undefined,landAssessment:undefined,weather:[],soilAnalyses:[],inputPolicy:{allowAssumptions:false,allowStale:false},
     soil:{...c.soil,layers:c.soil.layers.map(l=>({...l,initialTheta:null}))}};
   return migrateInputs(next);
 }

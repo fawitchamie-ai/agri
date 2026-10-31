@@ -1,3 +1,5 @@
+import {agronomicCoverage,compareAgronomic,harvestDiagnostic} from '@/lib/seasonal/agronomic';
+import {sampleParcelSoil} from '@/lib/seasonal/agronomic-spatial';
 import {authoritativeLand,startLandJob,stepLandJob,landJobStatus} from '@/lib/seasonal/land-jobs';
 import {planSeason,yieldCsv} from '@/lib/seasonal/yield';
 import {loadLandAssessment} from '@/lib/seasonal/land-provider';
@@ -53,6 +55,34 @@ export async function POST(request: Request) { try {
   if(b.action==='land-job-start')return json(await startLandJob(b.geometry,s));
   if(b.action==='land-job-step')return json(await stepLandJob(b.id,s));
   if(b.action==='land-job-status')return json(await landJobStatus(b.id,s));
+  if(['agronomic-coverage','agronomic-compare'].includes(b.action)){
+    const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);
+    return json(b.action==='agronomic-coverage'?agronomicCoverage(config):await compareAgronomic(config,b.events??[],b.variants));
+  }
+  if(b.action==='agronomic-soil')return json(await sampleParcelSoil(await authoritativeLand(validateParcel(b.geometry),s)));
+  if(b.action==='agronomic-harvest'){
+    const {row}=await readable(b.id,request);if(!Number.isInteger(b.revision))throw new InputError('Révision antérieure requise.');
+    const old=await db.prepare('SELECT * FROM seasonal_revisions WHERE campaign_id=? AND revision=?').bind(b.id,b.revision).first<any>();
+    if(!old)throw new HttpError(404,'Révision introuvable.');
+    const config=JSON.parse(old.config),estimate=JSON.parse(old.plan).yieldEstimation,actual=JSON.parse(row.config);
+    if(typeof b.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(b.date)||!Number.isFinite(Date.parse(b.date))||new Date(b.date).toISOString().slice(0,10)!==b.date||b.date>new Date().toISOString().slice(0,10)||b.date<=config.asOfDate||b.date<=old.created_at.slice(0,10))throw new InputError('La prédiction doit être enregistrée avant la récolte, à une date réelle.');
+    if(JSON.stringify(config.parcelGeometry)!==JSON.stringify(actual.parcelGeometry)||config.crop!==actual.crop)throw new InputError('Parcelle ou culture incompatible.');
+    const predicted=estimate?.scenarios.find((x:any)=>x.id==='recorded')?.totals?.yieldKgHaSown;
+    if(predicted==null||estimate.method!=='fao-seasonal')throw new InputError('Prédiction hydrique disponible requise ; une hypothèse imposée ne constitue pas une prévision évaluée.');
+    if(b.productCompatible!==true||!b.source?.trim())throw new InputError('Source et compatibilité organe/produit/référence requises.');
+    const result=harvestDiagnostic(predicted,b.kg,estimate.surface.sownM2,b.moisture,b.referenceMoisture);
+    const now=new Date().toISOString(),revision=row.revision+1;
+    const observation={parameter:'Récolte observée',value:JSON.stringify({date:b.date,kg:b.kg,moisture:b.moisture,referenceMoisture:b.referenceMoisture,predictionRevision:b.revision,productCompatible:true}),unit:'kg',method:'Observation déclarée après récolte, diagnostic non certifié',source:b.source,depthCm:null,availableOn:now.slice(0,10)};
+    actual.agronomic=actual.agronomic??{version:'agronomic-1',geometryId:JSON.stringify(actual.parcelGeometry??null),system:'single',season:null,observations:[]};
+    const duplicate=actual.agronomic.observations.some((o:any)=>o.parameter===observation.parameter&&o.value===observation.value&&o.source===observation.source);
+    if(!duplicate){actual.agronomic.observations.push(observation);actual.asOfDate=now.slice(0,10);const nextPlan=planSeason(validateConfig(actual),JSON.parse(row.events),{requireGeometry:true});
+      const writes=await db.batch([
+        db.prepare('INSERT INTO seasonal_revisions (campaign_id,revision,actor_id,config,events,plan,reason,created_at) SELECT ?,?,?,?,?,?,?,? WHERE EXISTS (SELECT 1 FROM seasonal_campaigns WHERE id=? AND revision=?)').bind(b.id,revision,s.userId,JSON.stringify(actual),row.events,JSON.stringify(nextPlan),'Observation de récolte et diagnostic enregistrés.',now,b.id,row.revision),
+        db.prepare('UPDATE seasonal_campaigns SET revision=?,config=?,plan=?,updated_at=? WHERE id=? AND revision=?').bind(revision,JSON.stringify(actual),JSON.stringify(nextPlan),now,b.id,row.revision)
+      ]);if(writes[1].meta.changes!==1)throw new HttpError(409,'Campagne modifiée pendant le diagnostic ; réessayez.');
+    }
+    return json({...result,observationSaved:true,campaignRevision:duplicate?row.revision:revision,country:config.country,crop:config.crop,system:config.systemDomain,revision:b.revision,source:b.source,limits:['Produit et humidité de référence déclarés compatibles par l’utilisateur ; non certifiés.','Observation conservée dans une nouvelle révision ; anciennes versions préservées.']});
+  }
   if(b.action==='environment'){
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);

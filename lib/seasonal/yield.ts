@@ -1,3 +1,4 @@
+import {cropById} from './catalog.ts';
 import clipping from 'polygon-clipping';
 import {multiArea,landBlockReason,type MultiShape} from './land.ts';
 import {validateParcel} from './parcel.ts';
@@ -79,6 +80,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  'Ni pH, nutrition, température, ravageurs, mortalité ni pertes par inondation ne sont quantifiés. Aucun score de ces facteurs ne multiplie le rendement.',
  'L’eau voisine n’impose aucune pénalité. La surface récoltée ne réduit pas une seconde fois un rendement déjà exprimé par hectare semé.',
  'Le scénario proposé suppose l’exécution des arrosages et leurs contraintes connues ; énergie et accès non renseignés restent à vérifier.'],scenarios:[]};
+ if(c.agronomic&&c.agronomic.system!=='single'){out.missing.push('Cultures associées, successions ou récoltes multiples non prises en charge.');return out;}
  if(!y){out.missing.push('Renseignez la surface effectivement semée et une référence de rendement explicite.');return out;}
  if(!c.parcelGeometry||y.scopeGeometryId!==geometryIdentity(c.parcelGeometry))out.missing.push('Le contour a changé : redéfinissez les surfaces et unités du rendement.');
  const block=landBlockReason(c);if(block)out.missing.push(block);
@@ -86,6 +88,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  if(c.systemDomain!=='upland'||c.cropProfile?.id==='rice-flooded')out.missing.push('Système submergé ou nappe proche non pris en charge.');
  if(y.method==='fao-seasonal'&&SEASONAL_KY[c.cropProfile?.id??'']===undefined)out.missing.push('Culture sans modèle de rendement hydrique paramétré : Ky saisonnier et paramètres culturaux compatibles requis.');
  if(out.missing.length)return out;
+ if(y.method==='fao-seasonal'&&(c.soilAnalyses??[]).some(a=>a.measurements.some(m=>m.parameter==='EC'&&m.method==='saturated_paste'&&m.value>(cropById(c.cropProfile?.id??'')?.eceThresholdDsM?.[0]??Infinity)))){out.missing.push('Salinité de pâte saturée renseignée : réponse eau–salinité à qualifier avant cette approximation.');return out;}
  const tolerance=Math.max(.001,c.areaM2!*1e-7),shapes=y.units.map(u=>u.geometry??domain!);
  let joined:MultiShape['coordinates']=[];
  for(let i=0;i<shapes.length;i++){
