@@ -111,7 +111,7 @@ L'ECe peut être déclarée comme hypothèse modifiable pour le scénario isolé
 
 ## Vérification logicielle
 
-152 tests automatisés passent, dont nouveaux tests de NASA, ET0 FAO56, neuf cultures, salinité isolée, six pays synthétiques, dates, dénominateurs, paramètres absents, résultats/surfaces forgés, droits, sauvegarde et révisions. Les tests d'intégration, régressions et compilation passent également. Les acquisitions réelles sont rapportées séparément ci-dessus. Aucune métrique de validation de rendement n'est fabriquée.
+153 tests automatisés passent, dont nouveaux tests de NASA, ET0 FAO56, neuf cultures, salinité isolée, six pays synthétiques, dates, dénominateurs, paramètres absents, résultats/surfaces forgés, droits, sauvegarde et révisions. Les tests d'intégration, régressions et compilation passent également. Les acquisitions réelles sont rapportées séparément ci-dessus. Aucune métrique de validation de rendement n'est fabriquée.
 
 API POST `/api/seasonal` : `nasa-history`, `data-readiness`, `salinity-scenario`. Les actions existantes de simulation, acquisition de sol, comparaison, diagnostic, sauvegarde et observation restent disponibles. Les nouvelles entrées sont optionnelles ; aucune migration destructive ou modification de permissions.
 
@@ -120,3 +120,5 @@ API POST `/api/seasonal` : `nasa-history`, `data-readiness`, `salinity-scenario`
 La provenance détaillée d'une année peut dépasser 2 Mo avant compression. Les requêtes de la seule API saisonnière acceptent jusqu'à 8 Mo (contrôle en octets UTF-8) ; les autres API gardent leur plafond. Les colonnes config/événements/plan volumineuses sont stockées avec une enveloppe versionnée `agri-deflate-json-1` et une compression sans perte. L'API et les exports restituent le JSON complet. Les anciens JSON non compressés restent lisibles, sans migration des anciennes révisions. Les valeurs, dates et sources ne sont pas supprimées pour gagner de la place.
 
 La taille de la ligne compressée entière est contrôlée sous 1,8 Mo avant écriture, pour respecter la limite D1 de 2 Mo : https://developers.cloudflare.com/d1/platform/limits/. Un dépassement refuse la sauvegarde entière avec une explication ; aucune révision partielle n'est enregistrée. Un test de route sauvegarde et relit 365 jours et leur provenance après une requête dépassant 2 Mo ; les tests vérifient aussi l'ancienne sérialisation, le format compressé et les archives corrompues. Les traitements spatiaux différés restent inchangés.
+
+Le contrôle de santé après déploiement vérifie également les versions des modèles saisonniers, la présence des références nationales des six pays et une compression/relecture effective dans le runtime Worker. Il reste distinct d’un parcours humain complet et d’une acquisition externe NASA depuis chaque parcelle de production.

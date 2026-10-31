@@ -70,3 +70,7 @@ test('large campaign snapshots compress below D1 row limit, preserve every value
  const input={weather:Array.from({length:366},(_,day)=>({day,provenance:Array.from({length:8},()=>({source:'Synthetic long provenance '.repeat(30),value:12.5,unit:'mm'}))}))};
  assert.ok(JSON.stringify(input).length>2000000);const packed=encodeCampaignSnapshot(input,[],input);assert.ok(Object.values(packed).reduce((n,s)=>n+Buffer.byteLength(s),0)<1800000);assert.deepEqual(decodeCampaignValue(packed.config),input);assert.deepEqual(decodeCampaignValue(JSON.stringify({old:true})),{old:true});assert.throws(()=>decodeCampaignValue(JSON.stringify({encoding:'agri-deflate-json-1',data:'bad compressed payload'})));const {randomBytes}=await import('node:crypto');assert.throws(()=>encodeCampaignSnapshot({data:randomBytes(1800000).toString('base64')},[],{}),/trop volumineuse/);
 });
+
+test('production health identifies seasonal models, six real national references and the executing storage codec',async()=>{
+ const {seasonalHealth}=await import('../lib/seasonal/health.ts');const h=seasonalHealth();assert.equal(h.kyCrops,9);assert.equal(h.nationalCountries,6);assert.equal(h.storage,'ok');assert.equal(h.version,'source-models-2026-10-31');assert.match(h.nationalArchiveSha256,/^[a-f0-9]{64}$/);
+});
