@@ -1,0 +1,1434 @@
+{
+  "generatedAt": "2026-10-31T09:36:17.205Z",
+  "scope": "Provider integration checks on small public geographic sectors. Names locate a sector; no independent ground truth, cadastral status or crop suitability claimed.",
+  "fieldValidation": false,
+  "results": [
+    {
+      "country": "BEN",
+      "name": "Centre nominal du lac Nokoué",
+      "lon": 2.45,
+      "lat": 6.433333,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4498,
+              6.433133
+            ],
+            [
+              2.4502,
+              6.433133
+            ],
+            [
+              2.4502,
+              6.433533000000001
+            ],
+            [
+              2.4498,
+              6.433533000000001
+            ],
+            [
+              2.4498,
+              6.433133
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:3d8f245002a3ec92",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2.4498,
+                6.433133
+              ],
+              [
+                2.4502,
+                6.433133
+              ],
+              [
+                2.4502,
+                6.433533000000001
+              ],
+              [
+                2.4498,
+                6.433533000000001
+              ],
+              [
+                2.4498,
+                6.433133
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:17.216Z",
+        "areaM2": 1965.8378186178115,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 1965.8378186178115,
+            "fraction": 1,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      2.4498,
+                      6.433133
+                    ],
+                    [
+                      2.4502,
+                      6.433133
+                    ],
+                    [
+                      2.4502,
+                      6.433533000000001
+                    ],
+                    [
+                      2.4498,
+                      6.433533000000001
+                    ],
+                    [
+                      2.4498,
+                      6.433133
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.216Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.216Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.216Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "excluded",
+        "candidateAreaM2": 0,
+        "excludedAreaM2": 1965.8378186178115,
+        "unknownAreaM2": 0,
+        "messages": [
+          "Eau permanente ou surface incompatible cartographiée : cette partie est exclue du calcul terrestre standard.",
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    },
+    {
+      "country": "TGO",
+      "name": "Secteur du lac Togo",
+      "lon": 1.43,
+      "lat": 6.24,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              1.4298,
+              6.2398
+            ],
+            [
+              1.4302,
+              6.2398
+            ],
+            [
+              1.4302,
+              6.240200000000001
+            ],
+            [
+              1.4298,
+              6.240200000000001
+            ],
+            [
+              1.4298,
+              6.2398
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:d8e07f321cef2366",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                1.4298,
+                6.2398
+              ],
+              [
+                1.4302,
+                6.2398
+              ],
+              [
+                1.4302,
+                6.240200000000001
+              ],
+              [
+                1.4298,
+                6.240200000000001
+              ],
+              [
+                1.4298,
+                6.2398
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:17.206Z",
+        "areaM2": 1966.5745798497508,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 1966.5745798497508,
+            "fraction": 1,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      1.4298,
+                      6.2398
+                    ],
+                    [
+                      1.4302,
+                      6.2398
+                    ],
+                    [
+                      1.4302,
+                      6.240200000000001
+                    ],
+                    [
+                      1.4298,
+                      6.240200000000001
+                    ],
+                    [
+                      1.4298,
+                      6.2398
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.206Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.206Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:17.206Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "excluded",
+        "candidateAreaM2": 0,
+        "excludedAreaM2": 1966.5745798497508,
+        "unknownAreaM2": 0,
+        "messages": [
+          "Eau permanente ou surface incompatible cartographiée : cette partie est exclue du calcul terrestre standard.",
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    },
+    {
+      "country": "BFA",
+      "name": "Secteur de la retenue de Bagré",
+      "lon": -0.55,
+      "lat": 11.55,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -0.5502,
+              11.549800000000001
+            ],
+            [
+              -0.5498000000000001,
+              11.549800000000001
+            ],
+            [
+              -0.5498000000000001,
+              11.5502
+            ],
+            [
+              -0.5502,
+              11.5502
+            ],
+            [
+              -0.5502,
+              11.549800000000001
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:9f4873dc2fcfabd8",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -0.5502,
+                11.549800000000001
+              ],
+              [
+                -0.5498000000000001,
+                11.549800000000001
+              ],
+              [
+                -0.5498000000000001,
+                11.5502
+              ],
+              [
+                -0.5502,
+                11.5502
+              ],
+              [
+                -0.5502,
+                11.549800000000001
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:25.158Z",
+        "areaM2": 1938.2355510508914,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 1938.2355510508914,
+            "fraction": 1,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      -0.5502,
+                      11.549800000000001
+                    ],
+                    [
+                      -0.5498000000000001,
+                      11.549800000000001
+                    ],
+                    [
+                      -0.5498000000000001,
+                      11.5502
+                    ],
+                    [
+                      -0.5502,
+                      11.5502
+                    ],
+                    [
+                      -0.5502,
+                      11.549800000000001
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.158Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N09W003_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N09W003_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.158Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_20N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.158Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "conditional",
+        "candidateAreaM2": 1938.2355510508914,
+        "excludedAreaM2": 0,
+        "unknownAreaM2": 0,
+        "messages": [
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    },
+    {
+      "country": "GHA",
+      "name": "Secteur du lac Volta",
+      "lon": 0,
+      "lat": 7,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -0.0002,
+              6.9998
+            ],
+            [
+              0.0002,
+              6.9998
+            ],
+            [
+              0.0002,
+              7.0002
+            ],
+            [
+              -0.0002,
+              7.0002
+            ],
+            [
+              -0.0002,
+              6.9998
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:ff9f6804486e86aa",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -0.0002,
+                6.9998
+              ],
+              [
+                0.0002,
+                6.9998
+              ],
+              [
+                0.0002,
+                7.0002
+              ],
+              [
+                -0.0002,
+                7.0002
+              ],
+              [
+                -0.0002,
+                6.9998
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:25.161Z",
+        "areaM2": 1963.5494253252475,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 1963.5494253252475,
+            "fraction": 1,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      -0.0002,
+                      6.9998
+                    ],
+                    [
+                      0.0002,
+                      6.9998
+                    ],
+                    [
+                      0.0002,
+                      7.0002
+                    ],
+                    [
+                      -0.0002,
+                      7.0002
+                    ],
+                    [
+                      -0.0002,
+                      6.9998
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.161Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06W003_Map.tif",
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E000_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06W003_InputQuality.tif",
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06E000_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.161Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_10N_v1_5_2024.tif",
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_0E_10N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:25.161Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "conditional",
+        "candidateAreaM2": 1963.5494253252475,
+        "excludedAreaM2": 0,
+        "unknownAreaM2": 0,
+        "messages": [
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    },
+    {
+      "country": "SEN",
+      "name": "Secteur du lac de Guiers",
+      "lon": -15.85,
+      "lat": 16.25,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -15.8502,
+              16.2498
+            ],
+            [
+              -15.8498,
+              16.2498
+            ],
+            [
+              -15.8498,
+              16.2502
+            ],
+            [
+              -15.8502,
+              16.2502
+            ],
+            [
+              -15.8502,
+              16.2498
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:58c53d561211ae3c",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -15.8502,
+                16.2498
+              ],
+              [
+                -15.8498,
+                16.2498
+              ],
+              [
+                -15.8498,
+                16.2502
+              ],
+              [
+                -15.8502,
+                16.2502
+              ],
+              [
+                -15.8502,
+                16.2498
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:29.382Z",
+        "areaM2": 1899.262151972107,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 1899.262151972107,
+            "fraction": 1,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      -15.8502,
+                      16.2498
+                    ],
+                    [
+                      -15.8498,
+                      16.2498
+                    ],
+                    [
+                      -15.8498,
+                      16.2502
+                    ],
+                    [
+                      -15.8502,
+                      16.2502
+                    ],
+                    [
+                      -15.8502,
+                      16.2498
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N15W018_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N15W018_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_20W_20N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "excluded",
+        "candidateAreaM2": 0,
+        "excludedAreaM2": 1899.262151972107,
+        "unknownAreaM2": 0,
+        "messages": [
+          "Eau permanente ou surface incompatible cartographiée : cette partie est exclue du calcul terrestre standard.",
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    },
+    {
+      "country": "CIV",
+      "name": "Secteur de la retenue de Kossou",
+      "lon": -5.48,
+      "lat": 7.17,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -5.480200000000001,
+              7.1697999999999995
+            ],
+            [
+              -5.4798,
+              7.1697999999999995
+            ],
+            [
+              -5.4798,
+              7.1702
+            ],
+            [
+              -5.480200000000001,
+              7.1702
+            ],
+            [
+              -5.480200000000001,
+              7.1697999999999995
+            ]
+          ]
+        ]
+      },
+      "assessment": {
+        "version": "land-1",
+        "scopeId": "geometry-1:93c0ffcf377dfeab",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -5.480200000000001,
+                7.1697999999999995
+              ],
+              [
+                -5.4798,
+                7.1697999999999995
+              ],
+              [
+                -5.4798,
+                7.1702
+              ],
+              [
+                -5.480200000000001,
+                7.1702
+              ],
+              [
+                -5.480200000000001,
+                7.1697999999999995
+              ]
+            ]
+          ]
+        },
+        "assessedAt": "2026-10-31T09:36:29.382Z",
+        "areaM2": 1962.8254444897352,
+        "fractions": {
+          "permanentWater": {
+            "areaM2": 1472.119191271625,
+            "fraction": 0.7500000549739784,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      -5.480200000000001,
+                      7.1697999999999995
+                    ],
+                    [
+                      -5.4798,
+                      7.1697999999999995
+                    ],
+                    [
+                      -5.4798,
+                      7.169999999999957
+                    ],
+                    [
+                      -5.479999999999886,
+                      7.169999999999957
+                    ],
+                    [
+                      -5.479999999999886,
+                      7.1702
+                    ],
+                    [
+                      -5.480200000000001,
+                      7.1702
+                    ],
+                    [
+                      -5.480200000000001,
+                      7.1697999999999995
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "seasonalWater": {
+            "areaM2": 490.70625321811025,
+            "fraction": 0.2499999450260216,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [
+                      -5.479999999999886,
+                      7.169999999999957
+                    ],
+                    [
+                      -5.4798,
+                      7.169999999999957
+                    ],
+                    [
+                      -5.4798,
+                      7.1702
+                    ],
+                    [
+                      -5.479999999999886,
+                      7.1702
+                    ],
+                    [
+                      -5.479999999999886,
+                      7.169999999999957
+                    ]
+                  ]
+                ]
+              ]
+            }
+          },
+          "wetland": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "incompatible": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "potentialLand": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          "unknown": {
+            "areaM2": 0,
+            "fraction": 0,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          }
+        },
+        "sources": [
+          {
+            "id": "worldcover",
+            "status": "available",
+            "provider": "ESA",
+            "product": "WorldCover",
+            "version": "2021-v200",
+            "referencePeriod": {
+              "from": "2021-01-01",
+              "to": "2021-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": 10,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06W006_Map.tif"
+            ],
+            "limitations": [
+              "Occupation du sol 2021, pas observation actuelle.",
+              "InputQuality décrit les observations EO sources, pas la probabilité de bonne classification ; sa résolution propre est conservée.",
+              "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée."
+            ],
+            "quality": {
+              "status": "missing",
+              "resolutionM": null,
+              "coveredAreaM2": 0,
+              "assets": [
+                "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/inputquality/ESA_WorldCover_10m_2021_v200_N06W006_InputQuality.tif"
+              ],
+              "reason": "InputQuality non accessible sur les actifs publics essayés ; aucune qualité de pixel inventée.",
+              "observations": []
+            },
+            "qualityMask": {
+              "type": "MultiPolygon",
+              "coordinates": []
+            }
+          },
+          {
+            "id": "jrc",
+            "status": "available",
+            "provider": "EC JRC / Google",
+            "product": "Global Surface Water",
+            "version": "1.5-2024",
+            "referencePeriod": {
+              "from": "2024-01-01",
+              "to": "2024-12-31"
+            },
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": 30,
+            "crs": "EPSG:4326",
+            "reason": "",
+            "assets": [
+              "https://s3.waw4-1.cloudferro.com/swift/v1/global-surface-water/download2024/Aggregated/VER1-5/seasonality/seasonality_10W_10N_v1_5_2024.tif"
+            ],
+            "limitations": [
+              "Saisonnalité 2024 ; douze mois signifie eau permanente dans ce produit.",
+              "Le produit ne mesure ni hauteur d’eau ni état présent. Décalages de co-enregistrement possibles.",
+              "La couche Monthly Recurrence signalée défectueuse par le JRC n’est pas utilisée."
+            ]
+          },
+          {
+            "id": "recent",
+            "status": "missing",
+            "provider": "Digital Earth Africa",
+            "product": "WOfS",
+            "version": "unknown",
+            "referencePeriod": null,
+            "observedAt": null,
+            "acquiredAt": "2026-10-31T09:36:29.382Z",
+            "resolutionM": null,
+            "crs": null,
+            "reason": "Catalogue WOfS indisponible ou réponse non JSON.",
+            "assets": [],
+            "limitations": []
+          }
+        ],
+        "status": "mixed",
+        "candidateAreaM2": 0,
+        "excludedAreaM2": 1472.119191271625,
+        "unknownAreaM2": 0,
+        "messages": [
+          "Eau permanente ou surface incompatible cartographiée : cette partie est exclue du calcul terrestre standard.",
+          "Zone humide ou eau saisonnière : diagnostic de culture, saison, nappe et drainage nécessaire.",
+          "La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.",
+          "Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.",
+          "WOfS indisponible : Catalogue WOfS indisponible ou réponse non JSON."
+        ],
+        "boundaryUncertaintyM": null,
+        "legalStatus": "not_assessed"
+      }
+    }
+  ]
+}

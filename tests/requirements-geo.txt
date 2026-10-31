@@ -1,0 +1,4 @@
+# Optional independent validation only; not used by the deployed application.
+rasterio==1.5.2
+shapely==2.2.0
+pyproj==3.8.0

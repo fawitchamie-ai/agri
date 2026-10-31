@@ -1,3 +1,5 @@
+import {inputWarnings} from './provenance.ts';
+import {landBlockReason} from './land.ts';
 import { ENGINE_VERSION, type SeasonalConfig, type WaterEvent, type Volumes, type WaterDay, type WaterPeriod, type WaterPlan } from './types.ts';
 import { addDays, validateConfig, validateEvents } from './validation.ts';
 import { cropById, depletionAtDemand } from './catalog.ts';
@@ -23,9 +25,12 @@ function period(label: string, rows: WaterDay[]): WaterPeriod {
 }
 function periods(rows: WaterDay[], width: number): WaterPeriod[] { const result = []; for (let i = 0; i < rows.length; i += width) result.push(period(`${width === 7 ? 'Semaine' : 'Décade'} ${Math.floor(i / width) + 1}`, rows.slice(i, i + width))); return result; }
 
-export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan {
+export function planWater(input: unknown, inputEvents: unknown = [], options:{requireGeometry?:boolean}={}): WaterPlan {
   const c = validateConfig(input), events = validateEvents(inputEvents, c);
   const horizon = c.stages.reduce((s, x) => s + x.days, 0), horizonEnd = addDays(c.sowingDate, horizon - 1);
+  const eventProvenance=events.flatMap(e=>e.provenance?[e.provenance]:[]);
+  const gate=[options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...inputWarnings(c)].filter((x):x is string=>!!x);
+  if(gate.length)return {engineVersion:ENGINE_VERSION,levelOfEvidence:'simulation_non_validee',status:'blocked',complete:false,horizonEnd,assumptions:[],missing:gate,days:[],weeks:[],decades:[],stages:[],nextWindows:[],intervalDays:null,totals:{demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null},...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{})};
   const missing: string[] = [], assumptions = [
     'Simulation conditionnelle non validée au champ ; coefficients, sols et accès à l’eau à confirmer localement.',
     'Bilan journalier : croissance des racines, correction d’humidité, pluie et drainage, irrigation et drainage, puis évapotranspiration.',
@@ -153,6 +158,7 @@ export function planWater(input: unknown, inputEvents: unknown = []): WaterPlan 
   if (c.system.sourceBudgetM3 !== null && usedSourceM3 > c.system.sourceBudgetM3 + 1e-8) assumptions.push('Les apports déjà réalisés dépassent le quota déclaré. Le réalisé est conservé et aucun quota supplémentaire n’est inventé.');
   return {
     ...(c.nutritionReference?{nutrition:referenceQuantities(c.nutritionReference.id,c,c.nutritionReference.contextNote,c.nutritionReference.alreadyKgHa)}:{}),
+    ...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{}),
     engineVersion: ENGINE_VERSION, levelOfEvidence: 'simulation_non_validee', status: missing.length ? 'blocked' : 'conditional', complete, horizonEnd, assumptions, missing,
     days, weeks: periods(days, 7), decades: periods(days, 10), stages: c.stages.map((s, i) => { const rows = days.filter(d => d.stageIndex === i); return rows.length ? period(s.name, rows) : null; }).filter((x): x is WaterPeriod => x !== null),
     nextWindows: positive.slice(0, 8).map(d => ({ from: d.date, to: d.date, conditional: true, volume: d.intervention!, reasons: d.intervention!.reasons })),

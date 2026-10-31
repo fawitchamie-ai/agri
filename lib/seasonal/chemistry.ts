@@ -18,7 +18,7 @@ export const SOIL_PARAMETERS = {
  Al:{label:'Aluminium échangeable',units:['cmol(+)/kg'],methods:[]},
 } as const;
 export type SoilParameter=keyof typeof SOIL_PARAMETERS;
-export type SoilAnalysis={source:string;date:string;availableOn:string;topCm:number;bottomCm:number;status:'measured'|'declared'|'estimated';measurements:{parameter:SoilParameter;value:number;unit:string;method:string}[]};
+export type SoilAnalysis={source:string;date:string|null;availableOn:string;topCm:number;bottomCm:number;status:'measured'|'declared'|'estimated';measurements:{parameter:SoilParameter;value:number;unit:string;method:string}[]};
 export function chemistryGuidance(cropId:string|undefined, analyses:SoilAnalysis[]=[]) {
  const p=cropId?cropById(cropId):undefined;
  const messages=[p?.nutrition??'Choisissez la culture et une référence agronomique adaptée.',

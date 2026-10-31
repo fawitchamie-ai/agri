@@ -4,6 +4,8 @@ Le parcours « Préparer et suivre ma culture » permet de calculer et suivre un
 
 Le catalogue comporte 23 fiches culturales et neuf références de fertilisation conditionnelles. Les analyses conservent leurs méthodes, horizons, unités et dates de disponibilité ; elles ne déclenchent pas de dose personnalisée sans méthode locale calibrée. Voir [les règles agronomiques](docs/AGRONOMY.md), [l’audit de couverture des pays](docs/refonte/INVENTAIRE_EXISTANT.md) et [l’avancement vérifié de la refonte](AVANCEMENT.md).
 
+Les entrées de sol, météo et conduite disposent d’une provenance versionnée. Le contrôle serveur du contour croise WorldCover, la saisonnalité JRC et une observation récente si accessible ; les surfaces en eau, mixtes ou inconnues suspendent le calcul terrestre. Les hypothèses doivent être acceptées explicitement. Voir [le contrat, la migration et les limites](docs/PROVENANCE_TERRAIN.md).
+
 ## Socle Cloudflare existant
 
 Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.

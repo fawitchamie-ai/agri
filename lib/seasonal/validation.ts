@@ -1,3 +1,4 @@
+import {migrateInputs,parseInputLedger,valueEvidence} from './provenance.ts';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent } from './types.ts';
 import { validateParcel, parcelMetrics } from './parcel.ts';
 import { referenceQuantities } from './nutrition.ts';
@@ -44,13 +45,14 @@ export function validateConfig(input: unknown): SeasonalConfig {
   const end = addDays(sowingDate, cycleDays - 1);
   const weather = array(c.weather, 'Météo', 732).map(v => {
     const w = obj(v), date = isoDate(w.date);
-    if (!['observed', 'forecast', 'scenario'].includes(w.status)) throw new InputError('Statut météo invalide.');
+    if (!['observed','estimated', 'forecast', 'scenario'].includes(w.status)) throw new InputError('Statut météo invalide.');
     const availableAt = str(w.availableAt, 'Date de disponibilité');
     if (!Number.isFinite(Date.parse(availableAt))) throw new InputError('Date de disponibilité invalide.');
     if (date < sowingDate || date > end) throw new InputError('La météo doit appartenir au cycle.');
     if (availableAt.slice(0, 10) > asOfDate) throw new InputError('Une donnée météo indisponible à la date du conseil ne peut pas être utilisée.');
     if (w.status === 'observed' && date > asOfDate) throw new InputError('Une observation météo ne peut pas être future.');
-    return { date,...(w.temperatureMeanC===undefined?{}:{temperatureMeanC:optional(w.temperatureMeanC,'Température moyenne',-60,60)}), rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
+    if(w.provenance){try{const entries=Object.values(w.provenance);const id=(entries[0] as {scopeId?:string})?.scopeId;parseInputLedger({version:'inputs-1',scope:{id,geometry:null,point:null},values:w.provenance,migratedFrom:null});}catch(e){throw new InputError((e as Error).message);}}
+    return { ...(w.provenance?{provenance:w.provenance}:{}),date,...(w.temperatureMeanC===undefined?{}:{temperatureMeanC:optional(w.temperatureMeanC,'Température moyenne',-60,60)}), rainMm: optional(w.rainMm, 'Pluie', 0, 2000), et0Mm: optional(w.et0Mm, 'ET0', 0, 30), status: w.status, source: str(w.source, 'Source météo'), availableAt };
   });
   if (new Set(weather.map(w => w.date)).size !== weather.length) throw new InputError('Une seule météo par date : choisissez la source prioritaire.');
   const weekdays = array(system.allowedWeekdays, 'Jours d’accès', 7).map(v => number(v, 'Jour de semaine', 0, 6));
@@ -75,9 +77,9 @@ export function validateConfig(input: unknown): SeasonalConfig {
   }
   if(c.adjustDepletionToEtc!==undefined && typeof c.adjustDepletionToEtc!=='boolean')throw new InputError('Option d’ajustement du seuil hydrique invalide.');
   const soilAnalyses:SoilAnalysis[] = c.soilAnalyses===undefined?[]:array(c.soilAnalyses,'Analyses de sol',12).map(v=>{
-    const a=obj(v),date=isoDate(a.date,'Date de l’analyse'),topCm=number(a.topCm,'Début de l’horizon analysé',0,500),bottomCm=number(a.bottomCm,'Fin de l’horizon analysé',.1,500);
+    const a=obj(v),date=a.date===null&&a.status==='estimated'?null:isoDate(a.date,'Date de l’analyse'),topCm=number(a.topCm,'Début de l’horizon analysé',0,500),bottomCm=number(a.bottomCm,'Fin de l’horizon analysé',.1,500);
     const availableOn=isoDate(a.availableOn,'Date de disponibilité des résultats d’analyse');
-    if(bottomCm<=topCm || date>asOfDate || availableOn<date || availableOn>asOfDate)throw new InputError('Profondeur ou dates de l’analyse incompatibles avec le conseil : les résultats doivent être disponibles après la mesure et au plus tard à la date du conseil.');
+    if(bottomCm<=topCm || date!==null&&(date>asOfDate || availableOn<date) || availableOn>asOfDate)throw new InputError('Profondeur ou dates de l’analyse incompatibles avec le conseil : les résultats doivent être disponibles après la mesure et au plus tard à la date du conseil.');
     if(!['measured','declared','estimated'].includes(a.status))throw new InputError('Statut d’analyse invalide.');
     const measurements=array(a.measurements,'Mesures chimiques',16).map(v=>{
       const m=obj(v), parameter=m.parameter as SoilParameter;
@@ -118,12 +120,16 @@ export function validateConfig(input: unknown): SeasonalConfig {
     try{referenceQuantities(id,validated,contextNote,alreadyKgHa);}catch(e){throw new InputError((e as Error).message);}
     validated.nutritionReference={id,contextNote,alreadyKgHa};
   }
-  return validated;
+  try{validated.inputs=parseInputLedger(c.inputs);}catch(e){throw new InputError((e as Error).message);}
+  if(c.inputPolicy!==undefined){if(typeof c.inputPolicy?.allowAssumptions!=='boolean'||typeof c.inputPolicy?.allowStale!=='boolean')throw new InputError('Politique des données invalide.');validated.inputPolicy={allowAssumptions:c.inputPolicy.allowAssumptions,allowStale:c.inputPolicy.allowStale};}
+  if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
+  return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {
   const end = addDays(c.sowingDate, c.stages.reduce((s, x) => s + x.days, 0) - 1);
   const events = array(input, 'Observations', 1500).map(v => {
     const e = obj(v), date = isoDate(e.date), id = str(e.id, 'Identifiant événement', 100);
+    if(c.parcelGeometry&&e.provenance?.scopeId&&e.provenance.scopeId!==c.inputs?.scope.id)throw new InputError('Observation liée à un autre contour : elle ne peut pas être transférée automatiquement.');
     if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new InputError('Identifiant événement invalide.');
     if (!['rain', 'irrigation', 'soil'].includes(e.kind) || !['measured', 'declared', 'planned', 'cancelled'].includes(e.status)) throw new InputError('Type ou statut d’événement invalide.');
     if (!['mm', 'L', 'm3', 'fraction'].includes(e.unit) || !['net', 'field', 'source'].includes(e.point)) throw new InputError('Unité ou point de mesure invalide.');
@@ -134,7 +140,7 @@ export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] 
     if (!Number.isFinite(Date.parse(recordedAt)) || recordedAt.slice(0, 10) > c.asOfDate) throw new InputError('Horodatage indisponible à la date du conseil.');
     const amount = number(e.amount, 'Quantité', 0, e.unit === 'fraction' ? .8 : 1e10);
     if (e.kind === 'soil' && c.soil.layers.some(l => amount < l.thetaWP || amount > l.thetaFC)) throw new InputError('Humidité hors des limites du profil.');
-    return { id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt };
+    return { id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt,provenance:valueEvidence(e.status==='cancelled'?null:amount,e.unit,c.inputs?.scope.id??'unlocated',{origin:'manual',status:e.status==='cancelled'?'missing':e.status==='measured'?'measured':'scenario',provider:e.source,method:`${e.kind} au point ${e.point} ; ${e.status}`,interval:{from:date,to:date},observedAt:['measured','declared'].includes(e.status)?date:null,acquiredAt:recordedAt,replacementReason:'Observation ou apport saisi ; pas de preuve instrumentale automatiquement vérifiée.'}) };
   });
   if (new Set(events.map(e => e.id)).size !== events.length) throw new InputError('Événement dupliqué : corrigez sa version au lieu de l’ajouter.');
   const rain = events.filter(e => e.kind === 'rain' && ['declared', 'measured'].includes(e.status));

@@ -1,8 +1,10 @@
+import {migrateInputs} from './provenance.ts';
 import type { SeasonalConfig } from './types.ts';
 
 /** Synthetic demonstration only. No claim of local measurements or validation. */
 export function exampleCampaign(date = new Date().toISOString().slice(0, 10)): SeasonalConfig {
   return {
+    inputPolicy:{allowAssumptions:true,allowStale:false},
     country: 'TGO', name: 'Parcelle de démonstration', territory: 'Localité fictive', crop: 'Maïs', variety: 'Non renseignée — démonstration', sowingDate: date, asOfDate: date, areaM2: 1000, latitude: null, longitude: null,
     soil: { source: 'Profil synthétique de démonstration, aucune analyse réelle', layers: [{ thicknessM: 1.2, thetaFC: .3, thetaWP: .15, initialTheta: .24 }], infiltrationMmDay: 30 },
     parameterSource: 'Hypothèses de démonstration inspirées de la structure FAO 56 ; durées et coefficients non calibrés localement',
@@ -18,8 +20,11 @@ export function exampleCampaign(date = new Date().toISOString().slice(0, 10)): S
 }
 export function emptyCampaign(date = new Date().toISOString().slice(0, 10)): SeasonalConfig {
   const c = exampleCampaign(date);
-  return { ...c, name: '', territory: '', variety: 'Non renseignée', areaM2: null,
+  const result:SeasonalConfig={ ...c,inputPolicy:{allowAssumptions:false,allowStale:false}, name: '', territory: '', variety: 'Non renseignée', areaM2: null,
     soil: { ...c.soil, source: 'Propriétés hypothétiques à confirmer par mesure ou référence locale', layers: c.soil.layers.map(l => ({ ...l, initialTheta: null })) },
     system: { ...c.system, name: 'À renseigner', source: 'Caractéristiques à renseigner', applicationEfficiency: null, transportEfficiency: null, sourceFlowM3h: null, hoursPerDay: null, sourceBudgetM3: null }, fallback: null,
   };
+  const next=migrateInputs(result);
+  for(const [path,p] of Object.entries(next.inputs!.values))if(path.startsWith('soil.')||path.startsWith('system.')||path.startsWith('stages.'))next.inputs!.values[path]={...p,origin:'default',method:'Valeur du profil initial de scénario',replacementReason:'Hypothèse fournie par le logiciel, à confirmer.'};
+  return next;
 }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {deflateSync} from 'node:zlib';
 import {readSoilPixel,loadEnvironment,type Environment} from '../lib/seasonal/environment.ts';
 import {automaticCampaign,mergeEnvironment,phSuitability} from '../lib/seasonal/automatic.ts';
+import {declareScenario,reconcileInputs,environmentContext} from '../lib/seasonal/provenance.ts';
 import {emptyCampaign} from '../lib/seasonal/example.ts';
 import {planWater} from '../lib/seasonal/engine.ts';
 import {addDays,validateConfig} from '../lib/seasonal/validation.ts';
@@ -55,14 +56,14 @@ test('Fusion : mesures prioritaires, ajustements préservés, propriétés hydri
  let c=automaticCampaign(emptyCampaign('2026-10-30'));c.asOfDate='2026-10-30';
  c.soilAnalyses=[{source:'Laboratoire local',date:'2026-10-29',availableOn:'2026-10-30',topCm:0,bottomCm:20,status:'measured',measurements:[{parameter:'pH',value:5.5,unit:'pH',method:'water'}]}];
  c.weather=[{date:'2026-10-30',rainMm:12,et0Mm:5,status:'observed',source:'Pluviomètre',availableAt:now}];
- const merged=mergeEnvironment(c,e);assert.equal(merged.soilAnalyses![0].measurements[0].value,5.5);assert.equal(merged.soilAnalyses!.flatMap(a=>a.measurements).filter(m=>m.parameter==='pH').length,1);
+ e.context=environmentContext(c);const merged=mergeEnvironment(c,e);assert.equal(merged.soilAnalyses![0].measurements[0].value,5.5);assert.equal(merged.soilAnalyses!.flatMap(a=>a.measurements).filter(m=>m.parameter==='pH').length,1);
  assert.equal(merged.weather[0].rainMm,12);assert.equal(merged.soil.layers.length,6);assert.equal(validateConfig(merged).soil.layers.length,6);
- const custom={...c,soil:{...c.soil,source:'Mesures hydriques locales'}};assert.equal(mergeEnvironment(custom,e).soil.layers.length,1);
+ const custom=reconcileInputs(c,{...c,soil:{...c.soil,source:'Mesures hydriques locales',layers:c.soil.layers.map(l=>({...l,thetaFC:.31}))}});assert.equal(mergeEnvironment(custom,e).soil.layers.length,1);
 });
 test('Simulation automatique : cycle complet, sensibilité aux apports, pH sans faux effet sur le rendement',async()=>{
  const e=await loadEnvironment(9.5,1.2,'TGO','2026-10-30',2,fakeFetch,now);
- const c=automaticCampaign(emptyCampaign('2026-10-30'));c.asOfDate='2026-10-30';c.areaM2=1000;
- const all=mergeEnvironment(c,{...e,weather:Array.from({length:125},(_,i)=>({...e.weather[0],date:addDays('2026-10-30',i),status:'scenario'}))});
+ const c=declareScenario(automaticCampaign(emptyCampaign('2026-10-30')));c.asOfDate='2026-10-30';c.areaM2=1000;
+ const all=mergeEnvironment(c,{...e,context:environmentContext(c),weather:Array.from({length:125},(_,i)=>({...e.weather[0],date:addDays('2026-10-30',i),status:'scenario'}))});
  const plan=planWater(all);assert.equal(plan.complete,true);assert.equal(plan.days.length,125);
  const wet=planWater({...all,weather:all.weather.map(w=>({...w,rainMm:10}))});assert.ok(wet.totals.netMm<plan.totals.netMm);
  const phOnly=structuredClone(all);phOnly.soilAnalyses![0].measurements.find(m=>m.parameter==='pH')!.value=5;

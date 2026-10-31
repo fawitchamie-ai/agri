@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-10-31T09:35:21.806183+00:00",
+  "versions": {
+    "rasterio": "1.5.2",
+    "shapely": "2.2.0",
+    "pyproj": "3.8.0"
+  },
+  "scope": "Independent native-pixel decoder check on the same recorded assets, with ellipsoidal area weights. Not independent ground truth or crop validation.",
+  "fieldValidation": false,
+  "results": [
+    {
+      "country": "TGO",
+      "sector": "Secteur du lac Togo",
+      "source": "worldcover",
+      "decodedFractions": {
+        "80": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "TGO",
+      "sector": "Secteur du lac Togo",
+      "source": "jrc",
+      "decodedFractions": {
+        "12": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "BEN",
+      "sector": "Centre nominal du lac Nokoué",
+      "source": "worldcover",
+      "decodedFractions": {
+        "80": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "BEN",
+      "sector": "Centre nominal du lac Nokoué",
+      "source": "jrc",
+      "decodedFractions": {
+        "12": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "GHA",
+      "sector": "Secteur du lac Volta",
+      "source": "worldcover",
+      "decodedFractions": {
+        "20": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "GHA",
+      "sector": "Secteur du lac Volta",
+      "source": "jrc",
+      "decodedFractions": {
+        "0": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "BFA",
+      "sector": "Secteur de la retenue de Bagré",
+      "source": "worldcover",
+      "decodedFractions": {
+        "40": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "BFA",
+      "sector": "Secteur de la retenue de Bagré",
+      "source": "jrc",
+      "decodedFractions": {
+        "0": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "CIV",
+      "sector": "Secteur de la retenue de Kossou",
+      "source": "worldcover",
+      "decodedFractions": {
+        "80": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "CIV",
+      "sector": "Secteur de la retenue de Kossou",
+      "source": "jrc",
+      "decodedFractions": {
+        "12": 0.7500000535346752,
+        "6": 0.24999994646532472
+      },
+      "errors": []
+    },
+    {
+      "country": "SEN",
+      "sector": "Secteur du lac de Guiers",
+      "source": "worldcover",
+      "decodedFractions": {
+        "80": 1.0
+      },
+      "errors": []
+    },
+    {
+      "country": "SEN",
+      "sector": "Secteur du lac de Guiers",
+      "source": "jrc",
+      "decodedFractions": {
+        "12": 1.0
+      },
+      "errors": []
+    }
+  ]
+}
