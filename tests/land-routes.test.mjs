@@ -17,5 +17,11 @@ test('Serveur : contrôle avant simulation et sauvegarde, rapport client favorab
   const unlocated=await request({action:'simulate',config:{...c,parcelGeometry:undefined}});assert.equal(unlocated.plan.status,'blocked');assert.match(unlocated.plan.missing[0],/Contour complet/);
   globalThis.__agriLandClass=40;
   const dry=await request({action:'simulate',config:c});assert.equal(dry.plan.status,'conditional');assert.ok(dry.plan.days.length>0);
+  const forged={...c,landSelection:'potentialLand',landAssessment:{...landFixture(testParcel,40),candidateAreaM2:1e9}};
+  const selected=await request({action:'simulate',config:forged});
+  assert.equal(selected.plan.complete,true);assert.equal(selected.plan.calculationArea.areaM2,selected.plan.land.candidateAreaM2);assert.ok(selected.plan.calculationArea.areaM2<1e9);
+  globalThis.__agriLandClass=80;
+  const waterSelection=await request({action:'simulate',config:forged});assert.equal(waterSelection.plan.status,'blocked');assert.equal(waterSelection.plan.days.length,0);
+
  }finally{delete globalThis.__agriLandClass;closeHarness();}
 });

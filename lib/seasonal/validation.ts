@@ -22,6 +22,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   const c = obj(input), soil = obj(c.soil), system = obj(c.system);
   if (!Object.hasOwn(COUNTRIES, c.country)) throw new InputError('Pays non pris en charge.');
   if (!['upland', 'flooded_rice', 'shallow_water_table'].includes(c.systemDomain)) throw new InputError('Système cultural invalide.');
+  if(c.landSelection!==undefined&&!['whole','potentialLand'].includes(c.landSelection))throw new InputError('Partie du contour à simuler invalide.');
   if(c.waterCondition!==undefined && !['unknown','drained','waterlogged','submerged'].includes(c.waterCondition))throw new InputError('État d’excès d’eau invalide.');
   const layers = array(soil.layers, 'Horizons de sol', 12).map((v) => {
     const l = obj(v), fc = number(l.thetaFC, 'Capacité au champ', .001, .8), wp = number(l.thetaWP, 'Flétrissement', 0, .7);
@@ -98,7 +99,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   });
   const validated:SeasonalConfig = {
     ...(cropProfile?{cropProfile}:{}),...(c.adjustDepletionToEtc===undefined?{}:{adjustDepletionToEtc:c.adjustDepletionToEtc}),...(c.soilAnalyses===undefined?{}:{soilAnalyses}),
-    country: c.country, ...(c.waterCondition!==undefined?{waterCondition:c.waterCondition}:{}), systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
+    ...(c.landSelection?{landSelection:c.landSelection}:{}),country: c.country, ...(c.waterCondition!==undefined?{waterCondition:c.waterCondition}:{}), systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
     areaM2: optional(c.areaM2, 'Surface en m²', .01, 1e9), latitude: optional(c.latitude, 'Latitude', -90, 90), longitude: optional(c.longitude, 'Longitude', -180, 180),
     parameterSource: str(c.parameterSource, 'Source des paramètres culturaux', 600),
     soil: { source: str(soil.source, 'Source du sol', 600), layers, infiltrationMmDay: optional(soil.infiltrationMmDay, 'Infiltration journalière', .01, 2000) }, stages,
@@ -129,6 +130,7 @@ export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] 
   const end = addDays(c.sowingDate, c.stages.reduce((s, x) => s + x.days, 0) - 1);
   const events = array(input, 'Observations', 1500).map(v => {
     const e = obj(v), date = isoDate(e.date), id = str(e.id, 'Identifiant événement', 100);
+    if(e.landSelection!==undefined&&!['whole','potentialLand'].includes(e.landSelection))throw new InputError('Portée de l’observation invalide.');
     if(c.parcelGeometry&&e.provenance?.scopeId&&e.provenance.scopeId!==c.inputs?.scope.id)throw new InputError('Observation liée à un autre contour : elle ne peut pas être transférée automatiquement.');
     if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new InputError('Identifiant événement invalide.');
     if (!['rain', 'irrigation', 'soil'].includes(e.kind) || !['measured', 'declared', 'planned', 'cancelled'].includes(e.status)) throw new InputError('Type ou statut d’événement invalide.');
@@ -140,7 +142,7 @@ export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] 
     if (!Number.isFinite(Date.parse(recordedAt)) || recordedAt.slice(0, 10) > c.asOfDate) throw new InputError('Horodatage indisponible à la date du conseil.');
     const amount = number(e.amount, 'Quantité', 0, e.unit === 'fraction' ? .8 : 1e10);
     if (e.kind === 'soil' && c.soil.layers.some(l => amount < l.thetaWP || amount > l.thetaFC)) throw new InputError('Humidité hors des limites du profil.');
-    return { id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt,provenance:valueEvidence(e.status==='cancelled'?null:amount,e.unit,c.inputs?.scope.id??'unlocated',{origin:'manual',status:e.status==='cancelled'?'missing':e.status==='measured'?'measured':'scenario',provider:e.source,method:`${e.kind} au point ${e.point} ; ${e.status}`,interval:{from:date,to:date},observedAt:['measured','declared'].includes(e.status)?date:null,acquiredAt:recordedAt,replacementReason:'Observation ou apport saisi ; pas de preuve instrumentale automatiquement vérifiée.'}) };
+    return { ...(e.landSelection?{landSelection:e.landSelection}:{}),id, date, kind: e.kind, unit: e.unit, point: e.point, status: e.status, amount, source: str(e.source, 'Source de l’observation', 600), recordedAt,provenance:valueEvidence(e.status==='cancelled'?null:amount,e.unit,c.inputs?.scope.id??'unlocated',{origin:'manual',status:e.status==='cancelled'?'missing':e.status==='measured'?'measured':'scenario',provider:e.source,method:`${e.kind} au point ${e.point} ; ${e.status}`,interval:{from:date,to:date},observedAt:['measured','declared'].includes(e.status)?date:null,acquiredAt:recordedAt,replacementReason:'Observation ou apport saisi ; pas de preuve instrumentale automatiquement vérifiée.'}) };
   });
   if (new Set(events.map(e => e.id)).size !== events.length) throw new InputError('Événement dupliqué : corrigez sa version au lieu de l’ajouter.');
   const rain = events.filter(e => e.kind === 'rain' && ['declared', 'measured'].includes(e.status));

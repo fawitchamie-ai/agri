@@ -8,9 +8,17 @@ export function automaticCampaign(c:SeasonalConfig,cropId=c.cropProfile?.id??'ma
  const next={...c,name:c.name.trim()||'Mon champ',territory:c.territory.trim()||'Parcelle GPS',sowingDate:date,asOfDate:new Date().toISOString().slice(0,10),
  soil:{...c.soil,source:c.soil.layers.some(l=>l.initialTheta===null)?'Hypothèse hydrique modifiable : capacité 0,30, flétrissement 0,15 et réserve initiale à 60 % ; non mesurée':c.soil.source,layers:c.soil.layers.map(l=>({...l,initialTheta:l.initialTheta??l.thetaWP+.6*(l.thetaFC-l.thetaWP)}))},
  system:{...c.system,name:'Arrosage simulé',source:'Hypothèses modifiables : efficacité 75 %, transport sans perte ; disponibilité non vérifiée',applicationEfficiency:c.system.applicationEfficiency??.75,transportEfficiency:c.system.transportEfficiency??1},fallback:null};
+ // A newly supplied default must replace its old null evidence, while keeping
+ // the explicit scenario gate. Never relabel failed automatic acquisitions.
+ const prepared=migrateInputs(next);
+ const defaults:[string,number|null,string][]=[...prepared.soil.layers.map((l,i)=>[`soil.layers.${i}.initialTheta`,l.initialTheta,'m³/m³'] as [string,number|null,string]),['system.applicationEfficiency',prepared.system.applicationEfficiency,'fraction'],['system.transportEfficiency',prepared.system.transportEfficiency,'fraction']];
+ for(const [path,value,unit] of defaults){
+  const old=prepared.inputs!.values[path];
+  if(value!==null&&old?.origin==='default'&&old.status==='missing')prepared.inputs!.values[path]=valueEvidence(value,unit,prepared.inputs!.scope.id,{origin:'default',status:'assumed',method:'Hypothèse initiale de scénario, modifiable',acquiredAt:new Date().toISOString(),replacementReason:'Valeur proposée par le logiciel ; acceptation explicite nécessaire.'});
+ }
  const profile=cropById(cropId);
- if(profile?.water?.durationIssue)return migrateInputs({...next,crop:profile.name,cropProfile:{id:cropId,version:CATALOG_VERSION,mode:'reference'},stages:[],nutritionReference:undefined,parameterSource:'Durées spécifiques à compléter avec une référence locale'});
- return migrateInputs(applyCropProfile(next,cropId));
+ if(profile?.water?.durationIssue)return migrateInputs({...prepared,crop:profile.name,cropProfile:{id:cropId,version:CATALOG_VERSION,mode:'reference'},stages:[],nutritionReference:undefined,parameterSource:'Durées spécifiques à compléter avec une référence locale'});
+ return migrateInputs(applyCropProfile(prepared,cropId));
 }
 export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalConfig{
  const c=migrateInputs(input),id=c.inputs!.scope.id;

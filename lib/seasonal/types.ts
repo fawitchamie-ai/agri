@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.2.0';
+export const ENGINE_VERSION = 'water-balance-1.3.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -17,6 +17,7 @@ export type WeatherDay = {
   provenance?: Record<string,import('./provenance.ts').InputValue>;
 };
 export type WaterEvent = {
+  landSelection?: 'whole' | 'potentialLand';
   provenance?: import('./provenance.ts').InputValue;
   id: string; date: string; kind: 'rain' | 'irrigation' | 'soil';
   amount: number; unit: 'mm' | 'L' | 'm3' | 'fraction';
@@ -27,6 +28,7 @@ export type WaterEvent = {
 export type SeasonalConfig = {
   inputs?: import('./provenance.ts').InputLedger;
   inputPolicy?: {allowAssumptions:boolean;allowStale:boolean};
+  landSelection?: 'whole' | 'potentialLand';
   landAssessment?: import('./land.ts').LandAssessment;
   parcelGeometry?: import('./parcel.ts').ParcelPolygon;
   country: Country; name: string; territory: string; crop: string; variety: string;
@@ -68,6 +70,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  calculationArea?: {selection:'whole'|'potentialLand';areaM2:number|null;geometry:import('./land.ts').MultiShape|null};
   eventProvenance?: import('./provenance.ts').InputValue[];
   land?: import('./land.ts').LandAssessment;
   inputProvenance?: import('./provenance.ts').InputLedger;

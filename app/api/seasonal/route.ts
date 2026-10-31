@@ -6,6 +6,7 @@ import { session, canSee } from '@/lib/server-auth';
 import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
 import { COUNTRIES, type Campaign } from '@/lib/seasonal/types';
+import {terrestrialSoilPoint} from '@/lib/seasonal/land';
 import { loadEnvironment } from '@/lib/seasonal/environment';
 import { loadForecast } from '@/lib/seasonal/weather';
 import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
@@ -49,7 +50,9 @@ export async function POST(request: Request) { try {
   if(b.action==='environment'){
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);
-    const [environment,landAssessment]=await Promise.all([loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,new Date().toISOString(),geometry,b.refresh===true),loadLandAssessment(geometry,fetch,new Date().toISOString(),b.refresh===true)]);
+    const now=new Date().toISOString();
+    const landAssessment=await loadLandAssessment(geometry,fetch,now,b.refresh===true);
+    const environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,terrestrialSoilPoint(landAssessment));
     return json({...environment,landAssessment});
   }
   if(b.action==='land'){try{return json({assessment:await loadLandAssessment(validateParcel(b.geometry))});}catch(e){throw new InputError((e as Error).message);}}
@@ -73,7 +76,7 @@ export async function POST(request: Request) { try {
   if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
   if (old && b.action === 'event') {
     const previous = JSON.parse(old.events).find((e: any) => e.id === b.event?.id);
-    if (previous && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && (previous.landSelection??'whole')===(JSON.parse(old.config).landSelection??'whole') && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? JSON.parse(old.config) : b.config);
@@ -84,10 +87,10 @@ export async function POST(request: Request) { try {
     // Client supplies stable ID but receipt time is server-owned. Past plans stay
     // immutable; a delayed observation is replayed in the newly issued plan.
     config.asOfDate = new Date().toISOString().slice(0,10);
-    const event = validateEvents([{ ...b.event, recordedAt: new Date().toISOString() }], config)[0];
+    const event = validateEvents([{ ...b.event, landSelection:config.landSelection??'whole',recordedAt: new Date().toISOString() }], config)[0];
     const next = upsertEvent(events,event);
     const previous = events.find((e: any) => e.id === event.id);
-    if (previous && ['date','kind','amount','unit','point','status','source'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
+    if (previous && ['date','kind','amount','unit','point','status','source','landSelection'].every(key => previous[key] === event[key as keyof typeof event])) return json({ campaign: campaign(old), unchanged: true });
     events = next;
   }
   // save never replaces the event log supplied by another client.
