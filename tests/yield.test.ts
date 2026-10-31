@@ -85,7 +85,7 @@ test('spatial heterogeneity uses separate water balances and explicit event scop
  event.unitId='west';assert.ok(result(c,[event]).scenarios[1].totals);
 });
 test('each advertised FAO crop accepts only its own independent reference with a complete parametrised cycle',()=>{
- for(const cropId of ['maize','sorghum','soybean','groundnut','tomato','cabbage','watermelon']){
+ for(const cropId of ['maize','sorghum','soybean','groundnut','tomato','cabbage','watermelon','onion','bell-pepper']){
   const c=applyCropProfile(fixture(),cropId,[20,35,40,30]);c.yieldEstimation!.method='fao-seasonal';c.yieldEstimation!.units[0].reference={...c.yieldEstimation!.units[0].reference!,cropId,independentYm:true};
   c.fallback={label:'Synthetic wet scenario',et0MmDay:4,rainMmDay:5};
   const e=result(c);assert.ok(e.scenarios[0].totals,JSON.stringify(e));

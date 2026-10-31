@@ -1,0 +1,17 @@
+import type {SeasonalConfig} from './types.ts';
+import {planSeason,SEASONAL_KY} from './yield.ts';
+import {SALINITY_PROFILES} from './salinity.ts';
+import {historicalContext} from './historical-context.ts';
+import {COUNTRIES} from './types.ts';
+export function dataReadiness(c:SeasonalConfig,events:unknown=[]){
+ const plan=planSeason(c,events),estimate=plan.yieldEstimation;
+ const present=new Set(c.soilAnalyses?.flatMap(a=>a.measurements.map(m=>m.parameter))??[]);
+ const missingChem=['mineralN','availableP','exchangeableK','EC'].filter(x=>!present.has(x as any));
+ return {version:'source-audit-2026-10-31',historicalNational:historicalContext(c.country,c.cropProfile?.id??'',c.asOfDate),country:COUNTRIES[c.country].name,crop:c.crop,water:{complete:plan.complete,missing:plan.missing},yield:{status:estimate?.status??'unavailable',missing:[...(estimate?.missing??['Surface semée et référence indépendante de rendement Ym nécessaires.']),...(estimate?.scenarios.flatMap(s=>s.missing)??[])]},salinity:plan.salinity??null,parameterizedHydricCrops:Object.keys(SEASONAL_KY),salinityCurve:SALINITY_PROFILES[c.cropProfile?.id??'']??null,
+ remaining:[{feature:'Rendement fiable de parcelle',required:['Ym indépendant pour culture, variété, produit et conduite','Récoltes indépendantes avec surfaces initialement semées, dates et humidités','Validation spatiale et temporelle dans chacun des six pays'],state:'field_validation_missing'},
+ {feature:'Engrais et réponse en rendement',required:[...missingChem.map(x=>'Analyse locale : '+x),'Méthode, profondeur, dates et représentativité des prélèvements','Courbes locales de réponse eau–azote–phosphore–potassium et apports précédents'],state:'response_model_missing'},
+ {feature:'Inondation, mortalité et récupération',required:['Durée et hauteur de submersion','Stade, variété, température et état de drainage','Réponse calibrée et observations de survie'],state:'response_model_missing'},
+ {feature:'Chaleur et phénologie',required:['Variété, seuils de développement et de dommage aux stades sensibles','Dates observées de levée/floraison et rendements indépendants'],state:'cultivar_calibration_missing'},
+ {feature:'Prévision de toute la saison future',required:['Ensembles saisonniers accessibles et qualifiés localement','Évaluation de leur compétence par pays et saison'],state:'evaluated_seasonal_forcing_missing'}],
+ sources:[{name:'FAOSTAT QCL',role:'Statistiques nationales 2020–2024, par hectare récolté, contexte distinct de Ym',url:'https://www.fao.org/faostat/en/#data/QCL',status:'official_bulk_snapshot_context_only'}, {name:'NASA POWER',role:'Historique de pluie et météo ; ET0 dérivée FAO56',url:'https://power.larc.nasa.gov/docs/services/api/temporal/daily/',status:'integrated_optional_history'}, {name:'FAO56',role:'Ky saisonnier et scénarios isolés de salinité',url:'https://www.fao.org/4/x0490e/x0490e0e.htm',status:'parameterized_with_limits'}, {name:'GAEZ v5',role:'Cartes régionales historiques de potentiel/atteignable',url:'https://www.fao.org/gaez/en',status:'data_access_confirmed_not_used_as_parcel_Ym',missing:'Unité/échelle exacte, produit frais/sec et dénominateur du raster choisi à qualifier avant conversion ; ne pas pénaliser à nouveau les contraintes déjà incluses.'}, {name:'SoilGrids',role:'Sols de maille et quantiles ; REST suspendu, WCS déjà intégré',url:'https://isric.org/explore/soilgrids',status:'wcs_integrated'}],review:'Revue agronomique indépendante encore requise. Un test logiciel ou une disponibilité géographique ne valide pas un rendement.'};
+}

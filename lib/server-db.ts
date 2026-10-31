@@ -7,11 +7,11 @@ export function json(data: unknown, status = 200, extra: HeadersInit = {}): Resp
 export class HttpError extends Error {
     constructor(public status: number, message: string) { super(message); }
 }
-export async function body(request: Request): Promise<Record<string, any>> { if (!request.headers.get('content-type')?.includes('application/json'))
+export async function body(request: Request, maxBytes=2000000): Promise<Record<string, any>> { if (!request.headers.get('content-type')?.includes('application/json'))
     throw new HttpError(415, 'Envoyez un document JSON.'); const origin = request.headers.get('origin'); if (origin && origin !== new URL(request.url).origin)
-    throw new HttpError(403, 'Origine de la requête refusée.'); if (Number(request.headers.get('content-length') || 0) > 2000000)
-    throw new HttpError(413, 'Fichier trop volumineux (2 Mo maximum).'); const text = await request.text(); if (text.length > 2000000)
-    throw new HttpError(413, 'Fichier trop volumineux (2 Mo maximum).'); let value; try {
+    throw new HttpError(403, 'Origine de la requête refusée.'); if (Number(request.headers.get('content-length') || 0) > maxBytes)
+    throw new HttpError(413, `Fichier trop volumineux (${maxBytes/1000000} Mo maximum).`); const text = await request.text(); if (new TextEncoder().encode(text).byteLength > maxBytes)
+    throw new HttpError(413, `Fichier trop volumineux (${maxBytes/1000000} Mo maximum).`); let value; try {
     value = JSON.parse(text);
 }
 catch {
