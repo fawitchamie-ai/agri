@@ -9,7 +9,7 @@ import { healthEndpoint, smokeCloudflare } from '../scripts/smoke-cloudflare.mjs
 const databaseId = '12345678-1234-4123-8123-123456789abc';
 const env = { CLOUDFLARE_API_TOKEN: 'test-only-token', CLOUDFLARE_ACCOUNT_ID: 'a'.repeat(32), CLOUDFLARE_DATABASE_ID: databaseId, CF_ACCESS_TEAM_DOMAIN: 'https://test.cloudflareaccess.com', CF_ACCESS_AUD: 'test-audience' };
 const config = () => ({ name: 'agri', vars: { CF_ACCESS_TEAM_DOMAIN: env.CF_ACCESS_TEAM_DOMAIN, CF_ACCESS_AUD: env.CF_ACCESS_AUD }, d1_databases: [{ binding: 'DB', database_id: databaseId }] });
-const goodHealth = { status: 'ok', database: 'ok', scientific: { forecastCount: 1092, notebookSha256: '0834a25e6a8da5f1daa075f0f0fdef26c16b6d810139aaefc511a3cd81693428', predictionCsvSha256: 'aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d' } };
+const goodHealth = {seasonal:{version:'source-models-2026-10-31',kyCrops:9,nationalCountries:6,storage:'ok'}, status: 'ok', database: 'ok', scientific: { forecastCount: 1092, notebookSha256: '0834a25e6a8da5f1daa075f0f0fdef26c16b6d810139aaefc511a3cd81693428', predictionCsvSha256: 'aaa4c8f734322ad21a1ef781b7ac10322915441a3e2f06f64633ecc01fa4e71d' } };
 const access = { APP_URL: 'https://agri.example.workers.dev', CF_ACCESS_CLIENT_ID: 'test-client', CF_ACCESS_CLIENT_SECRET: 'test-secret' };
 
 test('Publication : configuration réelle, base compilée et paramètres Access doivent concorder', () => {
@@ -78,7 +78,7 @@ test('Smoke : cible HTTPS sans identifiant ni URL détournée', () => {
 });
 
 test('Smoke : une connexion HTML, une redirection et une référence différente échouent', async () => {
-  for (const response of [new Response('', { status: 302 }), new Response('<html>login</html>', { headers: { 'Content-Type': 'text/html' } }), Response.json({ ...goodHealth, database: 'error' }), Response.json({ ...goodHealth, scientific: { ...goodHealth.scientific, forecastCount: 1 } })]) await assert.rejects(() => smokeCloudflare({ env: access, fetchImpl: async () => response }));
+  for (const response of [Response.json({...goodHealth,seasonal:undefined}), Response.json({...goodHealth,seasonal:{...goodHealth.seasonal,storage:'error'}}), new Response('', { status: 302 }), new Response('<html>login</html>', { headers: { 'Content-Type': 'text/html' } }), Response.json({ ...goodHealth, database: 'error' }), Response.json({ ...goodHealth, scientific: { ...goodHealth.scientific, forecastCount: 1 } })]) await assert.rejects(() => smokeCloudflare({ env: access, fetchImpl: async () => response }));
 });
 
 test('Smoke : preuve JSON v24 et D1 vérifiée, service limité au contrôle de santé', async () => {

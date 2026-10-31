@@ -1,0 +1,296 @@
+{
+  "generatedAt": "2026-10-31T19:41:13.424Z",
+  "scope": "Acquisition réelle NASA POWER à un point par pays, trois jours historiques. Ni validation de rendement ni test de toutes les parcelles.",
+  "source": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
+  "et0Method": "FAO56 Penman–Monteith, G journalier nul, albédo 0,23. Unités NASA strictement contrôlées.",
+  "results": [
+    {
+      "country": "TGO",
+      "requestedPoint": [
+        1.2,
+        9.5
+      ],
+      "queryPoint": [
+        1,
+        9.5
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 6.181118282978788,
+          "temperatureMinC": 19.77,
+          "temperatureMaxC": 36.61,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 6.7748174044390765,
+          "temperatureMinC": 19.75,
+          "temperatureMaxC": 36.2,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0,
+          "et0Mm": 6.199983235667406,
+          "temperatureMinC": 19.52,
+          "temperatureMaxC": 35.35,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    },
+    {
+      "country": "BEN",
+      "requestedPoint": [
+        2.4,
+        9.3
+      ],
+      "queryPoint": [
+        2.5,
+        9.5
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 5.799087168836275,
+          "temperatureMinC": 18.5,
+          "temperatureMaxC": 37.22,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 5.914520774645682,
+          "temperatureMinC": 18.85,
+          "temperatureMaxC": 36.94,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0,
+          "et0Mm": 5.662058033491804,
+          "temperatureMinC": 19.27,
+          "temperatureMaxC": 36.16,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    },
+    {
+      "country": "BFA",
+      "requestedPoint": [
+        -1.6,
+        12.3
+      ],
+      "queryPoint": [
+        -1.5,
+        12.5
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 5.220726489171637,
+          "temperatureMinC": 15.29,
+          "temperatureMaxC": 33.11,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 5.600935425406384,
+          "temperatureMinC": 15.52,
+          "temperatureMaxC": 33.24,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0,
+          "et0Mm": 5.841240227533095,
+          "temperatureMinC": 15.55,
+          "temperatureMaxC": 32.35,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    },
+    {
+      "country": "GHA",
+      "requestedPoint": [
+        -1.1,
+        8
+      ],
+      "queryPoint": [
+        -1,
+        8
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 5.320496657230919,
+          "temperatureMinC": 22.34,
+          "temperatureMaxC": 37.1,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 5.460447047053243,
+          "temperatureMinC": 20.69,
+          "temperatureMaxC": 36.61,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0.04,
+          "et0Mm": 5.431562777672521,
+          "temperatureMinC": 22.57,
+          "temperatureMaxC": 35.96,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    },
+    {
+      "country": "CIV",
+      "requestedPoint": [
+        -5.5,
+        7.5
+      ],
+      "queryPoint": [
+        -5.5,
+        7.5
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 6.148664485494069,
+          "temperatureMinC": 19.55,
+          "temperatureMaxC": 36.98,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 6.041201126411439,
+          "temperatureMinC": 19.24,
+          "temperatureMaxC": 37.38,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0.01,
+          "et0Mm": 5.811024031957732,
+          "temperatureMinC": 21.34,
+          "temperatureMaxC": 36.49,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    },
+    {
+      "country": "SEN",
+      "requestedPoint": [
+        -14.5,
+        14.4
+      ],
+      "queryPoint": [
+        -14.5,
+        14.5
+      ],
+      "requestedDays": 3,
+      "availableDays": 3,
+      "completeWaterDays": 3,
+      "observations": [
+        {
+          "date": "2025-01-01",
+          "rainMm": 0,
+          "et0Mm": 8.493216528067705,
+          "temperatureMinC": 16.33,
+          "temperatureMaxC": 32.45,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-02",
+          "rainMm": 0,
+          "et0Mm": 8.22501529500926,
+          "temperatureMinC": 15.41,
+          "temperatureMaxC": 32.56,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        },
+        {
+          "date": "2025-01-03",
+          "rainMm": 0,
+          "et0Mm": 8.55547194782564,
+          "temperatureMinC": 15.61,
+          "temperatureMaxC": 32.95,
+          "sourceVersion": "v2.10.1",
+          "acquiredAt": "2026-10-31T19:41:13.424Z"
+        }
+      ],
+      "limits": [
+        "Historique modélisé révisable ; aucune observation au champ déduite.",
+        "Les jours récents peuvent être indisponibles.",
+        "ET0 dérivée de données agrégées de maille ; validation locale non réalisée."
+      ]
+    }
+  ]
+}

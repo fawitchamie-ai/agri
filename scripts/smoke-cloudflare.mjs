@@ -26,7 +26,8 @@ export async function smokeCloudflare({ env = process.env, fetchImpl = fetch } =
   if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Le serveur n’a pas retourné de JSON : une page de connexion ne valide pas le déploiement.');
   const health = await response.json();
   if (health.status !== 'ok' || health.database !== 'ok' || health.scientific?.forecastCount !== 1092 || health.scientific?.notebookSha256 !== EXPECTED_NOTEBOOK || health.scientific?.predictionCsvSha256 !== EXPECTED_PREDICTIONS) throw new Error('La santé, la base D1 ou la référence scientifique v24 ne concorde pas avec le déploiement attendu.');
-  return { status: 'PASS', scope: 'Réponse JSON authentifiée de /api/health : runtime, base D1 et identifiants scientifiques v24. Aucun parcours utilisateur humain n’est simulé.' };
+  if(health.seasonal?.version!=='source-models-2026-10-31'||health.seasonal.kyCrops!==9||health.seasonal.nationalCountries!==6||health.seasonal.storage!=='ok')throw new Error('Les modèles saisonniers, les références des six pays ou la sauvegarde ne correspondent pas à la version publiée.');
+  return { status: 'PASS', scope: 'Réponse JSON authentifiée de /api/health : runtime, base D1, identifiants scientifiques v24, modèles saisonniers, références des six pays et compression/relecture en mémoire. Aucun parcours utilisateur humain n’est simulé.' };
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {

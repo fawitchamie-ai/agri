@@ -66,7 +66,7 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
   const evidence=values[`weather.${w.date}.rainMm`];
   if(w.status==='observed'||evidence?.origin==='manual'){
    const incoming=weather.get(w.date),selected={...(incoming??w),provenance:{...(incoming?.provenance??{})}};
-   for(const k of ['rainMm','et0Mm','temperatureMeanC'] as const){
+   for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const){
     const ev=values[`weather.${w.date}.${k}`];
     if(w[k]!==null&&w[k]!==undefined&&ev?.status!=='missing'&&(ev?.origin==='manual'||ev?.status==='measured')){selected[k]=w[k];if(ev)selected.provenance[k]=ev;}
    }
@@ -75,7 +75,7 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
   }
   else if(!weather.has(w.date)&&c.inputPolicy?.allowStale&&evidence?.origin==='automatic'&&evidence.acquiredAt){
    weather.set(w.date,w);
-   for(const k of ['rainMm','et0Mm','temperatureMeanC']){const p=`weather.${w.date}.${k}`;if(values[p])values[p]={...values[p],retention:'stale_authorized',replacementReason:'Nouvelle acquisition indisponible ; conservation explicitement autorisée.'};}
+   for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj']){const p=`weather.${w.date}.${k}`;if(values[p])values[p]={...values[p],retention:'stale_authorized',replacementReason:'Nouvelle acquisition indisponible ; conservation explicitement autorisée.'};}
   }
  }
  for(const [i,a] of analyses.entries())for(const [j,m] of a.measurements.entries()){
@@ -84,7 +84,7 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
   const priorAutomatic=(c.soilAnalyses??[]).flatMap((a,ai)=>a.measurements.map((n,mi)=>({n,ev:c.inputs!.values[`soilAnalyses.${ai}.measurements.${mi}.value`]}))).find(x=>x.n.parameter===m.parameter&&x.ev?.origin==='automatic');
   values[path]=manualOld?.ev??(spec&&spec[1]===null&&priorAutomatic?.ev?{...priorAutomatic.ev,retention:'stale_authorized',replacementReason:'Acquisition indisponible ; ancienne estimation conservée sur choix explicite.'}:spec&&s.provenance?.[spec[4]]?{...s.provenance[spec[4]],scopeId:id}:valueEvidence(m.value,m.unit,id,{origin:'automatic',status:'estimated',acquiredAt:e.retrievedAt,depthCm:[5,15],provider:'ISRIC',product:'SoilGrids',productVersion:'2.0'}));
  }
- for(const w of weather.values())for(const k of ['rainMm','et0Mm','temperatureMeanC'])if(w.provenance?.[k])values[`weather.${w.date}.${k}`]={...w.provenance[k],scopeId:id};
+ for(const w of weather.values())for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'])if(w.provenance?.[k])values[`weather.${w.date}.${k}`]={...w.provenance[k],scopeId:id};
  return migrateInputs({...c,soil,soilAnalyses:analyses,asOfDate:date,weather:[...weather.values()].map(w=>({...w,...(w.provenance?{provenance:Object.fromEntries(Object.entries(w.provenance).map(([k,v])=>[k,{...v,scopeId:id}]))}:{})})).sort((a,b)=>a.date.localeCompare(b.date)),inputs:{...c.inputs!,values},landAssessment:e.landAssessment??c.landAssessment});
 }
 export function phSuitability(ph:number|null,optimal:number[]|null|undefined,absolute:number[]|null|undefined):number|null{

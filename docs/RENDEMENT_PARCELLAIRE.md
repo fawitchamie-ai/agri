@@ -1,6 +1,6 @@
 # Rendement et production selon la surface semée
 
-Version : conditional-yield-1.0.0, 31 octobre 2026.
+Version : conditional-yield-1.1.0, 31 octobre 2026.
 
 ## Audit du logiciel et choix de méthode
 
@@ -25,7 +25,7 @@ S2 : FAO, annexe II, base théorique et tableau 12 reprenant FAO33 : https://www
 
 La relation est Ya = Ym × [1 − Ky × (1 − ETa/ETm)]. FAO56 précise que Ks appliqué au Kc simple est moins rigoureux que la séparation évaporation/transpiration et est surtout raisonnable lorsque l’évaporation du sol n’est pas une grande composante. Cette limite est affichée ; le module ne prétend pas devenir AquaCrop. L’usage saisonnier ignore la répartition du stress entre stades. Le logiciel refuse les cycles incomplets, ETm nul, ETa non physique, ETa/ETm < 0,5 ou une réponse négative/supérieure à Ym. Le seuil 0,5 est une restriction conservatrice d’implémentation, pas une preuve de calibration ni un seuil universel de survie. Aucune borne ne transforme une extrapolation extrême en résultat valide.
 
-Ky versionné FAO56-table24-seasonal-1 : maïs 1,25 ; sorgho grain 0,90 ; soja 0,85 ; arachide 0,70 ; tomate 1,05 ; chou pommé 0,95 ; pastèque 1,10. Les stades, sol, météo, variété et conduite doivent toujours être paramétrés ; le sorgho nécessite notamment des durées adaptées. Les autres cultures n’ont pas de modèle hydrique de rendement activé. Un scénario imposé reste possible lorsqu’une fiche hydrique complète existe ; il ne constitue pas un modèle paramétré pour une culture inconnue.
+Ky versionné FAO56-table24-seasonal-2 : maïs 1,25 ; sorgho grain 0,90 ; soja 0,85 ; arachide 0,70 ; tomate 1,05 ; chou pommé 0,95 ; pastèque 1,10 ; oignon 1,10 ; poivron 1,10. Les stades, sol, météo, variété et conduite doivent toujours être paramétrés ; le sorgho nécessite notamment des durées adaptées. Les autres cultures n’ont pas de modèle hydrique de rendement activé. Un scénario imposé reste possible lorsqu’une fiche hydrique complète existe ; il ne constitue pas un modèle paramétré pour une culture inconnue.
 
 ## Contrat spatial et unités
 
@@ -76,3 +76,7 @@ Tests synthétiques : 4 t / 1,6 t, conversions, eau seule, inconnu, trous, compo
 Tests API : six pays, recalcul serveur, persistance, révisions, droits, export, portée des observations et reprise D1 après redémarrage. Les acquisitions réelles sur six échantillons sont consignées séparément dans la preuve d’acquisition ; elles ne valident ni toutes les parcelles ni les rendements. Aucune récolte prospective n’a servi à calibrer ou valider ce nouveau modèle.
 
 À construire avant un conseil prédictif validé : références Ym locales indépendantes, calibration par culture/variété et conduite, validation spatiale/temporelle, modèle d’engorgement/mortalité, allocation de ressources multi-unités, analyses sol représentatives de toute la parcelle et évaluation prospective sur récoltes mesurées.
+
+## Complément de recherche et de données
+
+Voir [DONNEES_MODELES_SIX_PAYS.md](DONNEES_MODELES_SIX_PAYS.md) pour NASA POWER, ET0 dérivée, les neuf cultures hydriques et le scénario de salinité isolée. Ce dernier reste distinct des trois scénarios hydriques ; ses paramètres et résultats sont conservés dans les révisions et les exports JSON, sans ajout ambigu dans le CSV hydrique.
