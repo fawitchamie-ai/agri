@@ -45,8 +45,11 @@ async function recentLayer(shape:ParcelPolygon,fetcher:typeof fetch,now:string):
   const from=new Date(Date.parse(now)-90*86400000).toISOString(),url=new URL('https://explorer.digitalearth.africa/stac/search');
   url.search=new URLSearchParams({collections:'wofs_ls',bbox:bbox(shape).join(','),datetime:`${from}/${now}`,limit:'5'}).toString();
   try{
-    const res=await fetcher(url,{signal:AbortSignal.timeout(15000),redirect:'error'});
-    if(!res.ok||!res.headers.get('content-type')?.includes('json'))throw new Error('Catalogue WOfS indisponible ou réponse non JSON.');
+    const res=await fetcher(url,{signal:AbortSignal.timeout(15000),redirect:'manual'});
+    if(!res.ok||!res.headers.get('content-type')?.includes('json')){
+      await res.body?.cancel();
+      throw new Error(`Catalogue WOfS indisponible (HTTP ${res.status}) ou réponse non JSON ; aucune redirection suivie.`);
+    }
     type Item={id?:string;properties?:{datetime?:string};assets?:Record<string,{href?:string}>};
     const data=await res.json() as {features?:Item[]};
     if(!Array.isArray(data.features))throw new Error('Catalogue WOfS invalide.');

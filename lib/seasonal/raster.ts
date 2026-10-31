@@ -1,10 +1,25 @@
-import {BaseClient,BaseResponse,fromCustomClient} from 'geotiff';
+import {BaseClient,BaseResponse,BaseDecoder,addDecoder,fromCustomClient} from 'geotiff';
+import {decompress} from 'fzstd';
 import proj4 from 'proj4';
 import {bbox,type RasterCell} from './land.ts';
 import type {ParcelPolygon,Position} from './parcel.ts';
 
 const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com']);
 export type RasterWindow={cells:RasterCell[];resolutionM:number;crs:string};
+// JRC seasonality uses Zstandard. The default GeoTIFF decoder compiles Wasm
+// bytes at runtime, which Workers forbids. Keep GeoTIFF's predictor handling
+// while replacing only the block decompressor with a pure JavaScript decoder.
+class JavaScriptZstdDecoder extends BaseDecoder {
+  decodeBlock(buffer:ArrayBufferLike):ArrayBuffer{
+    const p=this.parameters,bits=typeof p.bitsPerSample==='number'?[p.bitsPerSample]:Array.from(p.bitsPerSample);
+    const expected=p.tileWidth*p.tileHeight*bits.reduce((n,b)=>n+b,0)/8;
+    if(!Number.isFinite(expected)||expected<=0||expected>16000000)throw new Error('Bloc Zstandard décompressé trop volumineux.');
+    const decoded=decompress(new Uint8Array(buffer));
+    if(decoded.byteLength>16000000)throw new Error('Bloc Zstandard décompressé trop volumineux.');
+    return new Uint8Array(decoded).buffer;
+  }
+}
+addDecoder(50000,async()=>JavaScriptZstdDecoder,undefined,false);
 class SafeResponse extends BaseResponse {
   constructor(private response:Response,private budget:{bytes:number}){super();}
   get ok(){return this.response.ok;} get status(){return this.response.status;}
@@ -23,7 +38,12 @@ class RangeClient extends BaseClient {
   constructor(url:string,private fetcher:typeof fetch,private deadline:AbortSignal){super(url);if(!ALLOWED_HOSTS.has(new URL(url).hostname)||new URL(url).protocol!=='https:')throw new Error('Hôte raster non autorisé.');}
   async request(options:RequestInit={}){
     if(++this.requests>80)throw new Error('Trop de blocs raster pour ce contour.');
-    const response=await this.fetcher(this.url,{...options,redirect:'error',signal:AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])])});
+    // Workers rejects redirect:'error' before sending the request. Manual mode
+    // preserves the host allowlist: a redirect is rejected by the 206 check.
+    // Call the native function without the RangeClient as its receiver.
+    // Workers' fetch rejects that receiver with Illegal invocation; Node accepts it.
+    const fetcher=this.fetcher;
+    const response=await fetcher(this.url,{...options,redirect:'manual',signal:AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])])});
     if(response.status!==206){await response.body?.cancel();throw new Error(`Lecture partielle indisponible (${response.status}).`);}
     return new SafeResponse(response,this.budget);
   }

@@ -112,11 +112,12 @@ Lectures HTTP partielles vers des hôtes fixes, budget de données et nombre de 
 
 ```bash
 pnpm check
-pnpm test
+pnpm test # comprend le test déterministe dans Cloudflare workerd
 pnpm test:integration
 pnpm test:regressions
 pnpm build
 node --experimental-transform-types scripts/check-land-sources.mjs --live
+node scripts/check-land-worker.mjs --live
 # Contrôle de décodage indépendant facultatif, dans un environnement Python isolé :
 pip install -r tests/requirements-geo.txt
 python scripts/check-raster-reference.py
@@ -142,3 +143,13 @@ Ce travail vérifie le transport, les classes et les règles du logiciel. Il ne 
 - https://docs.digitalearthafrica.org/en/latest/data_specs/Landsat_WOfS_specs.html
 - https://geotiffjs.github.io/geotiff.js/
 - https://github.com/mfogel/polygon-clipping
+
+## Correction du transport Workers du 31 octobre 2026
+
+Le premier déploiement utilisait `redirect: 'error'`, accepté par Node mais rejeté par Workers avant tout envoi réseau. Le lecteur raster appelait aussi la fonction native `fetch` comme méthode de son client : Workers refuse ce receveur (`Illegal invocation`), alors que Node le tolère. Les deux appels ont été corrigés : mode `manual`, refus explicite des réponses autres que 206 pour les rasters et appel de `fetch` sans receveur personnalisé. Les redirections restent refusées, sans élargissement de la liste des hôtes. Le catalogue WOfS refuse les redirections et les réponses non JSON en conservant le statut HTTP.
+
+Le test `land-worker.test.mjs` exécute le fournisseur, le décodage GeoTIFF et la classification dans le workerd verrouillé avec Wrangler, avec réponses HTTP synthétiques : eau exclue, panne inconnue, redirection refusée. Le test inclut désormais une bande compressée Zstandard : le décodeur Wasm par défaut de GeoTIFF ne peut pas compiler ses octets dans Workers. Le remplacement JavaScript `fzstd` conserve le traitement des prédicteurs par GeoTIFF, et borne la taille des blocs acceptés. Les trois incompatibilités sont donc couvertes avant publication. `check-land-worker.mjs --live` utilise le même runtime et les vraies tuiles sur six secteurs ; seul le transport TLS est relayé par le réseau de l’hôte. Le rapport `verification-worker-2026-10-31.json` distingue ce contrôle local d’un contrôle authentifié de production et d’une validation de terrain.
+
+L’interface indique désormais « Terrain non vérifié » pour une couverture entièrement inconnue et « Calcul suspendu » pour un plan bloqué, au lieu d’annoncer indéfiniment sa préparation. Les observations récentes et la qualité InputQuality restent signalées manquantes si leurs fournisseurs ne les livrent pas.
+
+Références : https://developers.cloudflare.com/workers/runtime-apis/request/ ; https://github.com/101arrowz/fzstd
