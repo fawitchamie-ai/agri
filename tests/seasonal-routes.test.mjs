@@ -1,3 +1,4 @@
+import {landFixture,testParcel} from './support/land-fixtures.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {localFetch,setIdentity,closeHarness} from './support/local-route-harness.mjs';
@@ -17,7 +18,7 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     }
     await req('/api/seasonal',{action:'capabilities',country:'XXX'},400);
     await req('/api/seasonal',{action:'capabilities',country:'TGO',cropId:'unknown'},400);
-    const config=exampleCampaign(new Date().toISOString().slice(0,10));
+    const config=exampleCampaign(new Date().toISOString().slice(0,10));config.parcelGeometry=testParcel;config.landAssessment=landFixture(testParcel);
     const save=await req('/api/seasonal',{action:'save',id:'campaign-1',expectedRevision:0,config},201);
     assert.deepEqual(save.campaign.plan,planWater(config));assert.equal(save.campaign.revision,1);
     const e={id:'rain-stable',date:config.sowingDate,kind:'rain',amount:20,unit:'mm',point:'field',status:'measured',source:'Synthetic fixture'};

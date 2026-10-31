@@ -13,6 +13,7 @@ import ParcelExplorer, {MapIcon} from './parcel-explorer';
 import {parcelMetrics,type ParcelPolygon} from '../../lib/seasonal/parcel';
 import {applyCropProfile,cropById,CATALOG_VERSION} from '../../lib/seasonal/catalog';
 import QuickSimulation from './quick-simulation';
+import {migrateInputs,reconcileInputs,geometryIdentity} from '../../lib/seasonal/provenance';
 import {automaticCampaign} from '../../lib/seasonal/automatic';
 import { seasonalCapabilities } from '../../lib/seasonal/capabilities';
 
@@ -64,10 +65,10 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     if(workspace) api('/api/seasonal').then(r=>setList(r.campaigns)).catch(e=>setError(e.message));
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
-  function edit(next: SeasonalConfig) { setNutrientResult(null);setConfig(next);setDirty(true);setPlanStale(true);setComparisons([]); }
+  function edit(next: SeasonalConfig) { setNutrientResult(null);setConfig(next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next));setDirty(true);setPlanStale(true);setComparisons([]); }
   function change<K extends keyof SeasonalConfig>(key:K,value:SeasonalConfig[K]) { if(key==='crop'){edit({...config,crop:String(value),cropProfile:undefined,nutritionReference:undefined,stages:[],parameterSource:''});return;}edit({...config,[key]:value,...(['country','territory','variety','systemDomain'].includes(key)?{nutritionReference:undefined}:{}),...(key==='stages'&&config.cropProfile?{cropProfile:{...config.cropProfile,mode:'custom' as const}}:{})}); }
   function sys<K extends keyof SeasonalConfig['system']>(key:K,value:SeasonalConfig['system'][K]) { edit({...config,system:{...config.system,[key]:value}}); }
-  function adopt(c:Campaign) { setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(c.config);setEvents(c.events);setPlan(c.plan);setDirty(false);setPlanStale(false);setComparisons([]); }
+  function adopt(c:Campaign) { setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(migrateInputs(c.config));setEvents(c.events);setPlan(null);setDirty(false);setPlanStale(true);setComparisons([]); }
   async function open(id:string) { setBusy(true);setError('');try {const r=await api('/api/seasonal?id='+encodeURIComponent(id));adopt(r.campaign);setHistory(r.history);setNotice('Campagne chargée.');}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}try {setPlan(planWater(config,events));setPlanStale(false);setTab('plan');}catch(e){setError((e as Error).message);} }
   async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');setList((await api('/api/seasonal')).campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
@@ -96,7 +97,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   }
   function newCampaign() {setDraftId(newId());setActive(null);setConfig(emptyCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setComparisons([]);setTab('simulation');}
   function loadExample() {setDraftId(newId());setActive(null);setConfig(exampleCampaign());setEvents([]);setPlan(null);setHistory([]);setDirty(true);setTab('carte');setNotice('Exemple synthétique chargé. Remplacez les hypothèses avant un usage sur votre champ.');}
-  function restoreDraft() {try{const d=JSON.parse(localStorage.getItem(draftKey)||'null');if(!d)throw new Error('Aucun brouillon enregistré sur cet appareil.');setConfig(d.config);setEvents(d.events);setActive(d.active);setPlan(null);setDirty(true);setNotice('Brouillon restauré : recalculez puis vérifiez la révision avant enregistrement.');}catch(e){setError((e as Error).message);}}
+  function restoreDraft() {try{const d=JSON.parse(localStorage.getItem(draftKey)||'null');if(!d)throw new Error('Aucun brouillon enregistré sur cet appareil.');setConfig(migrateInputs(d.config));setEvents(d.events);setActive(d.active);setPlan(null);setDirty(true);setNotice('Brouillon restauré : recalculez puis vérifiez la révision avant enregistrement.');}catch(e){setError((e as Error).message);}}
   function importWeather() {try {
     const rows=weatherText.trim().split(/\r?\n/).filter(Boolean).map((l,i)=>{
       const p=l.split(';').map(s=>s.trim());if(p.length!==5)throw new Error(`Ligne ${i+1} : date;pluie_mm;et0_mm;statut;source attendus.`);
@@ -115,7 +116,11 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   }catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function defineParcel(shape:ParcelPolygon|null,country:SeasonalConfig['country']) {
     const metrics=shape?parcelMetrics(shape):null;
-    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],nutritionReference:undefined};
+    if(geometryIdentity(config.parcelGeometry)!==geometryIdentity(shape)){
+      setEvents([]);
+      if(active){setDraftId(newId());setActive(null);setHistory([]);setNotice('Nouveau contour : une nouvelle campagne est préparée. Les observations de l’ancienne parcelle restent dans sa campagne.');}
+    }
+    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],inputs:emptyCampaign().inputs,landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},nutritionReference:undefined};
     edit(shape?automaticCampaign(next):next);
     if(shape){setParcelDraft(false);setTab('simulation');}
   }
@@ -194,7 +199,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     {config.fallback&&<div className="form-grid"><Field label="Nom et hypothèses du scénario"><input value={config.fallback.label} onChange={e=>change('fallback',{...config.fallback!,label:e.target.value})}/></Field><NumberField label="ET0 hypothétique (mm/j)" value={config.fallback.et0MmDay} onChange={v=>change('fallback',{...config.fallback!,et0MmDay:v??NaN})}/><NumberField label="Pluie hypothétique (mm/j)" value={config.fallback.rainMmDay} onChange={v=>change('fallback',{...config.fallback!,rainMmDay:v??NaN})}/></div>}
     <details open><summary>Saisir ou importer les données quotidiennes</summary><p>Une ligne par date, sans en-tête : <code>AAAA-MM-JJ;pluie_mm;et0_mm;statut;source</code>. Statut : observed, forecast ou scenario. Laisser une mesure inconnue vide. Toutes les lignes doivent avoir été disponibles à la date du conseil.</p><Field label="Données quotidiennes"><textarea rows={7} value={weatherText} onChange={e=>setWeatherText(e.target.value)} placeholder="2026-10-29;12;4.5;observed;Pluviomètre et station locale"/></Field><div className="form-actions"><button className="btn secondary" onClick={importWeather}>Vérifier et ajouter les lignes</button></div></details>
     <p>{config.weather.length} journée(s) renseignée(s). Les observations de pluie du suivi auront priorité sur ces lignes.</p>
-    {!!config.weather.length&&<div className="table-wrap"><table className="data-table"><thead><tr><th>Date</th><th>Pluie (mm)</th><th>ET0 (mm)</th><th>Statut</th><th>Source</th><th>Action</th></tr></thead><tbody>{config.weather.map(w=><tr key={w.date}><td>{w.date}</td><td>{fmt(w.rainMm)}</td><td>{fmt(w.et0Mm)}</td><td>{w.status==='forecast'?'Prévision':w.status==='scenario'?'Scénario':'Observation'}</td><td>{w.source}</td><td><button className="btn secondary small" onClick={()=>change('weather',config.weather.filter(x=>x.date!==w.date))}>Retirer</button></td></tr>)}</tbody></table></div>}
+    {!!config.weather.length&&<div className="table-wrap"><table className="data-table"><thead><tr><th>Date</th><th>Pluie (mm)</th><th>ET0 (mm)</th><th>Statut</th><th>Source</th><th>Action</th></tr></thead><tbody>{config.weather.map(w=><tr key={w.date}><td>{w.date}</td><td>{fmt(w.rainMm)}</td><td>{fmt(w.et0Mm)}</td><td>{w.status==='forecast'?'Prévision':w.status==='scenario'?'Scénario':w.status==='estimated'?'Estimé par modèle':'Observation'}</td><td>{w.source}</td><td><button className="btn secondary small" onClick={()=>change('weather',config.weather.filter(x=>x.date!==w.date))}>Retirer</button></td></tr>)}</tbody></table></div>}
     </section>}
 
     {tab==='plan'&&<div role="tabpanel" id="seasonal-panel-plan" aria-labelledby="seasonal-tab-plan">

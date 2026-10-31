@@ -1,3 +1,6 @@
+import {loadLandAssessment} from '@/lib/seasonal/land-provider';
+import {migrateInputs} from '@/lib/seasonal/provenance';
+import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
 import { body, database, failure, HttpError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
 import { planWater, upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
@@ -9,7 +12,7 @@ import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
 import { cropById } from '@/lib/seasonal/catalog';
 import { searchPlaces } from '@/lib/seasonal/places';
 
-function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: JSON.parse(row.config), events: JSON.parse(row.events), plan: JSON.parse(row.plan), updatedAt: row.updated_at, demo: !!row.demo }; }
+function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: migrateInputs(JSON.parse(row.config)), events: JSON.parse(row.events), plan: JSON.parse(row.plan), updatedAt: row.updated_at, demo: !!row.demo }; }
 async function readable(id: string, request: Request) {
   const s = await session(request), db = database();
   const row = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
@@ -28,7 +31,13 @@ export async function GET(request: Request) { try {
       if (!snapshot) throw new HttpError(404,'Révision introuvable.');
       return json({ id,revision:snapshot.revision,config:JSON.parse(snapshot.config),events:JSON.parse(snapshot.events),plan:JSON.parse(snapshot.plan),reason:snapshot.reason,createdAt:snapshot.created_at },200,{'Content-Disposition':`attachment; filename="campagne-revision-${snapshot.revision}.json"`});
     }
-    if (url.searchParams.get('format') === 'csv') return new Response(waterPlanCsv(JSON.parse(row.plan)), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="plan-irrigation.csv"', 'Cache-Control': 'no-store' } });
+    if (url.searchParams.get('format') === 'csv') {
+      const config=validateConfig(migrateInputs(JSON.parse(row.config)));
+      if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);
+      const plan=planWater(config,JSON.parse(row.events),{requireGeometry:true});
+      if(plan.status==='blocked')throw new HttpError(409,'Export du calendrier suspendu : '+plan.missing[0]);
+      return new Response(waterPlanCsv(plan), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="plan-irrigation.csv"', 'Cache-Control': 'no-store' } });
+    }
     const histories = await db.prepare('SELECT revision,reason,created_at FROM seasonal_revisions WHERE campaign_id=? ORDER BY revision DESC LIMIT 50').bind(id).all<any>();
     return json({ campaign: campaign(row), history: histories.results });
   }
@@ -37,7 +46,13 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request), db = database();
-  if(b.action==='environment')return json(await loadEnvironment(b.latitude,b.longitude,b.country,b.start,b.days));
+  if(b.action==='environment'){
+    let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
+    const m=parcelMetrics(geometry);
+    const [environment,landAssessment]=await Promise.all([loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,new Date().toISOString(),geometry,b.refresh===true),loadLandAssessment(geometry,fetch,new Date().toISOString(),b.refresh===true)]);
+    return json({...environment,landAssessment});
+  }
+  if(b.action==='land'){try{return json({assessment:await loadLandAssessment(validateParcel(b.geometry))});}catch(e){throw new InputError((e as Error).message);}}
   if(b.action==='places')return json({places:await searchPlaces(b.query),attribution:'GeoNames, répertoire local ; Open-Meteo Geocoding en complément'});
   if (b.action === 'capabilities') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
@@ -48,7 +63,7 @@ export async function POST(request: Request) { try {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
-  if (b.action === 'simulate') return json({ plan: planWater(b.config, b.events ?? []) });
+  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);return json({plan:planWater(config,b.events??[],{requireGeometry:true}),config});}
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
@@ -77,7 +92,8 @@ export async function POST(request: Request) { try {
   }
   // save never replaces the event log supplied by another client.
   events = validateEvents(events, config);
-  const plan = planWater(config, events), revision = b.expectedRevision + 1, now = new Date().toISOString();
+  if(config.parcelGeometry)config.landAssessment=await loadLandAssessment(config.parcelGeometry);
+  const plan = planWater(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
   const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : 'Paramètres et scénario de campagne actualisés.';
   if (!old) {
     await db.batch([

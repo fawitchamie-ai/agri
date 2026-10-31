@@ -13,9 +13,11 @@ export type SoilLayer = { thicknessM: number; thetaFC: number; thetaWP: number; 
 export type Stage = { name: string; days: number; kcStart: number; kcEnd: number; rootStartM: number; rootEndM: number; depletionFraction: number };
 export type WeatherDay = {
   date: string; rainMm: number | null; et0Mm: number | null; temperatureMeanC?: number | null;
-  status: 'observed' | 'forecast' | 'scenario'; source: string; availableAt: string;
+  status: 'observed' | 'estimated' | 'forecast' | 'scenario'; source: string; availableAt: string;
+  provenance?: Record<string,import('./provenance.ts').InputValue>;
 };
 export type WaterEvent = {
+  provenance?: import('./provenance.ts').InputValue;
   id: string; date: string; kind: 'rain' | 'irrigation' | 'soil';
   amount: number; unit: 'mm' | 'L' | 'm3' | 'fraction';
   point: 'net' | 'field' | 'source';
@@ -23,6 +25,9 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  inputs?: import('./provenance.ts').InputLedger;
+  inputPolicy?: {allowAssumptions:boolean;allowStale:boolean};
+  landAssessment?: import('./land.ts').LandAssessment;
   parcelGeometry?: import('./parcel.ts').ParcelPolygon;
   country: Country; name: string; territory: string; crop: string; variety: string;
   cropProfile?: { id: string; version: string; mode: 'reference' | 'custom' };
@@ -63,6 +68,9 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  eventProvenance?: import('./provenance.ts').InputValue[];
+  land?: import('./land.ts').LandAssessment;
+  inputProvenance?: import('./provenance.ts').InputLedger;
   nutrition?: ReturnType<typeof import('./nutrition.ts').referenceQuantities>;
   engineVersion: string; levelOfEvidence: 'simulation_non_validee'; status: 'conditional' | 'blocked';
   complete: boolean; horizonEnd: string; assumptions: string[]; missing: string[];

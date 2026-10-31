@@ -1,8 +1,11 @@
 import {COUNTRIES,type Country,type WeatherDay,type SoilLayer} from './types.ts';
+import {scopeId,valueEvidence,type InputValue} from './provenance.ts';
+import type {ParcelPolygon} from './parcel.ts';
+import type {LandAssessment} from './land.ts';
 import {addDays,InputError,isoDate} from './validation.ts';
 
-export type SoilEstimate = {hydraulicLayers?:SoilLayer[];ph:number|null;organicC:number|null;totalN:number|null;cec:number|null;sand:number|null;clay:number|null;source:string;depth:string;resolutionM:number;retrievedAt:string};
-export type Environment = {soil:SoilEstimate;weather:WeatherDay[];temperatures:{date:string;value:number;status:'forecast'|'scenario'}[];warnings:string[];retrievedAt:string;historicalYears:string};
+export type SoilEstimate = {provenance?:Record<string,InputValue>;hydraulicLayers?:SoilLayer[];ph:number|null;organicC:number|null;totalN:number|null;cec:number|null;sand:number|null;clay:number|null;source:string;depth:string;resolutionM:number;retrievedAt:string};
+export type Environment = {context?:string;scope?:{id:string;geometry:ParcelPolygon|null};landAssessment?:LandAssessment;soil:SoilEstimate;weather:WeatherDay[];temperatures:{date:string;value:number;status:'forecast'|'estimated'|'scenario'}[];warnings:string[];retrievedAt:string;historicalYears:string};
 const finite=(v:unknown,min:number,max:number):number|null=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max?v:null;
 
 /** Only the explicitly requested one-pixel, single-band integer TIFF (plain or Deflate, one pixel).
@@ -26,25 +29,36 @@ export async function readSoilPixel(buffer:ArrayBuffer):Promise<number|null> {
  const raw=tags.get(339)===2?pixels.getInt16(at,le):pixels.getUint16(at,le);
  return raw===nodata||raw<0||raw===65535?null:raw;
 }
-async function soilValue(property:string,depth:string,latitude:number,longitude:number,fetcher:typeof fetch):Promise<number|null>{
+async function soilValue(property:string,depth:string,latitude:number,longitude:number,fetcher:typeof fetch,statistic='mean'):Promise<number|null>{
  const url=new URL('https://maps.isric.org/mapserv');
- url.search=new URLSearchParams({map:`/map/${property}.map`,SERVICE:'WCS',VERSION:'1.0.0',REQUEST:'GetCoverage',COVERAGE:`${property}_${depth}cm_mean`,CRS:'EPSG:4326',BBOX:`${longitude-.0001},${latitude-.0001},${longitude+.0001},${latitude+.0001}`,WIDTH:'1',HEIGHT:'1',FORMAT:'GEOTIFF_INT16'}).toString();
- const response=await fetcher(url,{signal:AbortSignal.timeout(10000)});
- return response.ok?readSoilPixel(await response.arrayBuffer()):null;
+ url.search=new URLSearchParams({map:`/map/${property}.map`,SERVICE:'WCS',VERSION:'1.0.0',REQUEST:'GetCoverage',COVERAGE:`${property}_${depth}cm_${statistic}`,CRS:'EPSG:4326',BBOX:`${longitude-.0001},${latitude-.0001},${longitude+.0001},${latitude+.0001}`,WIDTH:'1',HEIGHT:'1',FORMAT:'GEOTIFF_INT16'}).toString();
+ try{const response=await fetcher(url,{signal:AbortSignal.timeout(10000)});
+ return response.ok?await readSoilPixel(await response.arrayBuffer()):null;}catch{return null;}
 }
 export async function loadSoil(latitude:number,longitude:number,fetcher:typeof fetch=fetch,now=new Date().toISOString()):Promise<SoilEstimate>{
  const specs=[['ph','phh2o',10,0,14],['organicC','soc',10,0,1000],['totalN','nitrogen',100,0,1000],['cec','cec',10,0,1000],['sand','sand',10,0,100],['clay','clay',10,0,100]] as const;
- const result:SoilEstimate={ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'ISRIC SoilGrids 2.0 — prédiction cartographique au point représentatif, CC BY 4.0',depth:'5–15 cm',resolutionM:250,retrievedAt:now};
+ const result:SoilEstimate={ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'ISRIC SoilGrids 2.0 — prédiction cartographique au point représentatif, CC BY 4.0',depth:'5–15 cm',resolutionM:250,retrievedAt:now,provenance:{}};
+ const id=scopeId(null,[longitude,latitude]);
+ const ev=(value:number|null,raw:number|null,unit:string,rawUnit:string,method:string,depth:[number,number])=>valueEvidence(value,unit,id,{rawValue:raw,rawUnit,method,depthCm:depth,provider:'ISRIC',product:'SoilGrids',productVersion:'2.0',acquiredAt:now,observedAt:null,status:value===null?'missing':'estimated',origin:'automatic',spatial:{point:[longitude,latitude],cell:`WCS query at ${longitude},${latitude}; native cell id not supplied`,resolutionM:250,crs:'EPSG:4326'},replacementReason:value===null?'Source inaccessible ou pixel sans donnée.':'Date de mesure du profil inconnue ; prédiction cartographique.'});
  const depths=[[0,5],[5,15],[15,30],[30,60],[60,100],[100,200]];
  const [hydraulics]=await Promise.all([
   Promise.allSettled(depths.map(async([top,bottom])=>{
    const [fc,wp]=await Promise.all([soilValue('wv0033',`${top}-${bottom}`,latitude,longitude,fetcher),soilValue('wv1500',`${top}-${bottom}`,latitude,longitude,fetcher)]);
+   const idx=depths.findIndex(d=>d[0]===top);
+   result.provenance![`layers.${idx}.thetaFC`]=ev(fc===null?null:fc/1000,fc,'m³/m³','10^-3 cm³/cm³','Rétention modélisée à 33 kPa',[top,bottom]);
+   result.provenance![`layers.${idx}.thetaWP`]=ev(wp===null?null:wp/1000,wp,'m³/m³','10^-3 cm³/cm³','Rétention modélisée à 1500 kPa',[top,bottom]);
+   result.provenance![`layers.${idx}.thicknessM`]=ev((bottom-top)/100,bottom-top,'m','cm','Bornes des horizons du produit',[top,bottom]);
    if(fc===null||wp===null||fc<=wp||fc>800||wp<0||wp>700)throw new Error('Rétention inconnue');
+   result.provenance![`layers.${idx}.initialTheta`]=valueEvidence(wp/1000+.6*(fc-wp)/1000,'m³/m³',id,{origin:'default',status:'assumed',method:'WP + 0,60 × (FC − WP)',depthCm:[top,bottom],acquiredAt:now,replacementReason:'Réserve initiale supposée à 60 %, non mesurée.'});
    return {thicknessM:(bottom-top)/100,thetaFC:fc/1000,thetaWP:wp/1000,initialTheta:wp/1000+.6*(fc-wp)/1000};
   })),
   Promise.allSettled(specs.map(async([key,property,div,min,max])=>{
-   const pixel=await soilValue(property,'5-15',latitude,longitude,fetcher);
+   const [pixel,low,high]=await Promise.all([soilValue(property,'5-15',latitude,longitude,fetcher),soilValue(property,'5-15',latitude,longitude,fetcher,'Q0.05'),soilValue(property,'5-15',latitude,longitude,fetcher,'Q0.95')]);
    if(pixel!==null)result[key]=finite(pixel/div,min,max);
+   const units={ph:'pH',organicC:'g/kg',totalN:'g/kg',cec:'cmol(+)/kg',sand:'%',clay:'%'};
+   result.provenance![key]=ev(result[key],pixel,units[key],`encoded ${property} / ${div}`,property==='phh2o'?'pH eau, prédiction':'Prédiction cartographique moyenne',[5,15]);
+   if(low!==null&&high!==null&&low<=high&&finite(low/div,min,max)!==null&&finite(high/div,min,max)!==null)result.provenance![key].uncertainty={lower:low/div,upper:high/div,level:.9,method:'Intervalle prédictif SoilGrids Q0.05–Q0.95'};
+   else result.provenance![key].replacementReason+=' Incertitude non récupérée.';
   })),
  ]);
  // Do not splice missing horizons together or apply topsoil values to the subsoil.
@@ -52,7 +66,7 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
 
  return result;
 }
-async function weatherJson(url:URL,fetcher:typeof fetch){const r=await fetcher(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error('Météo indisponible');const d=await r.json() as any;if(!Array.isArray(d?.daily?.time)||d.daily.time.length>1200||d.daily_units?.precipitation_sum!=='mm'||d.daily_units?.et0_fao_evapotranspiration!=='mm'||d.daily_units?.temperature_2m_mean!=='°C')throw new Error('Unités météo inconnues');return d.daily;}
+async function weatherJson(url:URL,fetcher:typeof fetch){const r=await fetcher(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw new Error('Météo indisponible');const d=await r.json() as any;if(!Array.isArray(d?.daily?.time)||d.daily.time.length>1200||d.daily_units?.precipitation_sum!=='mm'||d.daily_units?.et0_fao_evapotranspiration!=='mm'||d.daily_units?.temperature_2m_mean!=='°C')throw new Error('Unités météo inconnues');return {...d.daily,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};}
 async function acquireEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString()):Promise<Environment>{
  if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>85||Math.abs(longitude)>180||!Object.hasOwn(COUNTRIES,country))throw new InputError('Localisation invalide.');
  isoDate(start,'Date du semis');if(!Number.isInteger(days)||days<1||days>366)throw new InputError('Cycle invalide.');
@@ -68,14 +82,18 @@ async function acquireEnvironment(latitude:number,longitude:number,country:Count
  const recent=new Map<string,number>();if(forecast.status==='fulfilled')forecast.value.time.forEach((d:string,i:number)=>recent.set(d,i));
  for(let i=0;i<days;i++){
   const date=addDays(start,i),idx=recent.get(date),f=forecast.status==='fulfilled'?forecast.value:null;
-  let rain:number|null=null,et:number|null=null,temp:number|null=null,status:'forecast'|'scenario'='scenario',source=`Open-Meteo / ERA5 — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
-  if(idx!==undefined&&f){rain=finite(f.precipitation_sum[idx],0,2000);et=finite(f.et0_fao_evapotranspiration[idx],0,30);temp=finite(f.temperature_2m_mean[idx],-60,60);status='forecast';source=date<now.slice(0,10)?'Open-Meteo — historique récent de modèles, pas mesure au champ':'Open-Meteo — prévision de modèles, pas mesure au champ';}
+  let rain:number|null=null,et:number|null=null,temp:number|null=null,status:'forecast'|'estimated'|'scenario'='scenario',source=`Open-Meteo / Best Match — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
+  if(idx!==undefined&&f){rain=finite(f.precipitation_sum[idx],0,2000);et=finite(f.et0_fao_evapotranspiration[idx],0,30);temp=finite(f.temperature_2m_mean[idx],-60,60);status=date<now.slice(0,10)?'estimated':'forecast';source=date<now.slice(0,10)?'Open-Meteo — historique récent de modèles, pas mesure au champ':'Open-Meteo — prévision de modèles, pas mesure au champ';}
   if((rain===null||et===null)&&history.status==='fulfilled'){
    const h=history.value,indices:number[]=[];h.time.forEach((d:string,j:number)=>{if(d.slice(5)===(date.slice(5)==='02-29'?'02-28':date.slice(5)))indices.push(j);});
    const mean=(key:string,min:number,max:number)=>{const values=indices.map(j=>finite(h[key]?.[j],min,max)).filter((x):x is number=>x!==null);return values.length===3?values.reduce((a,b)=>a+b,0)/values.length:null;};
-   rain=mean('precipitation_sum',0,2000);et=mean('et0_fao_evapotranspiration',0,30);temp=mean('temperature_2m_mean',-60,60);status='scenario';source=`Open-Meteo / ERA5 — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
+   rain=mean('precipitation_sum',0,2000);et=mean('et0_fao_evapotranspiration',0,30);temp=mean('temperature_2m_mean',-60,60);status='scenario';source=`Open-Meteo / Best Match — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
   }
-  if(rain!==null||et!==null)weather.push({date,rainMm:rain,et0Mm:et,temperatureMeanC:temp,status,source,availableAt:now});
+  const meta=status!=='scenario'?f?._metadata:history.status==='fulfilled'?history.value._metadata:null;
+  const props=[['rainMm',rain,'precipitation_sum','mm'],['et0Mm',et,'et0_fao_evapotranspiration','mm'],['temperatureMeanC',temp,'temperature_2m_mean','°C']] as const;
+  const provenance:Record<string,InputValue>={};
+  for(const [key,val,property,unit] of props)provenance[key]=valueEvidence(val,unit,scopeId(null,[longitude,latitude]),{rawValue:status==='scenario'&&history.status==='fulfilled'?history.value.time.flatMap((d:string,j:number)=>d.slice(5)===date.slice(5)?[history.value[property]?.[j]].filter((v:unknown)=>typeof v==='number'):[]):val,rawUnit:unit,origin:'automatic',status:val===null?'missing':status==='scenario'?'scenario':date<now.slice(0,10)?'estimated':'forecast',provider:'Open-Meteo',product:status==='scenario'?'Historical Weather API':'Forecast API',productVersion:null,method:status==='scenario'?'Moyenne du même jour sur trois années, scénario historique':property==='et0_fao_evapotranspiration'?'ET0 FAO':'Sortie de modèle',interval:{from:date,to:date},referencePeriod:status==='scenario'?{from:`${year-3}-01-01`,to:`${year-1}-12-31`}:null,acquiredAt:now,observedAt:null,model:null,runAt:null,spatial:{point:meta&&Number.isFinite(meta.longitude)&&Number.isFinite(meta.latitude)?[meta.longitude,meta.latitude]:null,cell:meta?`returned:${meta.longitude},${meta.latitude}`:null,resolutionM:null,crs:'EPSG:4326'},replacementReason:'Best Match : modèle, run et résolution effective non exposés par cette réponse ; pas une mesure de terrain.'});
+  if(rain!==null||et!==null)weather.push({date,rainMm:rain,et0Mm:et,temperatureMeanC:temp,status,source,availableAt:now,provenance});
   if(temp!==null)temperatures.push({date,value:temp,status});
  }
  return {soil:s,weather,temperatures,warnings,retrievedAt:now,historicalYears:`${year-3}–${year-1}`};
@@ -83,14 +101,14 @@ async function acquireEnvironment(latitude:number,longitude:number,country:Count
 
 // Public gridded estimates only, no account identifiers. Bounded per-isolate cache.
 const environmentCache=new Map<string,{until:number;value:Environment}>();
-export async function loadEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString()):Promise<Environment>{
- const key=JSON.stringify([latitude,longitude,country,start,days,now.slice(0,10)]);
+export async function loadEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),geometry?:ParcelPolygon,refresh=false):Promise<Environment>{
+ const key=JSON.stringify([geometry??null,latitude,longitude,country,start,days,now.slice(0,10)]);
  const cached=fetcher===fetch?environmentCache.get(key):undefined;
- if(cached&&cached.until>Date.now())return structuredClone(cached.value);
+ if(!refresh&&cached&&cached.until>Date.now())return {...structuredClone(cached.value),scope:{id:scopeId(geometry,[longitude,latitude]),geometry:geometry??null},context:JSON.stringify([geometry??null,country,start,days])};
  const value=await acquireEnvironment(latitude,longitude,country,start,days,fetcher,now);
  if(fetcher===fetch&&value.weather.length===days&&value.soil.ph!==null&&value.soil.hydraulicLayers){
   if(environmentCache.size>=24)environmentCache.delete(environmentCache.keys().next().value!);
   environmentCache.set(key,{until:Date.now()+3600000,value});
  }
- return structuredClone(value);
+ return {...structuredClone(value),scope:{id:scopeId(geometry,[longitude,latitude]),geometry:geometry??null},context:JSON.stringify([geometry??null,country,start,days])};
 }

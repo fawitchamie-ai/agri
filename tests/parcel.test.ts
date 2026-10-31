@@ -1,3 +1,4 @@
+import {landFixture} from './support/land-fixtures.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -28,6 +29,7 @@ test('Parcelle : intersections, alignements, doublons, surfaces et types invalid
 });
 test('Parcelle : surface et coordonnées recalculées, puis utilisées pour les volumes',()=>{
  const c=exampleCampaign('2026-10-01');c.parcelGeometry=polygonFromPoints(pts);c.areaM2=1;c.latitude=70;c.longitude=50;c.system.sourceBudgetM3=null;c.system.sourceFlowM3h=null;c.system.hoursPerDay=null;
+ c.landAssessment=landFixture(c.parcelGeometry);
  const canonical=validateConfig(c),m=parcelMetrics(c.parcelGeometry);assert.equal(canonical.areaM2,m.areaM2);assert.deepEqual([canonical.longitude,canonical.latitude],m.point);
  const actual=planWater(c);const reference=planWater({...c,parcelGeometry:undefined,areaM2:1000});
  assert.ok(Math.abs((actual.totals.fieldM3 as number)/(reference.totals.fieldM3 as number)-m.areaM2/1000)<1e-9);
