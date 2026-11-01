@@ -18,6 +18,10 @@ catch {
     throw new HttpError(400, 'Document JSON illisible.');
 } if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new HttpError(400, 'Document JSON attendu.'); return value; }
-export function failure(error: unknown): Response { if (error instanceof HttpError)
-    return json({ error: error.message }, error.status); console.error('AgriPrévision request failed', error instanceof Error ? error.message : 'unknown'); return json({ error: 'Le service est momentanément indisponible. Vos saisies peuvent être réessayées.' }, 503); }
+export function failure(error: unknown): Response {
+ if(error instanceof HttpError)return json({error:error.message},error.status);
+ const requestId=crypto.randomUUID();
+ console.error('AgriPrévision request failed',requestId,error instanceof Error?error.name:'unknown',error instanceof Error?error.message:'unknown');
+ return json({error:`Le service est momentanément indisponible. Vos saisies sont conservées ; réessayez. Référence : ${requestId}.`,requestId},503,{'X-Request-Id':requestId});
+}
 export async function digest(s: string): Promise<string> { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }

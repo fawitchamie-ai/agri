@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {deflateSync} from 'node:zlib';
-import {readSoilPixel,loadEnvironment,type Environment} from '../lib/seasonal/environment.ts';
+import {readSoilPixel,loadSoil,loadEnvironment,type Environment} from '../lib/seasonal/environment.ts';
 import {automaticCampaign,mergeEnvironment,phSuitability} from '../lib/seasonal/automatic.ts';
 import {declareScenario,reconcileInputs,environmentContext} from '../lib/seasonal/provenance.ts';
 import {emptyCampaign} from '../lib/seasonal/example.ts';
@@ -70,4 +70,19 @@ test('Simulation automatique : cycle complet, sensibilité aux apports, pH sans 
  assert.deepEqual(planWater(phOnly).totals,plan.totals);
  assert.equal(phSuitability(null,[5,7],[4,8]),null);assert.equal(phSuitability(6,[5,7],[4,8]),100);assert.equal(phSuitability(4.5,[5,7],[4,8]),50);
  assert.equal(automaticCampaign(c,'fonio').stages.length,0);assert.equal(automaticCampaign(c,'rice-flooded').stages.length,0);
+});
+
+test('incomplete forecast columns and malformed dates degrade to documented history, never a TypeError/503',async()=>{
+ for(const broken of ['column','date','duplicate']){
+  const provider:typeof fetch=async(input,init)=>{const r=await fakeFetch(input,init);if(new URL(String(input)).hostname!=='api.open-meteo.com')return r;const d=await r.json() as any;if(broken==='column')delete d.daily.et0_fao_evapotranspiration;if(broken==='date')d.daily.time[0]=null;if(broken==='duplicate'){for(const k of Object.keys(d.daily))d.daily[k].push(d.daily[k][0]);}return Response.json(d);};
+  const e=await loadEnvironment(9.5,1.2,'BEN','2026-10-30',2,provider,now);assert.equal(e.weather.length,2);assert.ok(e.weather.every(w=>w.status==='scenario'));assert.equal(e.weather[0].rainMm,3);assert.match(e.warnings.join(' '),/Prévisions météo indisponibles/);
+ }
+ const malformed:typeof fetch=async()=>Response.json({daily_units:{precipitation_sum:'mm',et0_fao_evapotranspiration:'mm',temperature_2m_mean:'°C'},daily:{time:['2026-10-30'],precipitation_sum:[]}});
+ const missing=await loadEnvironment(9.5,1.2,'BEN','2026-10-30',2,malformed,now,undefined,false,null);assert.equal(missing.weather.length,0);assert.equal(missing.soil.ph,null);
+});
+
+test('soil request deadline also stops queued reads rather than multiplying timeouts by 30',async()=>{
+ let calls=0,active=0,peak=0;
+ const slow:typeof fetch=async(_input,init)=>{calls++;active++;peak=Math.max(peak,active);try{return await new Promise<Response>((_resolve,reject)=>{const signal=init!.signal!;if(signal.aborted)reject(signal.reason);else signal.addEventListener('abort',()=>reject(signal.reason),{once:true});});}finally{active--;}};
+ const keepAlive=setTimeout(()=>{},1000),start=performance.now();try{const soil=await loadSoil(9.5,1.2,slow,now,20);assert.equal(soil.ph,null);assert.equal(soil.hydraulicLayers,undefined);assert.ok(calls<=4);assert.ok(peak<=4);assert.ok(performance.now()-start<900);}finally{clearTimeout(keepAlive);}
 });
