@@ -9,7 +9,7 @@ export default function InterventionComparison({config,events}:{config:SeasonalC
  const controller=useRef<AbortController|null>(null),key=JSON.stringify([config,events]);
  useEffect(()=>{controller.current?.abort();setResult(null);setError('');setBusy(false);return()=>controller.current?.abort();},[key]);
  async function compare(){controller.current?.abort();const request=new AbortController();controller.current=request;setBusy(true);setError('');setResult(null);
-  try{const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:request.signal,body:JSON.stringify({action:'compare-interventions',config,events})});const data=await response.json();if(!response.ok)throw new Error(data.error??'Comparaison indisponible');if(controller.current===request&&!request.signal.aborted){setResultKey(key);setResult(data);}}
+  try{const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:request.signal,body:JSON.stringify({action:'compare-interventions',config,events})});const data=await response.json() as ReturnType<typeof comparePlannedProducts>&{error?:string};if(!response.ok)throw new Error(data.error??'Comparaison indisponible');if(!data||!Array.isArray(data.scenarios))throw new Error('Réponse de comparaison invalide');if(controller.current===request&&!request.signal.aborted){setResultKey(key);setResult(data);}}
   catch(e){if(controller.current===request&&!request.signal.aborted)setError((e as Error).message);}
   finally{if(controller.current===request&&!request.signal.aborted)setBusy(false);}
  }
