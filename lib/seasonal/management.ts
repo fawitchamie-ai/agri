@@ -1,4 +1,5 @@
 import type {SeasonalConfig,WaterPlan} from './types.ts';
+import {landBlockReason} from './land.ts';
 import {geometryIdentity} from './provenance.ts';
 import {addDays,isoDate,InputError} from './validation.ts';
 export const MANAGEMENT_VERSION='management-1.0.0';
@@ -33,7 +34,8 @@ export function editableIrrigation(c:SeasonalConfig,p:WaterPlan|null):PlannedIrr
  return (p?.days??[]).filter(d=>d.date>=c.asOfDate&&d.intervention?.type==='proposed'&&d.intervention.fieldMm!==null&&d.intervention.fieldMm>0).map(d=>({date:d.date,fieldM3Ha:d.intervention!.fieldMm!*10}));
 }
 export function managementSummary(c:SeasonalConfig,plan:WaterPlan){
- const p=c.managementPlan!,areaM2=plan.calculationArea?.areaM2??null;
+ const p=c.managementPlan!,areaKnown=!landBlockReason(c)&&(!plan.yieldEstimation||plan.yieldEstimation.coverage.complete);
+ const areaM2=areaKnown?(plan.yieldEstimation?.surface.sownM2??plan.calculationArea?.areaM2??null):null;
  return {version:MANAGEMENT_VERSION,areaM2,irrigationMode:p.irrigation.mode,irrigation:p.irrigation.applications.map(a=>{const d=plan.days.find(d=>d.date===a.date);return {...a,requestedFieldM3:areaM2===null?null:a.fieldM3Ha*areaM2/10000,simulatedFieldM3Ha:d?.intervention?.type==='proposed'&&d.intervention.fieldMm!==null?d.intervention.fieldMm*10:null,status:d?.intervention?.type==='recorded'?'recorded_takes_precedence':a.date<c.asOfDate?'past_unrealized':'proposed',reasons:d?.intervention?.reasons??[]};}),products:p.products.map(a=>({...a,totalProduct:areaM2===null?null:a.dose*areaM2/10000,totalUnit:a.unit==='kg/ha'?'kg':'L',npkKgHa:a.kind==='fertilizer'&&a.unit==='kg/ha'?a.npkPercent.map(n=>n===null?null:a.dose*n/100):[null,null,null],yieldEffect:'not_modelled'})),limits:['Arrosages futurs proposés, distincts des apports réalisés. Les contraintes déclarées bornent l’eau simulée.','Engrais, produits phytosanitaires et autres apports sont documentés ; aucun effet quantitatif sur le rendement n’est calibré ici.','Doses de produits commerciaux saisies, sans validation d’homologation ni prescription automatique. Un produit en L/ha sans masse volumique ne donne pas de kg de nutriments.']};
 }
 export function managementCsv(p:ManagementPlan){
