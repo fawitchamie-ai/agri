@@ -1,5 +1,5 @@
 'use client';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {EditButton,Pencil} from './editable-value';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
 import {SEASONAL_KY,yieldCsv,type YieldInput,type YieldReference} from '../../lib/seasonal/yield';
@@ -7,7 +7,8 @@ import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
 const fmt=(v:number|null|undefined,d=2)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 export default function YieldSummary({config,plan,stale,onChange}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void}){
  const [editing,setEditing]=useState(false);
- const [mode,setMode]=useState('recorded'),[error,setError]=useState(''),[campaigns,setCampaigns]=useState<{id:string;name:string}[]>([]),[other,setOther]=useState<WaterPlan['yieldEstimation']>(),[otherName,setOtherName]=useState('');
+ const [mode,setMode]=useState(config.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded'),[error,setError]=useState(''),[campaigns,setCampaigns]=useState<{id:string;name:string}[]>([]),[other,setOther]=useState<WaterPlan['yieldEstimation']>(),[otherName,setOtherName]=useState('');
+ useEffect(()=>{if(config.managementPlan?.irrigation.mode==='manual')setMode('proposed');},[config.managementPlan?.irrigation.mode]);
  const input=config.yieldEstimation,estimate=stale?undefined:plan?.yieldEstimation;
  const scenario=estimate?.scenarios.find(s=>s.id===mode),result=scenario?.totals;
  const unit=input?.units[0],reference=unit?.reference;

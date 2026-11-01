@@ -1,3 +1,4 @@
+import {parseManagement} from './management.ts';
 import {parseSowingInput} from './sowing.ts';
 import {parseAgronomic} from './agronomic.ts';
 import {parseYieldInput} from './yield.ts';
@@ -133,6 +134,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.agronomic=parseAgronomic(c.agronomic,validated);
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
   validated.salinity=parseSalinityInput(c.salinity);
+  validated.managementPlan=parseManagement(c.managementPlan,validated);
   return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {

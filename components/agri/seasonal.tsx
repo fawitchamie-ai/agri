@@ -125,7 +125,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       setEvents([]);
       if(active){setDraftId(newId());setActive(null);setHistory([]);setNotice('Nouveau contour : une nouvelle campagne est préparée. Les observations de l’ancienne parcelle restent dans sa campagne.');}
     }
-    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],inputs:emptyCampaign().inputs,landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},nutritionReference:undefined,sowingPlan:undefined};
+    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],inputs:emptyCampaign().inputs,landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},nutritionReference:undefined,sowingPlan:undefined,managementPlan:undefined};
     edit(shape?automaticCampaign(next):next);
     if(shape){setParcelDraft(false);setTab('simulation');}
   }

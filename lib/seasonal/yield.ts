@@ -1,3 +1,4 @@
+import {managementSummary} from './management.ts';
 import {estimateSowing} from './sowing.ts';
 import {cropById} from './catalog.ts';
 import {salinityScenario} from './salinity.ts';
@@ -9,7 +10,7 @@ import {validateConfig,validateEvents,InputError} from './validation.ts';
 import {planWater} from './engine.ts';
 import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
 
-export const YIELD_VERSION='conditional-yield-1.1.0';
+export const YIELD_VERSION='conditional-yield-1.2.0';
 export const KY_VERSION='FAO56-table24-seasonal-2';
 export const FAO_SOURCE='https://www.fao.org/4/x0490e/x0490e0e.htm';
 /** Whole-cycle values only. No interpolation to unlisted crops, no stage products. */
@@ -171,6 +172,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
  plan.sowingPlan=estimateSowing(c);
+ if(c.managementPlan)plan.management=managementSummary(c,plan);
  if(!c.salinity)return plan;
  // Reuse only spatial coverage checks; salinity is not a second water penalty.
  const spatial=estimateYield({...c,yieldEstimation:c.yieldEstimation?{...c.yieldEstimation,method:'declared-scenario'}:undefined},[],plan);

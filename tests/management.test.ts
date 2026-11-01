@@ -1,0 +1,40 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {emptyManagement,editableIrrigation,managementCsv} from '../lib/seasonal/management.ts';
+import {exampleCampaign} from '../lib/seasonal/example.ts';import {applyCropProfile} from '../lib/seasonal/catalog.ts';
+import {planWater,waterPlanCsv} from '../lib/seasonal/engine.ts';import {planSeason} from '../lib/seasonal/yield.ts';
+import {addDays,validateConfig} from '../lib/seasonal/validation.ts';import {geometryIdentity} from '../lib/seasonal/provenance.ts';import {assessLandGeometry} from '../lib/seasonal/land.ts';import {parcelMetrics} from '../lib/seasonal/parcel.ts';
+import type {Country,WaterEvent} from '../lib/seasonal/types.ts';
+function fixture(){const c=applyCropProfile(exampleCampaign('2026-11-01'),'maize');c.waterCondition='drained';c.parcelGeometry={type:'Polygon',coordinates:[[[1,8],[1.001,8],[1.001,8.001],[1,8.001],[1,8]]]};c.areaM2=parcelMetrics(c.parcelGeometry).areaM2;c.landAssessment=assessLandGeometry(c.parcelGeometry,[{id:'worldcover',status:'available',provider:'Synthetic test',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:'2026-11-01T00:00:00Z',resolutionM:10,crs:'EPSG:4326',cells:[{id:'land',value:40,geometry:c.parcelGeometry}],reason:null,assets:[],limitations:[]}]);c.managementPlan=emptyManagement(c);c.managementPlan.irrigation.mode='manual';c.system.sourceBudgetM3=1e6;c.system.sourceFlowM3h=null;c.system.hoursPerDay=null;c.fallback={label:'Synthetic moderate weather, not an acquisition',rainMmDay:2,et0MmDay:4};return c;}
+test('per-hectare field water is converted once, constrained and never compensated between manual dates',()=>{
+ const c=fixture();c.managementPlan!.irrigation.applications=[{date:c.asOfDate,fieldM3Ha:100}];let p=planSeason(c);const a=p.days[0].intervention!;assert.equal(a.netMm,7.5);assert.equal(a.fieldMm,10);assert.ok(Math.abs(a.fieldM3!-c.areaM2!/100)<1e-8);assert.equal(p.days.filter(d=>d.intervention).length,1);assert.equal(p.management!.irrigation[0].simulatedFieldM3Ha,100);
+ c.system.maxNetMmPerDay=3;p=planSeason(c);assert.equal(p.days[0].intervention!.netMm,3);assert.equal(p.management!.irrigation[0].simulatedFieldM3Ha,40);assert.equal(p.management!.irrigation[0].fieldM3Ha,100);assert.equal(p.days[0].intervention!.constrained,true);
+ c.system.sourceBudgetM3=0;assert.equal(planSeason(c).totals.netMm,0);c.managementPlan!.irrigation.applications[0].fieldM3Ha=0;assert.equal(planSeason(c).totals.netMm,0);
+ c.system.applicationEfficiency=null;assert.match(planSeason(c).missing.join(' '),/Efficacité d’arrosage requise/);
+ assert.match(waterPlanCsv(p),/dose_demandee_m3_ha_champ/);
+});
+test('past proposals are not realised; a recorded event takes precedence without duplication',()=>{
+ const c=fixture();c.asOfDate=addDays(c.sowingDate,3);c.managementPlan!.irrigation.applications=[{date:c.sowingDate,fieldM3Ha:200}];assert.equal(planSeason(c).totals.netMm,0);assert.equal(planSeason(c).management!.irrigation[0].status,'past_unrealized');
+ const e:WaterEvent={id:'actual',date:c.sowingDate,kind:'irrigation',amount:2,unit:'mm',point:'net',status:'declared',source:'Synthetic realised event',recordedAt:'2026-11-04T00:00:00Z'};
+ const p=planSeason(c,[e]);assert.equal(p.totals.netMm,2);assert.equal(p.management!.irrigation[0].status,'recorded_takes_precedence');
+ c.asOfDate=c.sowingDate;e.recordedAt='2026-11-01T00:00:00Z';assert.equal(planSeason(c,[e]).totals.netMm,2);e.status='planned';assert.equal(planSeason(c,[e]).totals.netMm,15,'an event only planned in the journal is not a real irrigation');
+});
+test('full-cycle FAO yield responds to the edited water plan in all six countries; recorded and rainfed stay unchanged',()=>{
+ for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN'] as Country[]){const c=fixture();c.country=country;c.yieldEstimation={version:'yield-input-1',method:'fao-seasonal',scopeGeometryId:geometryIdentity(c.parcelGeometry),homogeneityAssumption:'Synthetic uniform unit',units:[{id:'field',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic area',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Synthetic independent Ym, not field validation',availableOn:c.asOfDate,context:'Test fixture only',cropId:'maize',independentYm:true}}]};
+ const dry=planSeason(c).yieldEstimation!;c.managementPlan!.irrigation.applications=Array.from({length:25},(_,i)=>({date:addDays(c.sowingDate,i*5),fieldM3Ha:200}));const wet=planSeason(c);
+ assert.ok(wet.yieldEstimation!.scenarios[2].totals!.productionKg>dry.scenarios[2].totals!.productionKg,country);assert.deepEqual(wet.yieldEstimation!.scenarios[0].totals,dry.scenarios[0].totals);assert.deepEqual(wet.yieldEstimation!.scenarios[1].totals,dry.scenarios[1].totals);assert.equal(wet.calculationArea!.areaM2,1000);assert.equal(wet.management!.irrigation[0].requestedFieldM3,20);
+ c.yieldEstimation.method='declared-scenario';const before=planSeason(c).yieldEstimation!.scenarios[2].totals;c.managementPlan!.irrigation.applications=[];assert.deepEqual(planSeason(c).yieldEstimation!.scenarios[2].totals,before);
+ c.yieldEstimation.method='fao-seasonal';c.fallback=null;assert.equal(planSeason(c).yieldEstimation!.scenarios[2].totals,null);
+ }
+});
+test('product doses and nutrient mass keep units and explicit sources; chemicals never invent yield multipliers',()=>{
+ const c=fixture(),baseline=planSeason(c);c.managementPlan!.products=[{id:'npk',date:c.asOfDate,kind:'fertilizer',product:'Synthetic commercial NPK',dose:100,unit:'kg/ha',status:'planned',source:'Test, not a recommendation',npkPercent:[15,15,15]},{id:'liquid',date:c.asOfDate,kind:'fertilizer',product:'Synthetic liquid',dose:3,unit:'L/ha',status:'declared',source:'Synthetic declaration',npkPercent:[10,null,null]},{id:'pest',date:c.asOfDate,kind:'pesticide',product:'=untrusted',dose:2,unit:'L/ha',status:'planned',source:'Test only, no product prescribed',npkPercent:[null,null,null]}];
+ const p=planSeason(c);assert.deepEqual(p.totals,baseline.totals);assert.deepEqual(p.management!.products.find(a=>a.id==='npk')!.npkKgHa,[15,15,15]);assert.deepEqual(p.management!.products.find(a=>a.id==='liquid')!.npkKgHa,[null,null,null]);assert.ok(Math.abs(p.management!.products.find(a=>a.id==='npk')!.totalProduct!-100*c.areaM2!/10000)<1e-8);assert.equal(p.management!.products.find(a=>a.id==='pest')!.yieldEffect,'not_modelled');const csv=managementCsv(c.managementPlan!);assert.match(csv,/kg\/ha/);assert.match(csv,/L\/ha/);assert.match(csv,/'=untrusted/);assert.match(csv,/non_modelise/);
+});
+test('forged scope, future actuals, dates outside the cycle, duplicate dates and nonphysical doses are rejected',()=>{
+ const c=fixture();c.managementPlan!.irrigation.applications=[{date:c.asOfDate,fieldM3Ha:100}];
+ for(const edit of [(p:any)=>p.geometryId='forged',(p:any)=>p.cropId='tomato',(p:any)=>p.version='unknown',(p:any)=>p.irrigation.applications[0].fieldM3Ha=-1,(p:any)=>p.irrigation.applications[0].fieldM3Ha=NaN,(p:any)=>p.irrigation.applications[0].date='2099-01-01',(p:any)=>p.irrigation.applications.push(p.irrigation.applications[0])]){const d=structuredClone(c);edit(d.managementPlan);assert.throws(()=>validateConfig(d));}
+ c.managementPlan!.products=[{id:'x',date:addDays(c.asOfDate,1),kind:'other',product:'Test',dose:1,unit:'kg/ha',status:'declared',source:'Synthetic',npkPercent:[null,null,null]}];assert.throws(()=>validateConfig(c),/futur/);
+ c.managementPlan!.products=[];c.managementPlan!.irrigation={mode:'automatic',applications:[]};c.fallback={label:'Synthetic dry cycle',rainMmDay:0,et0MmDay:5};const auto=planSeason(c);const copied=editableIrrigation(c,auto);assert.ok(copied.length>8,'whole cycle, not just the eight nextWindows');assert.equal(copied.length,auto.days.filter(d=>d.intervention?.type==='proposed'&&d.intervention.fieldMm!>0).length);
+ const changedCrop=applyCropProfile(c,'soybean');assert.equal(changedCrop.managementPlan,undefined);assert.ok(c.managementPlan,'applying another crop does not mutate the original campaign');
+ c.managementPlan=undefined;const legacy=planWater(c);assert.equal(legacy.management,undefined);
+});

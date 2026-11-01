@@ -106,6 +106,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     const storedAfterRain = activeWater.reduce((a,b)=>a+b,0);
     const requiredNetMm = Math.max(0, tawMm - rawMm + demandMm - storedAfterRain);
     const actualIrrigations = todayEvents.filter(e => e.kind === 'irrigation');
+    const custom=c.managementPlan?.irrigation.mode==='manual',planned=custom?c.managementPlan!.irrigation.applications.find(a=>a.date===date):undefined;
     let net = 0, intervention: WaterDay['intervention'] = null;
     if (actualIrrigations.length) {
       const volumes: Volumes[] = [];
@@ -122,9 +123,10 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
       const source = sumKnown(volumes.map(v => v.sourceM3));
       if (source === null) sourceVolumeKnown = false; else usedSourceM3 += source;
       lastIrrigation = day;
-    } else if ((options.irrigationMode??'proposed')==='proposed' && date >= c.asOfDate && tawMm - activeWater.reduce((a, b) => a + b, 0) + demandMm >= rawMm) {
+    } else if ((options.irrigationMode??'proposed')==='proposed' && date >= c.asOfDate && (custom?!!planned:tawMm - activeWater.reduce((a, b) => a + b, 0) + demandMm >= rawMm)) {
       const stored = activeWater.reduce((a, b) => a + b, 0);
-      const requested = Math.min(tawMm-stored, Math.max(requiredNetMm,tawMm * (1-c.system.targetDepletionFraction) - stored));
+      if(planned&&c.system.applicationEfficiency===null){missing.push('Efficacité d’arrosage requise pour convertir le calendrier manuel en eau utile.');break;}
+      const requested = planned?planned.fieldM3Ha/10*c.system.applicationEfficiency!:Math.min(tawMm-stored, Math.max(requiredNetMm,tawMm * (1-c.system.targetDepletionFraction) - stored));
       const reasons: string[] = [];
       let allowed = requested;
       if (!c.system.allowedWeekdays.includes(new Date(date).getUTCDay())) { allowed = 0; reasons.push('Pas d’accès à l’eau ce jour.'); }
@@ -144,7 +146,8 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
       net = Math.max(0, allowed);
       const v = waterVolumes(net, c);
       if (v.sourceM3 === null) sourceVolumeKnown = false; else usedSourceM3 += v.sourceM3;
-      intervention = { ...v, type: 'proposed', constrained: net + 1e-9 < requested || reasons.length > 0, reasons };
+      intervention = { ...v, type: 'proposed', ...(planned?{requestedFieldM3Ha:planned.fieldM3Ha}:{}), constrained: net + 1e-9 < requested || reasons.length > 0, reasons };
+      if(planned)intervention.reasons.push('Date et dose prévues modifiées par l’utilisateur ; apport restant à réaliser.');
       if (net > 1e-9) lastIrrigation = day;
     }
     const irrigationDrain = addWater(net), drainageMm = rainDrain + irrigationDrain;
@@ -161,6 +164,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   const positive = future.filter(d => d.intervention!.netMm > 1e-9);
   const intervals = positive.slice(1).map((d, i) => (Date.parse(d.date) - Date.parse(positive[i].date)) / 86400000);
   const recordedSourceM3 = sumKnown(recorded.map(d => d.intervention!.sourceM3)), remainingSourceM3 = complete ? sumKnown(future.map(d => d.intervention!.sourceM3)) : null;
+  if(c.managementPlan?.irrigation.mode==='manual')assumptions.push('Calendrier d’arrosage manuel : aucune date supplémentaire ajoutée automatiquement. Les apports prévus dans le passé ne sont pas comptés comme réalisés.');
   if (days.some(d => d.unmetEtMm > .01)) assumptions.push('Des jours de stress hydrique subsistent : examiner le déficit et les contraintes. Le rendement n’est pas recalculé par ce module.');
   if(days.some(d=>d.drainageMm>.01||d.runoffMm>.01))assumptions.push('Excédent d’eau calculé : ce bilan ne prouve pas que l’eau s’est évacuée du champ. Vérifiez la stagnation et renseignez un engorgement ou une submersion si observé.');
   if (c.system.sourceBudgetM3 !== null && usedSourceM3 > c.system.sourceBudgetM3 + 1e-8) assumptions.push('Les apports déjà réalisés dépassent le quota déclaré. Le réalisé est conservé et aucun quota supplémentaire n’est inventé.');
@@ -180,7 +184,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
 export function upsertEvent(events: WaterEvent[], event: WaterEvent): WaterEvent[] { return [...events.filter(e => e.id !== event.id), event].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)); }
 
 export function waterPlanCsv(plan: WaterPlan): string {
-  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo','surface_calcul_m2','partie_du_contour'];
+  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo','surface_calcul_m2','partie_du_contour','dose_demandee_m3_ha_champ','dose_retenue_m3_ha_champ','version_moteur','mode_calendrier'];
   const quote = (v: unknown) => { const text=typeof v==='number'?String(v):String(v??'').replace(/^[\s]*[=+@-]/,"'$&");return `"${text.replaceAll('"','""')}"`; };
-  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus,plan.calculationArea?.areaM2,plan.calculationArea?.selection])].map(row => row.map(quote).join(';')).join('\r\n');
+  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus,plan.calculationArea?.areaM2,plan.calculationArea?.selection,d.intervention?.requestedFieldM3Ha,d.intervention?.fieldMm==null?null:d.intervention.fieldMm*10,plan.engineVersion,plan.management?.irrigationMode??'automatic'])].map(row => row.map(quote).join(';')).join('\r\n');
 }
