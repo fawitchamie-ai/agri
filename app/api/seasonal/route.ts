@@ -1,3 +1,4 @@
+import {calibrationEvidence} from '@/lib/seasonal/calibration-evidence';
 import {estimateSowing} from '@/lib/seasonal/sowing';
 import {managementCsv,editableIrrigation,emptyManagement} from '@/lib/seasonal/management';
 import {decodeCampaignValue,encodeCampaignSnapshot} from '@/lib/seasonal/storage';
@@ -63,6 +64,7 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='calibration-evidence')return json(calibrationEvidence(b.country,b.cropId));
   if(b.action==='sowing-plan'){
     const config=validateConfig(b.config,{allowUnparametrisedCycle:true});
     if(!config.parcelGeometry)throw new InputError('Dessinez une parcelle pour préparer le semis.');

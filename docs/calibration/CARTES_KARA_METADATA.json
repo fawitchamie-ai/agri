@@ -1,0 +1,140 @@
+[
+  {
+    "file": "MO_Kara.pdf",
+    "sha256": "4766b6757ee64ac0f9bfb65d6b47e112b6acbf725776a0825fe0738cfa058af7",
+    "bytes": 1430475,
+    "pages": 1,
+    "pdf_metadata": {
+      "/Title": null,
+      "/Creator": "Esri ArcMap 10.4.0.5524",
+      "/Producer": null,
+      "/CreationDate": "D:20191219170301+00",
+      "/ModDate": null
+    },
+    "geopdf_keys": [
+      "/VP"
+    ],
+    "measurement_dates": null,
+    "pixel_resolution_m": null,
+    "point_data_acquired": false,
+    "viewport_georeference": [
+      {
+        "subtype": "/GEO",
+        "crs_type": "/PROJCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "PROJCS[\"Lome_UTM_Zone_31N\",GEOGCS[\"GCS_Lome\",DATUM[\"D_Lome\",SPHEROID[\"Clarke_1880_IGN\",6378249.2,293.4660212936265]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",3.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      {
+        "subtype": "/GEO",
+        "crs_type": "/GEOGCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+      }
+    ],
+    "georeference_limit": "GeoPDF control points present; native analytical samples and raster resolution not acquired. Creation dates are not soil sampling dates.",
+    "non_soil_legend_masks": [
+      "Agglomération",
+      "Aires protégées",
+      "Zone montagneuse"
+    ],
+    "soil_depth_cm": [
+      0,
+      20
+    ],
+    "class_values_are_exact_samples": false
+  },
+  {
+    "file": "K_Kara.pdf",
+    "sha256": "07b14e4d5cd022e4e252625e063099f1041ccb45895e0f627bf7ee34364fd7ed",
+    "bytes": 1176688,
+    "pages": 1,
+    "pdf_metadata": {
+      "/Title": null,
+      "/Creator": "Esri ArcMap 10.4.0.5524",
+      "/Producer": null,
+      "/CreationDate": "D:20191227102024+00",
+      "/ModDate": null
+    },
+    "geopdf_keys": [
+      "/VP"
+    ],
+    "measurement_dates": null,
+    "pixel_resolution_m": null,
+    "point_data_acquired": false,
+    "viewport_georeference": [
+      {
+        "subtype": "/GEO",
+        "crs_type": "/PROJCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "PROJCS[\"Lome_UTM_Zone_31N\",GEOGCS[\"GCS_Lome\",DATUM[\"D_Lome\",SPHEROID[\"Clarke_1880_IGN\",6378249.2,293.4660212936265]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",3.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      {
+        "subtype": "/GEO",
+        "crs_type": "/GEOGCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+      }
+    ],
+    "georeference_limit": "GeoPDF control points present; native analytical samples and raster resolution not acquired. Creation dates are not soil sampling dates.",
+    "non_soil_legend_masks": [
+      "Agglomération",
+      "Aires protégées",
+      "Zone montagneuse"
+    ],
+    "soil_depth_cm": [
+      0,
+      20
+    ],
+    "class_values_are_exact_samples": false
+  },
+  {
+    "file": "P_Kara.pdf",
+    "sha256": "17b305da6573476b4b97837f89005cf8a11a4865a02491622d27a4b70545d12c",
+    "bytes": 1052443,
+    "pages": 1,
+    "pdf_metadata": {
+      "/Title": null,
+      "/Creator": "Esri ArcMap 10.4.0.5524",
+      "/Producer": null,
+      "/CreationDate": "D:20191226100151+00",
+      "/ModDate": null
+    },
+    "geopdf_keys": [
+      "/VP"
+    ],
+    "measurement_dates": null,
+    "pixel_resolution_m": null,
+    "point_data_acquired": false,
+    "viewport_georeference": [
+      {
+        "subtype": "/GEO",
+        "crs_type": "/PROJCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "PROJCS[\"Lome_UTM_Zone_31N\",GEOGCS[\"GCS_Lome\",DATUM[\"D_Lome\",SPHEROID[\"Clarke_1880_IGN\",6378249.2,293.4660212936265]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",3.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      {
+        "subtype": "/GEO",
+        "crs_type": "/GEOGCS",
+        "epsg": null,
+        "has_control_points": true,
+        "wkt": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]"
+      }
+    ],
+    "georeference_limit": "GeoPDF control points present; native analytical samples and raster resolution not acquired. Creation dates are not soil sampling dates.",
+    "non_soil_legend_masks": [
+      "Agglomération",
+      "Aires protégées",
+      "Zone montagneuse"
+    ],
+    "soil_depth_cm": [
+      0,
+      20
+    ],
+    "class_values_are_exact_samples": false
+  }
+]
