@@ -1,4 +1,4 @@
-import clipping from 'polygon-clipping';
+import * as clipping from './geometry-ops.ts';
 import {multiArea,terrestrialSoilPoint,type LandAssessment,type MultiShape} from './land.ts';
 import {loadSoil} from './environment.ts';
 import {geometryIdentity} from './provenance.ts';

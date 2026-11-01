@@ -1,7 +1,7 @@
 import {estimateSowing} from './sowing.ts';
 import {cropById} from './catalog.ts';
 import {salinityScenario} from './salinity.ts';
-import clipping from 'polygon-clipping';
+import * as clipping from './geometry-ops.ts';
 import {multiArea,landBlockReason,type MultiShape} from './land.ts';
 import {validateParcel} from './parcel.ts';
 import {geometryIdentity} from './provenance.ts';

@@ -23,6 +23,10 @@
     "ADMIN_EMAILS": ""
   },
   "observability": {
-    "enabled": false
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
   }
 }
