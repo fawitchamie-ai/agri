@@ -7,6 +7,8 @@ const {planWater}=await import('../lib/seasonal/engine.ts');
 const {applyCropProfile}=await import('../lib/seasonal/catalog.ts');
 const {seasonalCapabilities}=await import('../lib/seasonal/capabilities.ts');
 const base='http://agri.test';
+// New seed planning metadata is tested separately; the entire legacy water balance stays identical.
+function sameWater(actual,expected){const {sowingPlan,...water}=actual;assert.ok(sowingPlan.version);assert.deepEqual(water,expected);}
 async function req(path,body,status=200){const res=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const json=await res.json();assert.equal(res.status,status,JSON.stringify(json).slice(0,250));return json;}
 test('Campagnes : routes, persistance, révisions, idempotence, accès et corrections tardives',async()=>{
   try{
@@ -20,14 +22,14 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     await req('/api/seasonal',{action:'capabilities',country:'TGO',cropId:'unknown'},400);
     const config=exampleCampaign(new Date().toISOString().slice(0,10));config.parcelGeometry=testParcel;config.landAssessment=landFixture(testParcel);
     const save=await req('/api/seasonal',{action:'save',id:'campaign-1',expectedRevision:0,config},201);
-    assert.deepEqual(save.campaign.plan,planWater(config));assert.equal(save.campaign.revision,1);
+    sameWater(save.campaign.plan,planWater(config));assert.equal(save.campaign.revision,1);
     const e={id:'rain-stable',date:config.sowingDate,kind:'rain',amount:20,unit:'mm',point:'field',status:'measured',source:'Synthetic fixture'};
     const updated=await req('/api/seasonal',{action:'event',id:'campaign-1',expectedRevision:1,event:e});assert.equal(updated.campaign.revision,2);assert.equal(updated.campaign.events.length,1);
     const repeat=await req('/api/seasonal',{action:'event',id:'campaign-1',expectedRevision:1,event:e});assert.equal(repeat.unchanged,true);assert.equal(repeat.campaign.revision,2);
     await req('/api/seasonal',{action:'event',id:'campaign-1',expectedRevision:1,event:{...e,amount:30}},409);
     const correction=await req('/api/seasonal',{action:'event',id:'campaign-1',expectedRevision:2,event:{...e,amount:30}});assert.equal(correction.campaign.events.length,1);assert.equal(correction.campaign.revision,3);
-    const got=await req('/api/seasonal?id=campaign-1');assert.equal(got.history.length,3);assert.equal(got.history[0].revision,3);assert.deepEqual(got.campaign.plan,planWater(got.campaign.config,got.campaign.events));
-    const archived=await req('/api/seasonal?id=campaign-1&revision=1');assert.equal(archived.events.length,0);assert.deepEqual(archived.plan,planWater(config));
+    const got=await req('/api/seasonal?id=campaign-1');assert.equal(got.history.length,3);assert.equal(got.history[0].revision,3);sameWater(got.campaign.plan,planWater(got.campaign.config,got.campaign.events));
+    const archived=await req('/api/seasonal?id=campaign-1&revision=1');assert.equal(archived.events.length,0);sameWater(archived.plan,planWater(config));
     const csv=await localFetch(base+'/api/seasonal?id=campaign-1&format=csv');assert.equal(csv.status,200);assert.match(await csv.text(),/m3_source/);
     setIdentity({userId:'water-outsider',displayName:'Other',email:'other@example.test'});
     const other=await req('/api/seasonal');assert.equal(other.campaigns.length,0);await req('/api/seasonal?id=campaign-1',undefined,404);
@@ -43,7 +45,7 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     chemical.soilAnalyses=[{source:'Laboratoire fictif de test',date:chemical.asOfDate,availableOn:chemical.asOfDate,topCm:0,bottomCm:20,status:'measured',measurements:[{parameter:'availableP',value:8,unit:'mg/kg',method:'Olsen-Dabin'}]}];
     chemical.nutritionReference={id:'tgo-kozah-maize',contextNote:'Exemple de référence Kozah à vérifier localement ; non prescriptif.',alreadyKgHa:[50,null]};
     const expected=planWater(chemical);
-    assert.deepEqual((await req('/api/seasonal',{action:'simulate',config:chemical})).plan,expected);
+    sameWater((await req('/api/seasonal',{action:'simulate',config:chemical})).plan,expected);
     const savedChemical=await req('/api/seasonal',{action:'save',id:'chemical-test',expectedRevision:0,config:chemical},201);
     const loadedChemical=await req('/api/seasonal?id=chemical-test');
     assert.deepEqual(loadedChemical.campaign.config.soilAnalyses,chemical.soilAnalyses);

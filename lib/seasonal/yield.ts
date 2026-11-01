@@ -1,3 +1,4 @@
+import {estimateSowing} from './sowing.ts';
 import {cropById} from './catalog.ts';
 import {salinityScenario} from './salinity.ts';
 import clipping from 'polygon-clipping';
@@ -147,9 +148,15 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  out.limits.push(`Hypothèse spatiale : ${y.homogeneityAssumption}`);
  out.status=out.scenarios.some(s=>s.status==='conditional')?'conditional':'unavailable';return out;
 }
-/** One server entry point for preview, persistence and exports. Legacy plans unchanged until opted in. */
+/** One server entry point for preview, persistence and exports. Existing water calculations stay unchanged unless a planned or sown surface is explicitly supplied. */
 export function planSeason(input:unknown,inputEvents:unknown=[],options:{requireGeometry?:boolean}={}):WaterPlan{
- const c=validateConfig(input),events=validateEvents(inputEvents,c),multi=(c.yieldEstimation?.units.length??0)>1,plan=planWater(c,multi?[]:events,options);
+ const c=validateConfig(input),events=validateEvents(inputEvents,c),multi=(c.yieldEstimation?.units.length??0)>1;
+ const plannedArea=(!c.yieldEstimation||c.yieldEstimation.units.every(u=>u.sownAreaM2===null))?c.sowingPlan?.areaM2:null;
+ if(plannedArea!=null&&c.landAssessment&&c.landAssessment.status!=='unknown'&&plannedArea>c.landAssessment.candidateAreaM2+Math.max(.01,c.landAssessment.candidateAreaM2*1e-7))throw new InputError('La surface prévue dépasse la terre cartographiée disponible.');
+ const plan=planWater(c,multi?[]:events,plannedArea!=null&&plannedArea>0?{...options,unitAreaM2:plannedArea,unitGeometry:c.landAssessment?.fractions.potentialLand.geometry}:options);
+ if(plannedArea!=null&&plannedArea>0)plan.assumptions.push('Volumes sur la surface prévue du plan de semis ; position exacte et homogénéité de cette partie à vérifier. Ce n’est pas une déclaration de semis réalisé.');
+ if(plannedArea===0){plan.status='blocked';plan.complete=false;plan.days=[];plan.weeks=[];plan.decades=[];plan.stages=[];plan.nextWindows=[];plan.totals={demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null};plan.missing.push('Aucune surface prévue pour le semis : aucun arrosage proposé.');}
+
  if(c.yieldEstimation){
   const estimate=estimateYield(c,events,plan);
   if(estimate.coverage.complete&&estimate.surface.sownM2!>0&&c.yieldEstimation.units.length===1){
@@ -163,6 +170,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
  return attachSalinity(plan,c);
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
+ plan.sowingPlan=estimateSowing(c);
  if(!c.salinity)return plan;
  // Reuse only spatial coverage checks; salinity is not a second water penalty.
  const spatial=estimateYield({...c,yieldEstimation:c.yieldEstimation?{...c.yieldEstimation,method:'declared-scenario'}:undefined},[],plan);

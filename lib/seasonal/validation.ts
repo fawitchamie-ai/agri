@@ -1,3 +1,4 @@
+import {parseSowingInput} from './sowing.ts';
 import {parseAgronomic} from './agronomic.ts';
 import {parseYieldInput} from './yield.ts';
 import {migrateInputs,parseInputLedger,valueEvidence} from './provenance.ts';
@@ -21,7 +22,7 @@ function str(v: unknown, label: string, max = 300): string { if (typeof v !== 's
 function number(v: unknown, label: string, min: number, max: number): number { if (typeof v !== 'number' || !Number.isFinite(v) || v < min || v > max) throw new InputError(`${label} doit être compris entre ${min} et ${max}.`); return v; }
 function optional(v: unknown, label: string, min: number, max: number): number | null { return v === null || v === undefined ? null : number(v, label, min, max); }
 function array(v: unknown, label: string, max: number): any[] { if (!Array.isArray(v) || v.length > max) throw new InputError(`${label} : liste de ${max} éléments maximum attendue.`); return v; }
-export function validateConfig(input: unknown): SeasonalConfig {
+export function validateConfig(input: unknown, options:{allowUnparametrisedCycle?:boolean}={}): SeasonalConfig {
   const c = obj(input), soil = obj(c.soil), system = obj(c.system);
   if (!Object.hasOwn(COUNTRIES, c.country)) throw new InputError('Pays non pris en charge.');
   if (!['upland', 'flooded_rice', 'shallow_water_table'].includes(c.systemDomain)) throw new InputError('Système cultural invalide.');
@@ -44,7 +45,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
     return { name: str(s.name, 'Nom du stade', 100), days, rootStartM, rootEndM, kcStart: number(s.kcStart, 'Kc initial', 0, 2), kcEnd: number(s.kcEnd, 'Kc final', 0, 2), depletionFraction: number(s.depletionFraction, 'Fraction avant stress', .05, .95) };
   });
   const cycleDays = stages.reduce((s, x) => s + x.days, 0);
-  if (!cycleDays || cycleDays > 366) throw new InputError('Le cycle doit durer de 1 à 366 jours.');
+  if ((!cycleDays&&!options.allowUnparametrisedCycle) || cycleDays > 366) throw new InputError('Le cycle doit durer de 1 à 366 jours.');
   const sowingDate = isoDate(c.sowingDate, 'Semis'), asOfDate = isoDate(c.asOfDate, 'Date du conseil');
   const end = addDays(sowingDate, cycleDays - 1);
   const weather = array(c.weather, 'Météo', 732).map(v => {
@@ -128,6 +129,7 @@ export function validateConfig(input: unknown): SeasonalConfig {
   try{validated.inputs=parseInputLedger(c.inputs);}catch(e){throw new InputError((e as Error).message);}
   if(c.inputPolicy!==undefined){if(typeof c.inputPolicy?.allowAssumptions!=='boolean'||typeof c.inputPolicy?.allowStale!=='boolean')throw new InputError('Politique des données invalide.');validated.inputPolicy={allowAssumptions:c.inputPolicy.allowAssumptions,allowStale:c.inputPolicy.allowStale};}
   if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
+  validated.sowingPlan=parseSowingInput(c.sowingPlan,validated);
   validated.agronomic=parseAgronomic(c.agronomic,validated);
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
   validated.salinity=parseSalinityInput(c.salinity);

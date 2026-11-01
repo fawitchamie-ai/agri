@@ -10,7 +10,7 @@ test('Parcelle : API, historique, export et protection des observations existant
   setIdentity({userId:'parcel-owner',displayName:'Parcel test',email:'parcel@example.test'});
   const c=exampleCampaign();c.parcelGeometry=polygonFromPoints([[1.2,6.2],[1.201,6.2],[1.201,6.201],[1.2,6.201]]);c.areaM2=1;
   const saved=await request({action:'save',id:'parcel-map-test',expectedRevision:0,config:c},201);
-  assert.equal(saved.campaign.config.areaM2,parcelMetrics(c.parcelGeometry).areaM2);assert.deepEqual(saved.campaign.plan,planWater(saved.campaign.config));
+  assert.equal(saved.campaign.config.areaM2,parcelMetrics(c.parcelGeometry).areaM2);const {sowingPlan,...waterPlan}=saved.campaign.plan;assert.deepEqual(waterPlan,planWater(saved.campaign.config));assert.ok(sowingPlan.version);
   const get=await localFetch('http://agri.test/api/seasonal?id=parcel-map-test&revision=1');assert.equal(get.status,200);const archive=await get.json();assert.deepEqual(archive.config.parcelGeometry,c.parcelGeometry);
   const e={id:'parcel-rain',date:c.sowingDate,kind:'rain',amount:10,unit:'mm',point:'field',status:'measured',source:'Synthetic fixture'};
   const observed=await request({action:'event',id:'parcel-map-test',expectedRevision:1,event:e});

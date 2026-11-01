@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  sowingPlan?: import('./sowing.ts').SowingInput;
   salinity?: import('./salinity.ts').SalinityInput;
   agronomic?: import('./agronomic.ts').AgronomicConfig;
   yieldEstimation?: import('./yield.ts').YieldInput;
@@ -75,6 +76,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  sowingPlan?: import('./sowing.ts').SowingEstimate;
   salinity?: {status:'unavailable';missing:string[]}|ReturnType<typeof import('./salinity.ts').salinityScenario>;
   yieldEstimation?: import('./yield.ts').YieldEstimate;
   calculationArea?: {selection:'whole'|'potentialLand';areaM2:number|null;geometry:import('./land.ts').MultiShape|null};
