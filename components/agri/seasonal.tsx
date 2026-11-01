@@ -1,7 +1,7 @@
 'use client';
 import './parcel-experience.css';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, useRef, type ReactNode } from 'react';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type Campaign, type WaterPeriod } from '../../lib/seasonal/types';
 import { planWater, waterPlanCsv } from '../../lib/seasonal/engine';
 import { emptyCampaign, exampleCampaign } from '../../lib/seasonal/example';
@@ -38,6 +38,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [tab,setTab] = useState('simulation');
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
   const [planStale,setPlanStale]=useState(true);
+  const simulationSequence=useRef(0);
   const [parcelDraft,setParcelDraft]=useState(false);
   const [period,setPeriod]=useState('weeks'), [allDays,setAllDays]=useState(false);
   const [weatherText,setWeatherText]=useState('');
@@ -55,22 +56,22 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   useEffect(()=>{
     if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);return;}
     setPlanStale(true);
-    const controller=new AbortController();let alive=true;
+    const controller=new AbortController();let alive=true;const requestId=String(++simulationSequence.current);
     const timer=setTimeout(async()=>{try{
-      const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'simulate',config,events})});
+      const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'simulate',config,events,requestId})});
       const result=await response.json() as any;if(!response.ok)throw new Error(result.error||'Calcul indisponible');
-      if(alive){setPlan(result.plan);setPlanStale(false);setError('');}
-    }catch(e){if(alive){setPlan(null);setPlanStale(true);setError((e as Error).message);}}},350);
+      if(alive&&requestId===String(simulationSequence.current)&&result.requestId===requestId){setPlan(result.plan);setPlanStale(false);setError('');}
+    }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlan(null);setPlanStale(true);setError((e as Error).message);}}},350);
     return()=>{alive=false;clearTimeout(timer);controller.abort();};
   },[config,events,parcelDraft]);
 
   useEffect(()=>{
-    setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');
+    simulationSequence.current++;setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');
     try { setQueue(JSON.parse(localStorage.getItem(queueKey)||'[]')); } catch { setQueue([]); }
     if(workspace) api('/api/seasonal').then(r=>setList(r.campaigns)).catch(e=>setError(e.message));
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
-  function edit(next: SeasonalConfig) { setNutrientResult(null);setConfig(next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next));setDirty(true);setPlanStale(true);setComparisons([]); }
+  function edit(next: SeasonalConfig) { simulationSequence.current++;setNutrientResult(null);setConfig(next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next));setDirty(true);setPlanStale(true);setComparisons([]); }
   function change<K extends keyof SeasonalConfig>(key:K,value:SeasonalConfig[K]) { if(key==='crop'){edit({...config,crop:String(value),cropProfile:undefined,nutritionReference:undefined,stages:[],parameterSource:''});return;}edit({...config,[key]:value,...(['country','territory','variety','systemDomain'].includes(key)?{nutritionReference:undefined}:{}),...(key==='stages'&&config.cropProfile?{cropProfile:{...config.cropProfile,mode:'custom' as const}}:{})}); }
   function sys<K extends keyof SeasonalConfig['system']>(key:K,value:SeasonalConfig['system'][K]) { edit({...config,system:{...config.system,[key]:value}}); }
   function adopt(c:Campaign) { setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(migrateInputs(c.config));setEvents(c.events);setPlan(null);setDirty(false);setPlanStale(true);setComparisons([]); }
@@ -147,7 +148,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   if(loadedScope!==scope)return <div className="card" role="status">Chargement de votre espace de campagne…</div>;
   return <div className="seasonal-tool">
     {tab!=='simulation'&&<div className="qs-compact-title"><button className="qs-back" onClick={()=>setTab('simulation')}>← Ma simulation</button><h1>{tab==='carte'?'Mon champ':'Réglages et suivi'}</h1></div>}
-    {tab==='simulation'&&<QuickSimulation config={config} plan={plan} stale={planStale} onChange={edit} onMap={()=>setTab('carte')} onAdvanced={setTab} onSave={save} canSave={!!workspace&&!busy} events={events}/>}
+    {tab==='simulation'&&loadedScope===scope&&<QuickSimulation key={scope+':'+(active?.id??draftId)} config={config} plan={plan} stale={planStale} onChange={edit} onMap={()=>setTab('carte')} onAdvanced={setTab} onSave={save} canSave={!!workspace&&!busy} events={events}/>}
     {error&&<div className="notice warning" role="alert">{error}</div>}
     {notice&&<div className="notice info" role="status">{notice}</div>}
     {queue.length>0&&<div className="notice warning no-print"><div><strong>{queue.length} saisie(s) en attente sur cet appareil</strong><p>Les conflits de révision interrompent la synchronisation pour préserver les corrections faites ailleurs.</p><button className="btn secondary" disabled={busy} onClick={synchronize}>Synchroniser</button>{active&&queue.some(q=>q.campaignId===active.id&&q.expectedRevision!==active.revision)&&<button className="btn secondary" onClick={()=>{persistQueue(queue.map(q=>q.campaignId===active.id?{...q,expectedRevision:active.revision}:q));setNotice('Saisies en attente reprises sur la révision affichée. Vérifiez leurs quantités avant de synchroniser.');}}>Reprendre les saisies sur cette révision après examen</button>}<button className="btn secondary" onClick={()=>download('observations-en-attente.json',JSON.stringify(queue,null,2),'application/json')}>Exporter les saisies en attente</button></div></div>}

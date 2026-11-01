@@ -1,3 +1,4 @@
+import {interventionOutcome} from './intervention-outcome.ts';
 import {managementSummary} from './management.ts';
 import {estimateSowing} from './sowing.ts';
 import {cropById} from './catalog.ts';
@@ -171,6 +172,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
  return attachSalinity(plan,c);
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
+ if(c.yieldEstimation||c.managementPlan)plan.response=interventionOutcome(c,plan);
  plan.sowingPlan=estimateSowing(c);
  if(c.managementPlan)plan.management=managementSummary(c,plan);
  if(!c.salinity)return plan;
@@ -182,10 +184,10 @@ function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
 }
 export function yieldCsv(e:YieldEstimate):string{
  const q=(v:unknown)=>'"'+String(v??'').replace(/^[\s]*[=+@-]/,"'$&").replaceAll('"','""')+'"';
- const header=['type_ligne','unite_id','mode','statut','surface_contour_m2','surface_semee_m2','surface_recoltee_m2','production_kg','production_t','rendement_kg_ha_seme','rendement_t_ha_seme','production_kg_ha_contour','reference_kg_ha','denominateur_reference','source_reference','disponible_depuis','methode','version_modele','version_ky','versions_donnees','couverture_complete','limites'];
+ const header=['type_ligne','unite_id','mode','statut','surface_contour_m2','surface_semee_m2','surface_recoltee_m2','production_kg','production_t','rendement_kg_ha_seme','rendement_t_ha_seme','production_kg_ha_contour','reference_kg_ha','denominateur_reference','source_reference','disponible_depuis','methode','version_modele','version_ky','versions_donnees','couverture_complete','limites','validation_locale','effet_nutrition'];
  const rows:unknown[][]=[];
  for(const s of e.scenarios){
-  const tail=[e.method,e.version,e.versions.ky,JSON.stringify(e.dataSources),e.coverage.complete,[...e.missing,...s.missing,...e.limits].join(' | ')];
+  const tail=[e.method,e.version,e.versions.ky,JSON.stringify(e.dataSources),e.coverage.complete,[...e.missing,...s.missing,...e.limits].join(' | '),'non_validee','non_modelise'];
   rows.push(['total','',s.id,s.status,e.surface.drawnM2,e.surface.sownM2,e.surface.harvestedM2,s.totals?.productionKg,s.totals?s.totals.productionKg/1000:null,s.totals?.yieldKgHaSown,s.totals?.yieldKgHaSown==null?null:s.totals.yieldKgHaSown/1000,s.totals?.productionKgHaContour,'','','','',...tail]);
   for(const u of s.units)rows.push(['unite',u.id,s.id,u.productionKg===null?'unavailable':'conditional',e.surface.drawnM2,u.sownAreaM2,u.harvestedAreaM2,u.productionKg,u.productionKg===null?null:u.productionKg/1000,u.yieldKgHaSown,u.yieldKgHaSown===null?null:u.yieldKgHaSown/1000,'',u.sourceKgHa,u.sourceDenominator,u.reference?.source,u.reference?.availableOn,...tail]);
  }

@@ -1,0 +1,40 @@
+{
+  "version": "prompt45-verification-1",
+  "date": "2026-11-01",
+  "baselineCommit": "42ffef94706603c8548777ded12d422ccf3852c6",
+  "checks": {
+    "typescript": "PASS",
+    "applicationTests": {
+      "passed": 200,
+      "failed": 0
+    },
+    "experimentalAndLeakagePythonTests": {
+      "passedLocally": 26,
+      "restrictedTestsSkippedInCloneWithoutNCFiles": 14
+    },
+    "realNativeEnginePythonTests": {
+      "passed": 9,
+      "scope": "upstream technical demo and synthetic software checks, not African yield validation"
+    },
+    "httpIntegration": "PASS",
+    "businessRegressions": "PASS",
+    "build": "PASS"
+  },
+  "data": {
+    "checkedOriginalXlsx": 7,
+    "reconstructedPlotSeasons": 4420,
+    "qualifiedSourceCombinations": 10,
+    "calibratedDomains": 0,
+    "rawNCFilesRedistributed": false
+  },
+  "browserJourney": "Cloudflare sign-in wall observed; authenticated production journey not verified",
+  "agronomicReview": "pending",
+  "serviceComputeExternallyProvisioned": false,
+  "filesSha256": {
+    "scripts/calibration/validation_pipeline.py": "26d735f31a49de0f7a5574986ab38fef8aeea92b93125cc7660e69bbbbc6db9e",
+    "services/crop-compute/calibration.py": "68beff801898e092d6187ab5b38c9a0086ded604a05d2e3b8694f764be857623",
+    "services/crop-compute/server.py": "10b0f47534d9902f6b7f88fb4bdf64fe8b39b1dc067d0e47d8ccfd62fbb49d02",
+    "docs/calibration/PLAN_CALIBRATION.json": "0880afb2f4f94842bc5b3333c875ade4d00d7138643db42bbead6c80eac370f4",
+    "docs/calibration/QUALIFICATION_MODELES.json": "8390f7af06a726c9ee19bfa2ffd8f9d9847a7b440b9a4e1399ad85338ff13dd1"
+  }
+}

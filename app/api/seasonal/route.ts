@@ -1,3 +1,5 @@
+import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
+import {protectRecordedProducts} from '@/lib/seasonal/management';
 import {calibrationEvidence} from '@/lib/seasonal/calibration-evidence';
 import {cropEngineManifest,concentrationInventory} from '@/lib/seasonal/crop-engine';
 import {productCatalog,nutrientBalance,snominApplication} from '@/lib/seasonal/products';
@@ -67,6 +69,8 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='calibration-status')return json(calibrationStatus(b.country,b.cropId));
+  if(b.action==='compare-interventions'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);return json(comparePlannedProducts(config,validateEvents(b.events??[],config),planSeason));}
   if(b.action==='crop-engine')return json({...cropEngineManifest(),service:computeAvailability()});
   if(b.action==='product-catalog')return json(productCatalog());
   if(b.action==='snomin-application')return json(snominApplication(b.application,b.parameters));
@@ -146,7 +150,7 @@ export async function POST(request: Request) { try {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
-  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));return json({plan:planSeason(config,b.events??[],{requireGeometry:true}),config});}
+  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));return json({plan:planSeason(config,b.events??[],{requireGeometry:true}),config,requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
@@ -163,6 +167,7 @@ export async function POST(request: Request) { try {
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&(decodeCampaignValue(old.config).sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
+  const recordedProductsCorrected=old&&b.action==='save'?protectRecordedProducts(validateConfig(decodeCampaignValue(old.config)),config):false;
   if (config.asOfDate > new Date().toISOString().slice(0,10)) throw new InputError('La date du conseil ne peut pas être future. Une date de semis future reste possible avec un scénario.');
   let events = old ? decodeCampaignValue(old.events) : b.events ?? [];
   if (b.action === 'event') {
@@ -179,7 +184,7 @@ export async function POST(request: Request) { try {
   events = validateEvents(events, config);
   if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));
   const plan = planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
-  const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : 'Paramètres et scénario de campagne actualisés.';
+  const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : recordedProductsCorrected?'Correction d’un apport réalisé : '+config.managementPlan!.recordedCorrection!.reason:'Paramètres et scénario de campagne actualisés.';
   const packed=encodeCampaignSnapshot(config,events,plan);
   if (!old) {
     await db.batch([
