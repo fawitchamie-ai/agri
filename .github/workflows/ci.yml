@@ -10,6 +10,22 @@ permissions:
   contents: read
 
 jobs:
+  crop-compute:
+    name: Moteur WOFOST réel et bilans des adaptateurs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Installer le moteur Python versionné
+        run: |
+          python3 -m venv .compute-python
+          .compute-python/bin/python -m pip install -r services/crop-compute/requirements.lock.txt
+      - name: Exécuter le vrai moteur, les scénarios et la reprise des tâches
+        env:
+          PYTHONWARNINGS: ignore::DeprecationWarning,ignore::ResourceWarning
+        run: .compute-python/bin/python -m unittest discover -s services/crop-compute -p 'test_*.py' -v
   checks:
     name: TypeScript, tests et compilation
     runs-on: ubuntu-latest
@@ -48,7 +64,7 @@ jobs:
 
   deploy:
     name: Publier en production
-    needs: checks
+    needs: [checks, crop-compute]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20

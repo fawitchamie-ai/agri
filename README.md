@@ -8,6 +8,8 @@ Les entrées de sol, météo et conduite disposent d’une provenance versionné
 
 L’audit expérimental sol–eau–engrais livre les fichiers autorisés, une base relationnelle reconstructible et la disponibilité réelle par pays/culture. Aucun nouveau modèle n’est déclaré calibré. Voir [l’inventaire vérifié](docs/calibration/INVENTAIRE.md), [le dictionnaire](docs/calibration/DICTIONNAIRE.md) et [les commandes de reconstruction](research-data/calibration/README.md).
 
+Les prompts 2–3 ajoutent un catalogue de compositions, les bilans élémentaires frais/sec et un adaptateur exécutant WOFOST 8.1–SNOMIN hors Workers. Son domaine est la recherche eau–azote, avec P/K non simulés et sans calibration locale déclarée. Le service externe n'est pas encore provisionné : aucun rendement de substitution n'est produit. Voir [le choix scientifique, les capacités et limites](docs/calibration/MOTEUR_SOL_EAU_NUTRITION.md) et [le service reproductible](services/crop-compute/README.md).
+
 ## Socle Cloudflare existant
 
 Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.
