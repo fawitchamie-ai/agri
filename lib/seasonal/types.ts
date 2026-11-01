@@ -77,6 +77,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  response?: ReturnType<typeof import('./intervention-outcome.ts').interventionOutcome>;
   management?: ReturnType<typeof import('./management.ts').managementSummary>;
   sowingPlan?: import('./sowing.ts').SowingEstimate;
   salinity?: {status:'unavailable';missing:string[]}|ReturnType<typeof import('./salinity.ts').salinityScenario>;

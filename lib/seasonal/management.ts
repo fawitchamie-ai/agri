@@ -6,7 +6,7 @@ import {convertApplication,parseComposition,type ProductComposition} from './pro
 export const MANAGEMENT_VERSION='management-1.0.0';
 export type PlannedIrrigation={date:string;fieldM3Ha:number};
 export type ProductApplication={id:string;date:string;kind:'fertilizer'|'pesticide'|'other';product:string;dose:number;unit:'kg/ha'|'L/ha';status:'planned'|'declared';source:string;npkPercent:[number|null,number|null,number|null];composition?:ProductComposition;applicationMode?:string};
-export type ManagementPlan={version:typeof MANAGEMENT_VERSION;geometryId:string;cropId:string;irrigation:{mode:'automatic'|'manual';applications:PlannedIrrigation[]};products:ProductApplication[]};
+export type ManagementPlan={version:typeof MANAGEMENT_VERSION;geometryId:string;cropId:string;irrigation:{mode:'automatic'|'manual';applications:PlannedIrrigation[]};products:ProductApplication[];recordedCorrection?:{id:string;reason:string}};
 export function emptyManagement(c:SeasonalConfig):ManagementPlan{return {version:MANAGEMENT_VERSION,geometryId:geometryIdentity(c.parcelGeometry),cropId:c.cropProfile?.id??'',irrigation:{mode:'automatic',applications:[]},products:[]};}
 export function parseManagement(input:unknown,c:SeasonalConfig):ManagementPlan|undefined{
  if(input===undefined)return undefined;
@@ -33,7 +33,19 @@ export function parseManagement(input:unknown,c:SeasonalConfig):ManagementPlan|u
   return {id:text(a.id,'Identifiant',100),date:d,kind:a.kind,product:text(a.product,'Nom du produit',160),dose:finite(a.dose,1000000,'Dose de produit commercial'),unit:a.unit,status:a.status,source:text(a.source,'Source de la dose',600),npkPercent,...(composition?{composition,applicationMode:text(a.applicationMode,'Mode d’application',200)}:{})};
  });
  if(new Set(products.map(a=>a.id)).size!==products.length)throw new InputError('Identifiant d’apport dupliqué.');
- return {version:MANAGEMENT_VERSION,geometryId:p.geometryId,cropId:p.cropId,irrigation:{mode:p.irrigation.mode,applications:applications.sort((a,b)=>a.date.localeCompare(b.date))},products:products.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id))};
+ let recordedCorrection:ManagementPlan['recordedCorrection'];
+ if(p.recordedCorrection!==undefined)recordedCorrection={id:text(p.recordedCorrection?.id,'Identifiant de correction',100),reason:text(p.recordedCorrection?.reason,'Motif de correction',600)};
+ return {version:MANAGEMENT_VERSION,geometryId:p.geometryId,cropId:p.cropId,irrigation:{mode:p.irrigation.mode,applications:applications.sort((a,b)=>a.date.localeCompare(b.date))},products:products.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id)),...(recordedCorrection?{recordedCorrection}:{})};
+}
+/** Saving a planned scenario never silently rewrites a realized product. A new
+ * correction id and an explicit reason are preserved in the immutable revision. */
+export function protectRecordedProducts(previous:SeasonalConfig,next:SeasonalConfig){
+ const recorded=previous.managementPlan?.products.filter(p=>p.status==='declared')??[];
+ if(!recorded.length)return false;
+ if(JSON.stringify(previous.parcelGeometry)!==JSON.stringify(next.parcelGeometry)||previous.cropProfile?.id!==next.cropProfile?.id||previous.country!==next.country||previous.variety!==next.variety||previous.sowingDate!==next.sowingDate||JSON.stringify(previous.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2]))!==JSON.stringify(next.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])))throw new InputError('Des produits réalisés sont liés à cette parcelle, cette culture et cette surface. Créez une nouvelle campagne pour changer ce périmètre.');
+ const changed=recorded.some(p=>JSON.stringify(p)!==JSON.stringify(next.managementPlan?.products.find(n=>n.id===p.id)));
+ if(changed){const c=next.managementPlan?.recordedCorrection;if(!c?.reason.trim()||c.id===previous.managementPlan?.recordedCorrection?.id)throw new InputError('Correction explicite d’un apport réalisé requise, avec un nouveau motif de révision.');}
+ return changed;
 }
 export function editableIrrigation(c:SeasonalConfig,p:WaterPlan|null):PlannedIrrigation[]{
  if(c.managementPlan?.irrigation.mode==='manual')return c.managementPlan.irrigation.applications;

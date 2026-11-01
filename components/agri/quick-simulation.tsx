@@ -8,6 +8,7 @@ import './quick-simulation.css';
 import WaterChart from './water-chart';
 import EditableValue,{Pencil} from './editable-value';
 import SowingSummary from './sowing-summary';
+import InterventionComparison from './intervention-comparison';
 import ManagementPlanner from './management-planner';
 import {waterOverview} from '../../lib/seasonal/overview';
 import DataCompletion from './data-completion';
@@ -97,6 +98,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   </div>
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
   <ManagementPlanner config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/>
+  <InterventionComparison config={config} events={events}/>
   {usable?<details className="qs-subtle-details"><summary>Comprendre la pluie et les besoins sur la saison</summary><WaterChart config={config} plan={plan}/></details>:<section className="qs-card qs-chart-placeholder"><span className="qs-eyebrow">ÉVOLUTION SUR LE CYCLE</span><h2>Vos graphiques apparaîtront ici</h2><p>{indicator.message}</p></section>}
   <details className="qs-settings" id="simulation-settings"><summary><span><Pencil/> Réglages et données</span><small>Sol, météo, sources et méthodes</small></summary><div className="qs-settings-content">
    <details onToggle={e=>{if(e.currentTarget.open)setTerrainOpened(true);}}><summary>Vérifier le terrain, le sol et les réglages d’arrosage</summary>{terrainOpened&&<><InputStatus config={config} onChange={onChange}/>

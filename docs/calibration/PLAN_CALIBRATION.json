@@ -1,0 +1,34 @@
+{
+  "version": "calibration-protocol-1",
+  "status": "fixed_method_pending_qualified_domain",
+  "registeredOn": "2026-11-01",
+  "seed": 20261101,
+  "inputSha256": null,
+  "scientificRationale": "Comparer une moyenne d'apprentissage, une réponse empirique N à plateau et le moteur journalier quand ses paramètres et observations sont identifiables. Ne jamais ajuster sur les sites/campagnes de test.",
+  "target": "kg de produit récolté sec/ha initialement semé ; conversion d'humidité et surface documentée obligatoire",
+  "weighting": "poids égaux aux sites, aux expériences dans le site, puis aux répétitions dans l'expérience",
+  "domain": null,
+  "splitBySite": null,
+  "splitRule": "Sites indépendants, traitements/répétitions/doublons groupés ; validation et test strictement postérieurs à l'apprentissage. Le test ne sélectionne ni paramètres ni modèle.",
+  "empiricalEquation": "Y = max(0, intercept + slope * min(N_cycle, knot)) ; approximation empirique uniquement dans les doses documentées",
+  "empiricalBounds": {
+    "interceptKgHa": {"grid": null, "source": null},
+    "slopeKgGrainPerKgN": {"grid": null, "source": null},
+    "knotNkgHa": {"grid": null, "source": null}
+  },
+  "acceptance": {"maxRMSETonnesHa": null, "maxAbsBiasTonnesHa": null},
+  "nativeStage": null,
+  "nativeGrid": null,
+  "stages": [
+    {"step": "weather_water_phenology", "required": "forçages compatibles et observations datées", "status": "pending"},
+    {"step": "cultivar", "required": "paramètres identifiables, traitements convenables sans absence de stress supposée", "status": "pending"},
+    {"step": "soil_supply_nutrients", "required": "témoins, omissions et gradients par cycle ; P et K non représentés par SNOMIN", "status": "pending"},
+    {"step": "organic", "required": "composition et apports réels documentés, contrastes organiques", "status": "pending"},
+    {"step": "water_nutrition", "required": "contrastes hydriques indépendants ; pas de compensation par efficacité de l'engrais", "status": "pending"}
+  ],
+  "nonEstimableNow": ["réponse indépendante à P et K", "mortalité par inondation", "états chimiques internes depuis le seul rendement final", "cultivars locaux sans phénologie et forçages", "cinétiques de compost sans profils et contrastes qualifiés"],
+  "imputation": "none ; missing required predictors block the domain",
+  "uncertainty": {"soil": "scénarios sourcés", "future_weather": "ensembles disponibles et compétence à évaluer", "product": "analyse et incertitude du lot", "parameters": "grilles et sensibilité documentées", "structure": "comparaison de modèles compatibles seulement", "predictiveInterval95": null},
+  "agronomicReview": "pending",
+  "collectionDesign": "À dimensionner avec un expérimentateur selon variabilité, précision et contrastes ; aucun nombre universel d'essais."
+}

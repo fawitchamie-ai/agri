@@ -1,0 +1,153 @@
+{
+  "acquiredCampaigns": 4420,
+  "domains": [
+    {
+      "country": "CIV",
+      "crop": "cowpea",
+      "variety": "Cowpea",
+      "observations": 384,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 384,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "fallow",
+      "variety": "Fallow",
+      "observations": 472,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 472,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "groundnut",
+      "variety": "Groundnut",
+      "observations": 288,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 288,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "maize",
+      "variety": "H507",
+      "observations": 1056,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 1056,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "maize",
+      "variety": "IRAT81",
+      "observations": 96,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 96,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "maize",
+      "variety": "IRAT83",
+      "observations": 1248,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 1248,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "CIV",
+      "crop": "soybean",
+      "variety": "Soybean",
+      "observations": 288,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 288,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "SEN",
+      "crop": "carrot",
+      "variety": "Pamela +",
+      "observations": 189,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 0,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "SEN",
+      "crop": "lettuce",
+      "variety": "Eden",
+      "observations": 210,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 0,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    },
+    {
+      "country": "SEN",
+      "crop": "tomato",
+      "variety": "Mongal",
+      "observations": 189,
+      "independentSiteGroups": 1,
+      "unresolvedDenominators": 0,
+      "calibrationStatus": "blocked",
+      "reasons": [
+        "Independent sites and later campaigns not available for a final test in this acquired domain",
+        "Cycle-specific input/forcing/cultivar and protocol qualification required before fitting"
+      ],
+      "metrics": null
+    }
+  ],
+  "calibratedDomains": [],
+  "agronomicReview": "pending",
+  "privateRowsPublished": false,
+  "checkedOn": "2026-11-01",
+  "sourceManifestSha256": "4f56e5a41443e801f1f2936ab49fd2bc008d01c0d9ae41e8b0ac27efb2459d08",
+  "agronomicValidationAcquired": false,
+  "nativeEngineCalibrationPerformed": false,
+  "publicArtifact": "Qualification metadata only; no raw NC data or fitted derivatives"
+}

@@ -23,6 +23,7 @@ from runner import validate
 class Jobs:
     def __init__(self,path,timeout=90):
         self.path=path;self.timeout=timeout
+        self.runtime=hashlib.sha256(Path(__file__).with_name('runner.py').read_bytes()+Path(__file__).with_name('requirements.lock.txt').read_bytes()).hexdigest()
         with self.connect() as db:
             db.execute('CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY,owner TEXT NOT NULL,input TEXT NOT NULL,status TEXT NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,created REAL NOT NULL,updated REAL NOT NULL,lease TEXT,result TEXT,error TEXT)')
 
@@ -34,7 +35,7 @@ class Jobs:
         try:validate(bundle)
         except KeyError as exc:raise ValueError('Required scientific input missing: '+str(exc)) from exc
         text=json.dumps(bundle,sort_keys=True,separators=(',',':'),allow_nan=False)
-        job=hashlib.sha256((owner+'\n'+text).encode()).hexdigest()
+        job=hashlib.sha256((self.runtime+'\n'+owner+'\n'+text).encode()).hexdigest()
         with self.connect() as db:
             db.execute("INSERT OR IGNORE INTO jobs(id,owner,input,status,created,updated) VALUES(?,?,?,'pending',?,?)",(job,owner,text,time.time(),time.time()))
         return self.get(owner,job)
@@ -65,6 +66,7 @@ class Jobs:
             db.execute("UPDATE jobs SET status='running',attempts=attempts+1,lease=?,updated=? WHERE id=?",(lease,now,r['id']))
         result=None;error=None
         try:
+            if hashlib.sha256((self.runtime+'\n'+r['owner']+'\n'+r['input']).encode()).hexdigest()!=r['id']:raise ValueError('Runtime version changed since submission; submit a new job without reusing states')
             p=subprocess.run([sys.executable,str(Path(__file__).with_name('runner.py'))],input=r['input'],text=True,capture_output=True,timeout=self.timeout,check=False)
             if p.returncode:
                 error='Engine failed: '+p.stderr.strip().splitlines()[-1][:1000] if p.stderr.strip() else 'Engine failed without result'
