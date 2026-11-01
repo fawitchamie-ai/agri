@@ -26,6 +26,7 @@ const render=(config,stale=false)=>renderToStaticMarkup(React.createElement(Quic
 test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',()=>{
  const html=render(declareScenario(fixture()));
  assert.match(html,/besoins couverts si le plan est réalisé/);
+ assert.match(html,/Surface utilisée pour ce bilan/);
  assert.match(html,/volume n’est pas à apporter en une fois/);
  assert.match(html,/La récolte n’est pas encore calculée/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
