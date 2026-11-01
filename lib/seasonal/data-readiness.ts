@@ -1,3 +1,4 @@
+import {calibrationEvidence} from './calibration-evidence.ts';
 import type {SeasonalConfig} from './types.ts';
 import {planSeason,SEASONAL_KY} from './yield.ts';
 import {SALINITY_PROFILES} from './salinity.ts';
@@ -7,7 +8,7 @@ export function dataReadiness(c:SeasonalConfig,events:unknown=[]){
  const plan=planSeason(c,events),estimate=plan.yieldEstimation;
  const present=new Set(c.soilAnalyses?.flatMap(a=>a.measurements.map(m=>m.parameter))??[]);
  const missingChem=['mineralN','availableP','exchangeableK','EC'].filter(x=>!present.has(x as any));
- return {version:'source-audit-2026-10-31',historicalNational:historicalContext(c.country,c.cropProfile?.id??'',c.asOfDate),country:COUNTRIES[c.country].name,crop:c.crop,water:{complete:plan.complete,missing:plan.missing},yield:{status:estimate?.status??'unavailable',missing:[...(estimate?.missing??['Surface semée et référence indépendante de rendement Ym nécessaires.']),...(estimate?.scenarios.flatMap(s=>s.missing)??[])]},salinity:plan.salinity??null,parameterizedHydricCrops:Object.keys(SEASONAL_KY),salinityCurve:SALINITY_PROFILES[c.cropProfile?.id??'']??null,
+ return {version:'source-audit-2026-11-01',experimentalEvidence:calibrationEvidence(c.country,c.cropProfile?.id),historicalNational:historicalContext(c.country,c.cropProfile?.id??'',c.asOfDate),country:COUNTRIES[c.country].name,crop:c.crop,water:{complete:plan.complete,missing:plan.missing},yield:{status:estimate?.status??'unavailable',missing:[...(estimate?.missing??['Surface semée et référence indépendante de rendement Ym nécessaires.']),...(estimate?.scenarios.flatMap(s=>s.missing)??[])]},salinity:plan.salinity??null,parameterizedHydricCrops:Object.keys(SEASONAL_KY),salinityCurve:SALINITY_PROFILES[c.cropProfile?.id??'']??null,
  remaining:[{feature:'Rendement fiable de parcelle',required:['Ym indépendant pour culture, variété, produit et conduite','Récoltes indépendantes avec surfaces initialement semées, dates et humidités','Validation spatiale et temporelle dans chacun des six pays'],state:'field_validation_missing'},
  {feature:'Engrais et réponse en rendement',required:[...missingChem.map(x=>'Analyse locale : '+x),'Méthode, profondeur, dates et représentativité des prélèvements','Courbes locales de réponse eau–azote–phosphore–potassium et apports précédents'],state:'response_model_missing'},
  {feature:'Inondation, mortalité et récupération',required:['Durée et hauteur de submersion','Stade, variété, température et état de drainage','Réponse calibrée et observations de survie'],state:'response_model_missing'},

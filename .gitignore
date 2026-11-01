@@ -58,3 +58,6 @@ yarn-error.log*
 /backup*.sql
 *:Zone.Identifier
 /.ci-python/
+
+# Restricted research originals stay local; fetch explicitly under their own licence.
+research-data/calibration/raw/research-only/*.xlsx

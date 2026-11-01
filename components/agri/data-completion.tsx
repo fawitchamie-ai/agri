@@ -72,6 +72,14 @@ export default function DataCompletion({config,events,onChange}:{config:Seasonal
     <button className="btn secondary" onClick={download}>Exporter la référence et ses sources</button>
    </>:<p>Audit en cours…</p>}
   </details>
+  <details><summary>Essais disponibles sur le sol et les engrais</summary>{audit?.experimentalEvidence?<>
+   <p><strong>Aucun modèle sol–engrais n’est encore calibré pour votre parcelle.</strong> Voici les données réellement acquises pour préparer ce travail. Elles ne modifient pas votre rendement simulé.</p>
+   <div className="table-wrap"><table className="data-table"><thead><tr><th>Pays</th><th>Parcelles × campagnes acquises</th><th>Sites d’essai</th><th>Fonctions externes OFRA</th></tr></thead><tbody>{audit.experimentalEvidence.coverage.map((r:any)=><tr key={r.country+r.crop}><td>{r.countryName} · {r.cropName}</td><td>{r.experimentalPlotSeasons.toLocaleString('fr-FR')}{r.experimentalPlotSeasons?' · recherche NC-SA':''}</td><td>{r.experimentalSites}</td><td>{r.externalFittedFunctions} · contexte</td></tr>)}</tbody></table></div>
+   <p>Une parcelle suivie plusieurs années n’est pas autant de sites indépendants. Les historiques administratifs et les fonctions déjà ajustées ne sont pas des répétitions d’essai.</p>
+   <p>Pilote de recherche retenu : maïs H507 à Gagnoa (Côte d’Ivoire), premier cycle {audit.experimentalEvidence.pilot.fromYear}–{audit.experimentalEvidence.pilot.toYear}, {audit.experimentalEvidence.pilot.plotSeasons} parcelles × campagnes. Les doses, surfaces et méthodes doivent encore être qualifiées. Les jeux CIRAD sont sous licence de recherche non commerciale.</p>
+   <details><summary>Sources acquises, restrictions et données manquantes</summary>{audit.experimentalEvidence.sources.map((s:any)=><div key={s.id}><p><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a> · {s.fileChecked?'Fichier contrôlé':s.fileAcquired?'Fichier acquis':'Notice / accès à qualifier'} · {s.licence}</p>{s.missing.slice(0,3).map((m:string)=><p key={m}>{m}</p>)}</div>)}<p>Inventaire vérifié le {audit.experimentalEvidence.checkedOn}. Les cartes de Kara restent des classes sur 0–20 cm ; aucun milieu de classe n’est ajouté comme analyse de sol.</p></details>
+   <button className="btn secondary" onClick={download}>Exporter l’inventaire et les données manquantes</button>
+  </>:<p>Inventaire en cours de chargement…</p>}</details>
   <details><summary>Ce qui manque encore pour cette parcelle</summary>{audit?<>
    <p>{audit.country} · {audit.crop}. Rendement : {audit.yield.status==='conditional'?'simulation conditionnelle':'indisponible'}. La disponibilité cartographique n’établit pas la validité agronomique.</p>
    {[...new Set<string>(audit.yield.missing)].slice(0,6).map(m=><p className="notice warning" key={m}>{m}</p>)}

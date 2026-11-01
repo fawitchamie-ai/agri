@@ -1,0 +1,1497 @@
+{
+  "version": "experimental-audit-2026-11-01",
+  "sources": [
+    {
+      "id": "cirad-gagnoa",
+      "title": "Gagnoa: récoltes, sols et météo de l’essai azote × compost",
+      "owner": "CIRAD / CNRA; Cardinael et al.",
+      "url": "https://doi.org/10.18167/DVN1/MHLKKW",
+      "licence": "CC-BY-NC-SA-4.0",
+      "licence_evidence": "https://doi.org/10.18167/DVN1/MHLKKW",
+      "checked_on": "2026-11-01",
+      "version": "1.0; file 32628, original format",
+      "published_at": "2026-05-05",
+      "measurement_dates": {
+        "trial": [
+          1971,
+          1990
+        ],
+        "soil": [
+          1971,
+          1974,
+          1975,
+          1979,
+          1981,
+          1993
+        ],
+        "rain": [
+          1970,
+          1991
+        ]
+      },
+      "countries": [
+        "CIV"
+      ],
+      "crops": [
+        "maize",
+        "soybean",
+        "groundnut",
+        "cowpea"
+      ],
+      "cropping_system": "Station Gagnoa; succession pluviale; premier cycle maïs; arrière-effets sur parcelles permanentes",
+      "depth_cm": [
+        0,
+        20
+      ],
+      "analytical_method": {
+        "SOC": "Walkley-Black (article §2.3)",
+        "pH_water": "eau; ratio non établi",
+        "pH_KCl": "KCl distinct",
+        "N": "azote total; méthode non précisée",
+        "P_available": "extractant non établi",
+        "K_exchangeable": "extractant non établi"
+      },
+      "unit": {
+        "grain": "t/ha à 15% eau pour le maïs",
+        "mineral_N_assignment": "kg N/ha/an",
+        "compost_applied": "t matière sèche/ha/cycle",
+        "SOC": "mg/g = g/kg",
+        "soil_P": "mg/kg",
+        "soil_K": "cmol/kg"
+      },
+      "spatial_support": "Un site; 96 parcelles expérimentales de 43,2 m²; 12 traitements × 8 répétitions",
+      "observations": {
+        "yield_rows": 3840,
+        "maize_rows": 2400,
+        "first_cycle_maize": 1920,
+        "soil_rows": 292,
+        "rain_days": 8035
+      },
+      "missing": [
+        "Surface nette récoltée et dénominateur semé/récolté non établis",
+        "Allocation exacte de la dose annuelle d’azote entre cycles et fractions d’apport à confirmer",
+        "Méthodes P/K et dates de disponibilité des analyses incomplètes",
+        "Quelques libellés Crop=Second; protocole et fichier divergent sur le nombre de prélèvements de sol",
+        "ET0 et forçage hydrique journalier complet absents",
+        "Licence NC-SA; usage commercial ou modèle opérationnel non autorisé par cette livraison",
+        "L’article indique H507 pour le premier cycle; le classeur passe à IRAT83. Ne pas fusionner les variétés comme une réponse unique."
+      ],
+      "access_state": "original_workbook_acquired_and_checked_research_only",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Pilote de recherche non commercial: réponse du maïs de premier cycle au traitement N × compost dans ce protocole",
+        "Audit longitudinal et préparation de calibration; aucun modèle déjà validé"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [
+        {
+          "path": "research-data/calibration/raw/research-only/gagnoa.xlsx",
+          "sha256": "465638a56cbbe8f0cb42cff56777477fc40510ef852a3149c77ed286748f23d7",
+          "bytes": 534413
+        }
+      ],
+      "publication": "https://doi.org/10.1016/j.fcr.2021.108335",
+      "protocol_url": "https://agritrop.cirad.fr/599537/7/599537_MAA.pdf",
+      "control": "C0N0 reçoit les apports communs P/K/S et dolomie. Ce n’est pas un témoin sans engrais.",
+      "pilot_cohort": {
+        "crop": "maize",
+        "variety": "H507",
+        "years": [
+          1971,
+          1976
+        ],
+        "plot_seasons": 576
+      },
+      "raw_files_distributed_in_repository": false,
+      "delivery": "Metadata, checksums and reproducible importer only. Original NC-SA workbooks were acquired and checked locally, excluded from repository and production assets; explicit licensed reacquisition required."
+    },
+    {
+      "id": "cirad-soere-senegal",
+      "title": "SOERE PRO Sangalkam: sols, apports, conduite et récoltes",
+      "owner": "CIRAD / ISRA / IRD / IESOL; Vermeire et al.",
+      "url": "https://doi.org/10.18167/DVN1/CHZ81W",
+      "licence": "CC-BY-NC-SA-4.0",
+      "licence_evidence": "https://doi.org/10.18167/DVN1/CHZ81W",
+      "checked_on": "2026-11-01",
+      "version": "3.1; six original file IDs pinned",
+      "published_at": "2025-11-12",
+      "measurement_dates": {
+        "from": 2016,
+        "to": 2025
+      },
+      "countries": [
+        "SEN"
+      ],
+      "crops": [
+        "tomato",
+        "lettuce",
+        "carrot"
+      ],
+      "cropping_system": "Maraîchage irrigué en succession, station ISRA Sangalkam",
+      "depth_cm": "Horizons conservés tels quels: 0_20, 0_10, 10_20, 20_40, 40_60 selon les lignes",
+      "analytical_method": {
+        "P_avail": "Olsen; bicarbonate 0,5 M",
+        "N_NO3": "extraction KCl 1 M; colorimétrie",
+        "N_NH4": "champ présent; métadonnée groupée à vérifier dans README",
+        "total_N": "Dumas, g N/kg sol sec",
+        "pH": "eau et KCl distincts",
+        "product_composition": "méthode et base fraîche/sèche conservées par lot; pas d’imputation des cycles sans analyse"
+      },
+      "unit": {
+        "OWP": "tonne matière brute/ha cultivé",
+        "synthetic_products": "kg matière brute/ha cultivé",
+        "harvest": "kg frais par planche ou par récolte de parcelle",
+        "soil": "unités propres des README, conservées sans fusion"
+      },
+      "spatial_support": "Un site; 21 parcelles cultivées de 64 m², six planches de 8 m² (=48 m² cultivés); 7 traitements × 3 répétitions; sol nu distinct",
+      "observations": null,
+      "missing": [
+        "Pas de témoin cultivé sans engrais: référence SF100",
+        "Certaines planches sont des répartitions de totaux de parcelle (carotte C2, laitue C2/C3)",
+        "Historique chiffré des volumes d’irrigation et météo complète non acquis dans ces fichiers",
+        "Analyses faites en fin de rotation; interdites comme prédicteurs antérieurs sans contrôle de dates",
+        "Licence NC-SA; pas d’activation commerciale automatique",
+        "Laitue C10: année 2024 dans les récoltes contre 2025 dans la conduite/doses; 21 liens non résolus, aucune année corrigée silencieusement."
+      ],
+      "access_state": "six_original_workbooks_acquired_and_checked_research_only",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Recherche non commerciale sur les amendements organiques en maraîchage",
+        "Observations par parcelle/campagne, en conservant les sous-échantillons sans pseudo-réplication"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [
+        {
+          "path": "research-data/calibration/raw/research-only/1_DATA_SOIL_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "0be42c6f6afb7b2b72aa004cc245eeb86e901566b5c0805af73c3113a571ea67",
+          "bytes": 140583
+        },
+        {
+          "path": "research-data/calibration/raw/research-only/2_DATA_FERTILIZATION_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "92470c9101f713cf10e2501c486297d6da8fc994ebf162fff5d54fd6f322eef1",
+          "bytes": 31808
+        },
+        {
+          "path": "research-data/calibration/raw/research-only/3_DATA_MANAGEMENT_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "b29d1c8838b76b47043c3e39c5871df9dce93332a9d6813ee510f94805e9f59c",
+          "bytes": 15325
+        },
+        {
+          "path": "research-data/calibration/raw/research-only/4_DATA_CROP_CARROT_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "7ab56f2413a7ed70c0bb45396faec041b19818e5839c09bdbf95bb1f432e4b89",
+          "bytes": 277934
+        },
+        {
+          "path": "research-data/calibration/raw/research-only/5_DATA_CROP_LETTUCE_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "4cc26b5a0f328aa9902d90409334b6763a1ca3922592cd8f212249ebf91728f9",
+          "bytes": 297415
+        },
+        {
+          "path": "research-data/calibration/raw/research-only/6_DATA_CROP_TOMATO_SOERE-PRO_SENEGAL.xlsx",
+          "sha256": "10b389a81e18bc257d0cadc7a28d4e7370ae79882d558d25ca66e17208d109b2",
+          "bytes": 645844
+        }
+      ],
+      "publication": "https://doi.org/10.1016/j.dib.2026.112456",
+      "raw_files_distributed_in_repository": false,
+      "delivery": "Metadata, checksums and reproducible importer only. Original NC-SA workbooks were acquired and checked locally, excluded from repository and production assets; explicit licensed reacquisition required."
+    },
+    {
+      "id": "ofra-functions",
+      "title": "OFRA: fonctions ajustées de réponse aux nutriments",
+      "owner": "Wortmann et al.; UNL, CABI, instituts partenaires; Dryad/Zenodo",
+      "url": "https://doi.org/10.5061/dryad.tt6h5h1",
+      "licence": "CC0-1.0",
+      "licence_evidence": "https://datadryad.org/api/v2/versions/251167",
+      "checked_on": "2026-11-01",
+      "version": "Dryad v4 / Zenodo v1, août 2023",
+      "published_at": "2023-08-22",
+      "measurement_dates": "Hétérogènes, chaînes d’années préservées; aucune expansion artificielle",
+      "countries": [
+        "TGO",
+        "BFA",
+        "GHA"
+      ],
+      "crops": [
+        "maize",
+        "sorghum",
+        "groundnut",
+        "cowpea",
+        "rice",
+        "cassava",
+        "soybean",
+        "millet",
+        "sesame",
+        "cotton"
+      ],
+      "cropping_system": "Culture pure/association et régimes hydriques distincts selon les libellés source",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "Unités des coefficients non réaffirmées sans notice; ne pas fabriquer de kg/ha par évaluation des coefficients",
+      "spatial_support": "Point/site de fonction ajustée, pas parcelle expérimentale brute",
+      "observations": {
+        "source_functions": 6146,
+        "six_country_subset": 534,
+        "maize_TGO": 15,
+        "maize_BFA": 69,
+        "maize_GHA": 125
+      },
+      "missing": [
+        "Doses, témoins et répétitions brutes absents du fichier de fonctions",
+        "Profondeur et méthodes des variables de sol souvent absentes",
+        "Identifiants réutilisés et variables SOC converties à distinguer des mesures",
+        "Fichiers Dryad API 401 et lien web 403; miroir Zenodo téléchargé normalement et SHA-256 identique à la notice Dryad"
+      ],
+      "access_state": "mirror_file_acquired_checksum_matches_dryad",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Repérage des essais et de leurs publications; contexte de domaines candidats",
+        "Fonctions externes conservées séparément; exclues de la validation par parcelle"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [
+        {
+          "path": "research-data/calibration/raw/open/ofra_response_functions.csv",
+          "sha256": "e545a36d4561b5c0c5e4b113f44a3bf0704597ba48c6bbdfdcd5b65151eda070",
+          "bytes": 389350
+        }
+      ],
+      "mirror": "https://zenodo.org/records/4383403"
+    },
+    {
+      "id": "wosis-phaq",
+      "title": "WoSIS latest: pH eau, profils et horizons",
+      "owner": "ISRIC et fournisseurs cités dans chaque ligne",
+      "url": "https://maps.isric.org/mapserv?map=/map/wosis_latest.map",
+      "licence": "CC-BY-3.0/4.0 et US Public Domain, filtrés par ligne",
+      "licence_evidence": "https://docs.isric.org/globaldata/wosis/faq-wosis.html",
+      "checked_on": "2026-11-01",
+      "version": "latest, extraction du 1 novembre 2026; snapshot local figé par SHA-256",
+      "published_at": null,
+      "measurement_dates": "Dates sources parfois ????-??-??: inconnues conservées, jamais date d’accès substituée",
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [],
+      "cropping_system": "Profils historiques sans conduite d’essai liée",
+      "depth_cm": "upper_depth/lower_depth propres à chaque horizon",
+      "analytical_method": "pH H2O; method_options de chaque ligne conservées; KCl non mélangé",
+      "unit": "pH",
+      "spatial_support": "Profils ponctuels, incertitude géographique déclarée; aucune moyenne de parcelle",
+      "observations": {
+        "fetched_country_horizon_records": 11954,
+        "retained_permissive_records": 4977,
+        "country_details": [
+          {
+            "country": "TGO",
+            "fetched_layer_records": 76,
+            "retained_open_layer_records": 38,
+            "excluded_licence": 38,
+            "profiles": 18,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 38,
+              "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 5,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 33
+            },
+            "raw_sha256": "2cd954fd8d11a949bccf93661bb437b569c4150d4436acb316ab76239e6bd942"
+          },
+          {
+            "country": "BEN",
+            "fetched_layer_records": 5711,
+            "retained_open_layer_records": 2824,
+            "excluded_licence": 2887,
+            "profiles": 1435,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 2887,
+              "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 26,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 2798
+            },
+            "raw_sha256": "8ffd188499ca61a0b7d6ba4f55416b623d3a4002a7b3742140f6a1a9e9b58fba"
+          },
+          {
+            "country": "BFA",
+            "fetched_layer_records": 1778,
+            "retained_open_layer_records": 49,
+            "excluded_licence": 1729,
+            "profiles": 543,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 37,
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 1729,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 12
+            },
+            "raw_sha256": "8515e0f3c236dd7a12bafa389681f5e0cd8cc6486ef39ed0e2114e765e30010b"
+          },
+          {
+            "country": "GHA",
+            "fetched_layer_records": 2044,
+            "retained_open_layer_records": 1224,
+            "excluded_licence": 820,
+            "profiles": 437,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 1062,
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 820,
+              "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 73,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 89
+            },
+            "raw_sha256": "81e1456b40886baf4c2f285a6c939e1470e0f672913d55dcad7a679186e362df"
+          },
+          {
+            "country": "CIV",
+            "fetched_layer_records": 1140,
+            "retained_open_layer_records": 142,
+            "excluded_licence": 998,
+            "profiles": 281,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 998,
+              "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 39,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 103
+            },
+            "raw_sha256": "4516be35b1cd2f81eef99790afec0f4ab029d3df3414dca9dfb03591c2a32d50"
+          },
+          {
+            "country": "SEN",
+            "fetched_layer_records": 1205,
+            "retained_open_layer_records": 700,
+            "excluded_licence": 505,
+            "profiles": 340,
+            "limit": 10000,
+            "truncated": false,
+            "licenses": {
+              "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 505,
+              "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 695,
+              "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 5
+            },
+            "raw_sha256": "17e584dafa9b0b9504f8b30a8eb43f042a8674d92c2bb9184a7d1310add05aaa"
+          }
+        ]
+      },
+      "missing": [
+        "Pas de traitement fertilisant ni rendement expérimental couplé",
+        "Certaines dates et occupations du sol absentes",
+        "Les licences NC ne sont pas incluses dans le sous-ensemble ouvert",
+        "Extraction limitée à cette propriété, pas inventaire exhaustif des autres propriétés ou du pays"
+      ],
+      "access_state": "wfs_actual_country_queries_acquired_and_checked",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Contexte pédologique et inventaire de méthodes; pas relation causale aux engrais"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [
+        {
+          "path": "research-data/calibration/raw/open/wosis_phaq.csv",
+          "sha256": "83ddbfe0de374d6ef6d43a3edf3e053e8d46fd23ee98ccec2b0b4477bd14c69f",
+          "bytes": 1858422
+        }
+      ],
+      "transformation": "WFS JSON metadata and every feature value preserved. Features ordered by (profile_id,layer_id); canonical JSON sort_keys=true, ensure_ascii=false, separators=(comma,colon), no trailing newline. source_snapshot_sha256 hashes this full country representation; raw_sha256 records original HTTP bytes. Licence-filtered rows retain that order.",
+      "upstream_by_country": [
+        {
+          "country": "TGO",
+          "fetched_layer_records": 76,
+          "retained_open_layer_records": 38,
+          "excluded_licence": 38,
+          "profiles": 18,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 38,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 5,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 33
+          },
+          "raw_sha256": "2cd954fd8d11a949bccf93661bb437b569c4150d4436acb316ab76239e6bd942",
+          "canonical_sha256": "18cb62fec51d0dfe73b06f8e1285738fc49df6ee59c251dcfc9752fcf98b7af2"
+        },
+        {
+          "country": "BEN",
+          "fetched_layer_records": 5711,
+          "retained_open_layer_records": 2824,
+          "excluded_licence": 2887,
+          "profiles": 1435,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 2887,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 26,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 2798
+          },
+          "raw_sha256": "8ffd188499ca61a0b7d6ba4f55416b623d3a4002a7b3742140f6a1a9e9b58fba",
+          "canonical_sha256": "458427dcd32e09a26f60dc42ae4b546b6631c3dab38b620083b3c8eaff710ff1"
+        },
+        {
+          "country": "BFA",
+          "fetched_layer_records": 1778,
+          "retained_open_layer_records": 49,
+          "excluded_licence": 1729,
+          "profiles": 543,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 37,
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 1729,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 12
+          },
+          "raw_sha256": "8515e0f3c236dd7a12bafa389681f5e0cd8cc6486ef39ed0e2114e765e30010b",
+          "canonical_sha256": "37fc48f5aabf02e6e52cfea099e0a5f18fe2800839591e0fd0b48e25981b9bdd"
+        },
+        {
+          "country": "GHA",
+          "fetched_layer_records": 2044,
+          "retained_open_layer_records": 1224,
+          "excluded_licence": 820,
+          "profiles": 437,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 1062,
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 820,
+            "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 73,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 89
+          },
+          "raw_sha256": "81e1456b40886baf4c2f285a6c939e1470e0f672913d55dcad7a679186e362df",
+          "canonical_sha256": "7d849b39e2b7e1f3e65080fce5505e7e7961466c4b8ce32af404486998acdff2"
+        },
+        {
+          "country": "CIV",
+          "fetched_layer_records": 1140,
+          "retained_open_layer_records": 142,
+          "excluded_licence": 998,
+          "profiles": 281,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 998,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 39,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 103
+          },
+          "raw_sha256": "4516be35b1cd2f81eef99790afec0f4ab029d3df3414dca9dfb03591c2a32d50",
+          "canonical_sha256": "6b9a4a6c70b6151fc3ef0c9e30d8be71eb386aeb7b6818c20bff6489a954f480"
+        },
+        {
+          "country": "SEN",
+          "fetched_layer_records": 1205,
+          "retained_open_layer_records": 700,
+          "excluded_licence": 505,
+          "profiles": 340,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 505,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 695,
+            "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 5
+          },
+          "raw_sha256": "17e584dafa9b0b9504f8b30a8eb43f042a8674d92c2bb9184a7d1310add05aaa",
+          "canonical_sha256": "d347c39346507018fb76888e71f840f9f332b174c224cdf0bf5c1fab538ce825"
+        }
+      ]
+    },
+    {
+      "id": "iita-togo-variety",
+      "title": "Essais internationaux variétaux maïs Togo",
+      "owner": "IITA, Maize Unit; Menkir et al.",
+      "url": "https://doi.org/10.25502/20180730/1522/MA",
+      "licence": "CC-BY-4.0",
+      "licence_evidence": "https://doi.org/10.25502/20180730/1522/MA",
+      "checked_on": "2026-11-01",
+      "version": "CKAN version metadata_modified figée dans manifest",
+      "published_at": "2018-07-03",
+      "measurement_dates": [
+        "1989",
+        "1992",
+        "2008",
+        "2010"
+      ],
+      "countries": [
+        "TGO"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "YIELD: unité non déduite du seul nom de colonne",
+      "spatial_support": "Entrée variétale × essai; répétition non individualisée dans ce fichier",
+      "observations": 112,
+      "missing": [
+        "Dose/produit d’engrais, témoin fertilisant et conduite expérimentale absents",
+        "Unité et méthode du champ YIELD à confirmer dans le dictionnaire de cette ressource",
+        "Pas de labels de parcelle/campagne reconstitués à partir de moyennes"
+      ],
+      "access_state": "csv_acquired_and_checked_context_only",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Contexte variétal et recherche des protocoles originaux"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [
+        {
+          "path": "research-data/calibration/raw/open/iita_togo_variety_means.csv",
+          "sha256": "acc334658483dd792b24528eae33641fb8f57befde6b1815caf784acb5ffd74b",
+          "bytes": 23257
+        }
+      ]
+    },
+    {
+      "id": "kara-p",
+      "title": "P_Kara.pdf — Phosphore assimilable",
+      "owner": "ITRA, Projet cartographie de la fertilité des sols agricoles du Togo",
+      "url": "https://fertitogo.tg/cartes-de-fertilite",
+      "licence": "non établie pour les données originales",
+      "licence_evidence": "https://fertitogo.tg/cartes-de-fertilite",
+      "checked_on": "2026-11-01",
+      "version": "non indiquée dans la carte fournie",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO"
+      ],
+      "crops": [],
+      "cropping_system": "Sol agricole cartographié, pas essai de fertilisation",
+      "depth_cm": [
+        0,
+        20
+      ],
+      "analytical_method": "Olsen-Dabin selon documentation FertiTogo",
+      "unit": "mg/kg",
+      "spatial_support": "Classes cartographiques régionales; résolution et échantillons ponctuels non établis",
+      "observations": null,
+      "missing": [
+        "Millésime de prélèvement, géoréférencement natif, résolution, incertitude et licence des fichiers originaux",
+        "Aucune mesure exacte à une coordonnée ni valeur sous 20 cm",
+        "Classes à bornes communes et intervalle K 170–171 non résolus par arrondi arbitraire"
+      ],
+      "access_state": "user_pdf_legend_checked_original_points_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Contexte qualitatif de la couche 0–20 cm; pas valeur ponctuelle ni covariable numérique de calibration"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "classes": [
+        "<8",
+        "8–15",
+        "15–23",
+        "23–30",
+        ">30"
+      ],
+      "provided_file_checked": true,
+      "original_point_file_acquired": false,
+      "producer_methods": "https://fertitogo.tg/analyse-des-sols",
+      "producer_contact_route": "https://fertitogo.tg/itra",
+      "direct_page_probe": "503 lors de la tentative; notices officielles consultées par index et fichiers fournis contrôlés",
+      "file_scope": "User-supplied map PDF",
+      "pdf_metadata_report": "docs/calibration/CARTES_KARA_METADATA.json",
+      "georeference": "GeoPDF /VP /GEO, Lome UTM Zone 31N and WGS84 viewports; control points present, no native raster or samples acquired",
+      "pdf_creation_dates": "2019-12-19, 2019-12-26, 2019-12-27; not sampling dates"
+    },
+    {
+      "id": "kara-k",
+      "title": "K_Kara.pdf — Potassium échangeable",
+      "owner": "ITRA, Projet cartographie de la fertilité des sols agricoles du Togo",
+      "url": "https://fertitogo.tg/cartes-de-fertilite",
+      "licence": "non établie pour les données originales",
+      "licence_evidence": "https://fertitogo.tg/cartes-de-fertilite",
+      "checked_on": "2026-11-01",
+      "version": "non indiquée dans la carte fournie",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO"
+      ],
+      "crops": [],
+      "cropping_system": "Sol agricole cartographié, pas essai de fertilisation",
+      "depth_cm": [
+        0,
+        20
+      ],
+      "analytical_method": "acétate d’ammonium selon documentation FertiTogo",
+      "unit": "mg/kg",
+      "spatial_support": "Classes cartographiques régionales; résolution et échantillons ponctuels non établis",
+      "observations": null,
+      "missing": [
+        "Millésime de prélèvement, géoréférencement natif, résolution, incertitude et licence des fichiers originaux",
+        "Aucune mesure exacte à une coordonnée ni valeur sous 20 cm",
+        "Classes à bornes communes et intervalle K 170–171 non résolus par arrondi arbitraire"
+      ],
+      "access_state": "user_pdf_legend_checked_original_points_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Contexte qualitatif de la couche 0–20 cm; pas valeur ponctuelle ni covariable numérique de calibration"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "classes": [
+        "<90",
+        "90–131",
+        "131–170",
+        "171–200",
+        ">200"
+      ],
+      "provided_file_checked": true,
+      "original_point_file_acquired": false,
+      "producer_methods": "https://fertitogo.tg/analyse-des-sols",
+      "producer_contact_route": "https://fertitogo.tg/itra",
+      "direct_page_probe": "503 lors de la tentative; notices officielles consultées par index et fichiers fournis contrôlés",
+      "file_scope": "User-supplied map PDF",
+      "pdf_metadata_report": "docs/calibration/CARTES_KARA_METADATA.json",
+      "georeference": "GeoPDF /VP /GEO, Lome UTM Zone 31N and WGS84 viewports; control points present, no native raster or samples acquired",
+      "pdf_creation_dates": "2019-12-19, 2019-12-26, 2019-12-27; not sampling dates"
+    },
+    {
+      "id": "kara-mo",
+      "title": "MO_Kara.pdf — Matière organique",
+      "owner": "ITRA, Projet cartographie de la fertilité des sols agricoles du Togo",
+      "url": "https://fertitogo.tg/cartes-de-fertilite",
+      "licence": "non établie pour les données originales",
+      "licence_evidence": "https://fertitogo.tg/cartes-de-fertilite",
+      "checked_on": "2026-11-01",
+      "version": "non indiquée dans la carte fournie",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO"
+      ],
+      "crops": [],
+      "cropping_system": "Sol agricole cartographié, pas essai de fertilisation",
+      "depth_cm": [
+        0,
+        20
+      ],
+      "analytical_method": "carbone Walkley-Black selon documentation FertiTogo",
+      "unit": "%",
+      "spatial_support": "Classes cartographiques régionales; résolution et échantillons ponctuels non établis",
+      "observations": null,
+      "missing": [
+        "Millésime de prélèvement, géoréférencement natif, résolution, incertitude et licence des fichiers originaux",
+        "Aucune mesure exacte à une coordonnée ni valeur sous 20 cm",
+        "Classes à bornes communes et intervalle K 170–171 non résolus par arrondi arbitraire"
+      ],
+      "access_state": "user_pdf_legend_checked_original_points_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Contexte qualitatif de la couche 0–20 cm; pas valeur ponctuelle ni covariable numérique de calibration"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "classes": [
+        "<0.7",
+        "0.7–2",
+        "2–3.5",
+        "3.5–4.5",
+        ">4.5"
+      ],
+      "provided_file_checked": true,
+      "original_point_file_acquired": false,
+      "producer_methods": "https://fertitogo.tg/analyse-des-sols",
+      "producer_contact_route": "https://fertitogo.tg/itra",
+      "direct_page_probe": "503 lors de la tentative; notices officielles consultées par index et fichiers fournis contrôlés",
+      "file_scope": "User-supplied map PDF",
+      "pdf_metadata_report": "docs/calibration/CARTES_KARA_METADATA.json",
+      "georeference": "GeoPDF /VP /GEO, Lome UTM Zone 31N and WGS84 viewports; control points present, no native raster or samples acquired",
+      "pdf_creation_dates": "2019-12-19, 2019-12-26, 2019-12-27; not sampling dates"
+    },
+    {
+      "id": "soilgrids",
+      "title": "SoilGrids 2.0 standard",
+      "owner": "ISRIC",
+      "url": "https://docs.isric.org/globaldata/soilgrids/",
+      "licence": "CC-BY-4.0",
+      "licence_evidence": "https://docs.isric.org/globaldata/soilgrids/",
+      "checked_on": "2026-11-01",
+      "version": "2.0 / 2020 products; service used by existing app",
+      "published_at": null,
+      "measurement_dates": "Mesures historiques de formation du modèle; pas une observation actuelle du champ",
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [],
+      "cropping_system": "not established",
+      "depth_cm": [
+        0,
+        5,
+        15,
+        30,
+        60,
+        100,
+        200
+      ],
+      "analytical_method": "Propriétés et quantiles par horizon selon produit; conversions du moteur auditées",
+      "unit": "dépend de la propriété; N total distinct de N minéral",
+      "spatial_support": "250 m, prédictions et quantiles",
+      "observations": null,
+      "missing": [
+        "P assimilable et K échangeable absents du produit standard",
+        "Essais dose-réponse et conduite non fournis",
+        "REST suspendu selon documentation; récupération WCS du logiciel conservée"
+      ],
+      "access_state": "existing_wcs_engine_audited_not_new_trial_acquisition",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Covariables estimées, avec incertitude, jamais analyse de laboratoire de la parcelle"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "isric-nutrient-maps",
+      "title": "Cartes nutritives Afrique subsaharienne",
+      "owner": "ISRIC / Hengl et al.",
+      "url": "https://isric.org/projects/soil-nutrient-maps-of-sub-saharan-africa-at-250-m-resolution/",
+      "licence": "ODbL-1.0 annoncée par le producteur",
+      "licence_evidence": "https://isric.org/projects/soil-nutrient-maps-of-sub-saharan-africa-at-250-m-resolution/",
+      "checked_on": "2026-11-01",
+      "version": "Projet 2016–2017, publication 2017",
+      "published_at": null,
+      "measurement_dates": "Hétérogènes; dates exactes des mesures de chaque maille non établies",
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [],
+      "cropping_system": "not established",
+      "depth_cm": [
+        0,
+        30
+      ],
+      "analytical_method": "P extractible Mehlich-3; K extractible Mehlich-3; distincts de Olsen-Dabin et de K acétate ammonium",
+      "unit": {
+        "P_Mehlich3": "pp100m; diviser par 100 pour ppm (=mg/kg dans la base indiquée)",
+        "K_Mehlich3": "ppm",
+        "N": "total, pas minéral"
+      },
+      "spatial_support": "250 m, prédictions de maille; producteurs signalent lacunes géographiques et limites pour P/S",
+      "observations": "Plus de 59 000 points annoncés pour formation; effectifs locaux par pays non vérifiés",
+      "missing": [
+        "Raster et métadonnées détaillées non acquis; catalogue API 500 lors du test",
+        "Pas de conversion automatique de 0–30 cm à 0–20 cm",
+        "Ne pas annoncer P Mehlich3 comme P Olsen/Bray ni comme mesure locale"
+      ],
+      "access_state": "catalogue_checked_raster_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Source candidate de covariables; non activée comme mesure de parcelle"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "dryad-diagnosis",
+      "title": "OFRA diagnostic éléments secondaires et micronutriments",
+      "owner": "Wortmann et al.; UNL et partenaires",
+      "url": "https://doi.org/10.5061/dryad.5t065bb",
+      "licence": "CC0-1.0",
+      "licence_evidence": "https://doi.org/10.5061/dryad.5t065bb",
+      "checked_on": "2026-11-01",
+      "version": "2019, Dryad version 23366",
+      "published_at": "2019-01-23",
+      "measurement_dates": [
+        2013,
+        2016
+      ],
+      "countries": [
+        "BFA",
+        "GHA"
+      ],
+      "crops": [
+        "maize",
+        "cassava",
+        "legumes"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "Réponse relative Mg/S/Zn/B; analyses de sol et foliaires selon notice",
+      "spatial_support": "not established",
+      "observations": "Notice: 1339 répétitions de 280 essais dans 11 pays; effectifs locaux non contrôlés",
+      "missing": [
+        "Fichier non acquis: API 401 et lien public 403",
+        "Les effectifs annoncés ne deviennent pas des données importées",
+        "Réponse MgSZnB ne remplace pas une réponse multi-dose NPK"
+      ],
+      "access_state": "catalogue_checked_download_blocked",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Référence et acquisition à poursuivre"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "iita-nigeria-omission",
+      "title": "Essais d’omission maïs Benue",
+      "owner": "IITA / Bayero University / SAA",
+      "url": "https://doi.org/10.25502/2dns-0p95/d",
+      "licence": "CC-BY-4.0",
+      "licence_evidence": "https://doi.org/10.25502/2dns-0p95/d",
+      "checked_on": "2026-11-01",
+      "version": "Production 2022-12-01",
+      "published_at": "2022-12-01",
+      "measurement_dates": [
+        2022,
+        2022
+      ],
+      "countries": [
+        "NGA"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "Source: kg/ha, humidité et surface de sous-parcelle; dictionnaire acquis",
+      "spatial_support": "Parcelles d’essais au Nigeria",
+      "observations": null,
+      "missing": [
+        "Hors des six pays: jamais attribué au Ghana ou au Bénin",
+        "Identifiants ménage et noms dans le brut: pas de copie inutile dans le dépôt",
+        "Ne valide aucun des six pays"
+      ],
+      "access_state": "four_csv_acquired_for_structure_review_not_redistributed",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Audit du format d’omission; pas domaine local de calibration"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "file_acquired_locally_for_review": true,
+      "file_scope": "four local CSV files; structural review only; outside target countries; not redistributed"
+    },
+    {
+      "id": "iita-ghana-bundled",
+      "title": "Ghana, innovation maïs-élevage",
+      "owner": "IITA; Nurudeen Abdul Rahman",
+      "url": "https://doi.org/10.25502/waxp-3t50/d",
+      "licence": "CC-BY-4.0 annoncée, accès sous embargo",
+      "licence_evidence": "https://doi.org/10.25502/waxp-3t50/d",
+      "checked_on": "2026-11-01",
+      "version": "Production 2025-12-10",
+      "published_at": null,
+      "measurement_dates": [
+        2025,
+        2027
+      ],
+      "countries": [
+        "GHA"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Embargo jusqu’au 1 décembre 2027; ressources only_allowed_users",
+        "Mention Open Access dans API contradictoire avec restriction des ressources; pas d’import",
+        "Ne pas traiter coordonnées de la notice (latitude/longitude inversées) comme coordonnées des essais"
+      ],
+      "access_state": "embargo_no_data_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "iita-organic-meta",
+      "title": "Méta-analyse apports organiques et minéraux",
+      "owner": "IITA; Gram et al.",
+      "url": "https://doi.org/10.25502/r259-vt34/d",
+      "licence": "CC-BY-4.0 annoncée, ressource restreinte",
+      "licence_evidence": "https://doi.org/10.25502/r259-vt34/d",
+      "checked_on": "2026-11-01",
+      "version": "Production 2018",
+      "published_at": null,
+      "measurement_dates": [
+        1971,
+        2018
+      ],
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Ressource signalée under embargo/only_allowed_users malgré notice Open Access",
+        "Données non acquises; ne pas extrapoler couverture détaillée des pays cités"
+      ],
+      "access_state": "restricted_resource_no_data_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "harvard-fertilizer",
+      "title": "Replication data: Fertilizer and grain prices constrain food production",
+      "owner": "Bonilla-Cedrez, Chamberlin, Hijmans; Harvard Dataverse",
+      "url": "https://doi.org/10.7910/DVN/O9FYCV",
+      "licence": "CC0 annoncée dans catalogue, fichiers non contrôlés",
+      "licence_evidence": "https://doi.org/10.7910/DVN/O9FYCV",
+      "checked_on": "2026-11-01",
+      "version": "2021",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": "Notice: 12 081 observations / 1141 lieux; aucun effectif local vérifié",
+      "missing": [
+        "Fichiers non acquis dans cet environnement",
+        "Risque de doublon avec essais OFRA et IITA à contrôler avant fusion"
+      ],
+      "access_state": "public_page_and_api_blocked_403",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Source prioritaire à obtenir, pas labels disponibles"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "wascal-experiments",
+      "title": "WASCAL Vea/Dano/Dassari: biomasse, rendement et phénologie",
+      "owner": "WASCAL / INRES Bonn / CSIR-OPRI",
+      "url": "https://dataportal.pauwes.dz/geonetwork/geonetwork/search?format=Excel",
+      "licence": "non établie pour les fichiers",
+      "licence_evidence": "https://dataportal.pauwes.dz/geonetwork/geonetwork/search?format=Excel",
+      "checked_on": "2026-11-01",
+      "version": null,
+      "published_at": null,
+      "measurement_dates": [
+        2012,
+        2014
+      ],
+      "countries": [
+        "BEN",
+        "BFA",
+        "GHA"
+      ],
+      "crops": [
+        "maize",
+        "sorghum",
+        "cotton"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "Non contrôlée dans fichiers",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Fichier brut, licence et clés de traitements non acquis",
+        "Une fiche de catalogue n’est pas une donnée expérimentale disponible"
+      ],
+      "access_state": "catalogue_consulted_files_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Acquisition ciblée à poursuivre"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "ifdc-ofra",
+      "title": "OFRA outils et version novembre 2023",
+      "owner": "IFDC / CABI / UNL",
+      "url": "https://ifdc.org/resources/ofra-analysis-tools/",
+      "licence": "licence de ce classeur spécifique non établie",
+      "licence_evidence": "https://ifdc.org/resources/ofra-analysis-tools/",
+      "checked_on": "2026-11-01",
+      "version": "16 novembre 2023",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [
+        "maize",
+        "other"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Outils FOT de Bénin/Sénégal ne prouvent pas présence d’essais locaux",
+        "Version novembre distincte du CC0 août; ne pas empiler mêmes fonctions comme observations indépendantes"
+      ],
+      "access_state": "workbook_acquired_checked_not_merged",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Repérage et contrôle de version; doublons potentiels avec archive CC0"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "local_workbook_sha256": "d3becbe673d7bd740300e8163b806a674e92279dd0039ca84c9d918a89fe9eb3",
+      "file_scope": "local reviewed workbook"
+    },
+    {
+      "id": "ifdc-ghana-report",
+      "title": "Réponses du maïs aux engrais au Ghana",
+      "owner": "IFDC FERARI / Bua et al.",
+      "url": "https://hub.ifdc.org/items/4cbd3b5a-dbaa-4668-be83-328a7804df23",
+      "licence": "rapport accessible; licence des données brutes non établie",
+      "licence_evidence": "https://hub.ifdc.org/items/4cbd3b5a-dbaa-4668-be83-328a7804df23",
+      "checked_on": "2026-11-01",
+      "version": "2020",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "GHA"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": "Rapport: près de 1700 points, pas des lignes acquises",
+      "missing": [
+        "Données originales et clés de traitement à demander aux producteurs",
+        "Publication seule insuffisante pour importer les répétitions"
+      ],
+      "access_state": "publication_consulted_raw_data_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Recherche des essais locaux originaux"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "national-inrab",
+      "title": "INRAB, recherche et recommandations maïs",
+      "owner": "INRAB, Bénin",
+      "url": "https://www.inrab.bj/",
+      "licence": "non établie pour les essais",
+      "licence_evidence": "https://www.inrab.bj/",
+      "checked_on": "2026-11-01",
+      "version": null,
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "BEN"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Fichiers de parcelles, sol, météo, témoins et doses à obtenir"
+      ],
+      "access_state": "institution_and_publications_consulted_no_raw_trials",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Voie producteur pour les essais Bénin"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "national-inera",
+      "title": "INERA, essais de fertilisation",
+      "owner": "INERA, Burkina Faso",
+      "url": "https://www.cabi.org/projects/optimizing-fertilizer-recommendations-in-africa-ofra/",
+      "licence": "non établie pour les essais bruts",
+      "licence_evidence": "https://www.cabi.org/projects/optimizing-fertilizer-recommendations-in-africa-ofra/",
+      "checked_on": "2026-11-01",
+      "version": null,
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "BFA"
+      ],
+      "crops": [
+        "maize",
+        "sorghum",
+        "rice"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Parcelles brutes OFRA/INERA derrière fonctions ajustées à obtenir"
+      ],
+      "access_state": "official_partner_confirmed_raw_trials_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Voie producteur Burkina Faso"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "national-csir",
+      "title": "CSIR Soil Research Institute, modèles et fertilisation maïs",
+      "owner": "CSIR-SRI, Ghana",
+      "url": "https://cspace.csirgh.com/items/show/219",
+      "licence": "publication; licence du brut non établie",
+      "licence_evidence": "https://cspace.csirgh.com/items/show/219",
+      "checked_on": "2026-11-01",
+      "version": "Étude 2015, essais 2010–2011",
+      "published_at": null,
+      "measurement_dates": [
+        2010,
+        2011
+      ],
+      "countries": [
+        "GHA"
+      ],
+      "crops": [
+        "maize"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Répétitions, doses réelles et fichiers DSSAT originaux à obtenir"
+      ],
+      "access_state": "publication_consulted_raw_trials_not_acquired",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Voie producteur Ghana"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "national-isra",
+      "title": "ISRA, fertilité et SOERE PRO",
+      "owner": "ISRA / CIRAD / IESOL",
+      "url": "https://valor-pro.hub.inrae.fr/les-sites-experimentaux/soere-pro-senegal",
+      "licence": "NC-SA pour jeu SOERE; non établie pour autres essais",
+      "licence_evidence": "https://valor-pro.hub.inrae.fr/les-sites-experimentaux/soere-pro-senegal",
+      "checked_on": "2026-11-01",
+      "version": null,
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "SEN"
+      ],
+      "crops": [
+        "tomato",
+        "lettuce",
+        "carrot"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Aucun essai maïs local complet acquis dans cette livraison"
+      ],
+      "access_state": "producer_protocol_consulted",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Protocole du site Sangalkam acquis séparément"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    },
+    {
+      "id": "existing-territorial",
+      "title": "Historiques administratifs, prévisions v24 et FAOSTAT déjà présents",
+      "owner": "Producteurs statistiques cités par archives HarvestStat/FAOSTAT; audit du dépôt",
+      "url": "https://github.com/fawitchamie-ai/agri/tree/main/docs/refonte",
+      "licence": "Licences propres aux archives; pas de nouvelle redistribution du brut",
+      "licence_evidence": "https://github.com/fawitchamie-ai/agri/tree/main/docs/refonte",
+      "checked_on": "2026-11-01",
+      "version": "Audits du dépôt conservés",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [
+        "maize",
+        "millet",
+        "sorghum",
+        "rice",
+        "other"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": [
+        {
+          "country": "BEN",
+          "rows_raw": 31704,
+          "rows_selected": 11412,
+          "first_year": 1995,
+          "last_year": 2023,
+          "selected_territories": 77,
+          "boundary_units": 77,
+          "exclusions": {
+            "outside_configured_crops": 20170,
+            "selected": 11412,
+            "source_qc_flag": 116,
+            "invalid_yield": 6
+          },
+          "canonical_panel_sha256": "a27a8f95ee54e3d8eb088af97e6e9fa4a178eb9775fb96ba2c1a74dd94089941"
+        },
+        {
+          "country": "BFA",
+          "rows_raw": 17338,
+          "rows_selected": 9313,
+          "first_year": 1984,
+          "last_year": 2023,
+          "selected_territories": 45,
+          "boundary_units": 45,
+          "exclusions": {
+            "selected": 9313,
+            "outside_configured_crops": 7781,
+            "invalid_yield": 195,
+            "source_qc_flag": 49
+          },
+          "canonical_panel_sha256": "14b623df86b476f48375f376d20559ebdd9027c76bf64da480cb08924206b497"
+        },
+        {
+          "country": "GHA",
+          "rows_raw": 2989,
+          "rows_selected": 1025,
+          "first_year": 1997,
+          "last_year": 2022,
+          "selected_territories": 16,
+          "boundary_units": 16,
+          "exclusions": {
+            "outside_configured_crops": 1472,
+            "selected": 1025,
+            "source_qc_flag": 431,
+            "invalid_yield": 61
+          },
+          "canonical_panel_sha256": "16bc28da755d329c7470d4fcbff8ad7df308161fff2d0371aadb0e126631beef"
+        },
+        {
+          "country": "SEN",
+          "rows_raw": 9979,
+          "rows_selected": 9317,
+          "first_year": 1960,
+          "last_year": 2015,
+          "selected_territories": 43,
+          "boundary_units": 45,
+          "exclusions": {
+            "selected": 9317,
+            "outside_configured_crops": 496,
+            "source_qc_flag": 83,
+            "invalid_yield": 83
+          },
+          "canonical_panel_sha256": "a975ac1bfe1ffb10406931338af1badb8a5f714ceb49c01d9c9f54912d48975e"
+        },
+        {
+          "country": "TGO",
+          "rows_selected": 2014,
+          "selected_territories": 34,
+          "first_year": 1995,
+          "last_year": 2019,
+          "canonical_panel_sha256": "73628bd8758fe78b1f08cd9f6aceac4bdf2f649d68bb2f60956b6af4fc7ff2cc"
+        }
+      ],
+      "missing": [
+        "Doses d’engrais, parcelles expérimentales, témoins et conduite absents des séries administratives",
+        "Origine fixe 2015 de v24 et reconstructions: pas des labels de parcelle contemporains"
+      ],
+      "access_state": "existing_files_and_schema_audited",
+      "catalogue_consulted": true,
+      "file_acquired": true,
+      "file_checked": true,
+      "usable_for": [
+        "Référence historique territoriale; exclue de la calibration causale aux apports"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": [],
+      "file_scope": "preexisting repository archives"
+    },
+    {
+      "id": "existing-campaigns",
+      "title": "Campagnes et observations utilisateur",
+      "owner": "Chaque coopérative et propriétaire de campagne",
+      "url": "https://github.com/fawitchamie-ai/agri/blob/main/lib/seasonal/storage.ts",
+      "licence": "Privées, pas autorisées pour corpus public",
+      "licence_evidence": "https://github.com/fawitchamie-ai/agri/blob/main/lib/seasonal/storage.ts",
+      "checked_on": "2026-11-01",
+      "version": "Révisions JSON/D1, agri-deflate-json-1",
+      "published_at": null,
+      "measurement_dates": null,
+      "countries": [
+        "TGO",
+        "BEN",
+        "BFA",
+        "GHA",
+        "CIV",
+        "SEN"
+      ],
+      "crops": [
+        "user_selected"
+      ],
+      "cropping_system": "not established",
+      "depth_cm": null,
+      "analytical_method": "not established",
+      "unit": "not established",
+      "spatial_support": "not established",
+      "observations": null,
+      "missing": [
+        "Accès authentifié aux données réelles non disponible ici; aucun effectif privé inventé",
+        "Résultat simulé ou rendement hypothétique exclu des labels de récolte",
+        "Consentement et provenance des récoltes réelles requis avant entraînement"
+      ],
+      "access_state": "code_and_backup_mechanism_audited_production_content_not_read",
+      "catalogue_consulted": true,
+      "file_acquired": false,
+      "file_checked": false,
+      "usable_for": [
+        "Import local explicite de suivi privé, exclu des données publiques par défaut"
+      ],
+      "experimental_calibration_eligible": false,
+      "model_calibrated": false,
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "version": "experimental-sources-1",
+  "files": [
+    {
+      "source_id": "cirad-gagnoa",
+      "path": "research-data/calibration/raw/research-only/gagnoa.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/32628?format=original",
+      "sha256": "465638a56cbbe8f0cb42cff56777477fc40510ef852a3149c77ed286748f23d7",
+      "bytes": 534413,
+      "acquired_at": "2026-11-01T09:18:07.543709+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "1.0",
+      "published_at": "2026-05-05",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/1_DATA_SOIL_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29456?format=original",
+      "sha256": "0be42c6f6afb7b2b72aa004cc245eeb86e901566b5c0805af73c3113a571ea67",
+      "bytes": 140583,
+      "acquired_at": "2026-11-01T09:18:07.544179+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/2_DATA_FERTILIZATION_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29460?format=original",
+      "sha256": "92470c9101f713cf10e2501c486297d6da8fc994ebf162fff5d54fd6f322eef1",
+      "bytes": 31808,
+      "acquired_at": "2026-11-01T09:18:07.544389+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/3_DATA_MANAGEMENT_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29458?format=original",
+      "sha256": "b29d1c8838b76b47043c3e39c5871df9dce93332a9d6813ee510f94805e9f59c",
+      "bytes": 15325,
+      "acquired_at": "2026-11-01T09:18:07.544536+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/4_DATA_CROP_CARROT_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29461?format=original",
+      "sha256": "7ab56f2413a7ed70c0bb45396faec041b19818e5839c09bdbf95bb1f432e4b89",
+      "bytes": 277934,
+      "acquired_at": "2026-11-01T09:18:07.544936+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/5_DATA_CROP_LETTUCE_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29462?format=original",
+      "sha256": "4cc26b5a0f328aa9902d90409334b6763a1ca3922592cd8f212249ebf91728f9",
+      "bytes": 297415,
+      "acquired_at": "2026-11-01T09:18:07.545714+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "cirad-soere-senegal",
+      "path": "research-data/calibration/raw/research-only/6_DATA_CROP_TOMATO_SOERE-PRO_SENEGAL.xlsx",
+      "url": "https://dataverse.cirad.fr/api/access/datafile/29495?format=original",
+      "sha256": "10b389a81e18bc257d0cadc7a28d4e7370ae79882d558d25ca66e17208d109b2",
+      "bytes": 645844,
+      "acquired_at": "2026-11-01T09:18:07.547789+00:00",
+      "license": "CC-BY-NC-SA-4.0",
+      "version": "3.1",
+      "published_at": "2025-11-12",
+      "redistribution_scope": "noncommercial_research_only",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": false
+    },
+    {
+      "source_id": "wosis-phaq",
+      "path": "research-data/calibration/raw/open/wosis_phaq.csv",
+      "url": "https://maps.isric.org/mapserv?map=/map/wosis_latest.map",
+      "sha256": "83ddbfe0de374d6ef6d43a3edf3e053e8d46fd23ee98ccec2b0b4477bd14c69f",
+      "bytes": 1858422,
+      "acquired_at": "2026-11-01T09:18:15.762766+00:00",
+      "license": "CC-BY-3.0/4.0-and-US-Public-Domain-per-record",
+      "version": "latest retrieved 2026-11-01",
+      "published_at": null,
+      "redistribution_scope": "record_licence_filtered",
+      "access_status": "downloaded",
+      "checked": true,
+      "upstream_by_country": [
+        {
+          "country": "TGO",
+          "fetched_layer_records": 76,
+          "retained_open_layer_records": 38,
+          "excluded_licence": 38,
+          "profiles": 18,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 38,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 5,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 33
+          },
+          "raw_sha256": "2cd954fd8d11a949bccf93661bb437b569c4150d4436acb316ab76239e6bd942",
+          "canonical_sha256": "18cb62fec51d0dfe73b06f8e1285738fc49df6ee59c251dcfc9752fcf98b7af2"
+        },
+        {
+          "country": "BEN",
+          "fetched_layer_records": 5711,
+          "retained_open_layer_records": 2824,
+          "excluded_licence": 2887,
+          "profiles": 1435,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 2887,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 26,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 2798
+          },
+          "raw_sha256": "8ffd188499ca61a0b7d6ba4f55416b623d3a4002a7b3742140f6a1a9e9b58fba",
+          "canonical_sha256": "458427dcd32e09a26f60dc42ae4b546b6631c3dab38b620083b3c8eaff710ff1"
+        },
+        {
+          "country": "BFA",
+          "fetched_layer_records": 1778,
+          "retained_open_layer_records": 49,
+          "excluded_licence": 1729,
+          "profiles": 543,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 37,
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 1729,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 12
+          },
+          "raw_sha256": "8515e0f3c236dd7a12bafa389681f5e0cd8cc6486ef39ed0e2114e765e30010b",
+          "canonical_sha256": "37fc48f5aabf02e6e52cfea099e0a5f18fe2800839591e0fd0b48e25981b9bdd"
+        },
+        {
+          "country": "GHA",
+          "fetched_layer_records": 2044,
+          "retained_open_layer_records": 1224,
+          "excluded_licence": 820,
+          "profiles": 437,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 1062,
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 820,
+            "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 73,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 89
+          },
+          "raw_sha256": "81e1456b40886baf4c2f285a6c939e1470e0f672913d55dcad7a679186e362df",
+          "canonical_sha256": "7d849b39e2b7e1f3e65080fce5505e7e7961466c4b8ce32af404486998acdff2"
+        },
+        {
+          "country": "CIV",
+          "fetched_layer_records": 1140,
+          "retained_open_layer_records": 142,
+          "excluded_licence": 998,
+          "profiles": 281,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 998,
+            "Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/": 39,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 103
+          },
+          "raw_sha256": "4516be35b1cd2f81eef99790afec0f4ab029d3df3414dca9dfb03591c2a32d50",
+          "canonical_sha256": "6b9a4a6c70b6151fc3ef0c9e30d8be71eb386aeb7b6818c20bff6489a954f480"
+        },
+        {
+          "country": "SEN",
+          "fetched_layer_records": 1205,
+          "retained_open_layer_records": 700,
+          "excluded_licence": 505,
+          "profiles": 340,
+          "limit": 10000,
+          "truncated": false,
+          "licenses": {
+            "Attribution-NonCommercial 3.0 International (CC BY-NC 3.0), https://creativecommons.org/licenses/by-nc/3.0/": 505,
+            "Attribution 3.0 International (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/": 695,
+            "U.S. Public Domain http://www.usa.gov/publicdomain/label/1.0/": 5
+          },
+          "raw_sha256": "17e584dafa9b0b9504f8b30a8eb43f042a8674d92c2bb9184a7d1310add05aaa",
+          "canonical_sha256": "d347c39346507018fb76888e71f840f9f332b174c224cdf0bf5c1fab538ce825"
+        }
+      ],
+      "transformation": "WFS JSON metadata and every feature value preserved. Features ordered by (profile_id,layer_id); canonical JSON sort_keys=true, ensure_ascii=false, separators=(comma,colon), no trailing newline. source_snapshot_sha256 hashes this full country representation; raw_sha256 records original HTTP bytes. Licence-filtered rows retain that order.",
+      "distributed_in_repository": true
+    },
+    {
+      "source_id": "ofra-functions",
+      "path": "research-data/calibration/raw/open/ofra_response_functions.csv",
+      "url": "https://zenodo.org/api/records/4383403/files/OFRA_RespFunc_Dataset_Updated_Aug_2023.xlsx/content",
+      "sha256": "e545a36d4561b5c0c5e4b113f44a3bf0704597ba48c6bbdfdcd5b65151eda070",
+      "bytes": 389350,
+      "acquired_at": "2026-11-01T09:19:09.754938+00:00",
+      "license": "CC0-1.0",
+      "version": "Dryad v4 / Zenodo v1 Aug 2023",
+      "published_at": "2023-08-22",
+      "redistribution_scope": "open",
+      "access_status": "downloaded",
+      "checked": true,
+      "upstream_sha256": "79a8fdecf0cbf519f6440af9c76c2cd37d840c0e26c17faabe2f88e34b1d04ce",
+      "upstream_digest_verified_against_dryad": true,
+      "upstream_total_rows": 6146,
+      "selected_country_rows": 534,
+      "excluded_reason": "Fitted functions, not experimental plots",
+      "transformation": "scripts/calibration/refresh_context.py ofra_bytes; first 47 source columns preserved",
+      "distributed_in_repository": true
+    },
+    {
+      "source_id": "iita-togo-variety",
+      "path": "research-data/calibration/raw/open/iita_togo_variety_means.csv",
+      "url": "https://data.iita.org/dataset/4f5da011-a856-4090-ab0a-d907598f9e31/resource/5c420700-46d1-4e52-8845-42af70fae3a3/download/international_maize_trial_regular_togo.csv",
+      "sha256": "acc334658483dd792b24528eae33641fb8f57befde6b1815caf784acb5ffd74b",
+      "bytes": 23257,
+      "acquired_at": "2026-11-01T09:19:09.755413+00:00",
+      "license": "CC-BY-4.0",
+      "version": "2023-03-30T14:38:22.720929",
+      "published_at": "2018-07-03",
+      "redistribution_scope": "open",
+      "access_status": "downloaded",
+      "checked": true,
+      "distributed_in_repository": true
+    }
+  ]
+}

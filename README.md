@@ -6,6 +6,8 @@ Le catalogue comporte 23 fiches culturales et neuf références de fertilisation
 
 Les entrées de sol, météo et conduite disposent d’une provenance versionnée. Le contrôle serveur du contour croise WorldCover, la saisonnalité JRC et une observation récente si accessible ; les surfaces en eau, mixtes ou inconnues suspendent le calcul terrestre. Les hypothèses doivent être acceptées explicitement. Voir [le contrat, la migration et les limites](docs/PROVENANCE_TERRAIN.md).
 
+L’audit expérimental sol–eau–engrais livre les fichiers autorisés, une base relationnelle reconstructible et la disponibilité réelle par pays/culture. Aucun nouveau modèle n’est déclaré calibré. Voir [l’inventaire vérifié](docs/calibration/INVENTAIRE.md), [le dictionnaire](docs/calibration/DICTIONNAIRE.md) et [les commandes de reconstruction](research-data/calibration/README.md).
+
 ## Socle Cloudflare existant
 
 Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.
