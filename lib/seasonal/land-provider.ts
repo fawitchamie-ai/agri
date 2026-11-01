@@ -67,6 +67,18 @@ async function recentLayer(shape:ParcelPolygon,fetcher:typeof fetch,now:string):
     return empty;
   }catch(e){return {...empty,reason:(e as Error).message};}
 }
+/** A failed partition is not evidence of land. Keep the input sources and
+ * mark the entire contour unknown; callers can still retrieve weather. */
+export function partitionLandSafely(shape:ParcelPolygon,layers:LandLayer[],now:string):LandAssessment{
+  try{return assessLandGeometry(shape,layers,now);}
+  catch(error){
+    const message='Découpage des classes non calculable : terrain laissé inconnu. Réessayez ou analysez des secteurs plus petits.';
+    console.error('AgriPrévision land partition failed','LAND_PARTITION_FAILED',error instanceof Error?error.name:'unknown');
+    const unknown=assessLandGeometry(shape,[],now);
+    unknown.fractions.unknown={areaM2:unknown.areaM2,fraction:1,geometry:{type:'MultiPolygon',coordinates:[shape.coordinates]}};unknown.unknownAreaM2=unknown.areaM2;
+    return {...unknown,sources:layers.map(({cells,...source})=>{void cells;return source;}),analysis:{status:'unavailable',code:'LAND_PARTITION_FAILED',message},messages:[message,...unknown.messages]};
+  }
+}
 const cache=new Map<string,{until:number;value:LandAssessment}>();
 const inflight=new Map<string,Promise<LandAssessment>>();
 export async function loadLandAssessment(input:unknown,fetcher:typeof fetch=fetch,now=new Date().toISOString(),refresh=false):Promise<LandAssessment>{
@@ -77,11 +89,11 @@ export async function loadLandAssessment(input:unknown,fetcher:typeof fetch=fetc
     const results=await Promise.allSettled([staticLayer('worldcover',shape,fetcher,now),staticLayer('jrc',shape,fetcher,now),recentLayer(shape,fetcher,now)]);
     const ids=['worldcover','jrc','recent'] as const;
     const layers=results.map((r,i)=>r.status==='fulfilled'?r.value:missingLandLayer(ids[i],String(r.reason?.message??r.reason),now));
-    const result=assessLandGeometry(shape,layers,now);
-    if(fetcher===fetch){if(cache.size>=16)cache.delete(cache.keys().next().value!);cache.set(key,{until:Date.now()+(layers.some(l=>l.id==='worldcover'&&l.status==='missing')?60000:1800000),value:result});}
+    const result=partitionLandSafely(shape,layers,now);
+    if(fetcher===fetch){if(cache.size>=16)cache.delete(cache.keys().next().value!);cache.set(key,{until:Date.now()+(result.analysis||layers.some(l=>l.id==='worldcover'&&l.status==='missing')?60000:1800000),value:result});}
     return result;
   })();
   if(fetcher===fetch)inflight.set(key,task);
   try{return structuredClone(await task);}finally{if(fetcher===fetch)inflight.delete(key);}
 }
-const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days+nativeRectangles2';
+const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days+nativeRectangles3+sphericalLinearEdges1+polyclip0168';

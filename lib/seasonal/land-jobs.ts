@@ -1,4 +1,5 @@
-import clipping from 'polygon-clipping';
+import {AREA_METHOD} from './spherical-area.ts';
+import * as clipping from './geometry-ops.ts';
 import {bbox,multiArea,LAND_CLASSES,LAND_VERSION,type LandAssessment,type MultiShape} from './land.ts';
 import {validateParcel,parcelMetrics,type ParcelPolygon} from './parcel.ts';
 import {scopeId,geometryIdentity} from './provenance.ts';
@@ -30,7 +31,7 @@ export function combineLandSectors(shape:ParcelPolygon,parts:LandAssessment[],no
  for(const cls of LAND_CLASSES){let geometry:MultiShape['coordinates']=[];for(const p of parts)geometry=clipping.union(geometry,p.fractions[cls].geometry.coordinates);const size=multiArea(geometry);fractions[cls]={areaM2:size,fraction:size/areaM2,geometry:{type:'MultiPolygon',coordinates:geometry}};}
  if(Math.abs(LAND_CLASSES.reduce((n,k)=>n+fractions[k].areaM2,0)-areaM2)>tol)throw new Error('Surfaces non réconciliées.');
  const excludedAreaM2=fractions.permanentWater.areaM2+fractions.incompatible.areaM2,unknownAreaM2=fractions.unknown.areaM2;
- return {version:LAND_VERSION,scopeId:scopeId(shape),geometry:shape,assessedAt:now,areaM2,fractions,
+ return {version:LAND_VERSION,areaMethod:AREA_METHOD,scopeId:scopeId(shape),geometry:shape,assessedAt:now,areaM2,fractions,
  sources:[...new Map(parts.flatMap(p=>p.sources).map(s=>[JSON.stringify(s),s])).values()],status:excludedAreaM2>=areaM2-tol?'excluded':excludedAreaM2>tol?'mixed':unknownAreaM2>=areaM2-tol?'unknown':'conditional',candidateAreaM2:fractions.potentialLand.areaM2,excludedAreaM2,unknownAreaM2,messages:[...new Set(parts.flatMap(p=>p.messages)),'Analyse par secteurs : couverture traitée complète ; les zones inconnues restent inconnues.'],boundaryUncertaintyM:null,legalStatus:'not_assessed'};
 }
 async function owned(id:unknown,s:Identity){
@@ -44,7 +45,7 @@ export async function landJobStatus(id:unknown,s:Identity){
  return {id:row.id,status:row.result?'complete':'pending',completed:sectors.results.filter(x=>x.complete).length,total:row.total,processedM2,totalM2:parcelMetrics(JSON.parse(row.geometry)).areaM2,errors:sectors.results.filter(x=>x.error).map(x=>({sector:x.sector,error:x.error})),assessment:row.result?JSON.parse(row.result):null};
 }
 export async function startLandJob(input:unknown,s:Identity){
- const shape=validateParcel(input),now=new Date().toISOString(),id=await digest(JSON.stringify(['land-sectors-1',s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const shape=validateParcel(input),now=new Date().toISOString(),id=await digest(JSON.stringify(['land-sectors-2-spherical-linear-edges',s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
  const existing=await database().prepare('SELECT id FROM land_jobs WHERE id=?').bind(id).first();if(existing)return landJobStatus(id,s);
  const sectors=splitLandSectors(shape),db=database();
  // Job and rows are atomic. Bounded 256 rows; D1 batch is transactional.
@@ -76,5 +77,7 @@ export async function authoritativeLand(shape:ParcelPolygon,s:Identity):Promise<
  if(parcelMetrics(shape).areaM2<SECTOR_AREA_THRESHOLD_M2)return loadLandAssessment(shape);
  const row=await database().prepare('SELECT result FROM land_jobs WHERE coop_id=? AND owner_id=? AND geometry=? AND result IS NOT NULL AND completed_at>=? ORDER BY completed_at DESC LIMIT 1').bind(s.coopId,s.userId,JSON.stringify(shape),new Date(Date.now()-86400000).toISOString()).first<{result:string}>();
  if(!row)throw new HttpError(409,'Analyse par secteurs requise : lancez ou reprenez le traitement du grand contour. Aucun résultat partiel ne sera extrapolé.');
- return JSON.parse(row.result);
+ const result=JSON.parse(row.result);
+ if(result.areaMethod!==AREA_METHOD)throw new HttpError(409,'La méthode de surface a été corrigée : relancez l’analyse par secteurs avant un nouveau calcul. Les campagnes enregistrées restent conservées.');
+ return result;
 }

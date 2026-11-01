@@ -1,4 +1,5 @@
-import clipping from 'polygon-clipping';
+import {sphericalRingAreaM2,AREA_METHOD} from './spherical-area.ts';
+import * as clipping from './geometry-ops.ts';
 import {validateParcel,parcelMetrics,type ParcelPolygon,type Position} from './parcel.ts';
 import {scopeId,geometryIdentity} from './provenance.ts';
 
@@ -15,22 +16,17 @@ export type LandLayer={
   qualityMask?:MultiShape;
 };
 export type LandAssessment={
-  version:typeof LAND_VERSION;scopeId:string;geometry:ParcelPolygon;assessedAt:string;
+  version:typeof LAND_VERSION;areaMethod?:typeof AREA_METHOD;analysis?:{status:'unavailable';code:'LAND_PARTITION_FAILED';message:string};scopeId:string;geometry:ParcelPolygon;assessedAt:string;
   areaM2:number;fractions:Record<LandClass,{areaM2:number;fraction:number;geometry:MultiShape}>;
   sources:Omit<LandLayer,'cells'>[];status:'excluded'|'mixed'|'conditional'|'unknown';
   candidateAreaM2:number;excludedAreaM2:number;unknownAreaM2:number;
   messages:string[];boundaryUncertaintyM:number|null;legalStatus:'not_assessed';
 };
 type MP=Position[][][];
-const rectangle=(g:ParcelPolygon)=>g.coordinates as clipping.Polygon;
+const rectangle=(g:ParcelPolygon)=>g.coordinates as Position[][];
 const intersect=(a:MP,b:MP)=>clipping.intersection(a,b) as MP;
 const difference=(a:MP,b:MP)=>b.length?clipping.difference(a,b) as MP:a;
-function ringArea(ring:Position[]):number {
-  let sum=0;const rad=Math.PI/180,R=6371008.8;
-  for(let i=0;i<ring.length-1;i++){const a=ring[i],b=ring[i+1];sum+=(b[0]-a[0])*rad*(2+Math.sin(a[1]*rad)+Math.sin(b[1]*rad));}
-  return Math.abs(sum)*R*R/2;
-}
-export function multiArea(shape:MP):number{return shape.reduce((n,p)=>n+Math.max(0,ringArea(p[0])-p.slice(1).reduce((s,r)=>s+ringArea(r),0)),0);}
+export function multiArea(shape:MP):number{return shape.reduce((n,p)=>n+Math.max(0,sphericalRingAreaM2(p[0])-p.slice(1).reduce((s,r)=>s+sphericalRingAreaM2(r),0)),0);}
 export function clipToParcel(shape:ParcelPolygon,cell:ParcelPolygon):MultiShape{return {type:'MultiPolygon',coordinates:intersect([shape.coordinates],[cell.coordinates])};}
 export function bbox(shape:ParcelPolygon):[number,number,number,number]{const p=shape.coordinates.flat();return [Math.min(...p.map(p=>p[0])),Math.min(...p.map(p=>p[1])),Math.max(...p.map(p=>p[0])),Math.max(...p.map(p=>p[1]))];}
 export function missingLandLayer(id:LandLayer['id'],reason:string,now:string):LandLayer {
@@ -64,7 +60,9 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
       const dry=layer.cells.filter(c=>c.value===0).map(c=>[c.geometry.coordinates] as MP);
       for(const piece of dry){if(!parts.permanentWater.length)break;const disputed=intersect(parts.permanentWater,piece);parts.permanentWater=difference(parts.permanentWater,disputed);parts.unknown=clipping.union(parts.unknown,disputed) as MP;}
     }
-    for(const cell of layer.cells){const cls=layerClass(layer.id,cell.value);if(!cls||cls==='unknown')continue;const cut=intersect(whole,[rectangle(cell.geometry)] as MP);if(cut.length)(groups[cls]??=[]).push(cut);}
+    // Merge source cells before cutting the parcel. Repeatedly clipping a sloped
+    // parcel edge creates almost-collinear fragments and unstable output rings.
+    for(const cell of layer.cells){const cls=layerClass(layer.id,cell.value);if(!cls||cls==='unknown')continue;(groups[cls]??=[]).push([rectangle(cell.geometry)] as MP);}
     for(const [cls,items] of Object.entries(groups) as [LandClass,MP[]][]){
       // Merge adjacent cell pieces in bounded batches to avoid huge call stacks.
       let joined:MP=[];
@@ -78,13 +76,13 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
       parts[cls]=clipping.union(parts[cls],joined) as MP;
     }
     if(layer.qualityMask?.coordinates.length){
-      const mask=intersect(whole,layer.qualityMask.coordinates);
+      const mask=layer.qualityMask.coordinates;
       for(const k of LAND_CLASSES)if(k!=='unknown')parts[k]=difference(parts[k],mask);
       parts.unknown=clipping.union(parts.unknown,mask) as MP;
     }
   }
   const fractions={} as LandAssessment['fractions'];
-  for(const k of LAND_CLASSES){const area=multiArea(parts[k]);fractions[k]={areaM2:area,fraction:area/areaM2,geometry:{type:'MultiPolygon',coordinates:parts[k]}};}
+  for(const k of LAND_CLASSES){const cut=intersect(whole,parts[k]),area=multiArea(cut);fractions[k]={areaM2:area,fraction:area/areaM2,geometry:{type:'MultiPolygon',coordinates:cut}};}
   const reconciled=LAND_CLASSES.reduce((n,k)=>n+fractions[k].areaM2,0);
   if(Math.abs(reconciled-areaM2)>Math.max(.001,areaM2*1e-7))throw new Error('Partition des surfaces incohérente : analyse suspendue.');
   const excludedAreaM2=fractions.permanentWater.areaM2+fractions.incompatible.areaM2;
@@ -98,7 +96,7 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
   if(layers.some(l=>l.id==='jrc'&&l.status==='available'))messages.push('La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.');
   messages.push('Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.');
   for(const l of layers)if(l.status==='missing')messages.push(`${l.product} indisponible : ${l.reason}`);
-  return {version:LAND_VERSION,scopeId:scopeId(geometry),geometry,assessedAt:now,areaM2,fractions,
+  return {version:LAND_VERSION,areaMethod:AREA_METHOD,scopeId:scopeId(geometry),geometry,assessedAt:now,areaM2,fractions,
     sources:layers.map(({cells,...s})=>{void cells;return s;}),status:excludedAreaM2>=areaM2-tolerance?'excluded':excludedAreaM2>tolerance?'mixed':unknownAreaM2>=areaM2-tolerance?'unknown':'conditional',
     candidateAreaM2,excludedAreaM2,unknownAreaM2,messages,boundaryUncertaintyM:null,legalStatus:'not_assessed'};
 }
@@ -121,7 +119,7 @@ export function terrestrialSoilPoint(a:LandAssessment):Position|null {
   const polygons=a.fractions.potentialLand.geometry.coordinates;
   if(!polygons.length)return null;
   const polygon=polygons.reduce((best,p)=>multiArea([p])>multiArea([best])?p:best);
-  const ys=polygon[0].map(p=>p[1]),south=Math.min(...ys),north=Math.max(...ys);
+  let south=Infinity,north=-Infinity;for(const point of polygon[0]){south=Math.min(south,point[1]);north=Math.max(north,point[1]);}
   let best:Position|null=null,width=0;
   for(const fraction of [.5,.25,.75]){
     const y=south+(north-south)*fraction,xs:number[]=[];

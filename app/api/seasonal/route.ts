@@ -10,7 +10,7 @@ import {planSeason,yieldCsv} from '@/lib/seasonal/yield';
 import {loadLandAssessment} from '@/lib/seasonal/land-provider';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
-import { body, database, failure, HttpError, json } from '@/lib/server-db';
+import { body, database, failure, HttpError, ServiceStageError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
 import { upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
@@ -107,8 +107,9 @@ export async function POST(request: Request) { try {
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);
     const now=new Date().toISOString();
-    const landAssessment=m.areaM2>=1_000_000?await authoritativeLand(geometry,s):await loadLandAssessment(geometry,fetch,now,b.refresh===true);
-    const environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,terrestrialSoilPoint(landAssessment));
+    let landAssessment;try{landAssessment=m.areaM2>=1_000_000?await authoritativeLand(geometry,s):await loadLandAssessment(geometry,fetch,now,b.refresh===true);}catch(e){if(e instanceof HttpError)throw e;throw new ServiceStageError('terrain',e);}
+    let point;try{point=terrestrialSoilPoint(landAssessment);}catch(e){throw new ServiceStageError('point-sol',e);}
+    let environment;try{environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,point);}catch(e){if(e instanceof InputError)throw e;throw new ServiceStageError('sol-meteo',e);}
     return json({...environment,landAssessment});
   }
   if(b.action==='land'){try{return json({assessment:await authoritativeLand(validateParcel(b.geometry),s)});}catch(e){throw new InputError((e as Error).message);}}

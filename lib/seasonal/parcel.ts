@@ -1,3 +1,4 @@
+import {sphericalRingAreaM2} from './spherical-area.ts';
 /** WGS84 GeoJSON, longitude first. Spherical surface: R=6371008.8 m.
  * Drawing is a user estimate, not a cadastral survey. No raster precision claim. */
 export type Position = [number, number];
@@ -20,17 +21,17 @@ export function containsPoint(ring:Position[],p:Position):boolean{
 }
 export function distanceM(a:Position,b:Position){const dlat=(b[1]-a[1])*rad,dlon=(b[0]-a[0])*rad;const h=Math.sin(dlat/2)**2+Math.cos(a[1]*rad)*Math.cos(b[1]*rad)*Math.sin(dlon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));}
 export function parcelMetrics(shape:ParcelPolygon):{areaM2:number;perimeterM:number;point:Position;pointIsCentroid:boolean}{
- const ring=shape.coordinates[0],pts=ring.slice(0,-1);let sum=0,perimeterM=0,crossSum=0,cx=0,cy=0;
+ const ring=shape.coordinates[0],pts=ring.slice(0,-1);let perimeterM=0,crossSum=0,cx=0,cy=0;
  // Shift to local origin before calculating a centroid, to retain precision at m² scale.
  const origin=pts[0];
  for(let i=0;i<pts.length;i++){
-  const a=pts[i],b=pts[(i+1)%pts.length];sum+=(b[0]-a[0])*rad*(2+Math.sin(a[1]*rad)+Math.sin(b[1]*rad));perimeterM+=distanceM(a,b);
+  const a=pts[i],b=pts[(i+1)%pts.length];perimeterM+=distanceM(a,b);
   const ax=a[0]-origin[0],ay=a[1]-origin[1],bx=b[0]-origin[0],by=b[1]-origin[1],c=ax*by-bx*ay;crossSum+=c;cx+=(ax+bx)*c;cy+=(ay+by)*c;
  }
  const centroid:Position=crossSum?[origin[0]+cx/(3*crossSum),origin[1]+cy/(3*crossSum)]:origin;
  const point=containsPoint(ring,centroid)&&!shape.coordinates.slice(1).some(h=>containsPoint(h,centroid))?centroid:[...origin] as Position;
  const holes=shape.coordinates.slice(1).map(h=>parcelMetrics({type:"Polygon",coordinates:[h]}));
- return {areaM2:Math.abs(sum)*R*R/2-holes.reduce((n,h)=>n+h.areaM2,0),perimeterM:perimeterM+holes.reduce((n,h)=>n+h.perimeterM,0),point,pointIsCentroid:equal(point,centroid)};
+ return {areaM2:sphericalRingAreaM2(ring)-holes.reduce((n,h)=>n+h.areaM2,0),perimeterM:perimeterM+holes.reduce((n,h)=>n+h.perimeterM,0),point,pointIsCentroid:equal(point,centroid)};
 }
 export function polygonFromPoints(points:Position[]):ParcelPolygon{
  return validateParcel({type:'Polygon',coordinates:[[...points,points[0]]]});

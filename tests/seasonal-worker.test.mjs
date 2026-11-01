@@ -11,11 +11,11 @@ import {declareScenario,geometryIdentity} from '../lib/seasonal/provenance.ts';
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler'));
 const {Miniflare,Response:WorkerResponse}=wr('miniflare'),{build}=wr('esbuild'),root=resolve('.');
 const bundle=await build({entryPoints:['tests/support/seasonal-worker.ts'],bundle:true,format:'esm',platform:'browser',target:'es2022',write:false,external:['node:*','cloudflare:workers'],alias:{'@':root},plugins:[{name:'test-only-identity',setup(b){b.onLoad({filter:/\/app\/chatgpt-auth\.ts$/},()=>({contents:`import {currentAccessIdentity} from ${JSON.stringify(root+'/lib/cloudflare-access.ts')};export async function getChatGPTUser(){return currentAccessIdentity();}`,loader:'ts'}));}}]});
-function raster(value){return new Uint8Array(writeArrayBuffer(new Uint8Array(16*16).fill(value),{width:16,height:16,BitsPerSample:[8],GeographicTypeGeoKey:4326,ModelPixelScale:[.0001,.0001,0],ModelTiepoint:[0,0,0,1.1992,9.5012,0]}));}
-const land=raster(40),water=raster(0),shape={type:'Polygon',coordinates:[[[1.2,9.5],[1.2004,9.5],[1.2004,9.5004],[1.2,9.5004],[1.2,9.5]]]};
+function raster(value){return new Uint8Array(writeArrayBuffer(Uint8Array.from({length:16*16},(_,i)=>typeof value==='function'?value(i):value),{width:16,height:16,BitsPerSample:[8],GeographicTypeGeoKey:4326,ModelPixelScale:[.0001,.0001,0],ModelTiepoint:[0,0,0,1.1992,9.5012,0]}));}
+const land=raster(40),fragmentedLand=raster(i=>[40,80,90,50][(i+Math.floor(i/16))%4]),water=raster(0),shape={type:'Polygon',coordinates:[[[1.2,9.5],[1.2004,9.5],[1.2004,9.5004],[1.2,9.5004],[1.2,9.5]]]};
 function fixture(){const c=applyCropProfile(exampleCampaign(),'maize');c.parcelGeometry=shape;c.landSelection='potentialLand';c.waterCondition='drained';c.yieldEstimation={version:'yield-input-1',method:'declared-scenario',scopeGeometryId:geometryIdentity(shape),homogeneityAssumption:'Synthetic runtime fixture',units:[{id:'field',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Synthetic only',availableOn:c.asOfDate,context:'Test only',cropId:'maize',independentYm:true}}]};return c;}
 test('Workers seasonal API: concurrent simulation, audit and D1 snapshots execute in the deployed runtime',async()=>{
- let outage=false,malformedForecast=false,soilCalls=0,soilActive=0,soilPeak=0;
+ let outage=false,fragmented=false,malformedForecast=false,soilCalls=0,soilActive=0,soilPeak=0;
  const mf=new Miniflare({modules:true,script:bundle.outputFiles[0].text,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],d1Databases:['DB'],outboundService:async req=>{
   const u=new URL(req.url),isSoil=u.hostname==='maps.isric.org';if(isSoil){soilCalls++;soilActive++;soilPeak=Math.max(soilPeak,soilActive);}await new Promise(r=>setTimeout(r,15));
   if(isSoil)soilActive--;
@@ -30,7 +30,7 @@ test('Workers seasonal API: concurrent simulation, audit and D1 snapshots execut
   }
   if(u.hostname==='explorer.digitalearth.africa')return WorkerResponse.json({features:[]});
   if(u.pathname.includes('/inputquality/'))return new WorkerResponse(null,{status:404});
-  const bytes=u.hostname==='esa-worldcover.s3.eu-central-1.amazonaws.com'?land:water,range=req.headers.get('range');
+  const bytes=u.hostname==='esa-worldcover.s3.eu-central-1.amazonaws.com'?(fragmented?fragmentedLand:land):water,range=req.headers.get('range');
   if(!range)return new WorkerResponse(null,{status:503});const [start,end]=range.slice(6).split('-').map(Number),last=Math.min(end,bytes.length-1);
   return new WorkerResponse(bytes.slice(start,last+1),{status:206,headers:{'content-range':`bytes ${start}-${last}/${bytes.length}`,'content-length':String(last-start+1)}});
  }});
@@ -49,6 +49,10 @@ test('Workers seasonal API: concurrent simulation, audit and D1 snapshots execut
   acquired=declareScenario(acquired);const ready=await post({action:'simulate',config:acquired});assert.equal(ready.plan.status,'conditional');assert.equal(ready.plan.days.length,210);assert.ok(ready.plan.totals.demandMm>0);assert.ok(ready.plan.totals.actualEtMm>0);
   const originalSoilCalls=soilCalls;malformedForecast=true;
   const refreshed=await post(body);assert.equal(refreshed.weather.length,210);assert.ok(refreshed.weather.every(w=>w.status==='scenario'));assert.match(refreshed.warnings.join(' '),/Prévisions météo indisponibles/);assert.equal(soilCalls,originalSoilCalls,'Stable complete soil profiles retain their original acquisition instead of refetching 30 rasters');
+  fragmented=true;malformedForecast=false;
+  const sloped={type:'Polygon',coordinates:[[[1.20003,9.50002],[1.20055,9.50009],[1.20049,9.50063],[1.20006,9.50057],[1.20003,9.50002]]]};
+  for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN']){const restored=await post({action:'environment',country,start:season.sowingDate,days:125,geometry:sloped,refresh:true});assert.equal(restored.weather.length,125);assert.equal(restored.landAssessment.analysis,undefined);assert.ok(restored.landAssessment.candidateAreaM2>0);assert.ok(restored.landAssessment.excludedAreaM2>0);assert.equal(restored.landAssessment.areaMethod,'spherical-linear-edges-1');}
+  fragmented=false;
   outage=true;const moved=structuredClone(c);moved.parcelGeometry={type:'Polygon',coordinates:shape.coordinates.map(r=>r.map(([x,y])=>[x+.0001,y]))};moved.yieldEstimation=undefined;
   const noSource=await post({action:'simulate',config:moved});assert.equal(noSource.plan.status,'blocked');assert.ok(noSource.plan.land.unknownAreaM2>0);
  }finally{await mf.dispose();}
