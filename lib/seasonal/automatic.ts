@@ -5,7 +5,7 @@ import {applyCropProfile,cropById,CATALOG_VERSION} from './catalog.ts';
 
 /** Explicit starting assumptions keep the first calculation usable, never measured. */
 export function automaticCampaign(c:SeasonalConfig,cropId=c.cropProfile?.id??'maize',date=c.sowingDate):SeasonalConfig{
- const next={...c,name:c.name.trim()||'Mon champ',territory:c.territory.trim()||'Parcelle GPS',sowingDate:date,asOfDate:new Date().toISOString().slice(0,10),
+ const next={...c,...(c.sowingPlan?.cropId!==cropId?{sowingPlan:undefined}:{}),name:c.name.trim()||'Mon champ',territory:c.territory.trim()||'Parcelle GPS',sowingDate:date,asOfDate:new Date().toISOString().slice(0,10),
  soil:{...c.soil,source:c.soil.layers.some(l=>l.initialTheta===null)?'Hypothèse hydrique modifiable : capacité 0,30, flétrissement 0,15 et réserve initiale à 60 % ; non mesurée':c.soil.source,layers:c.soil.layers.map(l=>({...l,initialTheta:l.initialTheta??l.thetaWP+.6*(l.thetaFC-l.thetaWP)}))},
  system:{...c.system,name:'Arrosage simulé',source:'Hypothèses modifiables : efficacité 75 %, transport sans perte ; disponibilité non vérifiée',applicationEfficiency:c.system.applicationEfficiency??.75,transportEfficiency:c.system.transportEfficiency??1},fallback:null};
  // A newly supplied default must replace its old null evidence, while keeping

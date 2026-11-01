@@ -1,3 +1,4 @@
+import {estimateSowing} from '@/lib/seasonal/sowing';
 import {decodeCampaignValue,encodeCampaignSnapshot} from '@/lib/seasonal/storage';
 import {loadNasaHistory,mergeNasa} from '@/lib/seasonal/nasa';
 import {parseSalinityInput} from '@/lib/seasonal/salinity';
@@ -56,6 +57,12 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='sowing-plan'){
+    const config=validateConfig(b.config,{allowUnparametrisedCycle:true});
+    if(!config.parcelGeometry)throw new InputError('Dessinez une parcelle pour préparer le semis.');
+    config.landAssessment=await authoritativeLand(config.parcelGeometry,s);
+    return json({sowingPlan:estimateSowing(config),land:config.landAssessment});
+  }
   if(b.action==='land-job-start')return json(await startLandJob(b.geometry,s));
   if(b.action==='land-job-step')return json(await stepLandJob(b.id,s));
   if(b.action==='land-job-status')return json(await landJobStatus(b.id,s));
@@ -129,6 +136,7 @@ export async function POST(request: Request) { try {
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? decodeCampaignValue(old.config) : b.config);
+  if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&(decodeCampaignValue(old.config).sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
   if (config.asOfDate > new Date().toISOString().slice(0,10)) throw new InputError('La date du conseil ne peut pas être future. Une date de semis future reste possible avec un scénario.');
