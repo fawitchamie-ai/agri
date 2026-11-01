@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.3.0';
+export const ENGINE_VERSION = 'water-balance-1.4.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  managementPlan?: import('./management.ts').ManagementPlan;
   sowingPlan?: import('./sowing.ts').SowingInput;
   salinity?: import('./salinity.ts').SalinityInput;
   agronomic?: import('./agronomic.ts').AgronomicConfig;
@@ -67,7 +68,7 @@ export type WaterDay = {
   stockStartMm: number; rootGainMm: number; stockEndMm: number; assimilationMm: number;
   tawMm: number; rawMm: number; depletionMm: number; unmetEtMm: number;
   balanceResidualMm: number; weatherSource: string; weatherStatus: WeatherDay['status'];
-  intervention: (Volumes & { type: 'recorded' | 'proposed'; constrained: boolean; reasons: string[] }) | null;
+  intervention: (Volumes & { type: 'recorded' | 'proposed'; requestedFieldM3Ha?:number; constrained: boolean; reasons: string[] }) | null;
 };
 export type WaterPeriod = {
   label: string; from: string; to: string; demandMm: number; actualEtMm: number;
@@ -76,6 +77,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  management?: ReturnType<typeof import('./management.ts').managementSummary>;
   sowingPlan?: import('./sowing.ts').SowingEstimate;
   salinity?: {status:'unavailable';missing:string[]}|ReturnType<typeof import('./salinity.ts').salinityScenario>;
   yieldEstimation?: import('./yield.ts').YieldEstimate;

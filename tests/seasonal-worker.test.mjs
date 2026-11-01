@@ -6,6 +6,7 @@ import {resolve} from 'node:path';
 import {writeArrayBuffer} from 'geotiff';
 import {exampleCampaign} from '../lib/seasonal/example.ts';
 import {applyCropProfile} from '../lib/seasonal/catalog.ts';
+import {emptyManagement} from '../lib/seasonal/management.ts';
 import {mergeEnvironment} from '../lib/seasonal/automatic.ts';
 import {declareScenario,geometryIdentity} from '../lib/seasonal/provenance.ts';
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler'));
@@ -39,6 +40,8 @@ test('Workers seasonal API: concurrent simulation, audit and D1 snapshots execut
   async function post(body,status=200){const r=await mf.dispatchFetch('https://local/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://local'},body:JSON.stringify(body)});const d=await r.json();assert.equal(r.status,status,JSON.stringify(d).slice(0,500));return d;}
   const c=fixture();
   for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN']){c.country=country;const [s]=await Promise.all(['simulate','data-readiness','agronomic-coverage'].map(action=>post({action,config:c})));assert.equal(s.plan.yieldEstimation.scenarios[0].totals.productionKg,400);}
+  c.managementPlan=emptyManagement(c);c.managementPlan.irrigation={mode:'manual',applications:[{date:c.asOfDate,fieldM3Ha:100}]};
+  for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN']){c.country=country;const s=await post({action:'simulate',config:c});assert.equal(s.plan.management.irrigation[0].simulatedFieldM3Ha,100);assert.equal(s.plan.yieldEstimation.scenarios[2].totals.productionKg,400);assert.equal(s.plan.days.filter(d=>d.intervention?.type==='proposed').length,1);}
   const saved=await post({action:'save',id:'runtime-campaign',expectedRevision:0,config:c},201);assert.equal(saved.campaign.plan.yieldEstimation.scenarios[0].totals.productionKg,400);
   const large=structuredClone(c);large.stages=large.stages.map((s,i)=>({...s,days:i===0?276:30}));const data=await post({action:'save',id:'runtime-large',expectedRevision:0,config:large},201);assert.equal(data.campaign.plan.days.length,366);
   const got=await mf.dispatchFetch('https://local/api/seasonal?id=runtime-large');assert.equal(got.status,200);assert.equal((await got.json()).campaign.plan.days.length,366);
@@ -53,7 +56,7 @@ test('Workers seasonal API: concurrent simulation, audit and D1 snapshots execut
   const sloped={type:'Polygon',coordinates:[[[1.20003,9.50002],[1.20055,9.50009],[1.20049,9.50063],[1.20006,9.50057],[1.20003,9.50002]]]};
   for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN']){const restored=await post({action:'environment',country,start:season.sowingDate,days:125,geometry:sloped,refresh:true});assert.equal(restored.weather.length,125);assert.equal(restored.landAssessment.analysis,undefined);assert.ok(restored.landAssessment.candidateAreaM2>0);assert.ok(restored.landAssessment.excludedAreaM2>0);assert.equal(restored.landAssessment.areaMethod,'spherical-linear-edges-1');}
   fragmented=false;
-  outage=true;const moved=structuredClone(c);moved.parcelGeometry={type:'Polygon',coordinates:shape.coordinates.map(r=>r.map(([x,y])=>[x+.0001,y]))};moved.yieldEstimation=undefined;
+  outage=true;const moved=structuredClone(c);moved.parcelGeometry={type:'Polygon',coordinates:shape.coordinates.map(r=>r.map(([x,y])=>[x+.0001,y]))};moved.yieldEstimation=undefined;moved.managementPlan=undefined;
   const noSource=await post({action:'simulate',config:moved});assert.equal(noSource.plan.status,'blocked');assert.ok(noSource.plan.land.unknownAreaM2>0);
  }finally{await mf.dispose();}
 });

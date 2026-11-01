@@ -1,4 +1,5 @@
 import {estimateSowing} from '@/lib/seasonal/sowing';
+import {managementCsv,editableIrrigation,emptyManagement} from '@/lib/seasonal/management';
 import {decodeCampaignValue,encodeCampaignSnapshot} from '@/lib/seasonal/storage';
 import {loadNasaHistory,mergeNasa} from '@/lib/seasonal/nasa';
 import {parseSalinityInput} from '@/lib/seasonal/salinity';
@@ -42,6 +43,11 @@ export async function GET(request: Request) { try {
       return json({ id,revision:snapshot.revision,config:decodeCampaignValue(snapshot.config),events:decodeCampaignValue(snapshot.events),plan:decodeCampaignValue(snapshot.plan),reason:snapshot.reason,createdAt:snapshot.created_at },200,{'Content-Disposition':`attachment; filename="campagne-revision-${snapshot.revision}.json"`});
     }
     if(url.searchParams.get('format')==='yield-csv'){const snapshot=decodeCampaignValue(row.plan).yieldEstimation;if(!snapshot)throw new HttpError(409,'Rendement non paramétré dans cette révision.');return new Response(yieldCsv(snapshot),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename=estimation-rendement-revision-${row.revision}.csv`,'Cache-Control':'no-store'}});}
+    if(url.searchParams.get('format')==='management-csv'){
+      const config=validateConfig(migrateInputs(decodeCampaignValue(row.config))),snapshot=decodeCampaignValue(row.plan);
+      const p=config.managementPlan??emptyManagement(config);
+      return new Response(managementCsv({...p,irrigation:{mode:'manual',applications:editableIrrigation(config,snapshot)}}),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename=apports-revision-${row.revision}.csv`,'Cache-Control':'no-store'}});
+    }
     if (url.searchParams.get('format')==='csv') {
       const config=validateConfig(migrateInputs(decodeCampaignValue(row.config)));
       if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));

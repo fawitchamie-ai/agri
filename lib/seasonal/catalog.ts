@@ -1211,6 +1211,7 @@ export function cropById(id: string) { return CROPS.find(c => c.id === id); }
 /** Stage examples are scenarios, not phenology calibration. Root growth is an
  * explicit interpolation assumption, capped by the real supplied soil depth. */
 export function applyCropProfile(c: SeasonalConfig, id: string, confirmedDays?: number[]): SeasonalConfig {
+ if(c.managementPlan&&c.managementPlan.cropId!==id)c={...c,managementPlan:undefined};
  const p = cropById(id);
  if (!p) throw new Error('Culture inconnue.');
  if (!p.water || id === 'rice-flooded') return {...c,crop:p.name,cropProfile:{id,version:CATALOG_VERSION,mode:'reference'},nutritionReference:undefined,stages:[],parameterSource:'Paramètres hydriques manquants ou système hors domaine : compléter une référence locale.',systemDomain:id==='rice-flooded'?'flooded_rice':'upland'};

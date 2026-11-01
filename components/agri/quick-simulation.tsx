@@ -8,6 +8,7 @@ import './quick-simulation.css';
 import WaterChart from './water-chart';
 import EditableValue,{Pencil} from './editable-value';
 import SowingSummary from './sowing-summary';
+import ManagementPlanner from './management-planner';
 import {waterOverview} from '../../lib/seasonal/overview';
 import DataCompletion from './data-completion';
 import AgronomicPanel from './agronomic-panel';
@@ -94,8 +95,9 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
     <button className="qs-text-button" onClick={()=>onAdvanced('plan')}>Ouvrir le calendrier détaillé →</button>
    </section>
   </div>
-  {usable?<WaterChart config={config} plan={plan}/>:<section className="qs-card qs-chart-placeholder"><span className="qs-eyebrow">ÉVOLUTION SUR LE CYCLE</span><h2>Vos graphiques apparaîtront ici</h2><p>{indicator.message}</p></section>}
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
+  <ManagementPlanner config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/>
+  {usable?<details className="qs-subtle-details"><summary>Comprendre la pluie et les besoins sur la saison</summary><WaterChart config={config} plan={plan}/></details>:<section className="qs-card qs-chart-placeholder"><span className="qs-eyebrow">ÉVOLUTION SUR LE CYCLE</span><h2>Vos graphiques apparaîtront ici</h2><p>{indicator.message}</p></section>}
   <details className="qs-settings" id="simulation-settings"><summary><span><Pencil/> Réglages et données</span><small>Sol, météo, sources et méthodes</small></summary><div className="qs-settings-content">
    <details onToggle={e=>{if(e.currentTarget.open)setTerrainOpened(true);}}><summary>Vérifier le terrain, le sol et les réglages d’arrosage</summary>{terrainOpened&&<><InputStatus config={config} onChange={onChange}/>
   <section className="qs-card qs-data-card"><div className="qs-card-heading"><div><span className="qs-eyebrow">PRÉREMPLI POUR VOUS</span><h2>Sol estimé et réglages d’arrosage</h2></div><button className="btn secondary small" aria-expanded={adjust} onClick={()=>setAdjust(!adjust)}>{adjust?'Fermer les réglages':'Ajuster les paramètres'} ⇄</button></div><div className="qs-data-grid">{[['pH du sol',fmt(ph,1),sourceLabel('pH')],['Carbone organique',`${fmt(chemistry('organicC'),1)} g/kg`,sourceLabel('organicC')],['Azote total',`${fmt(chemistry('totalN'),2)} g/kg`,chemistry('totalN')!==null?'Hors azote assimilable':'Indisponible'],['CEC',`${fmt(chemistry('CEC'),1)} cmol(+)/kg`,sourceLabel('CEC')],['Pluie du cycle',config.weather.length?`${fmt(config.weather.reduce((s,w)=>s+(w.rainMm??0),0))} mm`:'—',`${weatherCoverage} % du cycle renseigné`],['Réserve utile du sol',`${fmt(config.soil.layers.reduce((s,l)=>s+l.thicknessM*(l.thetaFC-l.thetaWP)*1000,0))} mm`,config.inputs?.values['soil.layers.0.thetaFC']?.origin==='automatic'?'Rétention estimée · réserve initiale supposée':'Hypothèses modifiables']].map(([label,value,source])=><div key={label}><small>{label}</small><strong>{value}</strong><span>{source}</span></div>)}</div>
