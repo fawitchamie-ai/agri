@@ -7,6 +7,8 @@ declare namespace Cloudflare {
     AUTH_DEMO_ONLY?: string;
     ADMIN_USER_IDS?: string;
     ADMIN_EMAILS?: string;
+    CROP_COMPUTE_URL?: string;
+    CROP_COMPUTE_TOKEN?: string;
   }
 }
 

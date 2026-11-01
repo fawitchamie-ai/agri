@@ -1,4 +1,7 @@
 import {calibrationEvidence} from '@/lib/seasonal/calibration-evidence';
+import {cropEngineManifest,concentrationInventory} from '@/lib/seasonal/crop-engine';
+import {productCatalog,nutrientBalance,snominApplication} from '@/lib/seasonal/products';
+import {computeAvailability,computeRequest} from '@/lib/seasonal/compute-service';
 import {estimateSowing} from '@/lib/seasonal/sowing';
 import {managementCsv,editableIrrigation,emptyManagement} from '@/lib/seasonal/management';
 import {decodeCampaignValue,encodeCampaignSnapshot} from '@/lib/seasonal/storage';
@@ -64,6 +67,18 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='crop-engine')return json({...cropEngineManifest(),service:computeAvailability()});
+  if(b.action==='product-catalog')return json(productCatalog());
+  if(b.action==='snomin-application')return json(snominApplication(b.application,b.parameters));
+  if(b.action==='nutrient-balance'){
+    const result=nutrientBalance(b.applications);
+    if(result.rows.some(a=>a.status==='declared'&&a.date>new Date().toISOString().slice(0,10)))throw new InputError('Un apport futur ne peut pas être déclaré réalisé.');
+    return json(result);
+  }
+  if(b.action==='soil-inventory')return json(concentrationInventory(b.parameters));
+  if(b.action==='engine-submit')return json(await computeRequest('submit',b.bundle,s),202);
+  if(b.action==='engine-status')return json(await computeRequest('status',b.jobId,s));
+  if(b.action==='engine-retry')return json(await computeRequest('retry',b.jobId,s),202);
   if(b.action==='calibration-evidence')return json(calibrationEvidence(b.country,b.cropId));
   if(b.action==='sowing-plan'){
     const config=validateConfig(b.config,{allowUnparametrisedCycle:true});

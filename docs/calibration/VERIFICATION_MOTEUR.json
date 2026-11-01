@@ -1,0 +1,84 @@
+{
+  "checkedOn": "2026-11-01",
+  "kind": "technical_execution_not_field_validation",
+  "model": "Wofost81_NWLP_MLWB_SNOMIN",
+  "pcseVersion": "6.0.13",
+  "python": "3.12.14",
+  "hardware": "ephemeral execution environment; not a service capacity guarantee",
+  "country": "DEMO",
+  "crop": "potato",
+  "predictiveMetrics": {
+    "MAE": null,
+    "RMSE": null,
+    "reason": "No qualified independent local observed labels used"
+  },
+  "fixtureSha256": "e79b676a19d3e4fce65f972d1ee2f413f1648c83504806654789f14101552e12",
+  "rows": [
+    {
+      "scenario": "upstream_reference",
+      "elapsedSecondsIncludingImport": 1.4636470689999896,
+      "engineElapsedSeconds": 0.6698561270000027,
+      "days": 169,
+      "result": {
+        "storageOrganDryMatterKgHaSown": 11532.58562954839,
+        "productionDryKg": 11532.58562954839,
+        "sownAreaHa": 1.0,
+        "denominator": "sown",
+        "freshOrMarketableProductionKg": null
+      },
+      "inputSha256": "82ed2004cf25a6a2e19516317c2edd4bcebac0a2e729af2308aa3f076baa24ad"
+    },
+    {
+      "scenario": "no_added_n",
+      "elapsedSecondsIncludingImport": 0.5669470800000909,
+      "engineElapsedSeconds": 0.5460984280000503,
+      "days": 169,
+      "result": {
+        "storageOrganDryMatterKgHaSown": 9475.00251400589,
+        "productionDryKg": 9475.00251400589,
+        "sownAreaHa": 1.0,
+        "denominator": "sown",
+        "freshOrMarketableProductionKg": null
+      },
+      "inputSha256": "0f25babaf8ad7957d6a75c4b5e6a22072fffbf8fce11d418c95b7ab2fdb60d4e"
+    },
+    {
+      "scenario": "same_total_n_delayed",
+      "elapsedSecondsIncludingImport": 0.6804291949999879,
+      "engineElapsedSeconds": 0.6555700549999983,
+      "days": 169,
+      "result": {
+        "storageOrganDryMatterKgHaSown": 10629.059178364432,
+        "productionDryKg": 10629.059178364432,
+        "sownAreaHa": 1.0,
+        "denominator": "sown",
+        "freshOrMarketableProductionKg": null
+      },
+      "inputSha256": "22e41d548fa2d688e2b3dd23f079faf2940ee3a7197d17dfccaf18af985e5b60"
+    },
+    {
+      "scenario": "40_percent_sown_area",
+      "elapsedSecondsIncludingImport": 0.6967612789999293,
+      "engineElapsedSeconds": 0.6747639579998577,
+      "days": 169,
+      "result": {
+        "storageOrganDryMatterKgHaSown": 11532.58562954839,
+        "productionDryKg": 4613.0342518193565,
+        "sownAreaHa": 0.4,
+        "denominator": "sown",
+        "freshOrMarketableProductionKg": null
+      },
+      "inputSha256": "f09d6e99a25293af180ac3faf2c7b063f8444951e4121a6c3c69eb85b7a80907"
+    }
+  ],
+  "fileSha256": {
+    "services/crop-compute/runner.py": "46e8dce39e19430c390f06e80c9b9c821abfd7b539670225b18249d56c05a502",
+    "services/crop-compute/server.py": "50ef88204d337e8286a6e2d729ba12318688af9487b6c10f6ea2e7e8720d19ed",
+    "services/crop-compute/requirements.lock.txt": "0bcfb2f9efb241fb1c8c251e2d61bedbdb88979a574a3f5c6bd89ef76c17c03e"
+  },
+  "limits": [
+    "Upstream technical example, no six-country calibration",
+    "Artificial variants test date/dose/surface wiring, not agronomic accuracy",
+    "No NC-SA experimental data or private campaign data used"
+  ]
+}
