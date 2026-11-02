@@ -171,6 +171,17 @@ répondu 403 dans cet environnement ; aucune recette humaine authentifiée en
 production n’est revendiquée. Une compilation ou un job de publication ne vaut
 pas à lui seul une visite authentifiée de l’interface.
 
+La [PR #22](https://github.com/fawitchamie-ai/agri/pull/22) est fusionnée au commit
+`d20f2dc127aeb11af1b21a06cad7566667a8cf4d`. Le
+[run de production 41467975201](https://github.com/fawitchamie-ai/agri/actions/runs/41467975201)
+a terminé contrôles et publication avec succès ; Cloudflare a confirmé la
+version `9f398b23-ea4a-4e8f-af7c-c75ea0aaec04` sur
+`https://agri.fawitchamie.workers.dev`. Le contrôle de santé est explicitement
+**SKIPPED** : les secrets Access de service sont absents, et aucune visite humaine
+authentifiée n’a été effectuée. Une correction d’affichage retire ensuite le
+message historique d’absence de données maïs lorsque des observations riz sont
+disponibles, sans modifier les diagnostics ni le modèle.
+
 ## Prochain point de reprise
 
 Repartir de main après la PR dédiée ou de la branche de livraison. Les tests v2
