@@ -125,11 +125,12 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   }catch(e){setError((e as Error).message);}finally{setBusy(false);} }
   function defineParcel(shape:ParcelPolygon|null,country:SeasonalConfig['country']) {
     const metrics=shape?parcelMetrics(shape):null;
-    if(geometryIdentity(config.parcelGeometry)!==geometryIdentity(shape)){
+    const changed=geometryIdentity(config.parcelGeometry)!==geometryIdentity(shape);
+    if(changed){
       setEvents([]);
       if(active){setDraftId(newId());setActive(null);setHistory([]);setNotice('Nouveau contour : une nouvelle campagne est préparée. Les observations de l’ancienne parcelle restent dans sa campagne.');}
     }
-    const next={...config,country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],inputs:emptyCampaign().inputs,landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},nutritionReference:undefined,sowingPlan:undefined,managementPlan:undefined};
+    const next={...config,...(changed?{agronomic:undefined,yieldEstimation:undefined,fieldTrials:undefined,salinity:undefined}:{}),country,parcelGeometry:shape??undefined,areaM2:metrics?.areaM2??null,longitude:metrics?.point[0]??null,latitude:metrics?.point[1]??null,weather:[],soil:emptyCampaign().soil,soilAnalyses:[],inputs:emptyCampaign().inputs,landAssessment:undefined,inputPolicy:{allowAssumptions:false,allowStale:false},nutritionReference:undefined,sowingPlan:undefined,managementPlan:undefined};
     edit(shape?automaticCampaign(next):next);
     if(shape){setParcelDraft(false);setTab('simulation');}
   }
