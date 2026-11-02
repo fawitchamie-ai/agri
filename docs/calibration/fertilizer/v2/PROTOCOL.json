@@ -1,0 +1,43 @@
+{
+  "version": "fertilizer-extension-2026-11-02",
+  "purpose": "Research screening; no automatic production promotion. Registered before extension model scores.",
+  "datasets": {
+    "AMAZXA": "Rice P addition with equal reported N and K, matched trial/variety; published adjusted genotype means, not replicate-level measurements. Neighboring P environments: causal assignment remains unqualified.",
+    "GFWCYQ": "Rice long-term fertilizer regimes at Ndiaye; compare each treatment with contemporaneous control. Repeated treatments include legacy effects, not first-season fertilizer effects.",
+    "BBKJH0": "Audit and descriptive paired management strategies only. Unit conflict and multiple management changes prevent fertilizer-only calibration.",
+    "4CFDEG": "Quarantined: conflicting treatment dose, unverified moisture and suspect Ndiaye coordinates; potential shared experiment with GFWCYQ.",
+    "TROYBD": "Quarantined: original pair identifiers lost in standardization, conflicting rates and country/site ambiguity; original metadata access currently HTTP 403.",
+    "SRANPI": "Descriptive source inventory only: variety, gypsum, zinc and fertilizer changes confounded."
+  },
+  "AMAZXA": {
+    "outer": "Leave one entire country out; all site-years and varieties in country travel together. No pooling with other datasets.",
+    "inner": "Leave one entire site out within remaining countries; select candidate on equally site-weighted delta MAE.",
+    "candidates": ["mean", "ridge_0.1", "ridge_1", "ridge_10"],
+    "features": ["P addition", "background N", "background K", "flooded", "irrigated", "dry season"],
+    "excludedFeatures": ["control yield", "treated yield", "plant nutrient concentrations", "soil variables of unqualified timing", "coordinates guessed by standardizer"],
+    "uncertainty": "Descriptive outer-fold residual quantiles only; no coverage guarantee or prospective confidence interval.",
+    "target": "P environment difference at matched genotype, t/ha grain at 14 percent moisture, from paper 10.3389/fpls.2016.01435"
+  },
+  "GFWCYQ": {
+    "train": "2015-2018",
+    "validation": "2019-2020",
+    "test": "2021-2022",
+    "candidates": ["mean", "dose_mean", "saturating_30", "saturating_60", "saturating_120"],
+    "saturation": "delta = a + b * (1-exp(-N/tau)), fit only N=60,120,180 at P=26,K=50; a captures the shared PK contrast and is not a zero-N prediction. Never extrapolate or optimize.",
+    "targets": ["delta", "control", "treated"],
+    "weighting": "equal campaign, then equal treatments within campaign",
+    "uncertainty": "95 percent split conformal, calibration scores=max absolute residual within each validation year; unavailable when finite-sample quantile exceeds calibration group count.",
+    "scope": "Temporal diagnostic at one repeatedly fertilized irrigated site; not geographical validation or a clean new-dose response. Moisture not qualified in supplied data."
+  },
+  "screen": {
+    "minRelativeMAEImprovement": 0.1,
+    "maxDeltaMAETonnesHa": 0.5,
+    "maxAbsDeltaBiasTonnesHa": 0.25,
+    "minIndependentTargetSites": 5,
+    "requireQualifiedUnitsAssignmentAndDomain": true,
+    "requireUsablePredictiveInterval": true
+  },
+  "rationale": "Preserves earlier practical research thresholds; do not lower them after seeing results. A passed numerical screen alone is insufficient to activate parcel advice.",
+  "productionEnabled": false,
+  "prospectivelyValidated": false
+}
