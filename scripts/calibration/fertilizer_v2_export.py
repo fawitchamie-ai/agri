@@ -6,9 +6,8 @@ from collections import defaultdict
 import json
 import statistics
 
-from fertilizer_pipeline import COUNTRIES, quantile, write
+from fertilizer_pipeline import COUNTRIES, digest, quantile, write
 from fertilizer_v2_import import ROOT, BASE, DOC
-from fertilizer_v2_evaluate import metrics
 
 
 def build(pairs, report):
@@ -42,18 +41,18 @@ def build(pairs, report):
                 ['Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.',
                  'Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.',
                  'Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises.']))
-    predictions={r['id']:r for r in json.loads((BASE/'predictions.json').read_text())}
     research=[]
     for country,code in COUNTRIES.items():
         for source in ('AMAZXA','GFWCYQ'):
-            rr=[r for r in pairs if r['country']==country and r['source']==source and r['id'] in predictions]
+            rr=[r for r in pairs if r['country']==country and r['source']==source]
             for system in sorted({r['system'] for r in rr}):
-                rs=[r for r in rr if r['system']==system]
-                group='site' if source=='AMAZXA' else 'campaign'
-                m=metrics(rs,[predictions[r['id']]['delta'] for r in rs],group=group)
-                b=metrics(rs,[predictions[r['id']]['baseline'] for r in rs],group=group)
+                if source=='AMAZXA':
+                    result=report[source]['byTargetCountrySystem'][country+'|'+system]
+                    m=result['metrics'];baseline_mae=result['baseline']['MAE']
+                else:
+                    m=report[source]['test'];baseline_mae=report[source]['baseline']['MAE']
                 research.append(dict(country=code,cropId='rice-flooded' if system=='lowland' else 'rice-upland',
-                    sourceId=source,metrics=m,baselineMAE=b['MAE'],
+                    sourceId=source,metrics=m,baselineMAE=baseline_mae,
                     design='Pays entièrement exclu, sélection interne par site' if source=='AMAZXA' else 'Test temporel 2021–2022, un seul site répété',
                     interval95Available=False,productionEnabled=False))
     missing={
@@ -73,7 +72,7 @@ def build(pairs, report):
 
 if __name__=='__main__':
     pairs=json.loads((BASE/'pairs.json').read_text());report=json.loads((DOC/'VALIDATION.json').read_text())
-    if report['productionEnabled'] or report['pairsSha256']!=__import__('fertilizer_pipeline').digest(pairs):
+    if report['productionEnabled'] or report['pairsSha256']!=digest(pairs):
         raise ValueError('Unqualified export input')
     result=build(pairs,report);write(ROOT/'data/seasonal/fertilizer-extension.json',result)
     print(json.dumps(dict(observations=len(result['observations']),researchDomains=len(result['research']))))

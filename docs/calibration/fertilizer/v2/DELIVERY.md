@@ -74,6 +74,12 @@ Erreurs en t/ha ; biais = prédit − observé. Les scores sont pondérés par s
 pour AMAZXA, par campagne pour GFWCYQ. Les sites ne sont pas tous des études
 indépendantes. Les seuils n’ont pas changé après les scores.
 
+Après les premiers scores, la revue du code a rendu les références par système
+explicites dans le rapport, pour que l’export consomme directement les résultats
+publiés sans dépendre d’un second fichier de prédictions. Cette correction
+d’export ne modifie aucun identifiant, partition, candidat, ajustement, score,
+intervalle ou seuil de décision.
+
 | Diagnostic | Contrastes évalués | Sites | MAE gain | RMSE gain | Biais gain |
 |---|---:|---:|---:|---:|---:|
 | AMAZXA, pays exclu et sélection interne par site | 412 | 7 | 0,793 | 1,020 | −0,079 |
@@ -122,7 +128,7 @@ L’export léger `data/seasonal/fertilizer-extension.json` contient dix groupes
 d’observations et quatre diagnostics pays/système. Il exclut les coefficients
 de modèles et ne déclenche aucun entraînement à la requête.
 
-- Bénin : riz pluvial/aérobie et riz de bas-fond, contrastes P séparés.
+- Bénin : riz aérobie avec irrigation d’appoint et riz de bas-fond, contrastes P séparés.
 - Burkina Faso : riz pluvial/aérobie, contrastes P à Farako-Ba.
 - Sénégal : riz de bas-fond irrigué à Ndiaye, trois régimes NPK par saison.
 - Togo, Ghana, Côte d’Ivoire : informations manquantes explicites, sans nouveau

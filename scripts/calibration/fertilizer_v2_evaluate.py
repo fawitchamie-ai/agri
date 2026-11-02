@@ -139,6 +139,7 @@ def evaluate_p(rows,criteria):
             if not rr:continue
             pp=[lookup[r['id']]['delta'] for r in rr];bb=[lookup[r['id']]['baseline'] for r in rr]
             report['byTargetCountrySystem'][country+'|'+system]=dict(metrics=metrics(rr,pp),
+                baseline=metrics(rr,bb),
                 **screen(metrics(rr,pp),metrics(rr,bb),len({r['site'] for r in rr}),False,False,criteria))
     return report,predictions
 

@@ -961,6 +961,17 @@
           "unit": "t grain/ha at 14% moisture",
           "weighting": "equal site, then equal contrasts within group"
         },
+        "baseline": {
+          "pairs": 96,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 1.7462046147289976,
+          "RMSE": 1.9193568261337308,
+          "bias": 1.734889520095572,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
         "relativeMAEImprovement": 0.0,
         "failedCriteria": [
           "insufficient_improvement_over_mean",
@@ -976,6 +987,17 @@
       },
       "Benin|upland": {
         "metrics": {
+          "pairs": 138,
+          "sites": 2,
+          "campaigns": 6,
+          "publications": 1,
+          "MAE": 0.693450544685342,
+          "RMSE": 0.9490070309630066,
+          "bias": -0.24806536543728888,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
           "pairs": 138,
           "sites": 2,
           "campaigns": 6,
@@ -1007,6 +1029,17 @@
           "MAE": 0.31662334900035416,
           "RMSE": 0.4007152078134581,
           "bias": 0.13531386097809517,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.3176282524607712,
+          "RMSE": 0.37872432573164694,
+          "bias": -0.03419470866533255,
           "unit": "t grain/ha at 14% moisture",
           "weighting": "equal site, then equal contrasts within group"
         },
