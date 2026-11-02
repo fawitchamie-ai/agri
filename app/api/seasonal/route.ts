@@ -1,4 +1,6 @@
 import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
+import {fertilizerEvidence,marginalScenario,nextFertilizerInformation} from '@/lib/seasonal/fertilizer-evidence';
+import {parseFieldTrials,protectFieldTrials,summarizeTrial} from '@/lib/seasonal/field-trials';
 import {protectRecordedProducts} from '@/lib/seasonal/management';
 import {calibrationEvidence} from '@/lib/seasonal/calibration-evidence';
 import {cropEngineManifest,concentrationInventory} from '@/lib/seasonal/crop-engine';
@@ -69,6 +71,10 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='fertilizer-evidence')return json(fertilizerEvidence(b.country,b.cropId,b.asOfDate));
+  if(b.action==='fertilizer-information')return json(nextFertilizerInformation(validateConfig(b.config)));
+  if(b.action==='marginal-scenario')return json(marginalScenario(b.parameters));
+  if(b.action==='field-trial-summary'){const config=validateConfig(b.config);return json({trials:(config.fieldTrials??[]).map(t=>({id:t.id,...summarizeTrial(t)}))});}
   if(b.action==='calibration-status')return json(calibrationStatus(b.country,b.cropId));
   if(b.action==='compare-interventions'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);return json(comparePlannedProducts(config,validateEvents(b.events??[],config),planSeason));}
   if(b.action==='crop-engine')return json({...cropEngineManifest(),service:computeAvailability()});
@@ -164,6 +170,7 @@ export async function POST(request: Request) { try {
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const config = validateConfig(b.action === 'event' ? decodeCampaignValue(old.config) : b.config);
+  if(old&&b.action==='save')protectFieldTrials(decodeCampaignValue(old.config),config);
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&(decodeCampaignValue(old.config).sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
   if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
@@ -183,6 +190,7 @@ export async function POST(request: Request) { try {
   // save never replaces the event log supplied by another client.
   events = validateEvents(events, config);
   if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));
+  config.fieldTrials=parseFieldTrials(config.fieldTrials,config);
   const plan = planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
   const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : recordedProductsCorrected?'Correction d’un apport réalisé : '+config.managementPlan!.recordedCorrection!.reason:'Paramètres et scénario de campagne actualisés.';
   const packed=encodeCampaignSnapshot(config,events,plan);

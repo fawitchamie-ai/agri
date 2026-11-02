@@ -1,0 +1,245 @@
+{
+  "files": [
+    {
+      "id": 52203773,
+      "name": "Senegal crop yield response database.xlsx",
+      "size": 1250540,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/52203773",
+      "supplied_md5": "0b2f3d21c7f3d84bb8c1c5e8c6c1c761",
+      "computed_md5": "0b2f3d21c7f3d84bb8c1c5e8c6c1c761",
+      "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    },
+    {
+      "id": 51042020,
+      "name": "Senegal crop yield response database_References.docx",
+      "size": 21203,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/51042020",
+      "supplied_md5": "3660d3853ae5cf19f8513c6db045f8b5",
+      "computed_md5": "3660d3853ae5cf19f8513c6db045f8b5",
+      "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    },
+    {
+      "id": 51041558,
+      "name": "Senegal_Soil.xlsx",
+      "size": 915885,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/51041558",
+      "supplied_md5": "e2105f1afa5308b74216669e3556412f",
+      "computed_md5": "e2105f1afa5308b74216669e3556412f",
+      "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    },
+    {
+      "id": 49271170,
+      "name": "Fig x. Nutrient by ID.png",
+      "size": 67971,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/49271170",
+      "supplied_md5": "09fbd0876761f7517c3fd7976f0d23cd",
+      "computed_md5": "09fbd0876761f7517c3fd7976f0d23cd",
+      "mimetype": "image/png"
+    },
+    {
+      "id": 49271173,
+      "name": "Fig x. Donuts per crop.png",
+      "size": 873122,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/49271173",
+      "supplied_md5": "ffb91c3d5269f380df764c823ff39e12",
+      "computed_md5": "ffb91c3d5269f380df764c823ff39e12",
+      "mimetype": "image/png"
+    },
+    {
+      "id": 49271188,
+      "name": "Fig x. Treatment by crop.png",
+      "size": 507221,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/49271188",
+      "supplied_md5": "0b85fa823558f998cff7cf945154828c",
+      "computed_md5": "0b85fa823558f998cff7cf945154828c",
+      "mimetype": "image/png"
+    }
+  ],
+  "folder_structure": {
+    "49271170": "",
+    "49271173": "",
+    "49271188": "",
+    "51041558": "",
+    "51042020": "",
+    "52203773": ""
+  },
+  "authors": [
+    {
+      "id": 16413459,
+      "full_name": "Federico Gomez",
+      "first_name": "Federico",
+      "last_name": "Gomez",
+      "is_active": true,
+      "url_name": "Federico_Gomez",
+      "orcid_id": "0000-0002-6184-3816"
+    },
+    {
+      "id": 12190307,
+      "full_name": "Ana J. P. Carcedo",
+      "first_name": "Ana J. P.",
+      "last_name": "Carcedo",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 19675058,
+      "full_name": "Andres Diatta",
+      "first_name": "Andres",
+      "last_name": "Diatta",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 9769763,
+      "full_name": "Pape Ibrahima Djighaly",
+      "first_name": "Pape Ibrahima",
+      "last_name": "Djighaly",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 19675060,
+      "full_name": "Latha Nagarajan",
+      "first_name": "Latha",
+      "last_name": "Nagarajan",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 17239822,
+      "full_name": "P.V. Vara Prasad",
+      "first_name": "P.V.",
+      "last_name": "Vara Prasad",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 11838558,
+      "full_name": "Zachary Stewart",
+      "first_name": "Zachary",
+      "last_name": "Stewart",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 19283977,
+      "full_name": "Shamie Zingore",
+      "first_name": "Shamie",
+      "last_name": "Zingore",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 6751634,
+      "full_name": "Kaushik Majumdar",
+      "first_name": "Kaushik",
+      "last_name": "Majumdar",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 12030800,
+      "full_name": "Ignacio Ciampitti",
+      "first_name": "Ignacio",
+      "last_name": "Ciampitti",
+      "is_active": true,
+      "url_name": "Ignacio_Ciampitti",
+      "orcid_id": ""
+    }
+  ],
+  "custom_fields": [],
+  "figshare_url": "https://figshare.com/articles/dataset/Towards_site-specific_nutrient_management_strategies_an_open_database_in_Senegal/27022285",
+  "download_disabled": false,
+  "description": "<h2><b>Towards site-specific nutrient management strategies: an open database in Senegal</b></h2><p><br></p><p dir=\"ltr\">Federico Gomez<sup>1*</sup>, Ana Carcedo<sup>1#</sup>, Andre Diatta<sup>2</sup>, Pape Djighaly<sup>3</sup>, Latha Nagarajan<sup>4</sup>, Upendra Singh<sup>4</sup>, Zachary Stewart<sup>5</sup>, Shamie Zingore<sup>6</sup>, Kaushik Majumdar<sup>6</sup>, P.V. Vara Prasad<sup>1</sup> and Ignacio Ciampitti<sup>1,7*</sup></p><p dir=\"ltr\"><sup>1</sup> Department of Agronomy, Kansas State University, Manhattan, Kansas, USA.<br><sup>2</sup> Department of Agronomy, Gaston Berger University, Saint-Louis, Senegal.<br><sup>3</sup> Department of Agroforestry, Assane Seck University, Ziguinchor, Senegal.<br><sup>4</sup> International Fertilizer Development Center, Washington DC, USA.<br><sup>5</sup> Center for Agriculture-Led Growth, Bureau for Resilience and Food Security, United States Agency for International Development, Washington, DC, USA.</p><p dir=\"ltr\"><sup>6</sup> African Plant Nutrition Institute (APNI), Ben Guerir, Morocco.<br><sup>7</sup> Department of Agronomy, Purdue University, West Lafayette, Indiana, USA.</p><p dir=\"ltr\"># Currently at: Plant Sciences Department, North Dakota State University, Fargo, North Dakota, USA.</p><p dir=\"ltr\">For more information about the dataset, please contact the corresponding authors at: fmgomez@ksu.edu, iciampit@purdue.edu.</p>",
+  "funding": null,
+  "funding_list": [],
+  "version": 1,
+  "status": "public",
+  "size": 3635942,
+  "created_date": "2025-02-07T15:35:56Z",
+  "modified_date": "2025-02-07T15:35:56Z",
+  "is_public": true,
+  "is_confidential": false,
+  "is_metadata_record": false,
+  "confidential_reason": "",
+  "metadata_reason": "",
+  "license": {
+    "value": 1,
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "tags": [
+    "Nitrogen fertilization",
+    "Africa",
+    "Phosphorus fertilization",
+    "Potassium fertilization"
+  ],
+  "keywords": [
+    "Nitrogen fertilization",
+    "Africa",
+    "Phosphorus fertilization",
+    "Potassium fertilization"
+  ],
+  "categories": [
+    {
+      "id": 23881,
+      "title": "Sustainable agricultural development",
+      "parent_id": 23851,
+      "path": "/23812/23851/23881",
+      "source_id": "300210",
+      "taxonomy_id": 100
+    },
+    {
+      "id": 29137,
+      "title": "Open access",
+      "parent_id": 29116,
+      "path": "/28798/29116/29137",
+      "source_id": "461007",
+      "taxonomy_id": 100
+    }
+  ],
+  "references": [],
+  "has_linked_file": false,
+  "citation": "Gomez, Federico; Carcedo, Ana J. P.; Diatta, Andres; Djighaly, Pape Ibrahima; Nagarajan, Latha; Vara Prasad, P.V.; et al. (2025). Towards site-specific nutrient management strategies: an open database in Senegal. figshare. Dataset. https://doi.org/10.6084/m9.figshare.27022285.v1",
+  "related_materials": [],
+  "is_embargoed": false,
+  "embargo_date": null,
+  "embargo_type": null,
+  "embargo_title": "",
+  "embargo_reason": "",
+  "embargo_options": [],
+  "id": 27022285,
+  "title": "Towards site-specific nutrient management strategies: an open database in Senegal",
+  "doi": "10.6084/m9.figshare.27022285.v1",
+  "handle": "",
+  "url": "https://api.figshare.com/v2/articles/27022285",
+  "published_date": "2025-02-07T15:35:56Z",
+  "thumb": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-previews/49271188/thumb.png",
+  "defined_type": 3,
+  "defined_type_name": "dataset",
+  "group_id": null,
+  "url_private_api": "https://api.figshare.com/v2/account/articles/27022285",
+  "url_public_api": "https://api.figshare.com/v2/articles/27022285",
+  "url_private_html": "https://figshare.com/account/articles/27022285",
+  "url_public_html": "https://figshare.com/articles/dataset/Towards_site-specific_nutrient_management_strategies_an_open_database_in_Senegal/27022285",
+  "timeline": {
+    "posted": "2025-02-07T15:35:56",
+    "firstOnline": "2025-02-07"
+  },
+  "resource_title": null,
+  "resource_doi": null
+}

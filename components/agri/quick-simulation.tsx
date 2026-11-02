@@ -15,6 +15,8 @@ import {waterOverview} from '../../lib/seasonal/overview';
 import DataCompletion from './data-completion';
 import AgronomicPanel from './agronomic-panel';
 import YieldSummary from './yield-summary';
+import FertilizerPanel from './fertilizer-panel';
+import FieldTrials from './field-trials';
 import InputStatus from './input-status';
 import {waterIndicator} from '../../lib/seasonal/water-indicator';
 import {declareScenario} from '../../lib/seasonal/provenance';
@@ -98,7 +100,8 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
    </section>
   </div>
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
-  <section className="qs-card" aria-label="Engrais et rendement"><h2>Mes engrais et leurs effets</h2><p>Consultez les repères documentés pour votre pays et votre culture, puis saisissez vos produits, doses et dates dans les apports. Leur bilan N–P₂O₅–K₂O est calculé. Leur effet sur le rendement n’est pas calculé : aucune dose optimale personnalisée n’est disponible.</p><button className="btn secondary" onClick={()=>onAdvanced('conseils')}>Voir les références et le bilan d’engrais</button></section>
+  <FertilizerPanel config={config} onAdvanced={onAdvanced}/>
+  <FieldTrials config={config} onChange={onChange}/>
   <ManagementPlanner config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/>
   <InterventionComparison config={config} events={events}/>
   {usable?<details className="qs-subtle-details"><summary>Comprendre la pluie et les besoins sur la saison</summary><WaterChart config={config} plan={plan}/></details>:<section className="qs-card qs-chart-placeholder"><span className="qs-eyebrow">ÉVOLUTION SUR LE CYCLE</span><h2>Vos graphiques apparaîtront ici</h2><p>{indicator.message}</p></section>}

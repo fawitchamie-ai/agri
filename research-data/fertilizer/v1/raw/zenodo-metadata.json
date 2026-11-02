@@ -1,0 +1,245 @@
+{
+  "created": "2020-12-22T03:41:47.238036+00:00",
+  "modified": "2023-08-22T14:51:18.647244+00:00",
+  "id": 4383403,
+  "conceptrecid": "4383402",
+  "doi": "10.5061/dryad.tt6h5h1",
+  "doi_url": "https://doi.org/10.5061/dryad.tt6h5h1",
+  "metadata": {
+    "title": "Geo-referenced crop-nutrient response function dataset for Tropical Africa",
+    "doi": "10.5061/dryad.tt6h5h1",
+    "publication_date": "2023-08-22",
+    "description": "The profit potential for a given investment in fertilizer use can be estimated using representative crop nutrient response functions. Where response data is scarce, determination of representative response functions can be strengthened by using results from homologous crop growing conditions. Maize (Zea mays L.) nutrient response functions were selected from the Optimization of Fertilizer Recommendations in Africa (OFRA) database of 5500 georeferenced response functions determined from field research conducted in Sub-Saharan Africa. Three methods for defining inference domains for selection of response functions were compared. Use of the OFRA Inference Tool (OFRA-IT; http://agronomy.unl.edu/OFRA) resulted in greater specificity of maize N, P, and K response functions with higher R2 values indicating superiority compared with using the Harvest Choice Agroecological Zones (HC-AEZ) and the recommendation domains of the Global Yield Gap Atlas project (GYGA-RD). The OFRA-IT queries three soil properties in addition to climate-related properties while the latter two options use climate properties only. The OFRA-IT was generally insensitive to changes in criteria ranges of 20–25% used in queries suggesting value in using wider criteria ranges compared with the default for information scarce crop nutrient response functions.",
+    "access_right": "open",
+    "creators": [
+      {
+        "name": "Wortmann, Charles",
+        "affiliation": "University of Nebraska - Lincoln",
+        "orcid": "0000-0001-9715-8469"
+      },
+      {
+        "name": "Milner, Maribeth",
+        "affiliation": "University of Nebraska - Lincoln"
+      },
+      {
+        "name": "Kaizzi, Kayuki C.",
+        "affiliation": "National Agricultural Research Laboratories, Kampala, Uganda*"
+      },
+      {
+        "name": "Nouri, Maman",
+        "affiliation": "Institut National de la Recherche Agronomique du Niger"
+      },
+      {
+        "name": "Cyamweshi, Athanase R.",
+        "affiliation": "Rwanda Agriculture Board"
+      },
+      {
+        "name": "Dicko, Mohammed K.",
+        "affiliation": "Institut D'Economie Rurale"
+      },
+      {
+        "name": "Kibunja, Catherine N.",
+        "affiliation": "Kenya Agricultural and Livestock Research Organization"
+      },
+      {
+        "name": "Macharia, Martin",
+        "affiliation": "CAB International"
+      },
+      {
+        "name": "Maria, Ricardo",
+        "affiliation": "Instituto de Investigação Agrária de Moçambique"
+      },
+      {
+        "name": "Nalivata, Patson C.",
+        "affiliation": "Lilongwe university of Agriculture and Natural Resources"
+      },
+      {
+        "name": "Demissie, Negash",
+        "affiliation": "Ethiopian Institute of Agricultural Research"
+      },
+      {
+        "name": "Nkonde, Davy",
+        "affiliation": "Zambia Agriculture Research Institute (ZARI), Lusaka, Zambia*"
+      },
+      {
+        "name": "Ouattara, Korodjouma",
+        "affiliation": "Institut de l'Environnement et Recherches Agricoles"
+      },
+      {
+        "name": "Senkoro, Catherine J.",
+        "affiliation": "Mlingano Agricultural Research Institute, Tanga, Tanzania*"
+      },
+      {
+        "name": "Tarfa, Bitrus Dawi",
+        "affiliation": "Ahmadu Bello University"
+      },
+      {
+        "name": "Tetteh, Francis M.",
+        "affiliation": "Council for Scientific and Industrial Research"
+      }
+    ],
+    "keywords": [
+      "Potassium",
+      "Zea mays",
+      "Vigna unguiculata L.",
+      "food crops",
+      "Glycine max L.",
+      "Pennisetum glaucum L.",
+      "Sorghum bicolor",
+      "1960 to 2017",
+      "tropic",
+      "Triticum aestivum L.",
+      "sub-sahara",
+      "Manihot esculenta L.",
+      "Sulfur",
+      "Phaseolus vulgaris L.",
+      "Arachis hypogaea L.",
+      "Zinc",
+      "Phosphorus",
+      "Cajanus cajan L."
+    ],
+    "related_identifiers": [
+      {
+        "identifier": "10.1007/s10705-017-9827-0",
+        "relation": "isCitedBy",
+        "scheme": "doi"
+      }
+    ],
+    "locations": [
+      {
+        "place": "Niger"
+      },
+      {
+        "place": "Tanzania"
+      },
+      {
+        "place": "Rwanda"
+      },
+      {
+        "place": "tropica Africa"
+      },
+      {
+        "place": "Zambia"
+      },
+      {
+        "place": "Kenya"
+      },
+      {
+        "place": "ghana"
+      },
+      {
+        "place": "Mozambique"
+      },
+      {
+        "place": "Burkina Faso"
+      },
+      {
+        "place": "Sub-saharan Africa"
+      },
+      {
+        "place": "Malawi"
+      },
+      {
+        "place": "Mali"
+      },
+      {
+        "place": "Uganda"
+      },
+      {
+        "place": "Nigeria"
+      },
+      {
+        "place": "Ethiopia"
+      }
+    ],
+    "resource_type": {
+      "title": "Dataset",
+      "type": "dataset"
+    },
+    "license": {
+      "id": "cc-zero"
+    },
+    "communities": [
+      {
+        "id": "dryad"
+      }
+    ],
+    "relations": {
+      "version": [
+        {
+          "index": 0,
+          "is_last": true,
+          "parent": {
+            "pid_type": "recid",
+            "pid_value": "4383402"
+          }
+        }
+      ]
+    },
+    "notes": "<p>GeorefCropNutrientResponseFunctions for Tropical Africa</p>"
+  },
+  "title": "Geo-referenced crop-nutrient response function dataset for Tropical Africa",
+  "links": {
+    "self": "https://zenodo.org/api/records/4383403",
+    "self_html": "https://zenodo.org/records/4383403",
+    "preview_html": "https://zenodo.org/records/4383403?preview=1",
+    "doi": "https://doi.org/10.5061/dryad.tt6h5h1",
+    "self_doi": "https://doi.org/10.5061/dryad.tt6h5h1",
+    "self_doi_html": "https://zenodo.org/doi/10.5061/dryad.tt6h5h1",
+    "reserve_doi": "https://zenodo.org/api/records/4383403/draft/pids/doi",
+    "parent": "https://zenodo.org/api/records/4383402",
+    "parent_html": "https://zenodo.org/records/4383402",
+    "self_iiif_manifest": "https://zenodo.org/api/iiif/record:4383403/manifest",
+    "self_iiif_sequence": "https://zenodo.org/api/iiif/record:4383403/sequence/default",
+    "files": "https://zenodo.org/api/records/4383403/files",
+    "media_files": "https://zenodo.org/api/records/4383403/media-files",
+    "latest": "https://zenodo.org/api/records/4383403/versions/latest",
+    "latest_html": "https://zenodo.org/records/4383403/latest",
+    "versions": "https://zenodo.org/api/records/4383403/versions",
+    "draft": "https://zenodo.org/api/records/4383403/draft",
+    "access_links": "https://zenodo.org/api/records/4383403/access/links",
+    "access_grants": "https://zenodo.org/api/records/4383403/access/grants",
+    "access_users": "https://zenodo.org/api/records/4383403/access/users",
+    "access_request": "https://zenodo.org/api/records/4383403/access/request",
+    "access": "https://zenodo.org/api/records/4383403/access",
+    "communities": "https://zenodo.org/api/records/4383403/communities",
+    "communities-suggestions": "https://zenodo.org/api/records/4383403/communities-suggestions",
+    "request_deletion": "https://zenodo.org/api/records/4383403/request-deletion",
+    "file_modification": "https://zenodo.org/api/records/4383403/file-modification",
+    "quota_increase": "https://zenodo.org/api/records/4383403/quota-increase",
+    "requests": "https://zenodo.org/api/records/4383403/requests"
+  },
+  "updated": "2023-08-22T14:51:18.647244+00:00",
+  "recid": "4383403",
+  "revision": 4,
+  "files": [
+    {
+      "id": "b305b1de-2396-4ed1-8138-af4cec646936",
+      "key": "OFRA_RespFunc_Dataset_Updated_Aug_2023.xlsx",
+      "size": 5044018,
+      "checksum": "md5:b4e408b904f8aebccd950ff6114a778f",
+      "links": {
+        "self": "https://zenodo.org/api/records/4383403/files/OFRA_RespFunc_Dataset_Updated_Aug_2023.xlsx/content"
+      }
+    }
+  ],
+  "swh": {},
+  "owners": [
+    {
+      "id": "90070"
+    }
+  ],
+  "status": "published",
+  "stats": {
+    "downloads": 80,
+    "unique_downloads": 75,
+    "views": 337,
+    "unique_views": 334,
+    "version_downloads": 80,
+    "version_unique_downloads": 75,
+    "version_unique_views": 334,
+    "version_views": 337
+  },
+  "state": "done",
+  "submitted": true
+}

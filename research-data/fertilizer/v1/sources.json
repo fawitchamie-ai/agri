@@ -1,0 +1,70 @@
+{
+  "version": "fertilizer-sources-1",
+  "files": [
+    {
+      "path": "carob.zip",
+      "url": "https://geodata.ucdavis.edu/carob/zip/doi_10.7910_DVN_GXUNAZ.zip",
+      "doi": "10.7910/DVN/GXUNAZ",
+      "version": "2.2 / Carob 2023-05-29",
+      "license": "CC-BY-4.0",
+      "owner": "Kihara, Okeyo, Bolo, Kinyua / Harvard Dataverse; Carob standardization",
+      "status": "acquired",
+      "sha256": "95b7b5233343a44fbe83e34ef18fbdf726de1ea8c6a4b1900f7aaf56a2522234",
+      "bytes": 134501,
+      "acquiredAt": "2026-11-02T10:23:26.961304+00:00"
+    },
+    {
+      "path": "senegal.xlsx",
+      "url": "https://ndownloader.figshare.com/files/52203773",
+      "doi": "10.6084/m9.figshare.27022285.v1",
+      "version": "1",
+      "license": "CC-BY-4.0",
+      "owner": "Towards site-specific nutrient management strategies: an open database in Senegal",
+      "status": "acquired",
+      "sha256": "88422b71875c8cb961e6dc9f0b8040403b67097a63306011ab106248cf6196a0",
+      "bytes": 1250540,
+      "acquiredAt": "2026-11-02T10:23:30.627487+00:00"
+    },
+    {
+      "path": "ofra.xlsx",
+      "url": "https://zenodo.org/api/records/4383403/files/OFRA_RespFunc_Dataset_Updated_Aug_2023.xlsx/content",
+      "doi": "10.5061/dryad.tt6h5h1",
+      "version": "Updated Aug 2023 / Zenodo 4383403",
+      "license": "CC0-1.0",
+      "owner": "Wortmann et al. / OFRA",
+      "status": "acquired",
+      "sha256": "79a8fdecf0cbf519f6440af9c76c2cd37d840c0e26c17faabe2f88e34b1d04ce",
+      "bytes": 5044018,
+      "acquiredAt": "2026-11-02T10:23:36.385316+00:00"
+    },
+    {
+      "path": "carob-standardization.R",
+      "url": "https://raw.githubusercontent.com/carob-data/carob/main/scripts/agronomy/doi_10.7910_DVN_GXUNAZ.R",
+      "doi": "10.7910/DVN/GXUNAZ",
+      "version": "audit snapshot; not executed",
+      "license": "GPL-3.0",
+      "owner": "Carob",
+      "status": "acquired",
+      "sha256": "15e16ad799c88658adb4c09ec69e86429f8ba8589087630e7e5a2f27ae3e32b2",
+      "bytes": 9324,
+      "acquiredAt": "2026-11-02T10:23:28.677384+00:00"
+    },
+    {
+      "path": "CAROB-LICENSE",
+      "url": "https://raw.githubusercontent.com/carob-data/carob/main/LICENSE",
+      "license": "GPL-3.0",
+      "owner": "Carob",
+      "version": "GPL-3.0",
+      "status": "acquired",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149,
+      "acquiredAt": "2026-11-02T10:36:00Z"
+    }
+  ],
+  "excluded": [
+    {
+      "doi": "10.18167/DVN1/MHLKKW",
+      "reason": "CC-BY-NC-SA-4.0; not used in operational evidence or training"
+    }
+  ]
+}

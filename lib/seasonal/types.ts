@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  fieldTrials?: import('./field-trials.ts').FieldTrial[];
   managementPlan?: import('./management.ts').ManagementPlan;
   sowingPlan?: import('./sowing.ts').SowingInput;
   salinity?: import('./salinity.ts').SalinityInput;

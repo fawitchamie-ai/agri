@@ -62,3 +62,10 @@ yarn-error.log*
 
 # Restricted research originals stay local; fetch explicitly under their own licence.
 research-data/calibration/raw/research-only/*.xlsx
+
+# Open originals rehydrated by acquire_fertilizer.py with pinned SHA-256.
+# Carob is retained; the larger auxiliary workbooks are audit inputs, not Worker assets.
+research-data/fertilizer/v1/raw/*.xlsx
+research-data/fertilizer/v1/pairs.json
+research-data/fertilizer/v1/rejected.json
+research-data/fertilizer/v1/test-predictions.json
