@@ -15,6 +15,28 @@ test('actual React controls edit a daily water quantity, retain the full manual 
  await m.stale(true);assert.match(m.host.textContent,/Recalcul du bilan et du rendement/);assert.doesNotMatch(m.host.querySelector('.mp-result').textContent,/tonnes/);assert.equal(m.host.querySelectorAll('.mp-hit').length,originalBars);await m.stale(false);
  await click(button(m.host,'Supprimer cet apport'));assert.equal(m.config.managementPlan.irrigation.applications.length,originalBars-1);await click(button(m.host,'Revenir au calendrier automatique'));assert.equal(m.config.managementPlan.irrigation.mode,'automatic');
 }finally{await m.close();}});
+test('cycle water bars update the hydric yield and keep the declared hypothesis fixed',async()=>{
+ const c=fixture();c.managementPlan=emptyManagement(c);c.managementPlan.irrigation={mode:'manual',applications:Array.from({length:25},(_,i)=>({date:new Date(Date.parse(c.sowingDate+'T00:00:00Z')+i*5*86400000).toISOString().slice(0,10),fieldM3Ha:200}))};
+ const m=await mount(c);try{
+  const total=()=>planSeason(m.config).yieldEstimation.scenarios.find(s=>s.id==='proposed').totals.productionKg;
+  const before=total();
+  assert.match(m.host.textContent,/chaque modification recalcule/);
+  for(let i=0;i<25;i++){
+   await click(m.host.querySelectorAll('.mp-hit')[i]);
+   await enter(m.host.querySelector('.mp-editor input[type=number]'),'0');
+  }
+  assert.ok(total()<before,'removing cycle irrigation lowers yield in this water-deficit fixture');
+  assert.equal(m.config.managementPlan.irrigation.applications.length,25);
+  assert.equal(m.config.managementPlan.irrigation.applications.every(a=>a.fieldM3Ha===0),true);
+ }finally{await m.close();}
+ c.yieldEstimation.method='declared-scenario';const fixed=await mount(c);try{
+  const before=planSeason(fixed.config).yieldEstimation.scenarios[2].totals;
+  await enter(fixed.host.querySelector('.mp-editor input[type=number]'),'0');
+  assert.deepEqual(planSeason(fixed.config).yieldEstimation.scenarios[2].totals,before);
+  assert.match(fixed.host.textContent,/calcul simple conserve votre hypothèse/);
+  assert.equal(fixed.host.querySelector('.mp-help a').getAttribute('href'),'#harvest-summary');
+ }finally{await fixed.close();}
+});
 test('clicking a bar only selects it; dragging and keyboard arrows commit new doses',async()=>{const c=fixture();c.managementPlan=emptyManagement(c);c.managementPlan.irrigation={mode:'manual',applications:[{date:c.asOfDate,fieldM3Ha:100}]};const m=await mount(c);try{
  const svg=m.host.querySelector('svg[aria-label]');svg.getBoundingClientRect=()=>({top:0,height:270,left:0,width:640});svg.setPointerCapture=()=>{};
  const point=async(type,y,target=svg)=>act(async()=>target.dispatchEvent(new window.PointerEvent(type,{bubbles:true,pointerId:1,button:0,clientY:y})));
