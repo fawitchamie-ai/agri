@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {seasonalRequest} from '../../lib/seasonal/request';
+import {seasonalRequest,pauseLandAnalysis,resumeLandAnalysis,type LandProgress} from '../../lib/seasonal/request';
 import {CROPS} from '../../lib/seasonal/catalog';
 import {automaticCampaign,mergeEnvironment} from '../../lib/seasonal/automatic';
 import type {Environment} from '../../lib/seasonal/environment';
@@ -25,9 +25,9 @@ import {declareScenario} from '../../lib/seasonal/provenance';
 import {geometryIdentity,environmentContext} from '../../lib/seasonal/provenance';
 const fmt=(v:number|null|undefined,d=0)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 const date=(s:string)=>new Date(s+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[];calculationError?:string;onRetry?:()=>void};
-export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry}:Props){
- const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[adjust,setAdjust]=useState(false),[sectorJob,setSectorJob]=useState<any>(null),[sectorRunning,setSectorRunning]=useState(false);
+type Props={landProgress?:LandProgress|null;config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[];calculationError?:string;onRetry?:()=>void};
+export default function QuickSimulation({landProgress,config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry}:Props){
+ const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[adjust,setAdjust]=useState(false),[sectorJob,setSectorJob]=useState<any>(null);
  const [terrainOpened,setTerrainOpened]=useState(false),[sourcesOpened,setSourcesOpened]=useState(false),[agronomyOpened,setAgronomyOpened]=useState(false);
  const [section,setSection]=useState('overview'),[harvestOpen,setHarvestOpen]=useState(false);
  const sections=[['overview','Vue du champ'],['water','Eau et semis'],['fertilizer','Engrais'],['notes','Suivi et essais']];
@@ -36,25 +36,24 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   setSection(target==='water'?'water':target==='notes'?'notes':'overview');
   if(target==='yield'){setHarvestOpen(true);requestAnimationFrame(()=>document.getElementById('field-harvest-details')?.scrollIntoView({behavior:'smooth',block:'start'}));}
  }
- const jobRun=useRef(false);
+ const progress=landProgress??sectorJob;
  const latest=useRef(config);latest.current=config;
  const duration=config.stages.reduce((s,x)=>s+x.days,0);
  const key=config.parcelGeometry?JSON.stringify([geometryIdentity(config.parcelGeometry),config.country,config.sowingDate,duration]):'';
  const parcelKey=config.parcelGeometry?JSON.stringify(config.parcelGeometry):'';
  const previousParcel=useRef(parcelKey),refreshKey=useRef<string|null>(null);
  function refreshData(){refreshKey.current=key;setRetry(x=>x+1);}
- useEffect(()=>{if(previousParcel.current!==parcelKey){previousParcel.current=parcelKey;setEnvironment(null);setSectorJob(null);jobRun.current=false;setSectorRunning(false);setError('');}},[parcelKey]);
+ useEffect(()=>{if(previousParcel.current!==parcelKey){previousParcel.current=parcelKey;setEnvironment(null);setSectorJob(null);setError('');}},[parcelKey]);
  useEffect(()=>{
   if(!key||!duration){setLoading(false);return;}
-  if((config.areaM2??0)>=1_000_000&&!sectorJob?.assessment){setLoading(false);return;}
   const refresh=refreshKey.current===key;refreshKey.current=null;
   const controller=new AbortController();let alive=true;setLoading(true);setError('');
-  seasonalRequest<Environment>({action:'environment',latitude:config.latitude,longitude:config.longitude,country:config.country,start:config.sowingDate,days:duration,geometry:config.parcelGeometry,refresh},controller.signal)
+  seasonalRequest<Environment>({action:'environment',latitude:config.latitude,longitude:config.longitude,country:config.country,start:config.sowingDate,days:duration,geometry:config.parcelGeometry,refresh},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setSectorJob(p);}})
    .then(d=>{if(!alive||environmentContext(latest.current)!==environmentContext(config))return;setEnvironment(d);onChange(mergeEnvironment(latest.current,d));})
    .catch(e=>{if(alive)setError(e.message==='Failed to fetch'?'Connexion indisponible. Réessayez ou ajustez les hypothèses.':e.message);})
    .finally(()=>{if(alive)setLoading(false);});
   return()=>{alive=false;controller.abort();};
- },[key,retry,sectorJob?.status]); // edits to a value never trigger a new network request
+ },[key,retry]); // edits to a value never trigger a new network request
  const phAnalysis=config.soilAnalyses?.find(a=>a.measurements.some(m=>m.parameter==='pH'));
  const ph=phAnalysis?.measurements.find(m=>m.parameter==='pH')?.value??null;
  const chemistry=(parameter:string)=>config.soilAnalyses?.flatMap((a,i)=>a.measurements.map((m,j)=>({m,ev:config.inputs?.values[`soilAnalyses.${i}.measurements.${j}.value`]}))).find(x=>x.m.parameter===parameter&&x.ev?.status!=='missing')?.m.value??null;
@@ -71,20 +70,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
  function selectCrop(id:string){try{onChange(automaticCampaign({...config,weather:[]},id));setError('');}catch(e){setError((e as Error).message);}}
  function setPh(value:string){const n=value===''?null:Number(value);const analyses=(config.soilAnalyses??[]).map(a=>({...a,measurements:a.measurements.filter(m=>m.parameter!=='pH')})).filter(a=>a.measurements.length);onChange({...config,soilAnalyses:[...analyses,...(n!==null?[{source:'Valeur saisie par l’utilisateur',date:config.asOfDate,availableOn:config.asOfDate,topCm:5,bottomCm:15,status:'declared' as const,measurements:[{parameter:'pH' as const,value:n,unit:'pH',method:'water'}]}]:[])]});}
  function climateChange(key:'rainMm'|'et0Mm',factor:number){onChange({...config,weather:config.weather.map(w=>({...w,[key]:w[key]===null?null:w[key]!*factor,status:'scenario',source:'Ajustement utilisateur — '+w.source.replace(/^Ajustement utilisateur — /,'')}))});}
- async function runSectors(){
-  if(jobRun.current)return;jobRun.current=true;setSectorRunning(true);setError('');
-  const geometry=config.parcelGeometry,identity=geometryIdentity(geometry);
-  const call=async(action:string,id?:string)=>{const r=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,geometry,id})});const data=await r.json() as any;if(!r.ok)throw new Error(data.error||'Traitement indisponible');return data;};
-  try{let job=await call('land-job-start');
-   while(jobRun.current&&geometryIdentity(latest.current.parcelGeometry)===identity){
-    setSectorJob(job);if(job.assessment){onChange({...latest.current,landAssessment:job.assessment});setRetry(x=>x+1);break;}
-    const before=job.completed;job=await call('land-job-step',job.id);
-    if(job.completed===before&&job.status!=='complete'&&!job.errors?.length)await new Promise(resolve=>setTimeout(resolve,2000));
-    if(job.errors?.length){setSectorJob(job);throw new Error(job.errors[0].error);}
-   }
-  }catch(e){setError((e as Error).message);}finally{jobRun.current=false;setSectorRunning(false);}
- }
- useEffect(()=>()=>{jobRun.current=false;},[]);
+ function runSectors(){if(progress?.id)resumeLandAnalysis(progress.id);setError('');setRetry(x=>x+1);onRetry?.();}
  return <div className="quick-sim qs-dashboard" aria-busy={stale||loading}>
   <div className="qs-title"><div><span className="qs-eyebrow">MA SAISON AGRICOLE</span><h1>Ma simulation</h1><p>Votre champ, les prochaines actions et les résultats.</p></div><div className="qs-title-actions"><button className="btn secondary" onClick={()=>onAdvanced('suivi')}>Ajouter une pluie ou un arrosage</button><button className="btn primary" disabled={!canSave||stale||!plan} onClick={onSave}>Enregistrer</button></div></div>
   <section className="qs-context" aria-label="Ma parcelle, ma culture et ma date de semis">
@@ -96,8 +82,9 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   {calculationError&&<div className="notice warning" role="alert"><strong>Calcul interrompu.</strong> {calculationError} <button className="btn secondary small" onClick={onRetry}>Relancer le calcul</button></div>}
   {error&&<div className="notice warning" role="alert">{error}<button className="btn secondary small" onClick={refreshData}>Réessayer</button></div>}
   {!config.parcelGeometry?<section className="qs-start"><div className="qs-start-icon" aria-hidden="true">⌖</div><h2>Où se trouve votre champ ?</h2><p>Dessinez la parcelle. Nous récupérons le terrain, le sol et la météo disponibles.</p><button className="btn primary" onClick={onMap}>Dessiner ma parcelle →</button></section>:<>
-  {(config.areaM2??0)>=1_000_000&&<section className="qs-card qs-job"><h2>Analyse par secteurs</h2><p>{sectorJob?`${sectorJob.completed} / ${sectorJob.total} secteurs · ${fmt(sectorJob.processedM2)} / ${fmt(sectorJob.totalM2)} m² analysés`:'Le grand contour sera analysé progressivement. Le traitement peut reprendre après une interruption.'}</p>{sectorJob&&<progress aria-label="Couverture traitée" value={sectorJob.completed} max={sectorJob.total}/>}<button className="btn secondary" disabled={sectorRunning} onClick={runSectors}>{sectorJob?'Reprendre le traitement':'Analyser le terrain'}</button>{sectorRunning&&<button className="btn secondary" onClick={()=>{jobRun.current=false;}}>Pause après ce secteur</button>}<small>Le résultat global attend la couverture complète.</small></section>}
+  {(config.areaM2??0)>=1_000_000&&<section className="qs-card qs-job" aria-live="polite"><h2>{progress?.status==='complete'?'Terrain analysé par secteurs':progress?.status==='paused'?'Analyse en pause':'Analyse automatique du terrain'}</h2><p>{progress?`${progress.completed} / ${progress.total} secteurs · ${fmt(progress.processedM2)} / ${fmt(progress.totalM2)} m² analysés`:'Préparation du traitement. Le sol, la météo et les calculs reprendront après la couverture complète.'}</p>{progress&&<progress aria-label="Couverture traitée" value={progress.completed} max={progress.total}/>}<div className="form-actions">{progress?.status==='pending'&&!error&&!calculationError&&!progress.errors?.length?<button className="btn secondary" onClick={()=>pauseLandAnalysis(progress.id)}>Mettre en pause</button>:progress?.status!=='complete'?<button className="btn secondary" onClick={runSectors}>Reprendre l’analyse</button>:null}<button className="qs-text-button" onClick={onMap}>Voir les zones terre et eau →</button></div><small>Les secteurs sont conservés ; aucun résultat global n’est extrapolé depuis une analyse partielle.</small></section>}
   {(fieldFlooded||mixedLand||!usable)&&<section className="qs-action-banner" aria-labelledby="next-action-title"><div><h2 id="next-action-title">{fieldFlooded?'Vérifier l’eau stagnante':mixedLand?'Utiliser la partie terrestre':indicator.kind==='assumptions'?'Confirmer les hypothèses':stale||loading?'Préparation de votre calendrier…':'Une information manque au calcul'}</h2><p>{fieldFlooded?'L’arrosage est suspendu : vérifiez le drainage du champ.':mixedLand?'L’eau, les zones humides, le bâti et les zones inconnues restent hors du système terrestre.':indicator.kind==='assumptions'?'Le sol initial et l’arrosage sont préremplis avec des hypothèses modifiables.':indicator.message}</p></div><div className="qs-action-buttons">{fieldFlooded?<button className="btn secondary" onClick={()=>onAdvanced('sol')}><Pencil/> Vérifier le sol</button>:mixedLand?<button className="btn primary" onClick={()=>onChange({...config,landSelection:'potentialLand'})}>Utiliser {fmt(config.landAssessment!.candidateAreaM2)} m² terrestres</button>:indicator.kind==='assumptions'?<><button className="btn primary" onClick={()=>onChange(declareScenario(config))}>Calculer avec ces hypothèses</button><button className="btn secondary" onClick={()=>onAdvanced('sol')}><Pencil/> Vérifier</button></>:!stale&&!loading?<button className="btn secondary" onClick={()=>onAdvanced('sol')}>Voir ce qui manque</button>:null}</div></section>}
+  <div className="field-quick-actions" aria-label="Accès directs aux fonctions de la campagne"><button onClick={()=>setSection('water')}>Semences et arrosage</button><button onClick={()=>setSection('fertilizer')}>Produits et doses d’engrais</button><button onClick={()=>onAdvanced('conseils')}>Comparer les dates de semis</button><button onClick={()=>onAdvanced('sol')}>Sol et eau</button><button onClick={()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({config,events,plan:stale?null:plan},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='campagne-agri.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}}>Exporter la campagne</button></div>
   <div className="field-section-tabs" role="tablist" aria-label="Informations de ma parcelle">{sections.map(([id,label],i)=><button key={id} id={'field-tab-'+id} role="tab" aria-selected={section===id} aria-controls={'field-panel-'+id} tabIndex={section===id?0:-1} onClick={()=>setSection(id)} onKeyDown={e=>{const next=e.key==='ArrowRight'?(i+1)%sections.length:e.key==='ArrowLeft'?(i+sections.length-1)%sections.length:e.key==='Home'?0:e.key==='End'?sections.length-1:null;if(next!==null){e.preventDefault();setSection(sections[next][0]);document.getElementById('field-tab-'+sections[next][0])?.focus();}}}>{label}</button>)}</div>
   {section==='overview'&&<div role="tabpanel" id="field-panel-overview" aria-labelledby="field-tab-overview"><FieldOverview config={config} plan={plan} events={events} stale={stale} loading={loading} onAction={fieldAction}/><details className="field-harvest-details" id="field-harvest-details" open={harvestOpen} onToggle={e=>setHarvestOpen(e.currentTarget.open)}><summary>Comprendre ou ajuster mon rendement et ma récolte</summary><YieldSummary config={config} plan={plan} stale={stale||loading} onChange={onChange}/></details></div>}
   {section==='water'&&<div role="tabpanel" id="field-panel-water" aria-labelledby="field-tab-water"><div className="qs-overview-grid">
@@ -114,7 +101,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   <InterventionComparison config={config} events={events}/>
   {usable?<WaterChart config={config} plan={plan}/>:<section className="qs-card qs-chart-placeholder"><h2>Le bilan d’eau attend ses données</h2><p>{indicator.message}</p></section>}
   </div>}
-  {section==='fertilizer'&&<div role="tabpanel" id="field-panel-fertilizer" aria-labelledby="field-tab-fertilizer"><FertilizerPanel config={config} onAdvanced={onAdvanced}/></div>}
+  {section==='fertilizer'&&<div role="tabpanel" id="field-panel-fertilizer" aria-labelledby="field-tab-fertilizer"><ManagementPlanner initialKind="fertilizer" config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/><FertilizerPanel config={config} onAdvanced={onAdvanced}/><InterventionComparison config={config} events={events}/></div>}
   {section==='notes'&&<div role="tabpanel" id="field-panel-notes" aria-labelledby="field-tab-notes"><FieldNotebook config={config} onChange={onChange}/><section className="qs-card"><div className="field-panel-title"><div><h2>Pluies et arrosages réalisés</h2><p>{events.filter(e=>e.status==='measured'||e.status==='declared').length} observation(s) ou apport(s) enregistré(s).</p></div><button className="btn secondary" onClick={()=>onAdvanced('suivi')}>Ouvrir le carnet d’eau →</button></div></section><details className="field-harvest-details"><summary>Organiser un essai et comparer les résultats</summary><FieldTrials config={config} onChange={onChange}/></details></div>}
   <details className="qs-settings" id="simulation-settings"><summary><span><Pencil/> Réglages et données</span><small>Sol, météo, sources et méthodes</small></summary><div className="qs-settings-content">
    <details onToggle={e=>{if(e.currentTarget.open)setTerrainOpened(true);}}><summary>Vérifier le terrain, le sol et les réglages d’arrosage</summary>{terrainOpened&&<><InputStatus config={config} onChange={onChange}/>

@@ -1,8 +1,9 @@
 'use client';
+import {seasonalRequest} from '../../lib/seasonal/request';
 import {useState,useEffect,useRef} from 'react';
 import type {SeasonalConfig,WaterEvent} from '../../lib/seasonal/types';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
-async function request(body:unknown,signal?:AbortSignal){const r=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});const d=await r.json() as any;if(!r.ok)throw new Error(d.error??'Service indisponible');return d;}
+async function request(body:unknown,signal?:AbortSignal){return seasonalRequest<any>(body,signal);}
 const fmt=(n:number|null|undefined)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:3}).format(n);
 export default function AgronomicPanel({config,events,onChange}:{config:SeasonalConfig;events:WaterEvent[];onChange:(c:SeasonalConfig)=>void}){
  const [report,setReport]=useState<any>(),[comparison,setComparison]=useState<any>(),[soil,setSoil]=useState<any>(),[error,setError]=useState(''),[busy,setBusy]=useState(false),[group,setGroup]=useState('');

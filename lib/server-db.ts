@@ -7,6 +7,7 @@ export function json(data: unknown, status = 200, extra: HeadersInit = {}): Resp
 export class HttpError extends Error {
     constructor(public status: number, message: string) { super(message); }
 }
+export class PreparationPending extends Error { constructor(public data:Record<string,unknown>){super('Préparation en cours');} }
 export async function body(request: Request, maxBytes=2000000): Promise<Record<string, any>> { if (!request.headers.get('content-type')?.includes('application/json'))
     throw new HttpError(415, 'Envoyez un document JSON.'); const origin = request.headers.get('origin'); if (origin && origin !== new URL(request.url).origin)
     throw new HttpError(403, 'Origine de la requête refusée.'); if (Number(request.headers.get('content-length') || 0) > maxBytes)
@@ -22,6 +23,7 @@ export class ServiceStageError extends Error {
  constructor(public stage:'terrain'|'point-sol'|'sol-meteo',public original:unknown){super('Acquisition interrompue à l’étape '+stage);this.name='ServiceStageError';}
 }
 export function failure(error: unknown): Response {
+ if(error instanceof PreparationPending)return json(error.data,202);
  if(error instanceof HttpError)return json({error:error.message},error.status);
  const requestId=crypto.randomUUID();
  const stage=error instanceof ServiceStageError?error.stage:undefined,original=error instanceof ServiceStageError?error.original:error;

@@ -1,4 +1,5 @@
 'use client';
+import {seasonalRequest} from '../../lib/seasonal/request';
 import {useEffect,useRef,useState} from 'react';
 import type {SeasonalConfig,WaterEvent} from '../../lib/seasonal/types';
 
@@ -6,8 +7,7 @@ export default function DataCompletion({config,events,onChange}:{config:Seasonal
  const [audit,setAudit]=useState<any>(),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const key=JSON.stringify([config,events]),latest=useRef(key);latest.current=key;
  async function call(action:string,extra:Record<string,unknown>={},signal?:AbortSignal){
-  const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal,body:JSON.stringify({action,config,events,...extra})});
-  const d=await response.json() as any;if(!response.ok)throw new Error(d.error??'Service indisponible');return d;
+  return seasonalRequest<any>({action,config,events,...extra},signal);
  }
  useEffect(()=>{
   setAudit(undefined);setError('');const ctrl=new AbortController();let alive=true;

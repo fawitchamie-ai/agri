@@ -7,6 +7,7 @@ import {applyCropProfile} from '../lib/seasonal/catalog.ts';
 import {geometryIdentity} from '../lib/seasonal/provenance.ts';
 const {splitLandSectors,combineLandSectors}=await import('../lib/seasonal/land-jobs.ts');
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
+import {seasonalRequest} from '../lib/seasonal/request.ts';
 const base='https://agri.test';
 async function req(body,status=200,path='/api/seasonal'){const r=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const data=await r.json();assert.equal(r.status,status,JSON.stringify(data).slice(0,500));return data;}
 test('server recalculates yield, retains revisions/permissions, resumes durable sector analysis',async()=>{try{
@@ -25,10 +26,13 @@ test('server recalculates yield, retains revisions/permissions, resumes durable 
  c.yieldEstimation.units[0].sownAreaM2=500;await req({action:'save',id:'yield-campaign',expectedRevision:3,config:c},400);
  const g={type:'Polygon',coordinates:[[[1,8],[1.011,8],[1.011,8.011],[1,8.011],[1,8]]]};
  const parts=splitLandSectors(g);assert.equal(parts.length,9);const combined=combineLandSectors(g,parts.map(p=>landFixture(p)),new Date().toISOString());assert.ok(Math.abs(combined.candidateAreaM2-parcelMetrics(g).areaM2)<.01);assert.throws(()=>combineLandSectors(g,[landFixture(parts[0])],new Date().toISOString()),/incomplète/);
- const big={...c,parcelGeometry:g,yieldEstimation:undefined};await req({action:'simulate',config:big},409);
+ const big={...c,parcelGeometry:g,yieldEstimation:undefined};const pending=await req({action:'simulate',config:big},202);assert.equal(pending.code,'LAND_ANALYSIS_PENDING');assert.equal(pending.job.completed,0);const concurrent=await Promise.all([req({action:'simulate',config:big},202),req({action:'environment',geometry:g,country:'TGO',start:big.sowingDate,days:125},202)]);assert.ok(concurrent.every(r=>r.job.id===pending.job.id));
  let job=await req({action:'land-job-start',geometry:g});assert.equal(job.total,9);assert.equal(job.processedM2,0);
  job=await req({action:'land-job-step',id:job.id});assert.equal(job.completed,1);
  restartDatabase();const resume=await req({action:'land-job-start',geometry:g});assert.equal(resume.id,job.id);assert.equal(resume.completed,1);
  while(job.status!=='complete')job=await req({action:'land-job-step',id:job.id});assert.equal(job.completed,9);assert.ok(job.assessment);assert.equal((await req({action:'simulate',config:big})).plan.land.areaM2,parcelMetrics(g).areaM2);
+ const nextGeometry={type:'Polygon',coordinates:g.coordinates.map(r=>r.map(([x,y])=>[x+.02,y]))},progress=[];
+ const automatic=await seasonalRequest({action:'simulate',config:{...big,parcelGeometry:nextGeometry},requestId:'automatic-test'},undefined,5000,(url,options)=>localFetch(base+url,options),{onLandProgress:p=>progress.push(p.completed)});
+ assert.equal(automatic.requestId,'automatic-test');assert.equal(automatic.plan.land.areaM2,parcelMetrics(nextGeometry).areaM2);assert.equal(progress.at(-1),9);assert.ok(progress.includes(0));
  setIdentity({userId:'yield-outsider',email:'outsider@example.test',displayName:'Other'});await req({action:'land-job-status',id:job.id},404);await req(undefined,404,'/api/seasonal?id=yield-campaign');
 }finally{closeHarness();}});

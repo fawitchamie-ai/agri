@@ -32,8 +32,8 @@ function ApplicationChart({rows,unit,selected,onSelect,onDose}:{rows:Bar[];unit:
  </svg></div>;
 }
 
-export default function ManagementPlanner({config,plan,stale,onChange,onActual}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onActual:()=>void}){
- const [kind,setKind]=useState<Kind>('water'),[unit,setUnit]=useState<'kg/ha'|'L/ha'>('kg/ha'),[selected,setSelected]=useState(''),[adding,setAdding]=useState(false),[error,setError]=useState('');
+export default function ManagementPlanner({config,plan,stale,onChange,onActual,initialKind='water'}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onActual:()=>void;initialKind?:Kind}){
+ const [kind,setKind]=useState<Kind>(initialKind),[unit,setUnit]=useState<'kg/ha'|'L/ha'>('kg/ha'),[selected,setSelected]=useState(''),[adding,setAdding]=useState(false),[error,setError]=useState('');
  const current=stale?null:plan,p=config.managementPlan??emptyManagement(config);
  const [recordedReason,setRecordedReason]=useState(''),[recordedEditingId,setRecordedEditingId]=useState('');
  const undoStack=useRef<{previous:typeof p;next:string;scope:string}[]>([]);

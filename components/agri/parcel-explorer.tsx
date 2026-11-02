@@ -30,8 +30,8 @@ function atCountry(geo:CountriesGeo|undefined,point:Position){return geo?.featur
  const polygons=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
  return polygons.some((rings:Position[][])=>containsPoint(rings[0],point)&&!rings.slice(1).some(h=>containsPoint(h,point)));
 });}
-type Props={config:SeasonalConfig;plan:WaterPlan|null;locked:boolean;canSearch:boolean;onParcel:(shape:ParcelPolygon|null,country:Country)=>void;onPrepare:(crop:string,date:string)=>void;onScenario:(crop:string,date:string)=>void;onCalendar:()=>void;onName:(name:string)=>void;onDirty:(dirty:boolean)=>void;onWaterCondition:(value:SeasonalConfig['waterCondition'])=>void};
-export default function ParcelExplorer({config,plan,locked,canSearch,onParcel,onPrepare,onScenario,onCalendar,onName,onDirty,onWaterCondition}:Props){
+type Props={onLandSelection?:(selection:'whole'|'potentialLand')=>void;config:SeasonalConfig;plan:WaterPlan|null;locked:boolean;canSearch:boolean;onParcel:(shape:ParcelPolygon|null,country:Country)=>void;onPrepare:(crop:string,date:string)=>void;onScenario:(crop:string,date:string)=>void;onCalendar:()=>void;onName:(name:string)=>void;onDirty:(dirty:boolean)=>void;onWaterCondition:(value:SeasonalConfig['waterCondition'])=>void};
+export default function ParcelExplorer({config,plan,locked,onLandSelection,canSearch,onParcel,onPrepare,onScenario,onCalendar,onName,onDirty,onWaterCondition}:Props){
  const initial=config.parcelGeometry?.coordinates[0].slice(0,-1)??[];
  const [points,setPoints]=useState<Position[]>(initial),[closed,setClosed]=useState(!!config.parcelGeometry),[drawing,setDrawing]=useState(false);
  const [basemap,setBasemap]=useState<'satellite'|'plan'>('satellite'),[selected,setSelected]=useState<string>(config.country),[countries,setCountries]=useState<CountriesGeo>();
@@ -42,7 +42,9 @@ export default function ParcelExplorer({config,plan,locked,canSearch,onParcel,on
  const [drawMode,setDrawMode]=useState<'center'|'tap'>('center'),[mapReady,setMapReady]=useState(false),[mapZoom,setMapZoom]=useState(6);
  const viewportChanged=useCallback((_:Position,zoom:number)=>setMapZoom(zoom),[]);
  const readyMap=useCallback((map:MapController)=>{m.current=map;setMapReady(true);const pts=config.parcelGeometry?.coordinates[0];if(pts?.length)map.fitBounds([[Math.min(...pts.map(p=>p[0])),Math.min(...pts.map(p=>p[1]))],[Math.max(...pts.map(p=>p[0])),Math.max(...pts.map(p=>p[1]))]],{padding:60,maxZoom:18});},[]);
- const [expanded,setExpanded]=useState(false);
+ const [expanded,setExpanded]=useState(false),[showLand,setShowLand]=useState(true);
+ const land=plan?.land??config.landAssessment;
+ const currentLand=land&&JSON.stringify(land.geometry)===JSON.stringify(config.parcelGeometry)?land:undefined;
  useEffect(()=>{if(!expanded)return;const escape=(e:KeyboardEvent)=>{if(e.key==='Escape')setExpanded(false);};window.addEventListener('keydown',escape);return()=>window.removeEventListener('keydown',escape);},[expanded]);
  const {geometry,metrics,geometryError}=useMemo(()=>{
   if(points.length<3)return {geometry:null,metrics:null,geometryError:''};
@@ -75,11 +77,12 @@ export default function ParcelExplorer({config,plan,locked,canSearch,onParcel,on
 
   <div className="parcel-workbench">
    <div className="parcel-map-stage">
-    <ParcelMap points={points} closed={closed||locked} drawing={drawing&&!locked} drawMode={drawMode} basemap={basemap} selected={selected} onCountries={setCountries} onReady={readyMap} onViewport={viewportChanged} onCountry={countryView} onAdd={add} onMove={(i,p)=>{if(!locked){setPoints(all=>all.map((v,j)=>i===j?p:v));setClosed(false);setLocationConfirmed(false);}}} onClose={finish}/>
+    <ParcelMap landAssessment={applied?currentLand:undefined} showLand={showLand} points={points} closed={closed||locked} drawing={drawing&&!locked} drawMode={drawMode} basemap={basemap} selected={selected} onCountries={setCountries} onReady={readyMap} onViewport={viewportChanged} onCountry={countryView} onAdd={add} onMove={(i,p)=>{if(!locked){setPoints(all=>all.map((v,j)=>i===j?p:v));setClosed(false);setLocationConfirmed(false);}}} onClose={finish}/>
     <div className="map-top-tools">
      <form className="map-search" onSubmit={search}><MapIcon name="search" size={19}/><input aria-label="Chercher un village ou une ville" placeholder="Un village, une ville…" value={query} onChange={e=>setQuery(e.target.value)} minLength={3} maxLength={120}/><button type="submit" disabled={searching} aria-label="Rechercher le lieu">{searching?'…':<MapIcon name="arrow" size={18}/>}</button>
       {!!places.length&&<ul className="map-place-results">{places.map((p,i)=><li key={i}><button type="button" onClick={()=>{m.current?.flyTo({center:[p.longitude,p.latitude],zoom:15,duration:1300});setPlaces([]);setQuery(p.name);setBasemap('satellite');}}><MapIcon name="pin"/><span><strong>{p.name}</strong><small>{[p.region,p.country].filter(Boolean).join(' · ')}</small></span></button></li>)}<li><small><a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames</a> · complément Open-Meteo</small></li></ul>}
      </form>
+     {applied&&currentLand&&<button className="parcel-terrain-toggle" aria-pressed={showLand} onClick={()=>setShowLand(v=>!v)}>{showLand?'Masquer':'Afficher'} terre / eau</button>}
      <div className="map-view-toggle" aria-label="Fond de carte"><button type="button" aria-pressed={basemap==='satellite'} onClick={()=>setBasemap('satellite')}><MapIcon name="globe" size={16}/>Satellite</button><button type="button" aria-pressed={basemap==='plan'} onClick={()=>setBasemap('plan')}>Plan</button><button type="button" aria-label={expanded?'Réduire la carte':'Agrandir la carte'} title={expanded?'Réduire la carte':'Agrandir la carte'} aria-pressed={expanded} onClick={()=>setExpanded(v=>!v)}><MapIcon name="expand" size={16}/></button></div>
     </div>
     {drawing&&<div className="map-draw-options" role="group" aria-label="Méthode de tracé"><button type="button" aria-pressed={drawMode==='center'} onClick={()=>setDrawMode('center')}><MapIcon name="target" size={16}/>Repère au centre</button><button type="button" aria-pressed={drawMode==='tap'} onClick={()=>setDrawMode('tap')}><MapIcon name="pin" size={16}/>Clic sur la carte</button></div>}
@@ -108,6 +111,7 @@ export default function ParcelExplorer({config,plan,locked,canSearch,onParcel,on
      {!applied&&<button type="button" className="parcel-main-button" disabled={!geometry||!supported||locked||(!detected&&!locationConfirmed)} onClick={useParcel}>Confirmer et simuler <MapIcon name="check"/></button>}
      {applied&&<button className="parcel-main-button" onClick={onCalendar}>Voir ma simulation <MapIcon name="arrow"/></button>}
     </>}
+    {applied&&currentLand&&<div className="parcel-map-land-summary"><strong>Répartition du terrain</strong><div>Terre potentielle : {fmt(currentLand.candidateAreaM2/10000,3)} ha</div><div>Eau permanente : {fmt(currentLand.fractions.permanentWater.areaM2/10000,3)} ha</div><div>Eau saisonnière : {fmt(currentLand.fractions.seasonalWater.areaM2/10000,3)} ha</div><div>Zone humide : {fmt(currentLand.fractions.wetland.areaM2/10000,3)} ha</div><div>Inconnu : {fmt(currentLand.unknownAreaM2/10000,3)} ha</div><div className="parcel-class-legend"><span><i style={{background:'#61a477'}}/>Terre</span><span><i style={{background:'#3679c2'}}/>Eau permanente</span><span><i style={{background:'#59b6dd'}}/>Eau saisonnière</span><span><i style={{background:'#e6d9bc'}}/>Inconnu</span></div>{onLandSelection&&<button className="parcel-text-button" disabled={locked||currentLand.candidateAreaM2<=0||config.landSelection==='potentialLand'} onClick={()=>onLandSelection('potentialLand')}>Simuler sur la partie terrestre</button>}<small>Sources cartographiques historiques ; les inondations actuelles restent à vérifier au champ.</small></div>}
     {message&&<p className="parcel-message" role="status">{message}</p>}
     {locked&&<p className="parcel-message">Cette campagne a déjà des observations. Son contour est conservé : créez une nouvelle campagne pour un autre champ.</p>}
     <details className="parcel-coordinate-tools" open={coordinateOpen} onToggle={e=>setCoordinateOpen(e.currentTarget.open)}><summary>Points GPS, import et export</summary>
