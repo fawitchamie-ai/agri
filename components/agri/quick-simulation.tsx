@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {seasonalRequest} from '../../lib/seasonal/request';
 import {CROPS} from '../../lib/seasonal/catalog';
 import {automaticCampaign,mergeEnvironment} from '../../lib/seasonal/automatic';
 import type {Environment} from '../../lib/seasonal/environment';
@@ -20,8 +21,8 @@ import {declareScenario} from '../../lib/seasonal/provenance';
 import {geometryIdentity,environmentContext} from '../../lib/seasonal/provenance';
 const fmt=(v:number|null|undefined,d=0)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 const date=(s:string)=>new Date(s+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[]};
-export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events}:Props){
+type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[];calculationError?:string;onRetry?:()=>void};
+export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry}:Props){
  const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[adjust,setAdjust]=useState(false),[sectorJob,setSectorJob]=useState<any>(null),[sectorRunning,setSectorRunning]=useState(false);
  const [terrainOpened,setTerrainOpened]=useState(false),[sourcesOpened,setSourcesOpened]=useState(false),[agronomyOpened,setAgronomyOpened]=useState(false);
  const jobRun=useRef(false);
@@ -37,8 +38,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
   if((config.areaM2??0)>=1_000_000&&!sectorJob?.assessment){setLoading(false);return;}
   const refresh=refreshKey.current===key;refreshKey.current=null;
   const controller=new AbortController();let alive=true;setLoading(true);setError('');
-  fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'environment',latitude:config.latitude,longitude:config.longitude,country:config.country,start:config.sowingDate,days:duration,geometry:config.parcelGeometry,refresh})})
-   .then(async r=>{let d:any;try{d=await r.json();}catch{throw new Error(`Actualisation des données interrompue (HTTP ${r.status}). Vos saisies sont conservées.`);}if(!r.ok)throw new Error(`Actualisation interrompue (HTTP ${r.status}). ${d.error||'Vos saisies sont conservées.'}`);return d as Environment;})
+  seasonalRequest<Environment>({action:'environment',latitude:config.latitude,longitude:config.longitude,country:config.country,start:config.sowingDate,days:duration,geometry:config.parcelGeometry,refresh},controller.signal)
    .then(d=>{if(!alive||environmentContext(latest.current)!==environmentContext(config))return;setEnvironment(d);onChange(mergeEnvironment(latest.current,d));})
    .catch(e=>{if(alive)setError(e.message==='Failed to fetch'?'Connexion indisponible. Réessayez ou ajustez les hypothèses.':e.message);})
    .finally(()=>{if(alive)setLoading(false);});
@@ -81,7 +81,8 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
    <EditableValue label="Ma culture" value={config.crop} hint="Culture utilisée pour cette simulation"><label className="field"><span>Culture de la simulation</span><select autoFocus value={config.cropProfile?.id??'maize'} onChange={e=>selectCrop(e.target.value)}>{CROPS.map(c=><option key={c.id} value={c.id}>{c.name}{!c.water?.automaticExample?' · cycle à préciser':''}</option>)}</select></label></EditableValue>
    <EditableValue label="Date de semis" value={new Date(config.sowingDate+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})} hint={duration?`Cycle de référence : ${duration} jours`:'Durée du cycle à préciser'}><label className="field"><span>Date de semis de la simulation</span><input autoFocus type="date" value={config.sowingDate} onChange={e=>{if(e.target.value)onChange({...config,sowingDate:e.target.value,weather:[]});}}/></label></EditableValue>
   </section>
-  <div className="qs-live" role="status"><span><i className={loading?'loading':''}/>{!config.parcelGeometry?'Commencez par votre parcelle':loading?'Récupération du sol et de la météo…':stale?'Recalcul en cours…':latestAuto?`Données actualisées à ${latestAuto}`:'Scénario de votre campagne'}</span>{config.parcelGeometry&&<button onClick={refreshData} disabled={loading}>Actualiser les données ↻</button>}</div>
+  <div className="qs-live" role="status"><span><i className={loading?'loading':''}/>{!config.parcelGeometry?'Commencez par votre parcelle':loading?'Récupération du sol et de la météo…':stale?'Recalcul en cours…':calculationError?'Calcul interrompu':latestAuto?`Données actualisées à ${latestAuto}`:'Scénario de votre campagne'}</span>{config.parcelGeometry&&<button onClick={refreshData} disabled={loading}>Actualiser les données ↻</button>}</div>
+  {calculationError&&<div className="notice warning" role="alert"><strong>Calcul interrompu.</strong> {calculationError} <button className="btn secondary small" onClick={onRetry}>Relancer le calcul</button></div>}
   {error&&<div className="notice warning" role="alert">{error}<button className="btn secondary small" onClick={refreshData}>Réessayer</button></div>}
   {!config.parcelGeometry?<section className="qs-start"><div className="qs-start-icon" aria-hidden="true">⌖</div><h2>Où se trouve votre champ ?</h2><p>Dessinez la parcelle. Nous récupérons le terrain, le sol et la météo disponibles.</p><button className="btn primary" onClick={onMap}>Dessiner ma parcelle →</button></section>:<>
   {(config.areaM2??0)>=1_000_000&&<section className="qs-card qs-job"><h2>Analyse par secteurs</h2><p>{sectorJob?`${sectorJob.completed} / ${sectorJob.total} secteurs · ${fmt(sectorJob.processedM2)} / ${fmt(sectorJob.totalM2)} m² analysés`:'Le grand contour sera analysé progressivement. Le traitement peut reprendre après une interruption.'}</p>{sectorJob&&<progress aria-label="Couverture traitée" value={sectorJob.completed} max={sectorJob.total}/>}<button className="btn secondary" disabled={sectorRunning} onClick={runSectors}>{sectorJob?'Reprendre le traitement':'Analyser le terrain'}</button>{sectorRunning&&<button className="btn secondary" onClick={()=>{jobRun.current=false;}}>Pause après ce secteur</button>}<small>Le résultat global attend la couverture complète.</small></section>}
@@ -97,6 +98,7 @@ export default function QuickSimulation({config,plan,stale,onChange,onMap,onAdva
    </section>
   </div>
   <YieldSummary config={config} plan={plan} stale={stale} onChange={onChange}/>
+  <section className="qs-card" aria-label="Engrais et rendement"><h2>Mes engrais et leurs effets</h2><p>Consultez les repères documentés pour votre pays et votre culture, puis saisissez vos produits, doses et dates dans les apports. Leur bilan N–P₂O₅–K₂O est calculé. Leur effet sur le rendement n’est pas calculé : aucune dose optimale personnalisée n’est disponible.</p><button className="btn secondary" onClick={()=>onAdvanced('conseils')}>Voir les références et le bilan d’engrais</button></section>
   <ManagementPlanner config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/>
   <InterventionComparison config={config} events={events}/>
   {usable?<details className="qs-subtle-details"><summary>Comprendre la pluie et les besoins sur la saison</summary><WaterChart config={config} plan={plan}/></details>:<section className="qs-card qs-chart-placeholder"><span className="qs-eyebrow">ÉVOLUTION SUR LE CYCLE</span><h2>Vos graphiques apparaîtront ici</h2><p>{indicator.message}</p></section>}

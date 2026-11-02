@@ -1,5 +1,6 @@
 'use client';
 import './parcel-experience.css';
+import {seasonalRequest} from '../../lib/seasonal/request';
 
 import { useEffect, useState, useRef, type ReactNode } from 'react';
 import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type Campaign, type WaterPeriod } from '../../lib/seasonal/types';
@@ -30,6 +31,8 @@ type QueueItem = { campaignId: string; expectedRevision: number; event: WaterEve
 export default function Seasonal({ workspace, science }: { workspace: Bootstrap | null; science: Science | null }) {
   const [config,setConfig] = useState<SeasonalConfig>(()=>emptyCampaign());
   const [events,setEvents] = useState<WaterEvent[]>([]);
+  const [simulationError,setSimulationError]=useState('');
+  const [simulationRetry,setSimulationRetry]=useState(0);
   const [plan,setPlan] = useState<WaterPlan|null>(null);
   const [draftId,setDraftId]=useState(newId);
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
@@ -54,16 +57,16 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [nutrientResult,setNutrientResult]=useState<ReturnType<typeof nutrientBalance>|null>(null);
   const capabilities = seasonalCapabilities(config.country, config.cropProfile?.id);
   useEffect(()=>{
-    if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);return;}
-    setPlanStale(true);
+    if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);setPlanStale(false);setSimulationError('');return;}
+    setPlanStale(true);setSimulationError('');
     const controller=new AbortController();let alive=true;const requestId=String(++simulationSequence.current);
     const timer=setTimeout(async()=>{try{
-      const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'simulate',config,events,requestId})});
-      const result=await response.json() as any;if(!response.ok)throw new Error(result.error||'Calcul indisponible');
-      if(alive&&requestId===String(simulationSequence.current)&&result.requestId===requestId){setPlan(result.plan);setPlanStale(false);setError('');}
-    }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlan(null);setPlanStale(true);setError((e as Error).message);}}},350);
+      const result=await seasonalRequest<{plan:WaterPlan;requestId:string}>({action:'simulate',config,events,requestId},controller.signal);
+      if(result.requestId!==requestId||!result.plan)throw new Error('Réponse de calcul incomplète. Relancez le calcul ; vos saisies sont conservées.');
+      if(alive&&requestId===String(simulationSequence.current)){setPlan(result.plan);setPlanStale(false);setSimulationError('');}
+    }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlan(null);setPlanStale(false);setSimulationError((e as Error).message);}}},350);
     return()=>{alive=false;clearTimeout(timer);controller.abort();};
-  },[config,events,parcelDraft]);
+  },[config,events,parcelDraft,simulationRetry]);
 
   useEffect(()=>{
     simulationSequence.current++;setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');
@@ -148,7 +151,8 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   if(loadedScope!==scope)return <div className="card" role="status">Chargement de votre espace de campagne…</div>;
   return <div className="seasonal-tool">
     {tab!=='simulation'&&<div className="qs-compact-title"><button className="qs-back" onClick={()=>setTab('simulation')}>← Ma simulation</button><h1>{tab==='carte'?'Mon champ':'Réglages et suivi'}</h1></div>}
-    {tab==='simulation'&&loadedScope===scope&&<QuickSimulation key={scope+':'+(active?.id??draftId)} config={config} plan={plan} stale={planStale} onChange={edit} onMap={()=>setTab('carte')} onAdvanced={setTab} onSave={save} canSave={!!workspace&&!busy} events={events}/>}
+    {tab==='simulation'&&loadedScope===scope&&<QuickSimulation key={scope+':'+(active?.id??draftId)} config={config} plan={plan} stale={planStale} calculationError={simulationError} onRetry={()=>setSimulationRetry(n=>n+1)} onChange={edit} onMap={()=>setTab('carte')} onAdvanced={setTab} onSave={save} canSave={!!workspace&&!busy} events={events}/>}
+    {tab!=='simulation'&&simulationError&&<div className="notice warning" role="alert"><strong>Calcul interrompu.</strong> {simulationError} <button className="btn secondary small" onClick={()=>setSimulationRetry(n=>n+1)}>Relancer le calcul</button></div>}
     {error&&<div className="notice warning" role="alert">{error}</div>}
     {notice&&<div className="notice info" role="status">{notice}</div>}
     {queue.length>0&&<div className="notice warning no-print"><div><strong>{queue.length} saisie(s) en attente sur cet appareil</strong><p>Les conflits de révision interrompent la synchronisation pour préserver les corrections faites ailleurs.</p><button className="btn secondary" disabled={busy} onClick={synchronize}>Synchroniser</button>{active&&queue.some(q=>q.campaignId===active.id&&q.expectedRevision!==active.revision)&&<button className="btn secondary" onClick={()=>{persistQueue(queue.map(q=>q.campaignId===active.id?{...q,expectedRevision:active.revision}:q));setNotice('Saisies en attente reprises sur la révision affichée. Vérifiez leurs quantités avant de synchroniser.');}}>Reprendre les saisies sur cette révision après examen</button>}<button className="btn secondary" onClick={()=>download('observations-en-attente.json',JSON.stringify(queue,null,2),'application/json')}>Exporter les saisies en attente</button></div></div>}

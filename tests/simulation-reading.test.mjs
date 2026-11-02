@@ -50,3 +50,13 @@ test('blocked and stale simulations display the action needed without showing a 
  const blocked=render(c);assert.match(blocked,/Confirmer les hypothèses/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé/);
  const stale=render(declareScenario(c),true);assert.match(stale,/Calcul en préparation/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé/);
 });
+test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',()=>{
+ const config=declareScenario(fixture());
+ const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
+ assert.match(html,/Calcul interrompu/);assert.match(html,/Relancer le calcul/);
+ assert.doesNotMatch(html,/Recalcul en cours…|Recalcul du bilan d’eau en cours/);
+ assert.match(html,/Voir les références et le bilan d’engrais/);
+ assert.match(html,/modifier l’arrosage ne change pas le rendement saisi/);
+ assert.match(html,/Méthode de calcul/);
+ assert.match(html,/effet sur le rendement n’est pas calculé/);
+});
