@@ -29,7 +29,7 @@ Les services publics WMS et STAC Digital Earth Africa sont raccordés. Le catalo
 
 Un clic explicite indique au visiteur que l’emprise de la parcelle sera transmise au fournisseur. Les données de compte, notes et récoltes ne sont pas envoyées. Le catalogue STAC propose des dates de scènes intersectant cette emprise ; seules les dates également publiées par le WMS sont proposées pour les vues journalières. Le pourcentage de nuages décrit la scène entière. Les vues mensuelles indiquent leur mois et n’affichent pas une précision quotidienne.
 
-Les images sont récupérées par une route authentifiée, depuis un fournisseur fixe et avec une emprise et une taille bornées. Le serveur vérifie le format PNG. Le contour exact est superposé à l’image ; les pixels transparents restent inconnus et une image vide sur le contour est signalée. Les légendes proviennent du fournisseur. Ces vues n’appliquent aucun coefficient de rendement ni aucune dose automatique d’engrais.
+Les images sont récupérées par une route authentifiée, depuis un fournisseur fixe et avec une emprise et une taille bornées. Le serveur vérifie le format PNG. Le service WMS 1.3 est appelé en EPSG:4326 avec son ordre latitude/longitude ; le contour GeoJSON reste en longitude/latitude. Le contour exact est superposé à l’image ; les pixels transparents restent inconnus et une image vide sur le contour est signalée. Les légendes proviennent du fournisseur. Ces vues n’appliquent aucun coefficient de rendement ni aucune dose automatique d’engrais.
 
 Sources :
 - https://ows.digitalearth.africa/wms?service=WMS&request=GetCapabilities

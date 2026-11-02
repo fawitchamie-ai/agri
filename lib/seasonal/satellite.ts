@@ -47,7 +47,7 @@ export function satelliteBounds(input:unknown):[number,number,number,number]{
 export function satelliteMapUrl(layer:SatelliteLayer,date:string,bounds:number[]){
  if(!Object.hasOwn(SATELLITE_LAYERS,layer)||!iso(date)||bounds.length!==4||bounds.some(v=>!Number.isFinite(v))||bounds[0]>=bounds[2]||bounds[1]>=bounds[3]||bounds[0]<-180||bounds[2]>180||bounds[1]<-85||bounds[3]>85||bounds[2]-bounds[0]>2||bounds[3]-bounds[1]>2)throw new Error('Emprise ou couche satellite invalide.');
  const l=SATELLITE_LAYERS[layer],u=new URL(SATELLITE_WMS);
- u.search=new URLSearchParams({service:'WMS',request:'GetMap',version:'1.1.1',layers:l.name,styles:l.style,srs:'EPSG:4326',bbox:bounds.join(','),width:'640',height:'400',format:'image/png',transparent:'true',time:date}).toString();return u.toString();
+ u.search=new URLSearchParams({service:'WMS',request:'GetMap',version:'1.3.0',layers:l.name,styles:l.style,crs:'EPSG:4326',bbox:[bounds[1],bounds[0],bounds[3],bounds[2]].join(','),width:'640',height:'400',format:'image/png',transparent:'true',time:date}).toString();return u.toString();
 }
 export async function satelliteImage(layer:SatelliteLayer,date:string,bounds:number[],fetcher:typeof fetch=fetch){
  const url=satelliteMapUrl(layer,date,bounds),catalog=await satelliteCatalog(new Date().toISOString().slice(0,10),fetcher);
