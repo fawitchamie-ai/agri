@@ -1,5 +1,10 @@
 # Reprise engrais — 2 novembre 2026
 
+> Mise à jour : la reprise décrite ci-dessous a été exécutée sur
+> `feat/fertilizer-validation-v2-delivery`. Lire désormais [DELIVERY.md](DELIVERY.md)
+> et `VALIDATION.json` dans ce répertoire pour les nouveaux résultats. Le reste
+> de ce fichier conserve l’état historique exact du point `f2fcd53`.
+
 ## État exact
 
 Base : `main` au commit `9442c254d3409646138b2311f5b9888aaca2422a` (PR #21).

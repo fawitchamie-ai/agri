@@ -1,0 +1,600 @@
+{
+  "version": "fertilizer-extension-evidence-1",
+  "availableOn": "2026-11-02",
+  "productionEnabled": false,
+  "observations": [
+    {
+      "id": "AMAZXA|Benin|Benin/Bohicon|upland|(80.0, 30.0, 50.0)|all",
+      "sourceId": "AMAZXA",
+      "country": "BEN",
+      "cropId": "rice-upland",
+      "location": "Bohicon",
+      "system": "upland",
+      "pairs": 31,
+      "sites": 1,
+      "campaigns": 1,
+      "publications": 1,
+      "season": null,
+      "contrast": "P_environment",
+      "baselineNutrients": [
+        80.0,
+        0.0,
+        50.0
+      ],
+      "treatedNutrients": [
+        80.0,
+        30.0,
+        50.0
+      ],
+      "moisturePercent": 14,
+      "years": [
+        2013
+      ],
+      "controlMedianTonnesHa": 1.2866199999999999,
+      "treatedMedianTonnesHa": 2.1221,
+      "deltaMedianTonnesHa": 0.81596,
+      "deltaObserved80": [
+        0.10246000000000004,
+        1.377
+      ],
+      "negativePairs": 2,
+      "source": "https://doi.org/10.3389/fpls.2016.01435",
+      "license": "CC-BY-4.0",
+      "attribution": "Vandamme et al. (2016), supplementary genotype means",
+      "limits": [
+        "Parcelles voisines avec/sans P ; affectation du P non qualifiée comme randomisée.",
+        "N et K déjà présents dans les deux modalités ; ce témoin n’est pas sans engrais.",
+        "Moyennes ajustées par génotype d’une même publication, pas des parcelles indépendantes."
+      ]
+    },
+    {
+      "id": "AMAZXA|Benin|Benin/Cotonou|lowland|(80.0, 30.0, 50.0)|all",
+      "sourceId": "AMAZXA",
+      "country": "BEN",
+      "cropId": "rice-flooded",
+      "location": "Cotonou",
+      "system": "lowland",
+      "pairs": 96,
+      "sites": 1,
+      "campaigns": 2,
+      "publications": 1,
+      "season": null,
+      "contrast": "P_environment",
+      "baselineNutrients": [
+        80.0,
+        0.0,
+        50.0
+      ],
+      "treatedNutrients": [
+        80.0,
+        30.0,
+        50.0
+      ],
+      "moisturePercent": 14,
+      "years": [
+        2012,
+        2013
+      ],
+      "controlMedianTonnesHa": 4.2089,
+      "treatedMedianTonnesHa": 2.8694699999999997,
+      "deltaMedianTonnesHa": -1.3516799999999998,
+      "deltaObserved80": [
+        -2.3313149999999996,
+        -0.3131600000000001
+      ],
+      "negativePairs": 90,
+      "source": "https://doi.org/10.3389/fpls.2016.01435",
+      "license": "CC-BY-4.0",
+      "attribution": "Vandamme et al. (2016), supplementary genotype means",
+      "limits": [
+        "Parcelles voisines avec/sans P ; affectation du P non qualifiée comme randomisée.",
+        "N et K déjà présents dans les deux modalités ; ce témoin n’est pas sans engrais.",
+        "Moyennes ajustées par génotype d’une même publication, pas des parcelles indépendantes."
+      ]
+    },
+    {
+      "id": "AMAZXA|Benin|Benin/Cotonou|upland|(80.0, 30.0, 50.0)|all",
+      "sourceId": "AMAZXA",
+      "country": "BEN",
+      "cropId": "rice-upland",
+      "location": "Cotonou",
+      "system": "upland",
+      "pairs": 107,
+      "sites": 1,
+      "campaigns": 5,
+      "publications": 1,
+      "season": null,
+      "contrast": "P_environment",
+      "baselineNutrients": [
+        80.0,
+        0.0,
+        50.0
+      ],
+      "treatedNutrients": [
+        80.0,
+        30.0,
+        50.0
+      ],
+      "moisturePercent": 14,
+      "years": [
+        2012,
+        2013
+      ],
+      "controlMedianTonnesHa": 2.4513499999999997,
+      "treatedMedianTonnesHa": 2.96079,
+      "deltaMedianTonnesHa": 0.5824500000000002,
+      "deltaObserved80": [
+        -0.80035,
+        1.9327760000000007
+      ],
+      "negativePairs": 30,
+      "source": "https://doi.org/10.3389/fpls.2016.01435",
+      "license": "CC-BY-4.0",
+      "attribution": "Vandamme et al. (2016), supplementary genotype means",
+      "limits": [
+        "Parcelles voisines avec/sans P ; affectation du P non qualifiée comme randomisée.",
+        "N et K déjà présents dans les deux modalités ; ce témoin n’est pas sans engrais.",
+        "Moyennes ajustées par génotype d’une même publication, pas des parcelles indépendantes."
+      ]
+    },
+    {
+      "id": "AMAZXA|Burkina Faso|Burkina Faso/Farako-Ba|upland|(80.0, 30.0, 50.0)|all",
+      "sourceId": "AMAZXA",
+      "country": "BFA",
+      "cropId": "rice-upland",
+      "location": "Farako-Ba",
+      "system": "upland",
+      "pairs": 33,
+      "sites": 1,
+      "campaigns": 1,
+      "publications": 1,
+      "season": null,
+      "contrast": "P_environment",
+      "baselineNutrients": [
+        80.0,
+        0.0,
+        50.0
+      ],
+      "treatedNutrients": [
+        80.0,
+        30.0,
+        50.0
+      ],
+      "moisturePercent": 14,
+      "years": [
+        2013
+      ],
+      "controlMedianTonnesHa": 0.65719,
+      "treatedMedianTonnesHa": 1.07621,
+      "deltaMedianTonnesHa": 0.43046,
+      "deltaObserved80": [
+        -0.05416199999999989,
+        0.84601
+      ],
+      "negativePairs": 5,
+      "source": "https://doi.org/10.3389/fpls.2016.01435",
+      "license": "CC-BY-4.0",
+      "attribution": "Vandamme et al. (2016), supplementary genotype means",
+      "limits": [
+        "Parcelles voisines avec/sans P ; affectation du P non qualifiée comme randomisée.",
+        "N et K déjà présents dans les deux modalités ; ce témoin n’est pas sans engrais.",
+        "Moyennes ajustées par génotype d’une même publication, pas des parcelles indépendantes."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(60.0, 26.0, 50.0)|dry",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 8,
+      "sites": 1,
+      "campaigns": 8,
+      "publications": 1,
+      "season": "dry",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        60.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "controlMedianTonnesHa": 2.242498504,
+      "treatedMedianTonnesHa": 5.781424875,
+      "deltaMedianTonnesHa": 3.574757621,
+      "deltaObserved80": [
+        2.5419750413000006,
+        4.687217841900001
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(60.0, 26.0, 50.0)|wet",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 7,
+      "sites": 1,
+      "campaigns": 7,
+      "publications": 1,
+      "season": "wet",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        60.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2022
+      ],
+      "controlMedianTonnesHa": 1.7118525,
+      "treatedMedianTonnesHa": 4.7985208329999995,
+      "deltaMedianTonnesHa": 2.9798352959999996,
+      "deltaObserved80": [
+        1.5557307996,
+        3.9909123330000003
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(120.0, 26.0, 50.0)|dry",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 8,
+      "sites": 1,
+      "campaigns": 8,
+      "publications": 1,
+      "season": "dry",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        120.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "controlMedianTonnesHa": 2.242498504,
+      "treatedMedianTonnesHa": 6.5526040315,
+      "deltaMedianTonnesHa": 4.336883736000001,
+      "deltaObserved80": [
+        3.04620625,
+        5.4772677083
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(120.0, 26.0, 50.0)|wet",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 7,
+      "sites": 1,
+      "campaigns": 7,
+      "publications": 1,
+      "season": "wet",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        120.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2022
+      ],
+      "controlMedianTonnesHa": 1.7118525,
+      "treatedMedianTonnesHa": 4.64775,
+      "deltaMedianTonnesHa": 2.740208333,
+      "deltaObserved80": [
+        1.9306355164000002,
+        4.206932082800001
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(180.0, 26.0, 50.0)|dry",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 8,
+      "sites": 1,
+      "campaigns": 8,
+      "publications": 1,
+      "season": "dry",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        180.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "controlMedianTonnesHa": 2.242498504,
+      "treatedMedianTonnesHa": 5.0412528545,
+      "deltaMedianTonnesHa": 2.8121856255,
+      "deltaObserved80": [
+        1.9970419579999996,
+        3.4546184339
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    },
+    {
+      "id": "GFWCYQ|Senegal|Senegal/Ndiaye|lowland|(180.0, 26.0, 50.0)|wet",
+      "sourceId": "GFWCYQ",
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "location": "Ndiaye",
+      "system": "lowland",
+      "pairs": 7,
+      "sites": 1,
+      "campaigns": 7,
+      "publications": 1,
+      "season": "wet",
+      "contrast": "long_term_NPK_regime",
+      "baselineNutrients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "treatedNutrients": [
+        180.0,
+        26.0,
+        50.0
+      ],
+      "moisturePercent": null,
+      "years": [
+        2015,
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2022
+      ],
+      "controlMedianTonnesHa": 1.7118525,
+      "treatedMedianTonnesHa": 3.4508125,
+      "deltaMedianTonnesHa": 2.3350404209999995,
+      "deltaObserved80": [
+        1.2782791666,
+        3.109291083
+      ],
+      "negativePairs": 0,
+      "source": "https://doi.org/10.1371/journal.pone.0317170",
+      "license": "CC0-1.0",
+      "attribution": "Kouadio et al. (2025), Ndiaye observed campaign means",
+      "limits": [
+        "Régimes répétés sur les mêmes parcelles depuis une expérience de longue durée, à un seul site.",
+        "Le contraste inclut l’historique de fertilisation et l’apport conjoint de P et K.",
+        "Riz Sahel 108 irrigué ; humidité du grain non qualifiée dans les données acquises."
+      ]
+    }
+  ],
+  "research": [
+    {
+      "country": "BEN",
+      "cropId": "rice-flooded",
+      "sourceId": "AMAZXA",
+      "metrics": {
+        "pairs": 96,
+        "sites": 1,
+        "campaigns": 2,
+        "publications": 1,
+        "MAE": 1.7462046147289976,
+        "RMSE": 1.9193568261337308,
+        "bias": 1.734889520095572,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "baselineMAE": 1.7462046147289976,
+      "design": "Pays entièrement exclu, sélection interne par site",
+      "interval95Available": false,
+      "productionEnabled": false
+    },
+    {
+      "country": "BEN",
+      "cropId": "rice-upland",
+      "sourceId": "AMAZXA",
+      "metrics": {
+        "pairs": 138,
+        "sites": 2,
+        "campaigns": 6,
+        "publications": 1,
+        "MAE": 0.693450544685342,
+        "RMSE": 0.9490070309630066,
+        "bias": -0.24806536543728888,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "baselineMAE": 0.693450544685342,
+      "design": "Pays entièrement exclu, sélection interne par site",
+      "interval95Available": false,
+      "productionEnabled": false
+    },
+    {
+      "country": "BFA",
+      "cropId": "rice-upland",
+      "sourceId": "AMAZXA",
+      "metrics": {
+        "pairs": 33,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.31662334900035416,
+        "RMSE": 0.4007152078134581,
+        "bias": 0.13531386097809517,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "baselineMAE": 0.3176282524607712,
+      "design": "Pays entièrement exclu, sélection interne par site",
+      "interval95Available": false,
+      "productionEnabled": false
+    },
+    {
+      "country": "SEN",
+      "cropId": "rice-flooded",
+      "sourceId": "GFWCYQ",
+      "metrics": {
+        "pairs": 9,
+        "sites": 1,
+        "campaigns": 3,
+        "publications": 1,
+        "MAE": 0.6931844987754379,
+        "RMSE": 0.8173291511977651,
+        "bias": -0.252929168,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "baselineMAE": 0.6689355955555557,
+      "design": "Test temporel 2021–2022, un seul site répété",
+      "interval95Available": false,
+      "productionEnabled": false
+    }
+  ],
+  "missingByCountry": {
+    "TGO": [
+      "Maïs TROYBD : identifiants de paires, doses et localisation à qualifier dans les originaux."
+    ],
+    "BEN": [
+      "Riz : seulement deux sites publiés, réponse du phosphore avec N/K déjà apportés.",
+      "Maïs TROYBD : appariement original non récupéré."
+    ],
+    "BFA": [
+      "Riz : un site de phosphore ; RiceAdvice modifie aussi la conduite et ses unités P/K restent ambiguës."
+    ],
+    "GHA": [
+      "Maïs TROYBD : identifiants originaux manquants.",
+      "Riz RiceAdvice : identifiants d’exploitation absents et unités P/K à confirmer."
+    ],
+    "CIV": [
+      "Maïs TROYBD : identifiants originaux manquants.",
+      "Riz RiceAdvice : conduite, appariement et unités P/K non qualifiés."
+    ],
+    "SEN": [
+      "Riz : un seul site de longue durée, humidité non qualifiée.",
+      "Autres bases : doublons d’expérience, doses ou changements de variété à résoudre."
+    ]
+  },
+  "limits": [
+    "Ces comparaisons publiées ne prédisent pas le rendement de votre champ.",
+    "Dispersion observée (10e–90e percentiles), sans intervalle prédictif à 95 % disponible.",
+    "Aucun gain n’est ajouté au rendement hydrique ni à la moyenne nationale. Aucune dose optimale déduite.",
+    "Les six pays disposent d’un état des preuves ; aucun ne dispose ici d’une nouvelle réponse parcellaire validée."
+  ]
+}

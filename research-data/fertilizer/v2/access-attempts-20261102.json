@@ -1,0 +1,26 @@
+[
+  {
+    "name": "TROYBD-persistent-id",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/:persistentId/?persistentId=doi:10.7910/DVN/TROYBD/OMBSOY",
+    "status": "unavailable",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "name": "TROYBD-original-format",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/3603449?format=original",
+    "status": "unavailable",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "name": "BBKJH0-original-format",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/14102691?format=original",
+    "status": "unavailable",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "name": "BBKJH0-dictionary",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/13094736",
+    "status": "unavailable",
+    "error": "HTTP Error 403: Forbidden"
+  }
+]

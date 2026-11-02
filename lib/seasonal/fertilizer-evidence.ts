@@ -1,4 +1,5 @@
 import evidence from '../../data/seasonal/fertilizer-evidence.json' with {type:'json'};
+import extension from '../../data/seasonal/fertilizer-extension.json' with {type:'json'};
 import {historicalContext} from './historical-context.ts';
 import {COUNTRIES,type Country,type SeasonalConfig} from './types.ts';
 import {cropById} from './catalog.ts';
@@ -17,6 +18,12 @@ export function fertilizerEvidence(country:Country,cropId:string,asOfDate:string
   attribution:evidence.attribution,source:evidence.source,license:evidence.license,
   observations:available?evidence.summaries.filter(r=>r.country===country&&r.cropId===cropId):[],
   calibration:available&&cropId==='maize'?evidence.calibration:null,
+  extension:asOfDate>=extension.availableOn?{
+   version:extension.version,productionEnabled:false,
+   observations:extension.observations.filter(r=>r.country===country&&r.cropId===cropId),
+   research:extension.research.filter(r=>r.country===country&&r.cropId===cropId),
+   missingInformation:extension.missingByCountry[country],limits:extension.limits,
+  }:null,
   nationalReference:rows.length?{year:rows[0].year,kgHa:rows[0].yieldKgHaHarvested!.value,flag:rows[0].yieldKgHaHarvested!.flag,
    denominator:'harvested',scope:'national',independentYm:false,source:historical.source,version:historical.version,
    availableOn:historical.acquiredAt.slice(0,10),context:historical.product?.scope??'',

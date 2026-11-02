@@ -1,0 +1,3782 @@
+[
+  {
+    "id": "000c839f8765edecc67122f6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0059dbcc5bbc5ec92271a9bc",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "005af54d7482e7b9b773639c",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "00aed305d02fca2e031cb081",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "00c47321787ad940ce9ad095",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "00df764e0f89090dd83acc4a",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "010d95c8dd4476eed1409560",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "017c9e699e75a3fb4980bbf6",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "01dda96e6fb9f4329b8b0c70",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "01f25765b51130bb07d3c567",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "03b743594f75ececc61d86a3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "042c1ebb93225a7c3eaf987f",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "043ea9f7622ecfed8f502d0e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "04472148e669b641c959bae3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0569e2afba334dfe07481fc4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "059b7c56a421a868baee5a5a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "077182b3a899bafe53260128",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0804f040139467ce1354674f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0813f45fb6f83e385771bb71",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "08d98adc8ea320e08749b1eb",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0b1e9d4484495779f3b59f72",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0b70abb9615618988e53b1f3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "0c19fd81115d68f9778a64b7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0cbd75cc018816fa1f2def8e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "0d10ebab6b6e6dbbd3848fe4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "0d171ca4895ee6ce0d408b19",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "0dc1b23a19531aadf7da77ae",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0eda81b4333ff7012d90fe08",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "0f445fe36ec65166d9f8a276",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "0f462506e0649daac4c33ec0",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "1037ad6b6bd6a1ab08875338",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "119e48a28a03b6a20326f381",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "11b04aa4e034e7593736eaf8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "11dfff2b2b1ff384ce30bc57",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "1206bf5da79b420b6e4f4963",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "13b3fef1c40c991fe7c9c29e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "145b6539505095a14ed911b3",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "153149dcbffd4e07df3594c6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "1619a616e9a9d29d121eacfc",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "16cd40cb2754d6da4b12f243",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "1766caf8598cdbefb45a4611",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "1981ca9a7a99aaaa421995c3",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "19fd90612bcc2264d93efa8b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "1a2709ccae57f45cb4b8b65b",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "1b51cafd50c3accf55784c8f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "1caebd8d55c4880d7e4a7fa9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "1e0ea9fa24e64648e24fe9c1",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "1e53594e1bd3064907aa9fcf",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "1f211818e187c1631461c40f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "1f87e12261422b9136333e7e",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "1fb0aca9fc07e2d58083dbd9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "21a0a3b7c4f6cdb64e23cf11",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "220118a0fe12762bb12869c0",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "22090bb8c84dcca983892c54",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "234cfff0931b795509dcfe56",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "2402e9c458555daf35678246",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "248bc01bc399e085d1e2307f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "248fdbd6ce75015ca427cb2c",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "24b99f5379410013db1e42e8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "253d7613a14bf6852f0f7c75",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "25aaa8103fa01f7ab6c6376b",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "2645032f22f3ca552a0af98d",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "26e484e4a0aa6e2236567631",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "27014341d4af2aa52096e7c9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "275923b189d0cb92648670aa",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "27d6b5e3e703feb61317edaf",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "2865efef53b6a3d0ecf08d46",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "28b7177925a6c62eb39bd491",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "2a1fb059684bd8a6bab7aa20",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "2af2e51e672fed6f36d61567",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "2cc5751254cf647a5ab37e73",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "2d44c7244517d0947a2d36a5",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "2e06722c0f75a610c1e666e8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "2e47450b769c817adcb3b68f",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "2eb07474a39a9fdd38c82416",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "2f67f6b8ccf95071f832d3db",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "2fa755de20cf8b1e5415afa0",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "31b019a08d5ff31816465560",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "31d15667296e69eb89f33dbf",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "31eba1c94c094c3a2d30930f",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "32869a2514b555b8bedbf272",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "32a0f51e0d634bd17bde2ba3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "3319e192fd1c20d606f02cfc",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "33ad0fcc01019fc50cd48df9",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "3482a403fdafc15e9a41688c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "36fa68cbdbf413a42c3b4c8c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "37a59901937399ae2db014bf",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "37fc87a0c4d4bae9ff37899b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "381860c3b92bd7090552582a",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "38714d746e11a078e4f681e9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "387715f465fd0d6203e134e3",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "3a1b3251c7cdc0e08a811790",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "3ae81baddf90662cef178953",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "3be88cb0432b653fa6f9501f",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "3cbe845a0091b64da52d5a3a",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "3d222d8e27727aaec8f524fe",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "3edca9a606782a932d9b62ba",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "3ee596be189e7668ecc2ba61",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "3fecc494db32eac3c7fa3a06",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "3ffc93bfcfab91eb6305acef",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "407aca8b87007a3bd8f5c2ad",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "409f03e5a7236727f3978143",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "40ccb17f38981bcde8963d2f",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "418a3f69f0aac9ac09345794",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "418c22417c9951e40b04ee41",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "41a2dd47beb86dd2c53f5176",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "420b02d7970f8aeb711a75e5",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "422d1c26126bd9398cf8086c",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "429c530eb88a41c471b29c03",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "4345e27a579aad32513a27df",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "4425137a6c9a06cfcec6739e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "44ead85b9231d3fd3ff7438d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "450d6ffb7bc2af4fae5bf6a4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "47183036cf6b713ec6c2264c",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "48f31fff287f4a868951a32e",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "49d30d48af4d5a7e98afc1b5",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "49e37f0c4ee5110c7058e683",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "4a6a21b21781b1892d0f84be",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "4b3449836cc948c0c8446320",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "4bcbdc17a15742210b82c30b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "4bcfde5094093a72c679818c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "4db760a8c5bff4f8209fe86e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "4ea83a6edd281c1ea30b3762",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "4fa0dfd3f92727568cd4a4fb",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5169a2fbffc00d0aa81b6f99",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "52c9e35b05bc4d9f97ea7654",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "52e6df20a1df4592d09e5751",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "53a315e671abd9bd5bdf0e02",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "554ebbd96864a12142eec8ba",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "56682f559fac7608a51369e2",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "56aa3a3a94574e108ac217d8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "56d40d2b81e803e94fb79a35",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "56f704a95e8108c6c8e41628",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "570fa6515f66e3a487597ebe",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "588c384ed850f71554213963",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "5b2f4eda43da03153982acfe",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5ca7514f048e27edcaa6f0db",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "5cf0e28c3c97e84dc6a98c20",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5d7d62a4f3dffcb050756203",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "5da2e5bf3b3fcd2e8858b491",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5dbf2ab4fc30451e893fe2ed",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "5e10a397acf2e6a6494ff80a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "5e5aedfeca4f448a7f48100c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "5e5bbc5bb9ff5d0c9cd349c2",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "5e811b65ef3bba6d144e3711",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5ee3f984f0dca828144864df",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "5eec08cf967c9e29c6b17091",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "5f9926c7ceb4c418830b0ce4",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "602cdd746e7c8309f8ecf75c",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "609da38e1ab3f39a95255b33",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "61171300f128c3f45b5b61e9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "61b83b1962133c5fe944879a",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "61c612420f4dd931e00c2c8d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "622e641c3b66d58c1597b9cf",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "63a7e30ac18f42ff17a223e9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "63e588700d12571900f7070e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "64247764e9c0c4d0955c4c03",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "649d203944307508598a8633",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "665483bfabe2193d8dd77ac7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "66be7ed3247cece021d862c7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "672e2f8253a29b6b33c86723",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "67a295fe56a772eddae30283",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "683e8e08f102d059ece1fa84",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "695520a8e1c596c616b92ff0",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "69cedf9e789f2153211a227d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "6aa9aa4f11177abfca054982",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "6b102d14c4ecda8a9776f8db",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "6cca335b6c74bf688813092b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "6d719d63146233f112b2142d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "6ddf1ce62d16930dbddb013e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "6e34143c85cd9b650188c51d",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "6e61059163b58aacaeb0493e",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "6e91e609c4c0677691d29abc",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "6f93ae4e9c7d302d936b9796",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "70555c632d5bc363706ab12c",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "7129a846bcd39610b367986b",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "715e98dd35af3d8ed5b9978e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "71a199b5dfa9e40f269c2b5c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "71c64375d59efc5a76e9bdb4",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "71f70bc27d9b7c5197d448e0",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "7204af4a673e6c85a3c1a608",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "73a1a0b059ea2b0a0570c455",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "73df6aae33cd3af8d1723550",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "748fff13c73fd1ade824768e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "757ae8bff334e795955a0a50",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "76f8fa70357906fe289aa440",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "77465b1076cb026ad22ba7af",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "775486d5c65fa9463bff2da8",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "77c99dba4a604d79d5109048",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "7921f42e07ab5a0314e38693",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "7ace27a78b6fcdf18229ff95",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "7ad1ad83c4022d24e56701c1",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "7b11eef0e5e6c0fb385d901e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "7b1af58ab2cf803f5bb307c5",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "7b25a6c076c04b78fb68ce88",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "7c374b10bbc43e6b130de3d4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "7c3f3ff8f3ba15d047d6f300",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "7c45abdfbbbfa48a5d08b09d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "7c9f05e18c15d93810f2e7b7",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "7db41a1bd5e1610f095e2159",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "7e80f88d4292517d521c02e3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "804186f3a08f17251ae76492",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "807acb2004b91e2ba7b62064",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "80f518f464171f81e2b5aa8a",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "81bbbfd4add50bc2b2a44a7a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "81d308ad52c086c546494abd",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "820984899b2d330e08517d8b",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "82174fdf7333f55f3422e3ea",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "839b30c6d32a974e62946b54",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "83d09028424eec43655def5c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "83ddece98479d67a3ffbf8fc",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "84b30503a599c1af5ea3443e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "85acef708a9967c1c73a7643",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "868871bb6377d5c7ca1dcbb1",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "868a62eb13dae822908a5bb3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "871c65510c8ef47183edc04d",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "8762006a81f1dd4d093d4809",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "87fa9995c9edcbf96af6a7f2",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "8995080bcb56cc39cc692fd7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "89d7990a05719e598533278d",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "8a4e81d27f6dc71b62e80aa6",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "8acb67461703b95906a23fa2",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "8acce7b7ff92b8db4e3f5402",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "8aebea7bf81eb6f7dce20fdf",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "8b03bc0a3654bc0848761a65",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "8b480e44d1f2e695790875df",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "8ba4e60731cf4dfe6d018ec5",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "8bcbc14beacd837121977c13",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "8db39a8f410e11e3c2dbfcc9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "8f6b58755d54b76997a66ca8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "8fecc5ae80e4f6e65f7d88fb",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "907f1ced620b4a01cc0aa884",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "9088b558674a6a49fcbf32d0",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "90b8475d438700edf99daf8b",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "90d66dd95aa73f2304651628",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "91a1a62aa9eec2650d291acb",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "921a7d088aab8d657c35e135",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "9259860786378fae05e79dff",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "92a807481836191dcc9dccd0",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "93b8eb5d98bb98f93eb3547d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "93f336f235446db89c81a889",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "94513b7db3ff06ee53cac02b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "94736887694d945c762a64a7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "94c3735ddf606871445d8580",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "97931f1fa6028747eaaf8783",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "97b87f09071598eb48c281f7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "97f9db97cc2f46917e5ccf81",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "9932239a47a1bb60812776ed",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "9c6423d44a794fc52a40609f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "9c88ff2332071188fdeb1347",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "9cb5ec77a30adbef30a4c250",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "9cc970e17a4f85fc4660cdd8",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "9ce11363d48c2b1ed4e73c08",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "9d5710746f63323ea3124ce8",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "9dbdddc53e05789ba3ea6b92",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "9df22ed2cd7ec5dc7737a028",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "9e97f7d241ef44c6105ba926",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "9f01e603148e4b6a38bd7f9a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "9fe5fd8f046614e300de866b",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "a142b0f9103b4d9de8d73dc5",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "a2c6e8a28f62b9d21fb4d05b",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "a2f9c28025ce871bac17683b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a31cd111da414cb9820c65e4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a32b2a4b3b9854a71bb997e6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "a330f51d3369405e67e9d090",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "a34a7126b732976ad0d2f949",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "a398c2c1979cb57b14476b73",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a404f09e0aca20c597f40c6a",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "a48f3f7940d0680fa7560579",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "a5d759cc22230b63452ba81a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a616de28e406bb31c7af42d4",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "a644fe5d30c847c511f69a2d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a86970a50853c446ac7d65a4",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "a98b4c212d33d07de8b11895",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "aa9806066994a23907d0304b",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "adff3df2c7b2e456c96ce361",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "ae749c297156f90af7ef3788",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "af5ed54495bc0758bef49479",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "b0f58f43a7a7bc26c3547e9d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "b1dded6cccb9b4d15c1e354b",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "b2921a4d0518e4afbac80b58",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "b2b1c8356a55120c2fe67787",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "b2c053fcf3fed1e7563d28e4",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "b32323a31204f189d41b286e",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "b34e409abd30159eff6748bd",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "b4a642327ea64aab742154cb",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "b622b1bca753d28830dc7cf1",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "b6b88bebce20cb080e2d45b5",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "b745ccd0e28a1f59760503d7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "b74ba03cac9e4aab74651bce",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "b7545c6a3ca3db0ba972aef3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "b79c223a6ae815b688838b9c",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "b88b1a77018cdf8857620947",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "b8a1b93a472fa66ffda4602e",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "b9b5535033a4e74ca854d0ee",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ba014f356d1b73a0cada573a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ba9212ebe73136d04376501f",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "baaef9930b26c780c2540e0a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "bb1cce1f17f47480e60bc3b9",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "bb55ba0758405fc9f27ef094",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "bb876d393f6a8438fe129bfd",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "bb8ce567cfba593a459f2e1f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "bc86f2ed621db69409014766",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "bcbd8c8c5a78d17e0f68f45e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "be4eb73bdebda9da0214ede9",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "bf1e265322a08253956d8156",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "bf7c8c90abca88fecab2d654",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "bfb2c8b9e2a2edfa938ab201",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "bfeb5ce7d3d92bc39740ef31",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "c03b3a221bf6c12c6adebf94",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "c0bf0a3ffbac8ce20ada74d4",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "c118aed07cbc572bb8eb1986",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "c1a1346115fb6e441ab697d4",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "c27826eebb596507de8ed3ca",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "c2cf9d25fcbabb85b0ed53db",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "c34f19cdbd382519ab283b86",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "c392abe883d72c739071a91b",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "c3cb805649b04ef22738714a",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "c41dd912f20f6cda28e0bb21",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "c4734f6a092a5089cbe30761",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "c4753977d3e2dd18f0b7f20d",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "c576a56c10b37d36e0c227a7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "ca42a13f3b58cfce3e287fee",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ca6a0555cab184f1c0f3cb0a",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "ca9f867291cecfa6906639b6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "cb5741268e437d3b853b7c2a",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "cc7e80e0c930a7c61a5717f5",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ccdbf0b5f76b8a31b39c8b11",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "ccf36f46be4b5cd988fe2de8",
+    "split": "outer_Gambia",
+    "delta": 0.42475788045867924,
+    "baseline": 0.32267776335213944,
+    "control": 1.26543600298007,
+    "treated": 1.690193883438749,
+    "hierarchical": 0.4238596927352209
+  },
+  {
+    "id": "cdb846f4ef5728197a303ded",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ce0dba14369bb5af18357811",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "cef1b838472b770e8a24047f",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "d0124f9d8692407a72372ece",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d090757a993e148f9e6ced96",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d0c6f628d96b924fe2b4d52c",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "d1356b4efcd4e059a82f07a5",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d1e7ae56bf0d055d82ee9f77",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d30d0927d391e273eb72f49f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d376b9c80129147c9083fe63",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d5d491e3ac340cec9909b4af",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d5dcbdcabce8a88e5e0566de",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d6667d8c0cc09d5236c5c56e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d6bc2c894f7e2ed393562bec",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d7823ca20719ebdb66c89d9f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "d78dece0d120e92daf8c24aa",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d8e324bad05fdb2e9afe1f18",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "d911b2f1e8eb1304d3a34116",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "d932ea9807aa4fd8d793b466",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "da372f8cf961c1d6be9154c7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "dab5005c8b30b0d664682365",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "dafbeb4b8dae8666efcbdbb5",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "dbc804fd8babe150d0959f13",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "dc71a6f4bb6555a168b6ace2",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "dd8dc793e34bede7d8720aa5",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "de2bf903c80ae9eb9915b639",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "de6fd18ae89d62b4a86525c5",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "df7575fbd8cb10b96b8badb1",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "dffee66b7440e7d45401b12d",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "e0446654526e1358e990546d",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "e125927b6474bd4862145162",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "e1484c4d3cf52093b74f98d2",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "e1df21b8410910c6d54cae42",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "e203f345889cc09b88fe3e60",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "e3a47527b90a5d8ef5398870",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "e4f71d5e0ed9fd7140ebed2e",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "e528667f2f46279fb64022bc",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "e5bb58e0b7dd6ea60125b15f",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "e71561e29eaa1a09dbaf1ae3",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "e716fca2c7abe769eaaf93bd",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "e8074faa2e2de8e693ead020",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "e847f511abdba27178491938",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "e87f09615d240d498c79e321",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "e8f41e9b36f939b756df7341",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "e91b25e4f7b63a94ecc37f7f",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "e9e3f3472ef60a6bdfda8bb9",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "ea8cccab8494842c4beb89ab",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "eadd0f84cca22254806b9f82",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "eb2ad1f2d9ae3f5c4f8aeb0c",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "edb95e25561adba20fe5b350",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "eec9e09a4b7f677cfc1e4409",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "ef3a825c9df967c453e70307",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f022003510423b1412666308",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "f0c1cd3d32d5a2ade4fe1469",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f0e521f1304800a13fefe2ee",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "f0eaf3f59bb7a6caa6ac129b",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f13d25cbc160d1fa1375e4d5",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f1e528795047f8a7f3a34398",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "f2d8e646f91b8cc818fbad22",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "f4f8977e223a11632a5762d6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "f566f6f8df38d6a7eba70cbd",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "f5c2df5fc38f8fd59510fc45",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "f5dba5516d218baa221a3222",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f5df92d979443c277cd33696",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": 0.41657186162790155
+  },
+  {
+    "id": "f67e9a1f754109b16ea5731c",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "f72c6ee60547459b6cd38602",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "f748057f8682e07a3b3e8a42",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f7c87a851e1175f842aba658",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "f7c92dc05f43d1c23d06f1d6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f812155da3dd241258358e90",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f8d8668c9290fa1f70d8aca7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "f973148a8c939c1e548422e4",
+    "split": "outer_Burkina Faso",
+    "delta": 0.5181081034023376,
+    "baseline": 0.3485995337589099,
+    "control": 2.91833951259758,
+    "treated": 3.4364476159999175,
+    "hierarchical": 0.5124181954653432
+  },
+  {
+    "id": "f97aef97c921b1cbae9bdf8a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "fa3380fe9c5d3bb79d33eca6",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "fb0513d64a601faa95814155",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "fcce356b94aa1fc4d3f5b62a",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "fd230af74d01a87dad1050c1",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "fe2010a63af5797996c71639",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.4776669458646113
+  },
+  {
+    "id": "fe56d4b6cf3fcc1ee7880586",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "fed1789cbb26cccba46057e7",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "fedd4aab0167f6e2ea3ca3cb",
+    "split": "outer_Benin",
+    "delta": 0.40583545759557216,
+    "baseline": 0.40583545759557216,
+    "control": 2.0628624493315897,
+    "treated": 2.468697906927162,
+    "hierarchical": 0.15100659252372978
+  },
+  {
+    "id": "ff0a9d45d2a4f9c455b5a0af",
+    "split": "outer_Nigeria",
+    "delta": 0.3851462744794113,
+    "baseline": 0.3851462744794113,
+    "control": 2.003240297424709,
+    "treated": 2.3883865719041206,
+    "hierarchical": -0.019427255973273883
+  },
+  {
+    "id": "ffc926898247dfe9956d077c",
+    "split": "outer_Philippines",
+    "delta": -0.6065154049891721,
+    "baseline": 0.31916555614493225,
+    "control": 3.2945672006218065,
+    "treated": 2.688051795632634,
+    "hierarchical": -0.16771489315039298
+  },
+  {
+    "id": "18bc821dec9f73f4b0e8e3ba",
+    "split": "test",
+    "delta": 3.009020819698781,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.392636236448781
+  },
+  {
+    "id": "301e144fc47bce4f4bb72fb5",
+    "split": "test",
+    "delta": 3.4388563047906886,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.822471721540689
+  },
+  {
+    "id": "37e6f45ff70a28a2d3c95cc9",
+    "split": "test",
+    "delta": 3.0602584655105307,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.443873882260531
+  },
+  {
+    "id": "8e54832464e5603308539247",
+    "split": "test",
+    "delta": 3.009020819698781,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.392636236448781
+  },
+  {
+    "id": "980edd4bf575b4cd896fd596",
+    "split": "test",
+    "delta": 3.4388563047906886,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.822471721540689
+  },
+  {
+    "id": "a9f0790bebe48ecc10817653",
+    "split": "test",
+    "delta": 3.0602584655105307,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.443873882260531
+  },
+  {
+    "id": "bd87f349f20cf6a1842d34b6",
+    "split": "test",
+    "delta": 3.009020819698781,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.392636236448781
+  },
+  {
+    "id": "d369e5eca3cca46d3177e2ce",
+    "split": "test",
+    "delta": 3.4388563047906886,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.822471721540689
+  },
+  {
+    "id": "fe8e0baf7b2ea40bb8d7660e",
+    "split": "test",
+    "delta": 3.0602584655105307,
+    "baseline": 3.16937853,
+    "control": 2.38361541675,
+    "treated": 5.443873882260531
+  }
+]

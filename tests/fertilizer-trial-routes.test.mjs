@@ -7,6 +7,10 @@ test('authenticated experimental evidence and trial revision persistence survive
  setIdentity(null);await req({action:'fertilizer-evidence',country:'TGO',cropId:'maize',asOfDate:'2026-11-02'},401);
  setIdentity({userId:'trial-owner',email:'trial-owner@example.test',displayName:'Trial owner'});
  const d=await req({action:'fertilizer-evidence',country:'TGO',cropId:'maize',asOfDate:'2026-11-02'});assert.equal(d.observations.length,2);assert.equal(d.productionEnabled,false);
+ const rice=await req({action:'fertilizer-evidence',country:'BEN',cropId:'rice-upland',asOfDate:'2026-11-02'});
+ assert.ok(rice.extension.observations.length>0);assert.ok(rice.extension.observations.every(r=>r.country==='BEN'&&r.cropId==='rice-upland'&&r.contrast==='P_environment'));
+ assert.equal(rice.extension.productionEnabled,false);assert.equal(rice.extension.research[0].interval95Available,false);
+ const past=await req({action:'fertilizer-evidence',country:'BEN',cropId:'rice-upland',asOfDate:'2026-11-01'});assert.equal(past.extension,null);
  const c=fixture();const a=await req({action:'save',id:'field-trial-campaign',expectedRevision:0,config:c},201);assert.deepEqual(a.campaign.config.fieldTrials,c.fieldTrials);
  for(const p of c.fieldTrials[0].plots){p.areaM2=10;p.harvest={date:c.asOfDate,kg:p.arm==='control'?2:3,moisturePercent:20,source:'Synthetic route fixture'};}
  await req({action:'save',id:'field-trial-campaign',expectedRevision:1,config:c});restartDatabase();
