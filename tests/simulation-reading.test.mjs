@@ -16,6 +16,8 @@ const bundle=await build({entryPoints:['components/agri/quick-simulation.tsx'],b
 const compiled={exports:{}};
 new Function('require','module','exports',bundle.outputFiles[0].text)(require,compiled,compiled.exports);
 const Quick=compiled.exports.default;
+async function component(path){const b=await build({entryPoints:[path],bundle:true,format:'cjs',platform:'node',packages:'external',write:false,loader:{'.css':'empty'},jsx:'automatic'});const m={exports:{}};new Function('require','module','exports',b.outputFiles[0].text)(require,m,m.exports);return m.exports.default;}
+const Sowing=await component('components/agri/sowing-summary.tsx'),WaterChart=await component('components/agri/water-chart.tsx'),Fertilizer=await component('components/agri/fertilizer-panel.tsx');
 function fixture(){
  const c=applyCropProfile(exampleCampaign('2026-11-01'),'maize');
  c.parcelGeometry={type:'Polygon',coordinates:[[[1,8],[1.0006,8],[1.0006,8.0006],[1,8.0006],[1,8]]]};
@@ -25,7 +27,13 @@ function fixture(){
 }
 const render=(config,stale=false)=>renderToStaticMarkup(React.createElement(Quick,{config,plan:planSeason(config),stale,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
 test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',()=>{
- const html=render(declareScenario(fixture()));
+ const c=declareScenario(fixture()),plan=planSeason(c);
+ const html=render(c)+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
+ assert.match(render(c),/L’essentiel pour décider/);
+ assert.match(render(c),/role="tab"[^>]*aria-selected="true"[^>]*>Vue du champ/);
+ assert.match(render(c),/role="tab"[^>]*>Eau et semis/);
+ assert.match(render(c),/role="tab"[^>]*>Engrais/);
+ assert.match(render(c),/role="tab"[^>]*>Suivi et essais/);
  assert.match(html,/besoins couverts si le plan est réalisé/);
  assert.match(html,/Surface utilisée pour ce bilan/);
  assert.match(html,/SEMENCES À PRÉVOIR/);
@@ -35,7 +43,7 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/Les arrosages à prévoir/);
  assert.match(html,/La pluie face aux besoins/);
  assert.doesNotMatch(html,/Aucune dose de semis référencée/);
- assert.match(html,/total à répartir, pas à apporter en une fois/);
+ assert.match(render(c),/EAU À PRÉVOIR SUR LE CYCLE/);
  assert.match(html,/La récolte n’est pas encore calculée/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
  assert.match(html,/<title>[^<]+ : besoin [0-9]/);
@@ -48,15 +56,17 @@ test('ready simulation explains conditional water, exposes weekly readings and d
 test('blocked and stale simulations display the action needed without showing a new water percentage',()=>{
  const c=fixture();c.inputPolicy={allowAssumptions:false,allowStale:false};
  const blocked=render(c);assert.match(blocked,/Confirmer les hypothèses/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé/);
- const stale=render(declareScenario(c),true);assert.match(stale,/Calcul en préparation/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé/);
+ const stale=render(declareScenario(c),true);assert.match(stale,/Recalcul en cours/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé/);
 });
 test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',()=>{
  const config=declareScenario(fixture());
  const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
  assert.match(html,/Calcul interrompu/);assert.match(html,/Relancer le calcul/);
  assert.doesNotMatch(html,/Recalcul en cours…|Recalcul du bilan d’eau en cours/);
- assert.match(html,/Voir les références et le bilan d’engrais/);
+ assert.match(html,/role="tab"[^>]*>Engrais/);
+ const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,onAdvanced:()=>{}}));
+ assert.match(fertilizerHtml,/Voir les références et le bilan d’engrais/);
  assert.match(html,/modifier l’arrosage ne change pas le rendement saisi/);
  assert.match(html,/Méthode de calcul/);
- assert.match(html,/effet sur le rendement n’est pas calculé/);
+ assert.match(fertilizerHtml,/effet sur le rendement n’est pas calculé/);
 });
