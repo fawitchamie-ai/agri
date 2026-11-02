@@ -45,7 +45,16 @@ export async function landJobStatus(id:unknown,s:Identity){
  return {id:row.id,status:row.result?'complete':'pending',completed:sectors.results.filter(x=>x.complete).length,total:row.total,processedM2,totalM2:parcelMetrics(JSON.parse(row.geometry)).areaM2,errors:sectors.results.filter(x=>x.error).map(x=>({sector:x.sector,error:x.error})),assessment:row.result?JSON.parse(row.result):null};
 }
 export async function startLandJob(input:unknown,s:Identity){
- const shape=validateParcel(input),now=new Date().toISOString(),id=await digest(JSON.stringify(['land-sectors-3',AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const shape=validateParcel(input),now=new Date().toISOString();
+ // Resume compatible jobs created before automatic preparation was introduced.
+ const legacyId=await digest(JSON.stringify(['land-sectors-2-spherical-linear-edges',s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const legacy=await database().prepare('SELECT id,result FROM land_jobs WHERE id=? AND coop_id=? AND owner_id=?').bind(legacyId,s.coopId,s.userId).first<{id:string;result:string|null}>();
+ if(legacy){
+  const parts=await database().prepare('SELECT result FROM land_sectors WHERE job_id=? AND result IS NOT NULL').bind(legacyId).all<{result:string}>();
+  const compatible=(!legacy.result||JSON.parse(legacy.result).areaMethod===AREA_METHOD)&&parts.results.every(p=>JSON.parse(p.result).areaMethod===AREA_METHOD);
+  if(compatible)return landJobStatus(legacyId,s);
+ }
+ const id=await digest(JSON.stringify(['land-sectors-3',AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
  const existing=await database().prepare('SELECT id FROM land_jobs WHERE id=?').bind(id).first();if(existing)return landJobStatus(id,s);
  const sectors=splitLandSectors(shape),db=database();
  // Job and rows are atomic. Bounded 256 rows; D1 batch is transactional.
