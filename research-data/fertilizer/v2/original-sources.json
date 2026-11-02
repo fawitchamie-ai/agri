@@ -1,0 +1,22 @@
+[
+  {
+    "path": "TROYBD-original.csv",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/3603449",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "path": "TROYBD-references.tsv",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/3603448",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "path": "BBKJH0-original.xls",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/14102691",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "path": "BBKJH0-dictionary.xls",
+    "url": "https://dataverse.harvard.edu/api/access/datafile/13094736",
+    "error": "HTTP Error 403: Forbidden"
+  }
+]

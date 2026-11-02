@@ -10,6 +10,22 @@ test('country evidence never becomes a parcel forecast or a reference without fe
  assert.equal(fertilizerEvidence('TGO','maize','2026-10-01').observations.length,0);
  assert.throws(()=>fertilizerEvidence('XYZ' as any,'maize','2026-11-02'));
 });
+test('rice observations stay source-, country-, system- and availability-specific',()=>{
+ const upland=fertilizerEvidence('BEN','rice-upland','2026-11-02');
+ const flooded=fertilizerEvidence('BEN','rice-flooded','2026-11-02');
+ assert.ok(upland.extension!.observations.length>0);assert.ok(flooded.extension!.observations.length>0);
+ assert.ok(upland.extension!.observations.every(r=>r.system==='upland'&&r.contrast==='P_environment'&&r.baselineNutrients[0]>0&&r.baselineNutrients[2]>0&&r.moisturePercent===14));
+ const senegal=fertilizerEvidence('SEN','rice-flooded','2026-11-02');
+ assert.ok(senegal.extension!.observations.every(r=>r.contrast==='long_term_NPK_regime'&&r.moisturePercent===null));
+ assert.equal(fertilizerEvidence('SEN','rice-upland','2026-11-02').extension!.observations.length,0);
+ assert.equal(fertilizerEvidence('BEN','rice-upland','2026-11-01').extension,null);
+ for(const country of ['TGO','BEN','BFA','GHA','CIV','SEN'] as const){
+  const d=fertilizerEvidence(country,'rice-upland','2026-11-02');
+  assert.equal(d.productionEnabled,false);assert.equal(d.extension!.productionEnabled,false);
+  assert.ok(d.extension!.missingInformation.length>0);
+  assert.ok(d.extension!.research.every(r=>r.productionEnabled===false&&r.interval95Available===false));
+ }
+});
 test('randomized layouts, moisture corrections, missing data, correction history and contours remain explicit',()=>{
  const c=fixture();assert.deepEqual(createTrialLayout(2,false,42),c.fieldTrials![0].plots);
  assert.deepEqual(summarizeTrial(c.fieldTrials![0]).contrasts,[]);

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "AMAZXA-design.xlsx",
+    "url": "https://www.frontiersin.org/api/v4/articles/216077/file/Table_1.XLSX/216077_supplementary-materials_tables_1_xlsx/1",
+    "sha256": "3e202e439f4a234791246ff4ff6b01fed5b76c84dc42ff3d0025a14f4d92b8d7",
+    "bytes": 23669,
+    "license": "CC-BY-4.0",
+    "source": "10.3389/fpls.2016.01435",
+    "status": "acquired",
+    "retrievedOn": "2026-11-02"
+  },
+  {
+    "path": "AMAZXA-yields.xlsx",
+    "url": "https://www.frontiersin.org/api/v4/articles/216077/file/Data_Sheet_1.XLSX/216077_supplementary-materials_datasheets_1_xlsx/1",
+    "sha256": "e9ec844289fba198385eabad76df5187a4c025ea9258fd1ca7111a515b0eef96",
+    "bytes": 118809,
+    "license": "CC-BY-4.0",
+    "source": "10.3389/fpls.2016.01435",
+    "status": "acquired",
+    "retrievedOn": "2026-11-02"
+  }
+]

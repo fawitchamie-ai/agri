@@ -33,10 +33,34 @@ export default function FertilizerPanel({config,onAdvanced}:{config:SeasonalConf
    {ready.calibration&&<p>Évaluation de recherche sur {ready.calibration.test.pairs} paires dans {ready.calibration.test.localities} groupes de localités tenus à l’écart : MAE {fmt(ready.calibration.test.MAE)} t/ha sur le supplément, RMSE {fmt(ready.calibration.test.RMSE)} t/ha. {config.country==='TGO'&&<>Au Togo : MAE {fmt(ready.calibration.byCountry.Togo.MAE)} t/ha, sur 21 paires dans deux localités.</>} L’intervalle prédictif à 95 % reste indisponible et le modèle reste désactivé. Une correction d’alias de localités a invalidé un premier découpage ; cette évaluation est un diagnostic de recherche.</p>}
    {ready.limits.map(l=><p key={l}>{l}</p>)}<p>{ready.attribution} · {ready.license} · <a href={ready.source} target="_blank" rel="noreferrer">Données et citation</a>.</p>
   </details>}
+  {ready?.extension&&<RiceEvidence extension={ready.extension}/>}
   {action&&<p className="notice info"><strong>Prochaine action : {action.action}</strong> {action.reason} Priorité indicative, sans calcul validé de valeur de l’information.</p>}
   <button className="btn secondary" onClick={()=>onAdvanced('conseils')}>Voir les références et le bilan d’engrais</button>
   <EconomicSensitivity config={config}/>
  </section>;
+}
+
+function RiceEvidence({extension}:{extension:NonNullable<Evidence['extension']>}){
+ const obs=extension.observations;
+ return <details><summary>{obs.length?'Comparer les modalités publiées sur le riz':'Ce qui manque pour valider l’effet des engrais dans ce pays'}</summary>
+  {obs.length>0&&<>
+   <p>Rendements mesurés dans des essais publiés. Ces valeurs décrivent leurs conditions expérimentales ; elles ne sont pas les rendements prévus de votre parcelle. Les comparaisons d’une même localité partagent des génotypes, des campagnes ou des témoins.</p>
+   {obs.map(r=><div key={r.id}>
+    <h3>{r.location} · {r.contrast==='P_environment'?'Comparaison avec/sans phosphore':'Régime NPK de longue durée'}{r.season?` · saison ${r.season==='dry'?'sèche':'humide'}`:''}</h3>
+    <p>{r.pairs} comparaisons · {r.campaigns} campagnes · un site · {r.years.join(', ')}. {r.moisturePercent===14?'Grain à 14 % d’humidité.':'Humidité du grain non qualifiée.'}</p>
+    <div className="table-wrap"><table className="data-table"><thead><tr><th>Modalité</th><th>N–P–K élémentaires (kg/ha)</th><th>Rendement médian observé</th></tr></thead><tbody>
+     <tr><td>{r.contrast==='P_environment'?'Sans P ajouté, avec N/K':'Témoin du régime sans apport'}</td><td>{r.baselineNutrients.join(' – ')}</td><td>{fmt(r.controlMedianTonnesHa)} t/ha</td></tr>
+     <tr><td>{r.contrast==='P_environment'?'Avec P, mêmes N/K':'Régime NPK répété'}</td><td>{r.treatedNutrients.join(' – ')}</td><td>{fmt(r.treatedMedianTonnesHa)} t/ha</td></tr>
+    </tbody></table></div>
+    <p>Différence appariée médiane : <strong>{fmt(r.deltaMedianTonnesHa)} t/ha</strong>. Dispersion observée (10e–90e percentiles) : {fmt(r.deltaObserved80[0])} à {fmt(r.deltaObserved80[1])} t/ha. Différences négatives : {r.negativePairs}/{r.pairs}. La différence des médianes des bras peut différer de la médiane des différences.</p>
+    {r.limits.map(l=><p key={l}>{l}</p>)}
+    <p>{r.attribution} · {r.license} · <a href={r.source} target="_blank" rel="noreferrer">Publication et protocole</a>.</p>
+   </div>)}
+   {extension.research.map(r=><p key={r.sourceId+r.cropId}><strong>Diagnostic de recherche :</strong> {r.design}. MAE du supplément {fmt(r.metrics.MAE)} t/ha, RMSE {fmt(r.metrics.RMSE)}, biais {fmt(r.metrics.bias)} ; référence moyenne : MAE {fmt(r.baselineMAE)}. {r.metrics.pairs} comparaisons, {r.metrics.sites} sites, {r.metrics.campaigns} campagnes. Intervalle prédictif à 95 % indisponible ; réponse parcellaire désactivée.</p>)}
+  </>}
+  {extension.missingInformation.map(l=><p key={l}>{l}</p>)}
+  {extension.limits.map(l=><p key={l}>{l}</p>)}
+ </details>;
 }
 
 function EconomicSensitivity({config}:{config:SeasonalConfig}){

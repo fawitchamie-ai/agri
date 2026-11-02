@@ -1,0 +1,79 @@
+{
+  "sources": [
+    {
+      "path": "AMAZXA.zip",
+      "sha256": "63939ce78f76b452ec5237c56778d1e2669fb5b82afc40b47b9799865a3fb9e2",
+      "rows": 1223,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "4CFDEG.zip",
+      "sha256": "807a1b80dbc80f23d0ba0aee7fa4739e01bd97f79b8ef51bf2d4bcff1f2f2023",
+      "rows": 372,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "GFWCYQ.zip",
+      "sha256": "3547aca64907165fc3ff22fa400acef58f1cfb95e94ac9bfcb60c6fd49430290",
+      "rows": 156,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "BBKJH0.zip",
+      "sha256": "20059092bd7e57080d0272358edf0602419a99fa3d2d5838147bce5e93d9d999",
+      "rows": 664,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "SRANPI.zip",
+      "sha256": "d3b6028d8a517f1e26775906548bd4e71a7a25173287c7cde5ab1b67084da805",
+      "rows": 86,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "TROYBD.zip",
+      "sha256": "cc59775b58a7ed0a65828d85a04010b5054f3c0b4b8bcc66e6ebec9cade76d46",
+      "rows": 936,
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "AMAZXA-design.xlsx",
+      "sha256": "3e202e439f4a234791246ff4ff6b01fed5b76c84dc42ff3d0025a14f4d92b8d7",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "path": "AMAZXA-yields.xlsx",
+      "sha256": "e9ec844289fba198385eabad76df5187a4c025ea9258fd1ca7111a515b0eef96",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "quarantine": {
+    "4CFDEG": "dose_T5_moisture_coordinates_and_overlap_unresolved",
+    "TROYBD": "original_pair_identity_rates_and_country_unresolved",
+    "BBKJH0": "missing_household_identity_oxide_units_and_management_confounding",
+    "SRANPI": "variety_zinc_gypsum_and_fertilization_change_together"
+  },
+  "primaryRows": {
+    "AMAZXA": 1203,
+    "GFWCYQ": 156
+  },
+  "primaryTrialHeaderDisagreements": 594,
+  "pairCounts": {
+    "AMAZXA": 412,
+    "GFWCYQ": 45
+  },
+  "rejectionCounts": {
+    "AMAZXA|unknown_background_nutrients_no_zero_fill": 166,
+    "AMAZXA|negative_adjusted_level_not_physical_yield": 2,
+    "AMAZXA|no_unique_P_pair_by_trial_season_variety": 202,
+    "AMAZXA|missing_identity_or_season_no_fill": 9,
+    "GFWCYQ|outside_Ndiaye_rice_protocol": 96,
+    "AMAZXA|superseded_by_primary_supplements_do_not_pool": 1223,
+    "4CFDEG|dose_T5_moisture_coordinates_and_overlap_unresolved": 372,
+    "TROYBD|original_pair_identity_rates_and_country_unresolved": 936,
+    "BBKJH0|missing_household_identity_oxide_units_and_management_confounding": 664,
+    "SRANPI|variety_zinc_gypsum_and_fertilization_change_together": 86
+  },
+  "independence": "AMAZXA: one publication, genotype means within sites; Ndiaye: one site, repeated regimes. Sources kept separate, no overlap with quarantined LTFE.",
+  "missingValues": "Preserved as null in harmonized records. No inferred zeros, dates, blocks or replications."
+}

@@ -1,0 +1,1397 @@
+{
+  "version": "fertilizer-extension-evaluation-1",
+  "productionEnabled": false,
+  "prospectivelyValidated": false,
+  "AMAZXA": {
+    "source": "AMAZXA",
+    "status": "research_transfer_diagnostic",
+    "folds": [
+      {
+        "heldOutCountry": "Benin",
+        "selectedCandidate": "mean",
+        "innerScores": {
+          "mean": {
+            "pairs": 178,
+            "sites": 5,
+            "campaigns": 6,
+            "publications": 1,
+            "MAE": 0.6481839237518092,
+            "RMSE": 0.853443101358376,
+            "bias": 1.6408722254210306e-17,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_0.1": {
+            "pairs": 178,
+            "sites": 5,
+            "campaigns": 6,
+            "publications": 1,
+            "MAE": 0.8056534104080465,
+            "RMSE": 1.0018072750190574,
+            "bias": -0.12200394523166981,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_1": {
+            "pairs": 178,
+            "sites": 5,
+            "campaigns": 6,
+            "publications": 1,
+            "MAE": 0.7170545459984656,
+            "RMSE": 0.9211644012185384,
+            "bias": -0.052570113290816955,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_10": {
+            "pairs": 178,
+            "sites": 5,
+            "campaigns": 6,
+            "publications": 1,
+            "MAE": 0.6579292446184294,
+            "RMSE": 0.8635723378837877,
+            "bias": -0.010446079607167468,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          }
+        },
+        "trainSites": [
+          "Burkina Faso/Farako-Ba",
+          "Gambia/Yundum",
+          "Nigeria/Ibadan",
+          "Nigeria/Ikenne",
+          "Philippines/Pangil"
+        ],
+        "testSites": [
+          "Benin/Bohicon",
+          "Benin/Cotonou"
+        ],
+        "model": {
+          "candidate": "mean",
+          "coefficients": [
+            0.40583545759557216
+          ]
+        },
+        "controlModel": {
+          "candidate": "mean",
+          "coefficients": [
+            2.0628624493315897
+          ]
+        },
+        "test": {
+          "pairs": 234,
+          "sites": 2,
+          "campaigns": 8,
+          "publications": 1,
+          "MAE": 0.9033524592580433,
+          "RMSE": 1.1999151616196457,
+          "bias": 0.1832283790956516,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 234,
+          "sites": 2,
+          "campaigns": 8,
+          "publications": 1,
+          "MAE": 0.9033524592580433,
+          "RMSE": 1.1999151616196457,
+          "bias": 0.1832283790956516,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "hierarchicalComparison": {
+          "pairs": 234,
+          "sites": 2,
+          "campaigns": 8,
+          "publications": 1,
+          "MAE": 0.8206842940585961,
+          "RMSE": 1.1033624288847323,
+          "bias": 0.17781998086044287,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        }
+      },
+      {
+        "heldOutCountry": "Burkina Faso",
+        "selectedCandidate": "ridge_1",
+        "innerScores": {
+          "mean": {
+            "pairs": 379,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.8072806713145566,
+            "RMSE": 1.0456956336542544,
+            "bias": 1.1359558855627422e-17,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_0.1": {
+            "pairs": 379,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.7587978603282998,
+            "RMSE": 0.9619655279542236,
+            "bias": -0.207257225487807,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_1": {
+            "pairs": 379,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.7539545994079214,
+            "RMSE": 0.9682955327898931,
+            "bias": -0.09671248152289699,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_10": {
+            "pairs": 379,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.7971469333162161,
+            "RMSE": 1.0317005176181024,
+            "bias": -0.01846118513468322,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          }
+        },
+        "trainSites": [
+          "Benin/Bohicon",
+          "Benin/Cotonou",
+          "Gambia/Yundum",
+          "Nigeria/Ibadan",
+          "Nigeria/Ikenne",
+          "Philippines/Pangil"
+        ],
+        "testSites": [
+          "Burkina Faso/Farako-Ba"
+        ],
+        "model": {
+          "candidate": "ridge_1",
+          "coefficients": [
+            0.34859953375890984,
+            0.0,
+            0.06363372310594774,
+            -0.06363372310594773,
+            -0.27370076012848354,
+            -0.00904121058302178,
+            0.07732729364372196
+          ],
+          "means": [
+            30.0,
+            86.66666666666666,
+            46.666666666666664,
+            0.4121510673234811,
+            0.8333333333333333,
+            0.08108108108108109
+          ],
+          "scales": [
+            1,
+            14.907119849998598,
+            7.453559924999299,
+            0.4922220688140632,
+            0.37267799624996495,
+            0.27295959292870475
+          ],
+          "sites": []
+        },
+        "controlModel": {
+          "candidate": "ridge_1",
+          "coefficients": [
+            2.37762033701163,
+            0.0,
+            -0.19501884876934547,
+            0.19501884876934567,
+            0.2060297490817064,
+            -0.2405859029160109,
+            -0.0028176034313908377
+          ],
+          "means": [
+            30.0,
+            86.66666666666666,
+            46.666666666666664,
+            0.4121510673234811,
+            0.8333333333333333,
+            0.08108108108108109
+          ],
+          "scales": [
+            1,
+            14.907119849998598,
+            7.453559924999299,
+            0.4922220688140632,
+            0.37267799624996495,
+            0.27295959292870475
+          ],
+          "sites": []
+        },
+        "test": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.31662334900035416,
+          "RMSE": 0.4007152078134581,
+          "bias": 0.13531386097809517,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.3176282524607712,
+          "RMSE": 0.37872432573164694,
+          "bias": -0.03419470866533255,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "hierarchicalComparison": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.31610377534533424,
+          "RMSE": 0.3988297957803368,
+          "bias": 0.12962395304110075,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        }
+      },
+      {
+        "heldOutCountry": "Gambia",
+        "selectedCandidate": "ridge_1",
+        "innerScores": {
+          "mean": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.7422422245930804,
+            "RMSE": 0.9691192441183262,
+            "bias": 9.756125486475031e-18,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_0.1": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.6955926959889505,
+            "RMSE": 0.8921175971883054,
+            "bias": -0.18424743223388013,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_1": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.6889560499562005,
+            "RMSE": 0.8951324024859482,
+            "bias": -0.0855024158636422,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_10": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 13,
+            "publications": 1,
+            "MAE": 0.7331827295435066,
+            "RMSE": 0.9565505977044634,
+            "bias": -0.016936810721341514,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          }
+        },
+        "trainSites": [
+          "Benin/Bohicon",
+          "Benin/Cotonou",
+          "Burkina Faso/Farako-Ba",
+          "Nigeria/Ibadan",
+          "Nigeria/Ikenne",
+          "Philippines/Pangil"
+        ],
+        "testSites": [
+          "Gambia/Yundum"
+        ],
+        "model": {
+          "candidate": "ridge_1",
+          "coefficients": [
+            0.3226777633521394,
+            0.0,
+            0.0646533684487241,
+            -0.0646533684487241,
+            -0.2686764438396602,
+            0.018766709445639303,
+            0.07776176220759229
+          ],
+          "means": [
+            30.0,
+            86.66666666666666,
+            46.666666666666664,
+            0.4121510673234811,
+            0.8333333333333333,
+            0.08108108108108109
+          ],
+          "scales": [
+            1,
+            14.907119849998598,
+            7.453559924999299,
+            0.4922220688140632,
+            0.37267799624996495,
+            0.27295959292870475
+          ],
+          "sites": []
+        },
+        "controlModel": {
+          "candidate": "ridge_1",
+          "coefficients": [
+            1.918637123798417,
+            0.0,
+            -0.17696452267890447,
+            0.17696452267890442,
+            0.2949926863447143,
+            0.25179437386467224,
+            0.004875303895388103
+          ],
+          "means": [
+            30.0,
+            86.66666666666666,
+            46.666666666666664,
+            0.4121510673234811,
+            0.8333333333333333,
+            0.08108108108108109
+          ],
+          "scales": [
+            1,
+            14.907119849998598,
+            7.453559924999299,
+            0.4922220688140632,
+            0.37267799624996495,
+            0.27295959292870475
+          ],
+          "sites": []
+        },
+        "test": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.729768476793947,
+          "RMSE": 1.0123873740064977,
+          "bias": -0.11356698440618568,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.7335403022497109,
+          "RMSE": 1.028851013262609,
+          "bias": -0.2156471015127255,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "hierarchicalComparison": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.7296956507623152,
+          "RMSE": 1.0124885237528998,
+          "bias": -0.11446517212964402,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        }
+      },
+      {
+        "heldOutCountry": "Nigeria",
+        "selectedCandidate": "mean",
+        "innerScores": {
+          "mean": {
+            "pairs": 341,
+            "sites": 5,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.6834835960185855,
+            "RMSE": 0.9719393107596039,
+            "bias": 4.026286411478591e-17,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_0.1": {
+            "pairs": 341,
+            "sites": 5,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.9534785707234293,
+            "RMSE": 1.249419786560712,
+            "bias": -0.22937303037491788,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_1": {
+            "pairs": 341,
+            "sites": 5,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.8311081815771215,
+            "RMSE": 1.0931665056467004,
+            "bias": -0.14681324292244383,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_10": {
+            "pairs": 341,
+            "sites": 5,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.6987657827158397,
+            "RMSE": 0.9852420809403424,
+            "bias": -0.029516163520877364,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          }
+        },
+        "trainSites": [
+          "Benin/Bohicon",
+          "Benin/Cotonou",
+          "Burkina Faso/Farako-Ba",
+          "Gambia/Yundum",
+          "Philippines/Pangil"
+        ],
+        "testSites": [
+          "Nigeria/Ibadan",
+          "Nigeria/Ikenne"
+        ],
+        "model": {
+          "candidate": "mean",
+          "coefficients": [
+            0.3851462744794113
+          ]
+        },
+        "controlModel": {
+          "candidate": "mean",
+          "coefficients": [
+            2.003240297424709
+          ]
+        },
+        "test": {
+          "pairs": 71,
+          "sites": 2,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 0.7653076914125594,
+          "RMSE": 0.9116925280905718,
+          "bias": 0.11081623818908874,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 71,
+          "sites": 2,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 0.7653076914125594,
+          "RMSE": 0.9116925280905718,
+          "bias": 0.11081623818908874,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "hierarchicalComparison": {
+          "pairs": 71,
+          "sites": 2,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 0.6150369825478545,
+          "RMSE": 0.7564236585794256,
+          "bias": -0.07575773346300874,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        }
+      },
+      {
+        "heldOutCountry": "Philippines",
+        "selectedCandidate": "ridge_0.1",
+        "innerScores": {
+          "mean": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.7948083414157429,
+            "RMSE": 1.0356446412821791,
+            "bias": 1.4310621643861404e-17,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_0.1": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.6317287887300446,
+            "RMSE": 0.8566092264850698,
+            "bias": -0.08735892458308851,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_1": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.6403964342005084,
+            "RMSE": 0.8771200007562739,
+            "bias": -0.049023936415901304,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          },
+          "ridge_10": {
+            "pairs": 375,
+            "sites": 6,
+            "campaigns": 12,
+            "publications": 1,
+            "MAE": 0.759692681647421,
+            "RMSE": 0.9970946695266469,
+            "bias": -0.007817556568075595,
+            "unit": "t grain/ha at 14% moisture",
+            "weighting": "equal site, then equal contrasts within group"
+          }
+        },
+        "trainSites": [
+          "Benin/Bohicon",
+          "Benin/Cotonou",
+          "Burkina Faso/Farako-Ba",
+          "Gambia/Yundum",
+          "Nigeria/Ibadan",
+          "Nigeria/Ikenne"
+        ],
+        "testSites": [
+          "Philippines/Pangil"
+        ],
+        "model": {
+          "candidate": "ridge_0.1",
+          "coefficients": [
+            0.31916555614493225,
+            0.0,
+            0.0,
+            0.0,
+            -0.576622469675846,
+            0.12053611414512211,
+            0.0
+          ],
+          "means": [
+            30.0,
+            80.0,
+            50.0,
+            0.24548440065681446,
+            0.6666666666666666,
+            0.0
+          ],
+          "scales": [
+            1,
+            1,
+            1,
+            0.43037403463845153,
+            0.4714045207910317,
+            1
+          ],
+          "sites": []
+        },
+        "controlModel": {
+          "candidate": "ridge_0.1",
+          "coefficients": [
+            2.294076042717336,
+            0.0,
+            0.0,
+            0.0,
+            0.6043891025416892,
+            -0.08358161277416781,
+            0.0
+          ],
+          "means": [
+            30.0,
+            80.0,
+            50.0,
+            0.24548440065681446,
+            0.6666666666666666,
+            0.0
+          ],
+          "scales": [
+            1,
+            1,
+            1,
+            0.43037403463845153,
+            0.4714045207910317,
+            1
+          ],
+          "sites": []
+        },
+        "test": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 1.1659135130972802,
+          "RMSE": 1.2479362525690243,
+          "bias": -1.1659135130972802,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 0.4139953752001553,
+          "RMSE": 0.5056700994481654,
+          "bias": -0.2402325519631759,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "hierarchicalComparison": {
+          "pairs": 37,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 0.7275424664936151,
+          "RMSE": 0.8524575573319311,
+          "bias": -0.7271130012585011,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        }
+      }
+    ],
+    "test": {
+      "pairs": 412,
+      "sites": 7,
+      "campaigns": 14,
+      "publications": 1,
+      "MAE": 0.792803662890398,
+      "RMSE": 1.0201404024529823,
+      "bias": -0.07943962885084144,
+      "unit": "t grain/ha at 14% moisture",
+      "weighting": "equal site, then equal contrasts within group"
+    },
+    "baseline": {
+      "pairs": 412,
+      "sites": 7,
+      "campaigns": 14,
+      "publications": 1,
+      "MAE": 0.6860691758931203,
+      "RMSE": 0.9257914061254421,
+      "bias": 0.014002124632606673,
+      "unit": "t grain/ha at 14% moisture",
+      "weighting": "equal site, then equal contrasts within group"
+    },
+    "yieldControl": {
+      "pairs": 412,
+      "sites": 7,
+      "campaigns": 14,
+      "publications": 1,
+      "MAE": 1.5341848750694251,
+      "RMSE": 1.7890618090018882,
+      "bias": 0.09177421728222944,
+      "unit": "t grain/ha at 14% moisture",
+      "weighting": "equal site, then equal contrasts within group"
+    },
+    "yieldTreated": {
+      "pairs": 412,
+      "sites": 7,
+      "campaigns": 14,
+      "publications": 1,
+      "MAE": 1.2461577136232993,
+      "RMSE": 1.5775765357664637,
+      "bias": 0.012334588431388035,
+      "unit": "t grain/ha at 14% moisture",
+      "weighting": "equal site, then equal contrasts within group"
+    },
+    "byCountry": {
+      "Benin": {
+        "pairs": 234,
+        "sites": 2,
+        "campaigns": 8,
+        "publications": 1,
+        "MAE": 0.9033524592580433,
+        "RMSE": 1.1999151616196457,
+        "bias": 0.1832283790956516,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Burkina Faso": {
+        "pairs": 33,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.31662334900035416,
+        "RMSE": 0.4007152078134581,
+        "bias": 0.13531386097809517,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Gambia": {
+        "pairs": 37,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.729768476793947,
+        "RMSE": 1.0123873740064977,
+        "bias": -0.11356698440618568,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Nigeria": {
+        "pairs": 71,
+        "sites": 2,
+        "campaigns": 2,
+        "publications": 1,
+        "MAE": 0.7653076914125594,
+        "RMSE": 0.9116925280905718,
+        "bias": 0.11081623818908874,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Philippines": {
+        "pairs": 37,
+        "sites": 1,
+        "campaigns": 2,
+        "publications": 1,
+        "MAE": 1.1659135130972802,
+        "RMSE": 1.2479362525690243,
+        "bias": -1.1659135130972802,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      }
+    },
+    "bySystem": {
+      "lowland": {
+        "pairs": 173,
+        "sites": 3,
+        "campaigns": 5,
+        "publications": 1,
+        "MAE": 1.2546660278952788,
+        "RMSE": 1.438264057024233,
+        "bias": 0.4559475104925677,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "upland": {
+        "pairs": 239,
+        "sites": 5,
+        "campaigns": 9,
+        "publications": 1,
+        "MAE": 0.6224056684261091,
+        "RMSE": 0.8584359169240651,
+        "bias": -0.21032358048078045,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      }
+    },
+    "bySite": {
+      "Benin/Bohicon": {
+        "pairs": 31,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.5284066550220686,
+        "RMSE": 0.6305464438600127,
+        "bias": -0.40700712304958914,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Benin/Cotonou": {
+        "pairs": 203,
+        "sites": 1,
+        "campaigns": 7,
+        "publications": 1,
+        "MAE": 1.2782982634940179,
+        "RMSE": 1.5754377081639543,
+        "bias": 0.7734638812408924,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Burkina Faso/Farako-Ba": {
+        "pairs": 33,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.31662334900035416,
+        "RMSE": 0.4007152078134581,
+        "bias": 0.13531386097809517,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Gambia/Yundum": {
+        "pairs": 37,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.729768476793947,
+        "RMSE": 1.0123873740064977,
+        "bias": -0.11356698440618568,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Nigeria/Ibadan": {
+        "pairs": 40,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.8518799558595586,
+        "RMSE": 0.9821074160606117,
+        "bias": 0.7988665244794114,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Nigeria/Ikenne": {
+        "pairs": 31,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.6787354269655601,
+        "RMSE": 0.8353631275505907,
+        "bias": -0.5772340481012339,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      },
+      "Philippines/Pangil": {
+        "pairs": 37,
+        "sites": 1,
+        "campaigns": 2,
+        "publications": 1,
+        "MAE": 1.1659135130972802,
+        "RMSE": 1.2479362525690243,
+        "bias": -1.1659135130972802,
+        "unit": "t grain/ha at 14% moisture",
+        "weighting": "equal site, then equal contrasts within group"
+      }
+    },
+    "hierarchicalComparison": {
+      "pairs": 412,
+      "sites": 7,
+      "campaigns": 14,
+      "publications": 1,
+      "MAE": 0.6635406351163093,
+      "RMSE": 0.885603337944738,
+      "bias": -0.07254710365031088,
+      "unit": "t grain/ha at 14% moisture",
+      "weighting": "equal site, then equal contrasts within group"
+    },
+    "residualDescription": {
+      "residualQuantilesTonnesHa": {
+        "q10": -2.0281544575955714,
+        "q50": -0.10007545759557218,
+        "q90": 1.2093798072089736
+      },
+      "retrospectiveCentral80Coverage": 0.8466261618136717,
+      "retrospectiveWidthTonnesHa": 3.237534264804545,
+      "certified": false,
+      "reason": "Quantiles use these same outer residuals; retrospective dispersion, not out-of-sample interval calibration."
+    },
+    "interval95": {
+      "radiusTonnesHa": null,
+      "coverage": null,
+      "widthTonnesHa": null,
+      "certified": false,
+      "reason": "No independent calibration groups reserved; seven shared-publication sites do not establish a finite calibrated transfer interval."
+    },
+    "scope": "Matched genotype P environment differences, neighboring fields, one publication; not a clean randomized fertilizer-only or prospective parcel effect.",
+    "domain": {
+      "crop": "rice",
+      "targetSites": [
+        "Benin/Bohicon",
+        "Benin/Cotonou",
+        "Burkina Faso/Farako-Ba"
+      ],
+      "N": [
+        80.0,
+        120.0
+      ],
+      "P": [
+        30.0
+      ],
+      "K": [
+        30.0,
+        50.0
+      ],
+      "years": [
+        2012,
+        2013
+      ],
+      "system": [
+        "lowland",
+        "upland"
+      ],
+      "continuousDoseOptimization": false
+    },
+    "relativeMAEImprovement": -0.15557394319360207,
+    "failedCriteria": [
+      "insufficient_improvement_over_mean",
+      "delta_MAE_exceeds_0.5_t_ha",
+      "fewer_than_five_target_sites",
+      "units_assignment_or_domain_not_qualified_for_parcel_prediction",
+      "usable_predictive_interval_unavailable"
+    ],
+    "passed": false,
+    "productionEnabled": false,
+    "prospectivelyValidated": false,
+    "byTargetCountrySystem": {
+      "Benin|lowland": {
+        "metrics": {
+          "pairs": 96,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 1.7462046147289976,
+          "RMSE": 1.9193568261337308,
+          "bias": 1.734889520095572,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 96,
+          "sites": 1,
+          "campaigns": 2,
+          "publications": 1,
+          "MAE": 1.7462046147289976,
+          "RMSE": 1.9193568261337308,
+          "bias": 1.734889520095572,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "relativeMAEImprovement": 0.0,
+        "failedCriteria": [
+          "insufficient_improvement_over_mean",
+          "delta_MAE_exceeds_0.5_t_ha",
+          "absolute_bias_exceeds_0.25_t_ha",
+          "fewer_than_five_target_sites",
+          "units_assignment_or_domain_not_qualified_for_parcel_prediction",
+          "usable_predictive_interval_unavailable"
+        ],
+        "passed": false,
+        "productionEnabled": false,
+        "prospectivelyValidated": false
+      },
+      "Benin|upland": {
+        "metrics": {
+          "pairs": 138,
+          "sites": 2,
+          "campaigns": 6,
+          "publications": 1,
+          "MAE": 0.693450544685342,
+          "RMSE": 0.9490070309630066,
+          "bias": -0.24806536543728888,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 138,
+          "sites": 2,
+          "campaigns": 6,
+          "publications": 1,
+          "MAE": 0.693450544685342,
+          "RMSE": 0.9490070309630066,
+          "bias": -0.24806536543728888,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "relativeMAEImprovement": 0.0,
+        "failedCriteria": [
+          "insufficient_improvement_over_mean",
+          "delta_MAE_exceeds_0.5_t_ha",
+          "fewer_than_five_target_sites",
+          "units_assignment_or_domain_not_qualified_for_parcel_prediction",
+          "usable_predictive_interval_unavailable"
+        ],
+        "passed": false,
+        "productionEnabled": false,
+        "prospectivelyValidated": false
+      },
+      "Burkina Faso|upland": {
+        "metrics": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.31662334900035416,
+          "RMSE": 0.4007152078134581,
+          "bias": 0.13531386097809517,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "baseline": {
+          "pairs": 33,
+          "sites": 1,
+          "campaigns": 1,
+          "publications": 1,
+          "MAE": 0.3176282524607712,
+          "RMSE": 0.37872432573164694,
+          "bias": -0.03419470866533255,
+          "unit": "t grain/ha at 14% moisture",
+          "weighting": "equal site, then equal contrasts within group"
+        },
+        "relativeMAEImprovement": 0.003163772279801025,
+        "failedCriteria": [
+          "insufficient_improvement_over_mean",
+          "fewer_than_five_target_sites",
+          "units_assignment_or_domain_not_qualified_for_parcel_prediction",
+          "usable_predictive_interval_unavailable"
+        ],
+        "passed": false,
+        "productionEnabled": false,
+        "prospectivelyValidated": false
+      }
+    }
+  },
+  "GFWCYQ": {
+    "source": "GFWCYQ",
+    "status": "single_site_temporal_diagnostic",
+    "selectedCandidate": "saturating_30",
+    "selectionScores": {
+      "mean": {
+        "pairs": 12,
+        "sites": 1,
+        "campaigns": 4,
+        "publications": 1,
+        "MAE": 0.9426142029999999,
+        "RMSE": 1.2049460198231075,
+        "bias": 0.337764853,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "dose_mean": {
+        "pairs": 12,
+        "sites": 1,
+        "campaigns": 4,
+        "publications": 1,
+        "MAE": 1.0090869278333334,
+        "RMSE": 1.292759072040145,
+        "bias": 0.337764853,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "saturating_30": {
+        "pairs": 12,
+        "sites": 1,
+        "campaigns": 4,
+        "publications": 1,
+        "MAE": 0.927366462,
+        "RMSE": 1.221120092795876,
+        "bias": 0.3377648530000001,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "saturating_60": {
+        "pairs": 12,
+        "sites": 1,
+        "campaigns": 4,
+        "publications": 1,
+        "MAE": 0.9476603681620449,
+        "RMSE": 1.2338230242729837,
+        "bias": 0.3377648530000001,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "saturating_120": {
+        "pairs": 12,
+        "sites": 1,
+        "campaigns": 4,
+        "publications": 1,
+        "MAE": 0.9603613208875498,
+        "RMSE": 1.2447776473276755,
+        "bias": 0.33776485299999964,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      }
+    },
+    "model": {
+      "candidate": "saturating_30",
+      "tau": 30,
+      "a": 6.236336978165708,
+      "b": -3.2353357540094247
+    },
+    "controlModel": {
+      "candidate": "campaign_mean",
+      "valueTonnesHa": 2.38361541675
+    },
+    "test": {
+      "pairs": 9,
+      "sites": 1,
+      "campaigns": 3,
+      "publications": 1,
+      "MAE": 0.6931844987754379,
+      "RMSE": 0.8173291511977651,
+      "bias": -0.252929168,
+      "unit": "t grain/ha as reported; moisture unqualified",
+      "weighting": "equal campaign, then equal contrasts within group"
+    },
+    "baseline": {
+      "pairs": 9,
+      "sites": 1,
+      "campaigns": 3,
+      "publications": 1,
+      "MAE": 0.6689355955555557,
+      "RMSE": 0.8314026688734113,
+      "bias": -0.2529291680000001,
+      "unit": "t grain/ha as reported; moisture unqualified",
+      "weighting": "equal campaign, then equal contrasts within group"
+    },
+    "doseMeanReference": {
+      "pairs": 9,
+      "sites": 1,
+      "campaigns": 3,
+      "publications": 1,
+      "MAE": 0.5769583645555557,
+      "RMSE": 0.7301932989560843,
+      "bias": -0.2529291680000001,
+      "unit": "t grain/ha as reported; moisture unqualified",
+      "weighting": "equal campaign, then equal contrasts within group"
+    },
+    "yieldControl": {
+      "pairs": 9,
+      "sites": 1,
+      "campaigns": 3,
+      "publications": 1,
+      "MAE": 0.9120369209166665,
+      "RMSE": 1.0525975823061382,
+      "bias": 0.7597514154166668,
+      "unit": "t grain/ha as reported; moisture unqualified",
+      "weighting": "equal campaign, then equal contrasts within group"
+    },
+    "yieldTreated": {
+      "pairs": 9,
+      "sites": 1,
+      "campaigns": 3,
+      "publications": 1,
+      "MAE": 0.9370921998473889,
+      "RMSE": 1.215093094015467,
+      "bias": 0.5068222474166669,
+      "unit": "t grain/ha as reported; moisture unqualified",
+      "weighting": "equal campaign, then equal contrasts within group"
+    },
+    "splitSummary": {
+      "train": {
+        "pairs": 24,
+        "campaigns": 8,
+        "years": [
+          2015,
+          2016,
+          2017,
+          2018
+        ]
+      },
+      "validation": {
+        "pairs": 12,
+        "campaigns": 4,
+        "years": [
+          2019,
+          2020
+        ]
+      },
+      "test": {
+        "pairs": 9,
+        "campaigns": 3,
+        "years": [
+          2021,
+          2022
+        ]
+      }
+    },
+    "splitIds": {
+      "train": [
+        "06e1980b48e34e5512f3d61a",
+        "0805c27ce15af7224235a764",
+        "08a87b7521ddbcdf933cdcaf",
+        "0ccfcdca8dfa1d1cd6fe0141",
+        "209c7b76b62128c6b9f61814",
+        "20d8ecaba3d1d45c2f9eb769",
+        "24cf97fe6dddf564c6266c4f",
+        "300050be2e1c1783b81e18d2",
+        "44ca5c719fbaa488a0469238",
+        "463599deb67666d1e6d28cca",
+        "5246e108ab91dc73eda9ab03",
+        "55487cca35f0cd20ed8d8281",
+        "5f5ea12f4a7702d9efb99af9",
+        "745840da4bea5cfbc9ed8356",
+        "7e7ad508739eb04954ee0f60",
+        "8337f6baa10d2854b47a605f",
+        "933d52c4686a4901e316ecbd",
+        "bce9fd2c04af4415aeae40eb",
+        "bd33171050cc70144dd64ed8",
+        "c11e6734aacd7fed964fa211",
+        "cf62bc11d4c4e537f7176edb",
+        "de2bddb41270aa0197220e8e",
+        "f5feb50ec3076a82be5f4b67",
+        "fba6dc86b49f233d51d55f30"
+      ],
+      "validation": [
+        "0658958dc1e86cfc6c94601d",
+        "28bf161e9872d3bec2266e1b",
+        "3e261127f01fb1468bd977ff",
+        "477b5db903aafdf7bd1bfa89",
+        "761a3a0c6257bc00089c568f",
+        "76e2fc19ffa88abc26849551",
+        "9061423145d78abb8bb2cca6",
+        "99829be79d05c769f308f454",
+        "cdebb1688d6927d0c934ff9e",
+        "d6192341120708bcb4a314cf",
+        "d708d72e868a7cda4fd4f5aa",
+        "e7bc6b1f4a762a6f17680188"
+      ],
+      "test": [
+        "18bc821dec9f73f4b0e8e3ba",
+        "301e144fc47bce4f4bb72fb5",
+        "37e6f45ff70a28a2d3c95cc9",
+        "8e54832464e5603308539247",
+        "980edd4bf575b4cd896fd596",
+        "a9f0790bebe48ecc10817653",
+        "bd87f349f20cf6a1842d34b6",
+        "d369e5eca3cca46d3177e2ce",
+        "fe8e0baf7b2ea40bb8d7660e"
+      ]
+    },
+    "byCountry": {
+      "Senegal": {
+        "pairs": 9,
+        "sites": 1,
+        "campaigns": 3,
+        "publications": 1,
+        "MAE": 0.6931844987754379,
+        "RMSE": 0.8173291511977651,
+        "bias": -0.252929168,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      }
+    },
+    "bySystem": {
+      "lowland_irrigated": {
+        "pairs": 9,
+        "sites": 1,
+        "campaigns": 3,
+        "publications": 1,
+        "MAE": 0.6931844987754379,
+        "RMSE": 0.8173291511977651,
+        "bias": -0.252929168,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      }
+    },
+    "byYear": {
+      "2021": {
+        "pairs": 3,
+        "sites": 1,
+        "campaigns": 1,
+        "publications": 1,
+        "MAE": 0.5933705696596463,
+        "RMSE": 0.6697611723044791,
+        "bias": -0.08560837866666673,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      },
+      "2022": {
+        "pairs": 6,
+        "sites": 1,
+        "campaigns": 2,
+        "publications": 1,
+        "MAE": 0.7430914633333336,
+        "RMSE": 0.8819015807521572,
+        "bias": -0.3365895626666666,
+        "unit": "t grain/ha as reported; moisture unqualified",
+        "weighting": "equal campaign, then equal contrasts within group"
+      }
+    },
+    "interval95": {
+      "delta": {
+        "calibrationYears": 2,
+        "requiredRank": 3,
+        "radiusTonnesHa": null,
+        "coverage": null,
+        "widthTonnesHa": null,
+        "certified": false,
+        "reason": "Two validation years cannot supply finite 95% group quantile; repeated plots and model selection on validation also preclude certification."
+      },
+      "control": {
+        "calibrationYears": 2,
+        "requiredRank": 3,
+        "radiusTonnesHa": null,
+        "coverage": null,
+        "widthTonnesHa": null,
+        "certified": false,
+        "reason": "Two validation years cannot supply finite 95% group quantile; repeated plots and model selection on validation also preclude certification."
+      },
+      "treated": {
+        "calibrationYears": 2,
+        "requiredRank": 3,
+        "radiusTonnesHa": null,
+        "coverage": null,
+        "widthTonnesHa": null,
+        "certified": false,
+        "reason": "Two validation years cannot supply finite 95% group quantile; repeated plots and model selection on validation also preclude certification."
+      }
+    },
+    "scope": "Sahel 108, fully irrigated Ndiaye, repeated fertilizer regimes on same plots; includes decades of history, not a first-season input effect.",
+    "domain": {
+      "crop": "rice",
+      "site": "Senegal/Ndiaye",
+      "N": [
+        60,
+        120,
+        180
+      ],
+      "P": 26,
+      "K": 50,
+      "years": [
+        2015,
+        2022
+      ],
+      "moisturePercent": null,
+      "continuousDoseOptimization": false
+    },
+    "publishedCalendar": {
+      "scope": "Observed Ndiaye experimental protocol only, not a personal recommendation",
+      "basalPKDaysAfterTransplant": 14,
+      "NFractions": [
+        0.5,
+        0.25,
+        0.25
+      ],
+      "NStages": [
+        "14 days after transplant",
+        "panicle initiation",
+        "around 10 days before flowering"
+      ],
+      "source": "https://doi.org/10.1371/journal.pone.0317170"
+    },
+    "relativeMAEImprovement": -0.03624998188314876,
+    "failedCriteria": [
+      "insufficient_improvement_over_mean",
+      "delta_MAE_exceeds_0.5_t_ha",
+      "absolute_bias_exceeds_0.25_t_ha",
+      "fewer_than_five_target_sites",
+      "units_assignment_or_domain_not_qualified_for_parcel_prediction",
+      "usable_predictive_interval_unavailable"
+    ],
+    "passed": false,
+    "productionEnabled": false,
+    "prospectivelyValidated": false
+  },
+  "freezeSha256": "6dc967c73cd8e4f00a587de4042adea7b2ffb0fbe742d10545b3323b0d1fd496",
+  "pairsSha256": "e726fa39be92ddb24a4f71652d548805e22d3d809fa36e257cf4eef9279cdfc6",
+  "unavailableComparisons": {
+    "QUEFTS": "The admitted P environment means and long-term NPK regimes do not identify local indigenous N/P/K supply, nutrient uptake and joint efficiency bounds. Grain P concentration is a post-treatment response, not independent soil supply. No arbitrary QUEFTS parameters fitted or advertised.",
+    "WOFOST_SNOMIN": "No complete qualified daily forcings, cultivar, initial mineral N and dated management for these admitted contrasts. Existing research service is untouched."
+  }
+}
