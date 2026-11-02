@@ -4,12 +4,14 @@ import type * as L from 'leaflet';
 import {COUNTRY_VIEWS,type Position} from '../../lib/seasonal/parcel';
 import type {ParcelMapProps,MapController,CountriesGeo} from './parcel-map';
 import 'leaflet/dist/leaflet.css';
+import {LAND_COLORS} from '../../lib/seasonal/land-display';
 
 /** Leaflet owns the moving map. React only receives settled viewport changes.
  * Paths and markers are retained: adding a corner never rebuilds the basemap. */
 export default memo(function ParcelMapLight(props:ParcelMapProps){
  const host=useRef<HTMLDivElement>(null),map=useRef<L.Map|null>(null),latest=useRef(props);latest.current=props;
  const lib=useRef<typeof L|null>(null),markers=useRef<L.Marker[]>([]),line=useRef<L.Polyline|null>(null),fill=useRef<L.Polygon|null>(null);
+ const terrain=useRef<L.LayerGroup|null>(null);
  const bases=useRef<{satellite?:L.TileLayer;plan?:L.GridLayer;loading?:boolean}>({});
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[viewport,setViewport]=useState({center:[1.1,8.65] as Position,zoom:6});
  const changeBase=useRef<()=>void>(()=>{});
@@ -20,7 +22,8 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
    if(disposed||!host.current)return;
    const l=module.default??module;lib.current=l;
    const view=COUNTRY_VIEWS[latest.current.selected as keyof typeof COUNTRY_VIEWS]??COUNTRY_VIEWS.TGO;
-   const m=l.map(host.current,{center:[view.center[1],view.center[0]],zoom:Math.round(view.zoom),minZoom:2,maxZoom:20,zoomControl:false,attributionControl:false,worldCopyJump:true,zoomAnimation:true,markerZoomAnimation:false,fadeAnimation:false,doubleClickZoom:false,tapTolerance:12});map.current=m;
+   const m=l.map(host.current,{center:[view.center[1],view.center[0]],zoom:Math.round(view.zoom),minZoom:2,maxZoom:20,zoomControl:false,attributionControl:false,worldCopyJump:true,zoomAnimation:true,markerZoomAnimation:false,fadeAnimation:false,doubleClickZoom:false,tapTolerance:12,preferCanvas:true});map.current=m;
+   m.createPane('terrain');m.getPane('terrain')!.style.zIndex='350';terrain.current=l.layerGroup().addTo(m);
    l.control.zoom({position:'topright',zoomInTitle:'Rapprocher la carte',zoomOutTitle:'Éloigner la carte'}).addTo(m);
    l.control.scale({position:'bottomleft',imperial:false}).addTo(m);
    l.control.attribution({position:'bottomright',prefix:false}).addTo(m);
@@ -92,5 +95,10 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
   });
   m.getContainer().style.cursor=props.drawing&&props.drawMode==='tap'?'crosshair':'';
  },[props.points,props.closed,props.drawing,props.drawMode,ready]);
+ useEffect(()=>{
+  const group=terrain.current,l=lib.current;if(!ready||!group||!l)return;group.clearLayers();
+  if(!props.showLand||props.drawing||!props.closed||!props.landAssessment)return;
+  for(const [cls,part] of Object.entries(props.landAssessment.fractions))if(part.geometry.coordinates.length)l.geoJSON(part.geometry as GeoJSON.MultiPolygon,{pane:'terrain',interactive:false,style:{fillColor:LAND_COLORS[cls as keyof typeof LAND_COLORS],fillOpacity:cls==='unknown'?.3:.55,color:LAND_COLORS[cls as keyof typeof LAND_COLORS],weight:.5}}).addTo(group);
+ },[props.landAssessment,props.showLand,props.closed,props.drawing,ready]);
  return <div className="parcel-canvas-wrap map-light"><div ref={host} className="parcel-canvas" aria-label="Carte interactive du champ. Déplacez la carte, puis posez les coins avec le bouton."/>{!ready&&!error&&<div className="map-loading" role="status"><span className="map-loader"/>La carte arrive…</div>}{error&&<div className="map-service-message" role="status">{error}<button type="button" aria-label="Fermer le message de carte" onClick={()=>setError('')}>×</button></div>}<div className="map-coordinate-readout" aria-live="off">{Math.abs(viewport.center[1]).toFixed(5)}° {viewport.center[1]>=0?'N':'S'} · {Math.abs(viewport.center[0]).toFixed(5)}° {viewport.center[0]>=0?'E':'O'} <span>Zoom {viewport.zoom.toFixed(0)}</span></div></div>;
 });

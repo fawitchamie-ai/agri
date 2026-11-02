@@ -28,7 +28,7 @@ export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[]
  const result=estimate?.scenarios.find(s=>s.id===mode)?.totals??null;
  const actions:FieldAction[]=[];
  if(flooded)actions.push({id:'flood',level:'urgent',title:'Vérifier l’eau stagnante',reason:'Arrosage suspendu. Relevez la durée et l’étendue de l’engorgement ; faites vérifier le drainage et l’état des plantes.',source:'État du champ déclaré par vous ; mortalité et perte de rendement non calculées.',target:'soil'});
- const land=c.landAssessment;
+ const land=(!stale&&!loading?p?.land:undefined)??c.landAssessment;
  if(!land||land.unknownAreaM2>1e-6||geometryIdentity(land.geometry)!==geometryIdentity(c.parcelGeometry))actions.push({id:'terrain',level:'check',title:'Vérifier la surface terrestre',reason:'Le contour ne suffit pas à connaître la surface cultivable et réellement semée.',source:'Analyse d’occupation du sol absente ou incomplète.',target:'map'});
  else if(c.landSelection!=='potentialLand'&&(land.fractions.potentialLand.fraction??1)<1-1e-7)actions.push({id:'mixed',level:'check',title:'Séparer terre et surfaces exclues',reason:'Confirmez la partie terrestre avant d’estimer les volumes de la parcelle.',source:'Occupation du sol cartographiée ; aptitude agricole à confirmer.',target:'map'});
  const indicator=waterIndicator(c,p,stale,loading);

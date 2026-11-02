@@ -1,3 +1,4 @@
+import {satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} from '@/lib/seasonal/satellite';
 import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
 import {fertilizerEvidence,marginalScenario,nextFertilizerInformation} from '@/lib/seasonal/fertilizer-evidence';
 import {parseFieldTrials,protectFieldTrials,summarizeTrial} from '@/lib/seasonal/field-trials';
@@ -19,7 +20,7 @@ import {planSeason,yieldCsv} from '@/lib/seasonal/yield';
 import {loadLandAssessment} from '@/lib/seasonal/land-provider';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
-import { body, database, failure, HttpError, ServiceStageError, json } from '@/lib/server-db';
+import { body, database, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
 import { upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
@@ -41,6 +42,7 @@ async function readable(id: string, request: Request) {
 function error(e: unknown) { return e instanceof InputError ? json({ error: e.message }, 400) : failure(e); }
 export async function GET(request: Request) { try {
   const url = new URL(request.url), id = url.searchParams.get('id');
+  if(url.searchParams.get('satellite')==='image'){await session(request);try{return await satelliteImage(url.searchParams.get('layer') as SatelliteLayer,url.searchParams.get('date')??'',(url.searchParams.get('bbox')??'').split(',').map(Number));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if (id) {
     const { db, row } = await readable(id, request);
     const revision = url.searchParams.get('revision');
@@ -57,12 +59,12 @@ export async function GET(request: Request) { try {
       return new Response(managementCsv({...p,irrigation:{mode:'manual',applications:editableIrrigation(config,snapshot)}}),{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename=apports-revision-${row.revision}.csv`,'Cache-Control':'no-store'}});
     }
     if (url.searchParams.get('format')==='csv') {
-      const config=validateConfig(migrateInputs(decodeCampaignValue(row.config)));
-      if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,await session(request));
-      const plan=planSeason(config,decodeCampaignValue(row.events),{requireGeometry:true});
-      if(plan.status==='blocked')throw new HttpError(409,'Export du calendrier suspendu : '+plan.missing[0]);
-      return new Response(waterPlanCsv(plan), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="plan-irrigation.csv"', 'Cache-Control': 'no-store' } });
+      // An export is the saved revision, not an implicit new terrain analysis.
+      const plan=decodeCampaignValue(row.plan) as import('@/lib/seasonal/types').WaterPlan;
+      if(!plan||plan.status==='blocked')throw new HttpError(409,'Export du calendrier suspendu : '+(plan?.missing?.[0]??'aucun plan enregistré'));
+      return new Response(waterPlanCsv(plan), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="plan-irrigation-revision-${row.revision}.csv"`, 'Cache-Control':'no-store' } });
     }
+
     const histories = await db.prepare('SELECT revision,reason,created_at FROM seasonal_revisions WHERE campaign_id=? ORDER BY revision DESC LIMIT 50').bind(id).all<any>();
     return json({ campaign: campaign(row), history: histories.results });
   }
@@ -71,6 +73,8 @@ export async function GET(request: Request) { try {
 } catch (e) { return error(e); } }
 export async function POST(request: Request) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(b.action==='satellite-scenes'){try{return json(await satelliteScenes(b.geometry,b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
+  if(b.action==='satellite-catalog'){try{return json(await satelliteCatalog(b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if(b.action==='fertilizer-evidence')return json(fertilizerEvidence(b.country,b.cropId,b.asOfDate));
   if(b.action==='fertilizer-information')return json(nextFertilizerInformation(validateConfig(b.config)));
   if(b.action==='marginal-scenario')return json(marginalScenario(b.parameters));
@@ -140,12 +144,12 @@ export async function POST(request: Request) { try {
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
     const m=parcelMetrics(geometry);
     const now=new Date().toISOString();
-    let landAssessment;try{landAssessment=m.areaM2>=1_000_000?await authoritativeLand(geometry,s):await loadLandAssessment(geometry,fetch,now,b.refresh===true);}catch(e){if(e instanceof HttpError)throw e;throw new ServiceStageError('terrain',e);}
+    let landAssessment;try{landAssessment=m.areaM2>=1_000_000?await authoritativeLand(geometry,s):await loadLandAssessment(geometry,fetch,now,b.refresh===true);}catch(e){if(e instanceof HttpError||e instanceof PreparationPending)throw e;throw new ServiceStageError('terrain',e);}
     let point;try{point=terrestrialSoilPoint(landAssessment);}catch(e){throw new ServiceStageError('point-sol',e);}
     let environment;try{environment=await loadEnvironment(m.point[1],m.point[0],b.country,b.start,b.days,fetch,now,geometry,b.refresh===true,point);}catch(e){if(e instanceof InputError)throw e;throw new ServiceStageError('sol-meteo',e);}
     return json({...environment,landAssessment});
   }
-  if(b.action==='land'){try{return json({assessment:await authoritativeLand(validateParcel(b.geometry),s)});}catch(e){throw new InputError((e as Error).message);}}
+  if(b.action==='land')return json({assessment:await authoritativeLand(validateParcel(b.geometry),s)});
   if(b.action==='places')return json({places:await searchPlaces(b.query),attribution:'GeoNames, répertoire local ; Open-Meteo Geocoding en complément'});
   if (b.action === 'capabilities') {
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');

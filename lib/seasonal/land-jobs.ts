@@ -4,7 +4,7 @@ import {bbox,multiArea,LAND_CLASSES,LAND_VERSION,type LandAssessment,type MultiS
 import {validateParcel,parcelMetrics,type ParcelPolygon} from './parcel.ts';
 import {scopeId,geometryIdentity} from './provenance.ts';
 import {loadLandAssessment} from './land-provider.ts';
-import {database,digest,HttpError} from '../server-db.ts';
+import {database,digest,HttpError,PreparationPending} from '../server-db.ts';
 import type {session} from '../server-auth.ts';
 type Identity=Awaited<ReturnType<typeof session>>;
 export const SECTOR_AREA_THRESHOLD_M2=1_000_000;
@@ -45,11 +45,20 @@ export async function landJobStatus(id:unknown,s:Identity){
  return {id:row.id,status:row.result?'complete':'pending',completed:sectors.results.filter(x=>x.complete).length,total:row.total,processedM2,totalM2:parcelMetrics(JSON.parse(row.geometry)).areaM2,errors:sectors.results.filter(x=>x.error).map(x=>({sector:x.sector,error:x.error})),assessment:row.result?JSON.parse(row.result):null};
 }
 export async function startLandJob(input:unknown,s:Identity){
- const shape=validateParcel(input),now=new Date().toISOString(),id=await digest(JSON.stringify(['land-sectors-2-spherical-linear-edges',s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const shape=validateParcel(input),now=new Date().toISOString();
+ // Resume compatible jobs created before automatic preparation was introduced.
+ const legacyId=await digest(JSON.stringify(['land-sectors-2-spherical-linear-edges',s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const legacy=await database().prepare('SELECT id,result FROM land_jobs WHERE id=? AND coop_id=? AND owner_id=?').bind(legacyId,s.coopId,s.userId).first<{id:string;result:string|null}>();
+ if(legacy){
+  const parts=await database().prepare('SELECT result FROM land_sectors WHERE job_id=? AND result IS NOT NULL').bind(legacyId).all<{result:string}>();
+  const compatible=(!legacy.result||JSON.parse(legacy.result).areaMethod===AREA_METHOD)&&parts.results.every(p=>JSON.parse(p.result).areaMethod===AREA_METHOD);
+  if(compatible)return landJobStatus(legacyId,s);
+ }
+ const id=await digest(JSON.stringify(['land-sectors-3',AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
  const existing=await database().prepare('SELECT id FROM land_jobs WHERE id=?').bind(id).first();if(existing)return landJobStatus(id,s);
  const sectors=splitLandSectors(shape),db=database();
  // Job and rows are atomic. Bounded 256 rows; D1 batch is transactional.
- await db.batch([db.prepare('INSERT INTO land_jobs (id,coop_id,owner_id,geometry,created_at,total) VALUES (?,?,?,?,?,?)').bind(id,s.coopId,s.userId,JSON.stringify(shape),now,sectors.length),db.prepare("INSERT INTO land_sectors (job_id,sector,geometry,area_m2) SELECT ?, CAST(key AS INTEGER), json_extract(value,'$.geometry'), json_extract(value,'$.areaM2') FROM json_each(?)").bind(id,JSON.stringify(sectors.map(g=>({geometry:g,areaM2:parcelMetrics(g).areaM2}))))]);
+ await db.batch([db.prepare('INSERT OR IGNORE INTO land_jobs (id,coop_id,owner_id,geometry,created_at,total) VALUES (?,?,?,?,?,?)').bind(id,s.coopId,s.userId,JSON.stringify(shape),now,sectors.length),db.prepare("INSERT OR IGNORE INTO land_sectors (job_id,sector,geometry,area_m2) SELECT ?, CAST(key AS INTEGER), json_extract(value,'$.geometry'), json_extract(value,'$.areaM2') FROM json_each(?)").bind(id,JSON.stringify(sectors.map(g=>({geometry:g,areaM2:parcelMetrics(g).areaM2}))))]);
  return landJobStatus(id,s);
 }
 export async function stepLandJob(id:unknown,s:Identity){
@@ -76,8 +85,8 @@ export async function stepLandJob(id:unknown,s:Identity){
 export async function authoritativeLand(shape:ParcelPolygon,s:Identity):Promise<LandAssessment>{
  if(parcelMetrics(shape).areaM2<SECTOR_AREA_THRESHOLD_M2)return loadLandAssessment(shape);
  const row=await database().prepare('SELECT result FROM land_jobs WHERE coop_id=? AND owner_id=? AND geometry=? AND result IS NOT NULL AND completed_at>=? ORDER BY completed_at DESC LIMIT 1').bind(s.coopId,s.userId,JSON.stringify(shape),new Date(Date.now()-86400000).toISOString()).first<{result:string}>();
- if(!row)throw new HttpError(409,'Analyse par secteurs requise : lancez ou reprenez le traitement du grand contour. Aucun résultat partiel ne sera extrapolé.');
+ if(!row)throw new PreparationPending({code:'LAND_ANALYSIS_PENDING',job:await startLandJob(shape,s)});
  const result=JSON.parse(row.result);
- if(result.areaMethod!==AREA_METHOD)throw new HttpError(409,'La méthode de surface a été corrigée : relancez l’analyse par secteurs avant un nouveau calcul. Les campagnes enregistrées restent conservées.');
+ if(result.areaMethod!==AREA_METHOD)throw new PreparationPending({code:'LAND_ANALYSIS_PENDING',job:await startLandJob(shape,s)});
  return result;
 }

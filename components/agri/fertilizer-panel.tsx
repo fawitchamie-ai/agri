@@ -1,10 +1,11 @@
 'use client';
+import {seasonalRequest} from '../../lib/seasonal/request';
 import {useEffect,useState} from 'react';
 import type {SeasonalConfig} from '../../lib/seasonal/types';
 import type {fertilizerEvidence,nextFertilizerInformation} from '../../lib/seasonal/fertilizer-evidence';
 type Evidence=ReturnType<typeof fertilizerEvidence>;
 const fmt=(v:number|null|undefined,d=2)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
-async function post(body:unknown,signal?:AbortSignal){const r=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});const d=await r.json() as any;if(!r.ok)throw new Error(d.error??'Service indisponible.');return d;}
+async function post(body:unknown,signal?:AbortSignal){return seasonalRequest<any>(body,signal);}
 
 export default function FertilizerPanel({config,onAdvanced}:{config:SeasonalConfig;onAdvanced:(tab:string)=>void}){
  const [data,setData]=useState<Evidence|null>(null),[error,setError]=useState(''),[action,setAction]=useState<ReturnType<typeof nextFertilizerInformation>|null>(null);

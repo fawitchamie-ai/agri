@@ -1,4 +1,5 @@
 'use client';
+import {seasonalRequest} from '../../lib/seasonal/request';
 import {useState,useEffect} from 'react';
 import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
@@ -10,7 +11,7 @@ export default function SowingSummary({config,plan,stale,onChange,areaLocked=fal
  const [areaDraft,setAreaDraft]=useState<string|null>(null),[rateDraft,setRateDraft]=useState<string|null>(null);
  const [independent,setIndependent]=useState<{key:string;estimate:SowingEstimate;land:SeasonalConfig['landAssessment']}|null>(null),[seedError,setSeedError]=useState('');
  const seedKey=JSON.stringify([config.parcelGeometry,config.cropProfile?.id,config.sowingPlan,config.waterCondition,config.systemDomain,config.yieldEstimation,config.agronomic?.system,config.asOfDate,config.country]);
- useEffect(()=>{if(!noCycle||!config.parcelGeometry){setIndependent(null);return;}const controller=new AbortController();let alive=true;setIndependent(null);setSeedError('');const timer=setTimeout(async()=>{try{const response=await fetch('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({action:'sowing-plan',config})});const data=await response.json() as any;if(!response.ok)throw new Error(data.error||'Plan de semis indisponible.');if(alive)setIndependent({key:seedKey,estimate:data.sowingPlan,land:data.land});}catch(e){if(alive)setSeedError((e as Error).message);}},350);return()=>{alive=false;clearTimeout(timer);controller.abort();};},[noCycle,seedKey]);
+ useEffect(()=>{if(!noCycle||!config.parcelGeometry){setIndependent(null);return;}const controller=new AbortController();let alive=true;setIndependent(null);setSeedError('');const timer=setTimeout(async()=>{try{const data=await seasonalRequest<any>({action:'sowing-plan',config},controller.signal);if(alive)setIndependent({key:seedKey,estimate:data.sowingPlan,land:data.land});}catch(e){if(alive)setSeedError((e as Error).message);}},350);return()=>{alive=false;clearTimeout(timer);controller.abort();};},[noCycle,seedKey]);
  const scoped=independent?.key===seedKey?independent:null;
  const estimate=noCycle?scoped?.estimate:stale?undefined:plan?.sowingPlan,ref=SEED_REFERENCES[config.cropProfile?.id??''],input=config.sowingPlan;
  const area=input?.areaM2??estimate?.areaM2??config.landAssessment?.candidateAreaM2??null;

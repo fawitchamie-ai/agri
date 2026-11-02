@@ -8,6 +8,6 @@ export function countryBounds(f:MapCountry):[Position,Position]{
  return [[Math.min(...positions.map(p=>p[0])),Math.min(...positions.map(p=>p[1]))],[Math.max(...positions.map(p=>p[0])),Math.max(...positions.map(p=>p[1]))]];
 }
 export type MapController={getCenter:()=>{lng:number;lat:number};getZoom:()=>number;flyTo:(options:{center:Position;zoom:number;duration?:number})=>void;fitBounds:(bounds:[Position,Position],options?:{padding?:number;maxZoom?:number;duration?:number})=>void};
-export type ParcelMapProps={points:Position[];closed:boolean;drawing:boolean;drawMode:'center'|'tap';basemap:'satellite'|'plan';selected:string;onAdd:(p:Position)=>void;onMove:(i:number,p:Position)=>void;onClose:()=>void;onCountry:(iso:string)=>void;onReady:(m:MapController)=>void;onCountries:(c:CountriesGeo)=>void;onViewport?:(center:Position,zoom:number)=>void};
+export type ParcelMapProps={landAssessment?:import('../../lib/seasonal/land').LandAssessment;showLand?:boolean;points:Position[];closed:boolean;drawing:boolean;drawMode:'center'|'tap';basemap:'satellite'|'plan';selected:string;onAdd:(p:Position)=>void;onMove:(i:number,p:Position)=>void;onClose:()=>void;onCountry:(iso:string)=>void;onReady:(m:MapController)=>void;onCountries:(c:CountriesGeo)=>void;onViewport?:(center:Position,zoom:number)=>void};
 /** A single 2D interaction model on desktop and phones, including devices without WebGL. */
 export default function ParcelMap(props:ParcelMapProps){return <ParcelMapLight {...props}/>;}
