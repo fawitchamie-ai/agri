@@ -1,0 +1,39 @@
+{
+  "version": "fertilizer-extension-implementation-1",
+  "registeredOn": "2026-11-02",
+  "registeredBeforeExtensionScores": true,
+  "parent": "PROTOCOL.json (unchanged)",
+  "dataCorrections": [
+    "Use the original Frontiers Table_1 and Data_Sheet_1 instead of their overlapping AMAZXA Carob rendition; pin both workbooks in supplement-sources.json. Do not concatenate them with Carob.",
+    "Join primary workbooks by explicit environment ID. Use trial number from Table_1, which agrees with article Table 1; the yield sheet collapses environments 16-21 under trial 9 and shifts subsequent trial numbers. Keep both original trial labels in harmonized.json.",
+    "Country/site/year/variety come from the yield sheet; verify site/year against Table_1. Table_1 contains the literal country typo Benin Bohicon. Never use this spelling as a different country.",
+    "Require matching nonmissing season and system, known identical N and K and unique +P/-P within trial/year/variety. Missing season in environment 41 is not filled from its neighboring environment. Missing N/K are never copied across arms.",
+    "Preserve negative adjusted yield estimates in harmonized data, reject contrasts with negative physical yield levels, retain negative valid differences. rep is a replication count, not a block ID.",
+    "Convert primary g/m2 to kg/ha with factor 10; grain at 14 percent moisture is qualified by the article Methods. N/P/K are elemental rates. Irrigation status follows the article Methods, not guessed coordinates."
+  ],
+  "AMAZXA": {
+    "countries": "All countries with admissible contrasts, including Philippines; do not silently restrict the original protocol to Africa.",
+    "outer": "Leave one country out. All campaigns and genotypes in each site stay together. Shared varieties across countries mean this is transfer among known genotypes within one publication, not independent-study or unseen-genotype validation.",
+    "inner": "Leave one complete site out within outer training countries; equally site-weighted MAE; fit centering/scaling on training subset only.",
+    "fit": "Equal site weighting then equal contrasts within site. Weighted squared-error ridge, unpenalized intercept, penalty 0.1/1/10; population weighted standard deviations, constant predictors get scale 1.",
+    "features": ["delta elemental P kg/ha", "background N kg/ha", "background K kg/ha", "flooded indicator", "irrigated indicator", "dry season indicator"],
+    "tieBreak": "Original candidate order: mean, ridge_0.1, ridge_1, ridge_10.",
+    "secondaryComparison": "Execute hierarchical_ridge_1: same fixed features with penalty 1 and site-specific intercept deviations with penalty 1. Predict zero site deviation for unseen sites. Outer transfer metrics reported separately; this prespecified secondary candidate cannot replace the primary selection after scores. One study does not identify a study random effect.",
+    "yieldLevels": "Fit control level with the selected candidate on training only; treated prediction = predicted control + predicted delta. No observed control yield supplied as predictor.",
+    "uncertainty": "Outer residual 10/50/90 percentiles and descriptive central-80 coverage/width are retrospective diagnostics using those same residuals, never calibrated prediction intervals. No finite certified interval at 95 percent is asserted."
+  },
+  "GFWCYQ": {
+    "partition": "Train 2015-2018; select 2019-2020; test 2021-2022, as in parent. Four validation campaigns, two years. Preserve shared campaign controls.",
+    "modelFreeze": "Select on equally campaign-weighted validation delta MAE. Keep the selected train-only fit for test and interval calculation; do not refit on validation years.",
+    "references": ["mean of training contrasts", "training mean for each of the three observed N doses"],
+    "saturation": "OLS delta=a+b*(1-exp(-N/tau)); tau=30/60/120. No optimum, no extrapolation outside N=60/120/180 at P=26,K=50. a includes the PK contrast and is not evaluated at N=0.",
+    "yieldLevels": "Control is a training campaign mean (one control per campaign); treated=control+selected delta. Same control for all three dose contrasts in a campaign, never use the observed test control.",
+    "uncertainty": "Calibration max residual per validation year for delta/control/treated, rank ceil((n+1)*0.95). Return radius/coverage/width null if rank>n. Repeated plots and selection on these same validation years preclude certification even if a finite rank existed."
+  },
+  "screen": "All original numerical and qualification criteria retained, evaluated globally and separately in each target country/system. No new prospective test or independent study claimed.",
+  "unavailableComparisons": {
+    "QUEFTS": "The admitted P environment means and long-term NPK regimes do not identify local indigenous N/P/K supply, nutrient uptake and joint efficiency bounds. Grain P concentration is a post-treatment response, not independent soil supply. No arbitrary QUEFTS parameters fitted or advertised.",
+    "WOFOST_SNOMIN": "No complete qualified daily forcings, cultivar, initial mineral N and dated management for these admitted contrasts. Existing research service is untouched."
+  },
+  "productionEnabled": false
+}
