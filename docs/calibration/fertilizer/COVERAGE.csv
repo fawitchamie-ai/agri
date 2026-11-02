@@ -1,0 +1,91 @@
+country,crop,system,evidence,rawRows,matchedPairs,localityGroups,independentStudiesVerified,doseCoverage,validated
+TGO,carrot,unqualified,Carob published compilation,0,0,0,,,False
+TGO,cowpea,unqualified,Carob published compilation,0,0,0,,,False
+TGO,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+TGO,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+TGO,maize,unqualified,Carob published compilation,84,21,2,,NPK fixed dose within matched unit,False
+TGO,millet,unqualified,Carob published compilation,0,0,0,,,False
+TGO,onion,unqualified,Carob published compilation,0,0,0,,,False
+TGO,peanut,unqualified,Carob published compilation,0,0,0,,,False
+TGO,pepper,unqualified,Carob published compilation,0,0,0,,,False
+TGO,rice,unqualified,Carob published compilation,0,0,0,,,False
+TGO,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+TGO,soybean,unqualified,Carob published compilation,0,0,0,,,False
+TGO,teff,unqualified,Carob published compilation,0,0,0,,,False
+TGO,tomato,unqualified,Carob published compilation,0,0,0,,,False
+TGO,wheat,unqualified,Carob published compilation,0,0,0,,,False
+BEN,carrot,unqualified,Carob published compilation,0,0,0,,,False
+BEN,cowpea,unqualified,Carob published compilation,0,0,0,,,False
+BEN,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+BEN,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+BEN,maize,unqualified,Carob published compilation,3,0,0,,,False
+BEN,millet,unqualified,Carob published compilation,0,0,0,,,False
+BEN,onion,unqualified,Carob published compilation,0,0,0,,,False
+BEN,peanut,unqualified,Carob published compilation,0,0,0,,,False
+BEN,pepper,unqualified,Carob published compilation,0,0,0,,,False
+BEN,rice,unqualified,Carob published compilation,15,0,0,,,False
+BEN,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+BEN,soybean,unqualified,Carob published compilation,0,0,0,,,False
+BEN,teff,unqualified,Carob published compilation,0,0,0,,,False
+BEN,tomato,unqualified,Carob published compilation,0,0,0,,,False
+BEN,wheat,unqualified,Carob published compilation,0,0,0,,,False
+BFA,carrot,unqualified,Carob published compilation,0,0,0,,,False
+BFA,cowpea,unqualified,Carob published compilation,0,0,0,,,False
+BFA,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+BFA,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+BFA,maize,unqualified,Carob published compilation,0,0,0,,,False
+BFA,millet,unqualified,Carob published compilation,0,0,0,,,False
+BFA,onion,unqualified,Carob published compilation,0,0,0,,,False
+BFA,peanut,unqualified,Carob published compilation,0,0,0,,,False
+BFA,pepper,unqualified,Carob published compilation,0,0,0,,,False
+BFA,rice,unqualified,Carob published compilation,0,0,0,,,False
+BFA,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+BFA,soybean,unqualified,Carob published compilation,0,0,0,,,False
+BFA,teff,unqualified,Carob published compilation,0,0,0,,,False
+BFA,tomato,unqualified,Carob published compilation,0,0,0,,,False
+BFA,wheat,unqualified,Carob published compilation,0,0,0,,,False
+GHA,carrot,unqualified,Carob published compilation,0,0,0,,,False
+GHA,cowpea,unqualified,Carob published compilation,0,0,0,,,False
+GHA,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+GHA,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+GHA,maize,unqualified,Carob published compilation,33,0,0,,,False
+GHA,millet,unqualified,Carob published compilation,0,0,0,,,False
+GHA,onion,unqualified,Carob published compilation,0,0,0,,,False
+GHA,peanut,unqualified,Carob published compilation,0,0,0,,,False
+GHA,pepper,unqualified,Carob published compilation,0,0,0,,,False
+GHA,rice,unqualified,Carob published compilation,0,0,0,,,False
+GHA,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+GHA,soybean,unqualified,Carob published compilation,0,0,0,,,False
+GHA,teff,unqualified,Carob published compilation,0,0,0,,,False
+GHA,tomato,unqualified,Carob published compilation,0,0,0,,,False
+GHA,wheat,unqualified,Carob published compilation,0,0,0,,,False
+CIV,carrot,unqualified,Carob published compilation,0,0,0,,,False
+CIV,cowpea,unqualified,Carob published compilation,1,0,0,,,False
+CIV,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+CIV,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+CIV,maize,unqualified,Carob published compilation,0,0,0,,,False
+CIV,millet,unqualified,Carob published compilation,0,0,0,,,False
+CIV,onion,unqualified,Carob published compilation,0,0,0,,,False
+CIV,peanut,unqualified,Carob published compilation,0,0,0,,,False
+CIV,pepper,unqualified,Carob published compilation,0,0,0,,,False
+CIV,rice,unqualified,Carob published compilation,35,0,0,,,False
+CIV,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+CIV,soybean,unqualified,Carob published compilation,0,0,0,,,False
+CIV,teff,unqualified,Carob published compilation,0,0,0,,,False
+CIV,tomato,unqualified,Carob published compilation,0,0,0,,,False
+CIV,wheat,unqualified,Carob published compilation,0,0,0,,,False
+SEN,carrot,unqualified,Carob published compilation,0,0,0,,,False
+SEN,cowpea,unqualified,Carob published compilation,0,0,0,,,False
+SEN,faba bean,unqualified,Carob published compilation,0,0,0,,,False
+SEN,lettuce,unqualified,Carob published compilation,0,0,0,,,False
+SEN,maize,unqualified,Carob published compilation,0,0,0,,,False
+SEN,millet,unqualified,Carob published compilation,0,0,0,,,False
+SEN,onion,unqualified,Carob published compilation,0,0,0,,,False
+SEN,peanut,unqualified,Carob published compilation,0,0,0,,,False
+SEN,pepper,unqualified,Carob published compilation,0,0,0,,,False
+SEN,rice,unqualified,Carob published compilation,0,0,0,,,False
+SEN,sorghum,unqualified,Carob published compilation,0,0,0,,,False
+SEN,soybean,unqualified,Carob published compilation,0,0,0,,,False
+SEN,teff,unqualified,Carob published compilation,0,0,0,,,False
+SEN,tomato,unqualified,Carob published compilation,0,0,0,,,False
+SEN,wheat,unqualified,Carob published compilation,0,0,0,,,False

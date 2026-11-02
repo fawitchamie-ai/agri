@@ -1,3 +1,6 @@
 # Preserve acquired scientific snapshots byte for byte, including CSV CRLF.
 research-data/calibration/raw/** -text whitespace=cr-at-eol
 docs/calibration/*.csv -text whitespace=cr-at-eol
+
+# Immutable upstream audit bytes: do not normalize or whitespace-fix.
+research-data/fertilizer/v1/raw/carob-standardization.R -text -diff

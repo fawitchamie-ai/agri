@@ -1,0 +1,66 @@
+{
+  "version": "fertilizer-protocol-1",
+  "registeredOn": "2026-11-02",
+  "pairsSha256": "06763b2aa8b32aa1df77d96421662c58574dd5e0c0277407636f74a5df969e20",
+  "splitBySite": {
+    "Malawi/Kasu": "validation",
+    "Nigeria/Bunkure": "validation",
+    "Nigeria/Funtua": "validation",
+    "Nigeria/Lere": "validation",
+    "Kenya/Sidi": "validation",
+    "Nigeria/Soba": "test",
+    "Tanzania/Mbin": "test",
+    "Nigeria/T/wada": "test",
+    "Nigeria/Giwa": "test",
+    "Nigeria/Tofa": "test",
+    "Nigeria/Tudun Wada": "train",
+    "Malawi/Thuc": "train",
+    "Malawi/Nkha": "train",
+    "Kenya/Kand": "train",
+    "Nigeria/Bakori": "train",
+    "Nigeria/Makarfi": "train",
+    "Nigeria/Dandume": "train",
+    "Nigeria/Kauru": "train",
+    "Nigeria/Samaru": "train",
+    "Nigeria/Ikara": "train",
+    "Nigeria/Pamp": "train",
+    "Nigeria/Doguwa": "train",
+    "Nigeria/Faskari": "train",
+    "Tanzania/Kibe": "train",
+    "Togo/Affem": "test",
+    "Togo/Sessaro": "test"
+  },
+  "target": "matched NPK minus absolute control; kg grain/ha as reported, not certified dry product",
+  "weighting": "equal locality, then equal matched pairs within locality",
+  "candidates": [
+    "site_weighted_mean",
+    "ridge_context_0.1",
+    "ridge_context_1",
+    "ridge_context_10"
+  ],
+  "predictors": [
+    "latitude",
+    "longitude",
+    "reported N",
+    "reported P",
+    "reported K"
+  ],
+  "predictorQualification": "Geographic and stated dose context only; soil methods/timing not known, so soil excluded. No control yield used as a predictor.",
+  "selection": "validation locality-weighted delta MAE; fit on train only; final test never tunes",
+  "acceptance": {
+    "minRelativeMAEImprovement": 0.1,
+    "maxDeltaMAETonnesHa": 0.5,
+    "maxAbsDeltaBiasTonnesHa": 0.25,
+    "minIndependentTargetSites": 5,
+    "requireMoistureDenominatorAndAssignment": true
+  },
+  "rationale": "Screen for <500 kg/ha gain error and <250 kg/ha systematic gain bias; at least 10% better than a simple mean. Even passing this research screen cannot activate advice without qualified units and prospective review.",
+  "unavailableCandidates": {
+    "dose_plateau": "One NPK dose per matched experimental unit; cross-site dose differences do not identify a causal optimum.",
+    "QUEFTS": "No qualified crop uptake/soil nutrient supply and efficiency bounds for these contrasts. Fitting arbitrary efficiencies would not implement a justified QUEFTS comparison.",
+    "WOFOST_SNOMIN": "No daily forcing, dated applications, cultivar phenology and initial mineral N compatible with these pairs."
+  },
+  "uncertainty": "95% split-conformal interval using validation locality max residual; return unavailable if too few localities for finite 95% quantile.",
+  "temporalValidation": "Unavailable: no qualified year/campaign dates in this Carob snapshot.",
+  "productionEnabled": false
+}

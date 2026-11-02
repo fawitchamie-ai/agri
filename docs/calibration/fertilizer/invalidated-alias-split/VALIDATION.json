@@ -1,0 +1,209 @@
+{
+  "version": "fertilizer-research-1",
+  "pairsSha256": "06763b2aa8b32aa1df77d96421662c58574dd5e0c0277407636f74a5df969e20",
+  "protocolSha256": "fdeef2669a3467a63525ea57a5c78a7a4b6cb1ed87100090aa1297a3d797d92f",
+  "status": "research_only_criteria_failed",
+  "productionEnabled": false,
+  "forecastValidated": false,
+  "selectedCandidate": "site_weighted_mean",
+  "selectionScores": {
+    "site_weighted_mean": {
+      "pairs": 143,
+      "localities": 5,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.2840607777120752,
+      "RMSE": 1.5908747429760457,
+      "bias": -0.16698141769246386
+    },
+    "ridge_context_0.1": {
+      "pairs": 143,
+      "localities": 5,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.460430580049184,
+      "RMSE": 1.8005949675201005,
+      "bias": -0.13446371052333944
+    },
+    "ridge_context_1": {
+      "pairs": 143,
+      "localities": 5,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.4075541842335937,
+      "RMSE": 1.7376682023327428,
+      "bias": -0.15419783437613305
+    },
+    "ridge_context_10": {
+      "pairs": 143,
+      "localities": 5,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.3117096649699234,
+      "RMSE": 1.611774388103523,
+      "bias": -0.16735509971525242
+    }
+  },
+  "model": {
+    "candidate": "site_weighted_mean",
+    "coefficients": [
+      2.0897636222597122
+    ]
+  },
+  "baseline": {
+    "pairs": 116,
+    "localities": 7,
+    "unit": "t grain/ha as reported; moisture unspecified",
+    "MAE": 0.9713860845763778,
+    "RMSE": 1.310619841564352,
+    "bias": -0.012915096248542353
+  },
+  "test": {
+    "pairs": 116,
+    "localities": 7,
+    "unit": "t grain/ha as reported; moisture unspecified",
+    "MAE": 0.9713860845763778,
+    "RMSE": 1.310619841564352,
+    "bias": -0.012915096248542353
+  },
+  "yieldControl": {
+    "pairs": 116,
+    "localities": 7,
+    "unit": "t grain/ha as reported; moisture unspecified",
+    "MAE": 1.0315356216949079,
+    "RMSE": 1.315195206676247,
+    "bias": -0.23767953043235715
+  },
+  "yieldTreated": {
+    "pairs": 116,
+    "localities": 7,
+    "unit": "t grain/ha as reported; moisture unspecified",
+    "MAE": 1.2668405749826157,
+    "RMSE": 1.5732488418983048,
+    "bias": -0.2505946266808992
+  },
+  "relativeMAEImprovement": 0.0,
+  "byCountry": {
+    "Nigeria": {
+      "pairs": 64,
+      "localities": 4,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.9114756218943991,
+      "RMSE": 1.3129682251413326,
+      "bias": -0.4479763585068191
+    },
+    "Tanzania": {
+      "pairs": 31,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.9068615849426082,
+      "RMSE": 1.124342263208517,
+      "bias": 0.12630125666831396
+    },
+    "Togo": {
+      "pairs": 21,
+      "localities": 2,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.1234692597572198,
+      "RMSE": 1.3900328805382982,
+      "bias": 0.7875992518095829
+    }
+  },
+  "bySite": {
+    "Nigeria/Giwa": {
+      "pairs": 14,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.8348590382300297,
+      "RMSE": 0.9936880921218083,
+      "bias": -0.30616307142014854
+    },
+    "Nigeria/Soba": {
+      "pairs": 26,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.2852838601989445,
+      "RMSE": 1.9683859304992843,
+      "bias": -0.6453603161871556
+    },
+    "Nigeria/T/wada": {
+      "pairs": 14,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.8600263724598286,
+      "RMSE": 1.1507968452147885,
+      "bias": -0.4633236958956627
+    },
+    "Nigeria/Tofa": {
+      "pairs": 10,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.6657332166887938,
+      "RMSE": 0.842169618399168,
+      "bias": -0.3770583505243095
+    },
+    "Tanzania/Mbin": {
+      "pairs": 31,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.9068615849426082,
+      "RMSE": 1.124342263208517,
+      "bias": 0.12630125666831396
+    },
+    "Togo/Affem": {
+      "pairs": 14,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 1.616496261059375,
+      "RMSE": 1.801189886076201,
+      "bias": 1.4617821842750316
+    },
+    "Togo/Sessaro": {
+      "pairs": 7,
+      "localities": 1,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.6304422584550646,
+      "RMSE": 0.7874628957938268,
+      "bias": 0.11341631934413426
+    }
+  },
+  "weakResponse": {
+    "definition": "observed gain <=500 kg/ha, includes negative gains",
+    "sensitivity": 0.0,
+    "trueWeak": 10
+  },
+  "interval95": {
+    "radiusTonnesHa": null,
+    "validationLocalities": 5,
+    "coverage": null,
+    "widthTonnesHa": null,
+    "certified": false,
+    "reason": "Too few calibration localities for finite 95% group conformal interval; exchangeability with Togo unestablished."
+  },
+  "splitSummary": {
+    "train": {
+      "pairs": 295,
+      "localities": 14
+    },
+    "validation": {
+      "pairs": 143,
+      "localities": 5
+    },
+    "test": {
+      "pairs": 116,
+      "localities": 7
+    }
+  },
+  "economicDecisionError": null,
+  "economicReason": "No verified prices/costs or alternative dose gradients in these pairs.",
+  "failedCriteria": [
+    "insufficient_improvement_over_mean",
+    "gain_error_too_large",
+    "insufficient_independent_target_localities",
+    "moisture_denominator_and_assignment_unqualified",
+    "no_temporal_or_prospective_validation"
+  ],
+  "unavailableCandidates": {
+    "dose_plateau": "One NPK dose per matched experimental unit; cross-site dose differences do not identify a causal optimum.",
+    "QUEFTS": "No qualified crop uptake/soil nutrient supply and efficiency bounds for these contrasts. Fitting arbitrary efficiencies would not implement a justified QUEFTS comparison.",
+    "WOFOST_SNOMIN": "No daily forcing, dated applications, cultivar phenology and initial mineral N compatible with these pairs."
+  },
+  "missingnessSensitivity": "No soil imputation: soil excluded because analytical method and pre-treatment status are unqualified. All chosen geographic/dose predictors complete.",
+  "domain": "maize NPK vs absolute control; 25 published locality groups, not necessarily 25 independent study clusters; no parcel prescription"
+}

@@ -1,0 +1,142 @@
+{
+  "version": "fertilizer-evidence-1",
+  "checkedOn": "2026-11-02",
+  "availableOn": "2026-11-02",
+  "source": "https://doi.org/10.7910/DVN/GXUNAZ",
+  "license": "CC-BY-4.0",
+  "attribution": "Kihara, Okeyo, Bolo, Kinyua (2020), Harvard Dataverse v2.2; Carob standardization.",
+  "productionEnabled": false,
+  "forecastValidated": false,
+  "summaries": [
+    {
+      "country": "TGO",
+      "cropId": "maize",
+      "location": "Affem",
+      "site": "Togo/Affem",
+      "pairs": 14,
+      "controlMedianTonnesHa": 2.219560677994335,
+      "treatedMedianTonnesHa": 2.919375303643725,
+      "deltaMedianTonnesHa": 0.6580410773225398,
+      "deltaObserved80": [
+        -0.5151962611345551,
+        1.544584897828858
+      ],
+      "negativePairs": 5,
+      "doseReported": {
+        "N": 120.0,
+        "P": 40.0,
+        "K": 80.0
+      },
+      "distinctDoseVectors": 1,
+      "independentStudyCount": 1,
+      "year": null,
+      "denominator": "not_verified",
+      "moisture": "not_reported",
+      "source": "https://doi.org/10.7910/DVN/GXUNAZ",
+      "license": "CC-BY-4.0"
+    },
+    {
+      "country": "TGO",
+      "cropId": "maize",
+      "location": "Sessaro",
+      "site": "Togo/Sessaro",
+      "pairs": 7,
+      "controlMedianTonnesHa": 0.893148148148148,
+      "treatedMedianTonnesHa": 2.88839357429719,
+      "deltaMedianTonnesHa": 2.2956740740740753,
+      "deltaObserved80": [
+        0.8176874074074105,
+        2.690757037037038
+      ],
+      "negativePairs": 0,
+      "doseReported": {
+        "N": 120.0,
+        "P": 40.0,
+        "K": 80.0
+      },
+      "distinctDoseVectors": 1,
+      "independentStudyCount": 1,
+      "year": null,
+      "denominator": "not_verified",
+      "moisture": "not_reported",
+      "source": "https://doi.org/10.7910/DVN/GXUNAZ",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "calibration": {
+    "version": "fertilizer-research-1",
+    "status": "research_only_criteria_failed",
+    "selectedCandidate": "site_weighted_mean",
+    "test": {
+      "pairs": 125,
+      "localities": 7,
+      "unit": "t grain/ha as reported; moisture unspecified",
+      "MAE": 0.9627506275572889,
+      "RMSE": 1.29702193893407,
+      "bias": 0.012408448904353206
+    },
+    "byCountry": {
+      "Nigeria": {
+        "pairs": 73,
+        "localities": 4,
+        "unit": "t grain/ha as reported; moisture unspecified",
+        "MAE": 0.8963912683759873,
+        "RMSE": 1.2892312567899378,
+        "bias": -0.40340973409326786
+      },
+      "Tanzania": {
+        "pairs": 31,
+        "localities": 1,
+        "unit": "t grain/ha as reported; moisture unspecified",
+        "MAE": 0.9068938972517674,
+        "RMSE": 1.1243048047097397,
+        "bias": 0.12596736280700196
+      },
+      "Togo": {
+        "pairs": 21,
+        "localities": 2,
+        "unit": "t grain/ha as reported; moisture unspecified",
+        "MAE": 1.123397711072653,
+        "RMSE": 1.3898437219169655,
+        "bias": 0.7872653579482709
+      }
+    },
+    "splitSummary": {
+      "train": {
+        "pairs": 286,
+        "localities": 13
+      },
+      "validation": {
+        "pairs": 143,
+        "localities": 5
+      },
+      "test": {
+        "pairs": 125,
+        "localities": 7
+      }
+    },
+    "relativeMAEImprovement": 0.0,
+    "failedCriteria": [
+      "insufficient_improvement_over_mean",
+      "gain_error_too_large",
+      "insufficient_independent_target_localities",
+      "moisture_denominator_and_assignment_unqualified",
+      "no_temporal_or_prospective_validation"
+    ],
+    "interval95": {
+      "radiusTonnesHa": null,
+      "validationLocalities": 5,
+      "coverage": null,
+      "widthTonnesHa": null,
+      "certified": false,
+      "reason": "Too few calibration localities for finite 95% group conformal interval; exchangeability with Togo unestablished."
+    }
+  },
+  "limits": [
+    "Contrastes appariés publiés, pas des prévisions pour votre parcelle.",
+    "Humidité, année, attribution aléatoire et surface de référence non vérifiées : interprétation causale et transfert limités.",
+    "Les barres sont les 10e–90e percentiles des différences observées, pas des intervalles prédictifs ni des intervalles de confiance.",
+    "Une dose NPK par unité expérimentale ne permet pas de calculer une dose optimale. P/K conservés tels que rapportés, sans conversion vers des produits commerciaux.",
+    "Ces témoins ne sont pas des Ym sans stress hydrique. Aucun gain expérimental n’est ajouté à une moyenne nationale."
+  ]
+}
