@@ -6,8 +6,13 @@ test('live public satellite service: catalogue and PNG for a fixed public Togo s
  const catalog=satelliteDates(xml,new Date().toISOString().slice(0,10));
  t.diagnostic(JSON.stringify(Object.fromEntries(Object.entries(catalog).map(([k,v])=>[k,{dates:v.dates.length,latest:v.dates[0]}]))));
  assert.ok(catalog.rgb.dates.length,'Published RGB time/style was not decoded');assert.ok(catalog.ndvi.dates.length,'Published NDVI time/style was not decoded');assert.ok(catalog.anomaly.dates.length,'Monthly time/style was not decoded');
- const url=satelliteMapUrl('rgb',catalog.rgb.dates[0],[1,8,1.01,8.01]);let r;
- try{r=await fetch(url,{signal:AbortSignal.timeout(20000)});}catch(e){t.skip('Image provider unavailable: '+e.message);return;}
- if(!r.ok){const body=await r.text();t.diagnostic('Image response '+r.status+' '+body.slice(0,2000));t.diagnostic('Requested '+url);t.skip('Image HTTP '+r.status);return;}
- const data=new Uint8Array(await r.arrayBuffer());assert.deepEqual([...data.slice(0,8)],[137,80,78,71,13,10,26,10]);t.diagnostic('Public PNG received, '+data.length+' bytes. Coverage/cloudiness still require parcel inspection.');
+ for(const layer of ['rgb','ndvi','anomaly']){
+  const url=satelliteMapUrl(layer,catalog[layer].dates[0],[1,8,1.01,8.01]);let r;
+  try{r=await fetch(url,{signal:AbortSignal.timeout(15000)});}catch(e){t.skip('Image provider unavailable: '+e.message);return;}
+  if(r.status>=500){t.skip('Provider outage HTTP '+r.status);return;}
+  assert.ok(r.ok,'Image '+layer+' HTTP '+r.status+' '+(r.ok?'':await r.text()).slice(0,1800));
+  const data=new Uint8Array(await r.arrayBuffer());assert.deepEqual([...data.slice(0,8)],[137,80,78,71,13,10,26,10]);
+  const view=new DataView(data.buffer,data.byteOffset,data.byteLength);assert.equal(view.getUint32(16),512);assert.equal(view.getUint32(20),320);
+  t.diagnostic('Public PNG '+layer+' received, '+data.length+' bytes, 512x320. Parcel coverage/cloudiness remain to inspect.');
+ }
 });

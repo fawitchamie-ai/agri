@@ -40,3 +40,10 @@ Test CI du service public réel : catalogue et PNG à une emprise témoin publiq
 au Togo ; indisponibilité réseau signalée comme test ignoré, sans fausse réussite.
 L'accès au fournisseur depuis le conteneur local a répondu 403 ; pas de preuve
 locale d'acquisition d'une image réelle. Les résultats distants sont sur la PR.
+
+Le test réel sur GitHub a révélé un second défaut : GetMap refusait la largeur
+640 avec « Width 640 exceeds supported maximum 512 ». Les images WMS sont
+désormais demandées en 512×320 (mêmes proportions que le cadre 640×400).
+Le test distant vérifie RGB, NDVI et anomalie, la signature PNG et les dimensions.
+Une réponse 4xx n’est plus considérée comme une simple indisponibilité réseau.
+Chrome a confirmé des champs distincts sans débordement à 1200/360 px dans la CI.
