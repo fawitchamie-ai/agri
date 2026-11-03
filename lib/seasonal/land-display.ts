@@ -1,2 +1,2 @@
-export const LAND_COLORS={potentialLand:'#61a477',permanentWater:'#3679c2',seasonalWater:'#59b6dd',wetland:'#549c99',incompatible:'#939aa7',unknown:'#e6d9bc'};
+export const LAND_COLORS={potentialLand:'#5b7daa',permanentWater:'#3679c2',seasonalWater:'#4d8de9',wetland:'#4e71a2',incompatible:'#939aa7',unknown:'#b8cfea'};
 export const LAND_NAMES={potentialLand:'Terre potentielle',permanentWater:'Eau permanente',seasonalWater:'Eau saisonnière',wetland:'Zone humide',incompatible:'Bâti / incompatible',unknown:'Non déterminé'};
