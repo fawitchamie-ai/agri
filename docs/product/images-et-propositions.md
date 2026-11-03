@@ -47,3 +47,9 @@ désormais demandées en 512×320 (mêmes proportions que le cadre 640×400).
 Le test distant vérifie RGB, NDVI et anomalie, la signature PNG et les dimensions.
 Une réponse 4xx n’est plus considérée comme une simple indisponibilité réseau.
 Chrome a confirmé des champs distincts sans débordement à 1200/360 px dans la CI.
+
+Le contrôle de publication a révélé une erreur du test distant : il choisissait
+la première scène STAC (29 octobre), plus récente que le catalogue WMS du
+13 octobre. Le test suit désormais la même règle que le client : intersection
+des dates STAC et WMS avant GetMap. Les dates STAC seules ne prouvent pas
+la publication d’une image WMS. Aucune restriction serveur n’est contournée.
