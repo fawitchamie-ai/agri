@@ -21,7 +21,8 @@ export async function computeRequest(action:'submit'|'status'|'retry',input:unkn
   path+='/'+input+(action==='retry'?'/retry':'');method=action==='status'?'GET':'POST';
  }
  let r:Response;
- try{r=await fetch(cfg.base+path,{method,headers:{Authorization:'Bearer '+cfg.token,'X-Owner':owner,'Content-Type':'application/json'},body,redirect:'error',signal:AbortSignal.timeout(15000)});}catch{throw new HttpError(503,'Service de calcul inaccessible ; reprenez avec le même bundle ou identifiant. Aucun résultat substitué.');}
+ try{r=await fetch(cfg.base+path,{method,headers:{Authorization:'Bearer '+cfg.token,'X-Owner':owner,'Content-Type':'application/json'},body,redirect:'manual',signal:AbortSignal.timeout(15000)});}catch{throw new HttpError(503,'Service de calcul inaccessible ; reprenez avec le même bundle ou identifiant. Aucun résultat substitué.');}
+ if(r.status>=300&&r.status<400){await r.body?.cancel();throw new HttpError(502,'Redirection du service de calcul refusée.');}
  const raw=await r.text();if(raw.length>8000000)throw new HttpError(502,'Réponse de calcul trop volumineuse.');
  let data;try{data=JSON.parse(raw);}catch{throw new HttpError(502,'Réponse du service de calcul invalide.');}
  if(!r.ok)throw new HttpError([400,404,409,422,503].includes(r.status)?r.status:502,typeof data.error==='string'?data.error.slice(0,600):'Calcul refusé par le service.');

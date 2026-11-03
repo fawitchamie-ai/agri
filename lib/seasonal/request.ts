@@ -3,6 +3,9 @@ type Options={onLandProgress?:(p:LandProgress)=>void};
 type Preparation={controller:AbortController;promise:Promise<LandProgress>;listeners:Set<(p:LandProgress)=>void>;users:number;progress:LandProgress};
 const preparations=new Map<string,Preparation>(),paused=new Set<string>();
 const cancelled=()=>new DOMException('Calcul remplacé ou annulé.','AbortError');
+export class SeasonalServiceError extends Error {
+ constructor(message:string,public status:number,public action:string,public code?:string){super(message);this.name='SeasonalServiceError';}
+}
 function wireBody(value:unknown){if(!value||typeof value!=='object'||Array.isArray(value))return value;const b=value as Record<string,unknown>,c=b.config;if(!c||typeof c!=='object'||Array.isArray(c))return value;const {landAssessment,...config}=c as Record<string,unknown>;void landAssessment;return {...b,config};}
 /** Each HTTP exchange has a bounded deadline, including response-body reading. */
 async function exchange(body:unknown,signal:AbortSignal|undefined,timeoutMs:number,fetcher:typeof fetch){
@@ -11,8 +14,13 @@ async function exchange(body:unknown,signal:AbortSignal|undefined,timeoutMs:numb
  try{return await Promise.race([cancellation,(async()=>{
   if(signal?.aborted)throw cancelled();let response:Response;
   try{response=await fetcher('/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify(wireBody(body))});}catch(e){if(controller.signal.aborted)throw e;throw new Error('Connexion au service interrompue. Relancez le calcul. Vos saisies sont conservées.');}
-  let data:any;try{data=await response.json();}catch{throw new Error(response.status===401||response.status===403||response.redirected?'Votre session a peut-être expiré. Rouvrez votre espace, puis relancez le calcul. Vos saisies sont conservées.':'Réponse du service illisible. Relancez le calcul. Vos saisies sont conservées.');}
-  if(!response.ok)throw new Error(data.error||`Calcul indisponible (HTTP ${response.status}). Vos saisies sont conservées.`);
+  const action=typeof (body as {action?:unknown})?.action==='string'?(body as {action:string}).action:'unknown';
+  const raw=await response.text();let data:any;
+  try{data=JSON.parse(raw);}catch{
+   const limited=/(?:Worker exceeded (?:resource limits|CPU time limit)|cf-error-code[^>]*>\s*1102)/i.test(raw);
+   throw new SeasonalServiceError(limited?'Limite de calcul Cloudflare atteinte (1102). Le serveur a interrompu le traitement. Vos saisies sont conservées ; une correction de la capacité serveur est nécessaire.':response.status===401||response.status===403||response.redirected?'Votre session a peut-être expiré. Rouvrez votre espace, puis relancez le calcul. Vos saisies sont conservées.':`Réponse du service illisible (HTTP ${response.status}). Vos saisies sont conservées.`,response.status,action,limited?'CLOUDFLARE_RESOURCE_LIMIT':undefined);
+  }
+  if(!response.ok)throw new SeasonalServiceError(data?.error||`Calcul indisponible (HTTP ${response.status}). Vos saisies sont conservées.`,response.status,action,data?.code);
   return {status:response.status,data};
  })()]);}finally{clearTimeout(timer);signal?.removeEventListener('abort',onAbort);}
 }

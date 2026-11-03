@@ -7,7 +7,7 @@ import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type C
 import { planWater, waterPlanCsv } from '../../lib/seasonal/engine';
 import { emptyCampaign, exampleCampaign } from '../../lib/seasonal/example';
 import { nutrientBalance } from '../../lib/seasonal/agronomy';
-import { addDays } from '../../lib/seasonal/validation';
+import { addDays,validateConfig,validateEvents } from '../../lib/seasonal/validation';
 import type { Bootstrap, Science } from '../../lib/contracts';
 import { CropReference } from './crop-reference';
 import ParcelExplorer, {MapIcon} from './parcel-explorer';
@@ -59,24 +59,33 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const capabilities = seasonalCapabilities(config.country, config.cropProfile?.id);
   const terrainIdentity=JSON.stringify(config.parcelGeometry??null);
   useEffect(()=>{
-    if(!config.parcelGeometry||parcelDraft)return;
+    if(loadedScope!==scope||!config.parcelGeometry||parcelDraft)return;
     const geometry=config.parcelGeometry,controller=new AbortController();let alive=true;
-    seasonalRequest<{assessment:NonNullable<SeasonalConfig['landAssessment']>}>({action:'land',geometry},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}})
+    seasonalRequest<{assessment:NonNullable<SeasonalConfig['landAssessment']>}>({action:'land',geometry,refresh:simulationRetry>0},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}})
       .then(r=>{if(alive&&r.assessment)setConfig(old=>JSON.stringify(old.parcelGeometry)===JSON.stringify(geometry)?{...old,landAssessment:r.assessment}:old);})
-      .catch(e=>{if(alive&&e.name!=='AbortError')setSimulationError(e.message);});
+      .catch(e=>{if(alive&&e.name!=='AbortError'){setSimulationError(e.message);setPlanStale(false);}});
     return()=>{alive=false;controller.abort();};
-  },[terrainIdentity,parcelDraft,simulationRetry,scope]);
+  },[terrainIdentity,parcelDraft,simulationRetry,scope,loadedScope]);
   useEffect(()=>{
-    if(!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);setPlanStale(false);setSimulationError('');return;}
+    if(loadedScope!==scope||!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);setPlanStale(false);setSimulationError('');return;}
+    // The terrain effect prepares authoritative evidence first. Starting both
+    // operations together doubled the initial raster work, and the terrain
+    // response then cancelled and restarted the still-running simulation.
+    if(!config.landAssessment||geometryIdentity(config.landAssessment.geometry)!==geometryIdentity(config.parcelGeometry)){
+      setPlan(null);setPlanStale(true);return;
+    }
     setPlanStale(true);setSimulationError('');
     const controller=new AbortController();let alive=true;const requestId=String(++simulationSequence.current);
     const timer=setTimeout(async()=>{try{
+      // Editing can temporarily leave a required field empty. Explain that
+      // locally instead of sending a known-invalid automatic request (400).
+      const checked=validateConfig(config);validateEvents(events,checked);
       const result=await seasonalRequest<{plan:WaterPlan;requestId:string}>({action:'simulate',config,events,requestId},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}});
       if(result.requestId!==requestId||!result.plan)throw new Error('Réponse de calcul incomplète. Relancez le calcul ; vos saisies sont conservées.');
       if(alive&&requestId===String(simulationSequence.current)){setPlan(result.plan);setPlanStale(false);setSimulationError('');}
     }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlan(null);setPlanStale(false);setSimulationError((e as Error).message);}}},350);
     return()=>{alive=false;clearTimeout(timer);controller.abort();};
-  },[config,events,parcelDraft,simulationRetry]);
+  },[config,events,parcelDraft,simulationRetry,scope,loadedScope]);
 
   useEffect(()=>{
     simulationSequence.current++;setLandProgress(null);setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');

@@ -10,6 +10,13 @@ export const SATELLITE_LAYERS={
  clear:{name:'ndvi_anomaly',style:'style_count',label:'Observations claires du mois',resolutionM:30,period:'month'},
 } as const;
 export type SatelliteLayer=keyof typeof SATELLITE_LAYERS;
+/** Workers supports manual/follow, but rejects redirect:error before fetching.
+ * Reject redirects explicitly so parcel coordinates never reach a new host. */
+async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typeof fetch){
+ const response=await fetcher(url,{signal:AbortSignal.timeout(timeoutMs),redirect:'manual'});
+ if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('Redirection du fournisseur satellite refusée.');}
+ return response;
+}
 const iso=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 /** Normalize advertised dates only; timestamps and declared ISO intervals are
  * valid WMS time dimensions. Never fill missing months outside those intervals. */
@@ -49,16 +56,20 @@ export function satelliteDates(xml:string,asOf:string){
 }
 let cache:{until:number;xml:string}|undefined;
 let inflight:Promise<string>|undefined;
+let parsedCatalog:{xml:string;asOf:string;layers:ReturnType<typeof satelliteDates>}|undefined;
 async function capabilities(fetcher:typeof fetch){
  if(fetcher===fetch&&cache&&cache.until>Date.now())return cache.xml;
  if(fetcher===fetch&&inflight)return inflight;
- const task=(async()=>{const r=await fetcher(SATELLITE_WMS+'?service=WMS&version=1.3.0&request=GetCapabilities',{signal:AbortSignal.timeout(25000),redirect:'error'});if(!r.ok)throw new Error('Catalogue satellite temporairement indisponible.');const xml=await r.text();if(!xml.includes('WMS_Capabilities')&&!xml.includes('WMT_MS_Capabilities'))throw new Error('Catalogue satellite illisible.');if(xml.length>8_000_000)throw new Error('Catalogue satellite trop volumineux.');if(fetcher===fetch)cache={until:Date.now()+6*3600000,xml};return xml;})();
+ const task=(async()=>{const r=await satelliteFetch(SATELLITE_WMS+'?service=WMS&version=1.3.0&request=GetCapabilities',25000,fetcher);if(!r.ok){await r.body?.cancel();throw new Error('Catalogue satellite temporairement indisponible.');}const xml=await r.text();if(!xml.includes('WMS_Capabilities')&&!xml.includes('WMT_MS_Capabilities'))throw new Error('Catalogue satellite illisible.');if(xml.length>8_000_000)throw new Error('Catalogue satellite trop volumineux.');if(fetcher===fetch)cache={until:Date.now()+6*3600000,xml};return xml;})();
  if(fetcher===fetch)inflight=task;
  try{return await task;}finally{if(fetcher===fetch)inflight=undefined;}
 }
 export async function satelliteCatalog(asOf:string,fetcher:typeof fetch=fetch){
  if(!iso(asOf)||asOf>new Date().toISOString().slice(0,10))throw new Error('Date satellite invalide.');
- return {provider:'Digital Earth Africa',license:'Données Copernicus Sentinel-2 / produits DE Africa CC BY 4.0',source:SATELLITE_SOURCE,asOf,layers:satelliteDates(await capabilities(fetcher),asOf),scope:'Dates du catalogue régional ; une acquisition peut être nuageuse ou absente sur le champ. Les zones transparentes restent sans donnée.'};
+ const xml=await capabilities(fetcher);
+ const layers=parsedCatalog?.xml===xml&&parsedCatalog.asOf===asOf?parsedCatalog.layers:satelliteDates(xml,asOf);
+ if(fetcher===fetch)parsedCatalog={xml,asOf,layers};
+ return {provider:'Digital Earth Africa',license:'Données Copernicus Sentinel-2 / produits DE Africa CC BY 4.0',source:SATELLITE_SOURCE,asOf,layers,scope:'Dates du catalogue régional ; une acquisition peut être nuageuse ou absente sur le champ. Les zones transparentes restent sans donnée.'};
 }
 export function satelliteBounds(input:unknown):[number,number,number,number]{
  const shape=validateParcel(input),[w,s,e,n]=bbox(shape),lat=(s+n)/2,k=Math.max(.2,Math.cos(lat*Math.PI/180));
@@ -75,8 +86,8 @@ export function satelliteMapUrl(layer:SatelliteLayer,date:string,bounds:number[]
 export async function satelliteImage(layer:SatelliteLayer,date:string,bounds:number[],fetcher:typeof fetch=fetch){
  const url=satelliteMapUrl(layer,date,bounds),catalog=await satelliteCatalog(new Date().toISOString().slice(0,10),fetcher);
  if(!catalog.layers[layer].dates.includes(date))throw new Error('Cette date n’est pas publiée dans le catalogue courant. Actualisez les dates.');
- const r=await fetcher(url,{signal:AbortSignal.timeout(45000),redirect:'error'});
- if(!r.ok)throw new Error('Image satellite indisponible pour cette date.');
+ const r=await satelliteFetch(url,45000,fetcher);
+ if(!r.ok){await r.body?.cancel();throw new Error('Image satellite indisponible pour cette date.');}
  const bytes=await r.arrayBuffer();const signature=new Uint8Array(bytes,0,Math.min(8,bytes.byteLength));
  if(bytes.byteLength>3_000_000||signature.length!==8||![137,80,78,71,13,10,26,10].every((v,i)=>signature[i]===v))throw new Error('Le fournisseur n’a pas renvoyé une image PNG exploitable.');
  return new Response(bytes,{headers:{'Content-Type':'image/png','Cache-Control':'private, max-age=3600','X-Content-Type-Options':'nosniff','X-Satellite-Date':date,'X-Satellite-Provider':'Digital Earth Africa'}});
@@ -88,7 +99,7 @@ export async function satelliteScenes(input:unknown,asOf:string,fetcher:typeof f
  const shape=validateParcel(input);if(!iso(asOf)||asOf>new Date().toISOString().slice(0,10))throw new Error('Date satellite invalide.');
  const from=new Date(Date.parse(asOf)-120*86400000).toISOString(),u=new URL('https://explorer.digitalearth.africa/stac/search');
  u.search=new URLSearchParams({collections:'s2_l2a',bbox:bbox(shape).join(','),datetime:`${from}/${asOf}T23:59:59Z`,sortby:'-datetime',limit:'60'}).toString();
- const r=await fetcher(u,{signal:AbortSignal.timeout(25000),redirect:'error'});if(!r.ok)throw new Error('Dates d’acquisition de la parcelle indisponibles.');
+ const r=await satelliteFetch(u,25000,fetcher);if(!r.ok){await r.body?.cancel();throw new Error('Dates d’acquisition de la parcelle indisponibles.');}
  const data=await r.json() as {features?:{properties?:{datetime?:string;'eo:cloud_cover'?:number}}[]};if(!Array.isArray(data.features)||data.features.length>60)throw new Error('Catalogue des scènes satellite invalide.');
  const dates=new Map<string,{date:string;sceneCloudMin:number|null;sceneCloudMax:number|null}>();
  for(const item of data.features){const p=item.properties,date=p?.datetime?.slice(0,10);if(!date||!iso(date)||date>asOf||date<from.slice(0,10))continue;const cloud=p?.['eo:cloud_cover'],qualified=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;const old=dates.get(date);dates.set(date,{date,sceneCloudMin:qualified===null?old?.sceneCloudMin??null:old?.sceneCloudMin==null?qualified:Math.min(qualified,old.sceneCloudMin),sceneCloudMax:qualified===null?old?.sceneCloudMax??null:old?.sceneCloudMax==null?qualified:Math.max(qualified,old.sceneCloudMax)});}
