@@ -29,11 +29,13 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
    control:anchor.trim()?{kgHa:Number(anchor)*1000,source:anchorSource,moisturePercent:15,withoutFertilizer:true,denominator:'sown'}:null});
   onChange({...config,waterCondition:'drained',fertilizerScenario});setError('');
  }catch(e){setError((e as Error).message);}}
- return <div className="notice info" aria-label="Simulation exploratoire des engrais">
+ return <div className="notice info fertilizer-simulator" aria-label="Simulation exploratoire des engrais">
   <h3>Simuler l’effet de mes engrais sur le maïs</h3>
   <p><strong>Scénario exploratoire · paramètres transférés du Nigeria.</strong> Le calcul représente les interactions entre azote, phosphore et potassium. Un apport d’azote peut rester peu efficace si le phosphore ou le potassium limite la croissance.</p>
   <details><summary>Définir les hypothèses du scénario</summary>
    <p>Indiquez un plafond de rendement dans les conditions d’eau envisagées, avec une nutrition suffisante. Ce n’est ni une moyenne nationale ni votre rendement actuel avec engrais. Toutes les valeurs concernent le grain à 15 % d’humidité, par hectare effectivement semé.</p>
+   <button type="button" className="qs-text-button" onClick={()=>{setCeiling('10');setSource('Hypothèse transférée : plafond de paramétrage 10 t/ha, Shehu et al. 2019, '+QUEFTS_SOURCE+' ; à adapter au contexte hydrique local, aucune récolte garantie.');}}>Préremplir l’exemple publié du modèle (10 t/ha, Nigeria)</button>
+   <p>Ce plafond publié est une hypothèse de potentiel du modèle, pas un rendement attendu dans votre champ. Réduisez-le si votre référence agronomique et vos conditions d’eau le justifient.</p>
    <div className="form-grid">
     <label className="field"><span>Plafond du scénario (t/ha, maximum 10)</span><input type="number" min="0.001" max="10" step="0.1" value={ceiling} onChange={e=>setCeiling(e.target.value)}/></label>
     <label className="field"><span>Origine et contexte de ce plafond</span><input value={source} onChange={e=>setSource(e.target.value)} placeholder="Essai comparable, avis agronomique ou hypothèse explicitée"/></label>

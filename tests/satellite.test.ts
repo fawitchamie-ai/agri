@@ -7,7 +7,7 @@ test('satellite dates come from published capabilities, exclude future dates, re
  const d=satelliteDates(caps,'2026-11-02');assert.deepEqual(d.rgb.dates,['2026-10-13','2026-10-12']);assert.equal(d.ndvi.resolutionM,10);assert.equal(d.anomaly.resolutionM,30);assert.equal(d.anomaly.period,'month');assert.equal(d.clear.style,'style_count');assert.throws(()=>satelliteDates(caps,'not a date'));
 });
 test('WMS bounds preserve the field and native context; upstream URL is fixed and rejects forged inputs',()=>{
- const b=satelliteBounds(shape);assert.ok(b[0]<1&&b[1]<8&&b[2]>1.001&&b[3]>8.001);const u=new URL(satelliteMapUrl('ndvi','2026-10-13',b));assert.equal(u.origin,'https://ows.digitalearth.africa');assert.equal(u.searchParams.get('crs'),'EPSG:4326');assert.equal(u.searchParams.get('styles'),'ndvi');assert.equal(u.searchParams.get('version'),'1.3.0');assert.equal(u.searchParams.get('bbox'),[b[1],b[0],b[3],b[2]].join(','));assert.throws(()=>satelliteMapUrl('remote-url' as any,'2026-10-13',b));assert.throws(()=>satelliteMapUrl('rgb','2026-02-30',b));assert.throws(()=>satelliteMapUrl('rgb','2026-10-13',[0,0,180,80]));
+ const b=satelliteBounds(shape);assert.ok(b[0]<1&&b[1]<8&&b[2]>1.001&&b[3]>8.001);const u=new URL(satelliteMapUrl('ndvi','2026-10-13',b));assert.equal(u.origin,'https://ows.digitalearth.africa');assert.equal(u.searchParams.get('crs'),'EPSG:4326');assert.equal(u.searchParams.get('styles'),'ndvi');assert.equal(u.searchParams.get('width'),'512');assert.equal(u.searchParams.get('height'),'320');assert.equal(u.searchParams.get('version'),'1.3.0');assert.equal(u.searchParams.get('bbox'),[b[1],b[0],b[3],b[2]].join(','));assert.throws(()=>satelliteMapUrl('remote-url' as any,'2026-10-13',b));assert.throws(()=>satelliteMapUrl('rgb','2026-02-30',b));assert.throws(()=>satelliteMapUrl('rgb','2026-10-13',[0,0,180,80]));
 });
 test('satellite image verifies the PNG payload and never relabels provider errors as imagery',async()=>{
  const calls:string[]=[];const png=new Uint8Array([137,80,78,71,13,10,26,10,0]);
@@ -21,4 +21,10 @@ test('field acquisition dates are bounded and scene cloudiness never becomes par
  const {satelliteScenes}=await import('../lib/seasonal/satellite.ts');let requested='';
  const fetcher=(async(u:RequestInfo|URL)=>{requested=String(u);return Response.json({features:[{properties:{datetime:'2026-10-12T10:00:00Z','eo:cloud_cover':12}},{properties:{datetime:'2026-10-12T10:01:00Z','eo:cloud_cover':30}},{properties:{datetime:'2026-11-03T10:00:00Z','eo:cloud_cover':0}}]});}) as typeof fetch;
  const r=await satelliteScenes(shape,'2026-11-02',fetcher);assert.deepEqual(r.dates,[{date:'2026-10-12',sceneCloudMin:12,sceneCloudMax:30}]);assert.match(r.scope,/scène entière/);assert.equal(new URL(requested).origin,'https://explorer.digitalearth.africa');assert.equal(new URL(requested).searchParams.get('sortby'),'-datetime');assert.equal(new URL(requested).searchParams.get('limit'),'60');
+});
+
+test('real-world WMS timestamps, namespace and interval dimensions do not become an empty catalogue',()=>{
+ const stamp=caps.replace('2026-11-03,2026-10-13,2026-10-12','2026-10-12T00:00:00.000Z/2026-11-03T00:00:00.000Z/P1D').replace('2026-09-01,2026-08-01','2026-08-01T00:00:00Z,2026-09-01T00:00:00Z');
+ const d=satelliteDates(stamp,'2026-11-02');assert.equal(d.rgb.dates[0],'2026-11-02');assert.equal(d.rgb.dates.at(-1),'2026-10-12');assert.deepEqual(d.anomaly.dates,['2026-09-01','2026-08-01']);
+ const older=stamp.replaceAll('Dimension','Extent');assert.deepEqual(satelliteDates(older,'2026-11-02').rgb.dates,d.rgb.dates);
 });
