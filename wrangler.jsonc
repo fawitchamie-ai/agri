@@ -28,5 +28,11 @@
       "enabled": true,
       "invocation_logs": false
     }
+  },
+  "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/"
+    ]
   }
 }

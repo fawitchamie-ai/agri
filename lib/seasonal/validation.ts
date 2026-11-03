@@ -1,4 +1,5 @@
 import {parseManagement} from './management.ts';
+import {parseFertilizerScenario} from './fertilizer-scenario.ts';
 import {parseFieldTrials} from './field-trials.ts';
 import {parseSowingInput} from './sowing.ts';
 import {parseAgronomic} from './agronomic.ts';
@@ -136,6 +137,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);
   validated.salinity=parseSalinityInput(c.salinity);
   validated.managementPlan=parseManagement(c.managementPlan,validated);
+  validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
   return migrateInputs(validated);
 }

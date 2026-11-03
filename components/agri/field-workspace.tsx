@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import {fertilizerScope} from '../../lib/seasonal/fertilizer-scenario';
 import ParcelLayers from './parcel-layers';
 import {addFieldNote,fieldBrief,fieldNotes,NOTE_PARAMETERS,weatherLabel,type FieldAction} from '../../lib/seasonal/field-intelligence';
 import {COUNTRIES,type SeasonalConfig,type WaterPlan,type WaterEvent} from '../../lib/seasonal/types';
@@ -9,14 +10,17 @@ type Props={config:SeasonalConfig;plan:WaterPlan|null;events:WaterEvent[];stale:
 export function FieldOverview({config:c,plan,events,stale,loading,onAction}:Props){
  const b=fieldBrief(c,plan,events,stale,loading);
  const sown=b.estimate?.surface.sownM2;
+ const fertilizer=!stale&&!loading&&c.fertilizerScenario?.scope===fertilizerScope(c)&&plan?.fertilizerScenario?.status==='exploratory_transfer'?plan.fertilizerScenario.results:null;
+ const span=(v:[number,number]|null)=>v?`${fmt(v[0]/1000,2)} – ${fmt(v[1]/1000,2)}`:'—';
  return <section className="field-overview" aria-label="Synthèse de la parcelle">
   <div className="field-summary-heading"><div><span className="qs-eyebrow">VOTRE CHAMP EN UN COUP D’ŒIL</span><h2>L’essentiel pour décider</h2></div><span className="field-status">{stale||loading?'Mise à jour…':'Situation au '+date(c.asOfDate)}</span></div>
   <div className="field-metrics">
-   <button onClick={()=>onAction('yield')}><span>RENDEMENT ESTIMÉ</span><strong>{fmt(b.result?.yieldKgHaSown==null?null:b.result.yieldKgHaSown/1000,2)} <small>t/ha semé</small></strong><em>{stale||loading?'Recalcul en cours':b.result?(b.estimate?.method==='fao-seasonal'?'Scénario selon le déficit d’eau':'À partir de votre hypothèse'):'Référence à documenter'} <span aria-hidden="true">↗</span></em></button>
-   <button onClick={()=>onAction('yield')}><span>RÉCOLTE ESTIMÉE</span><strong>{fmt(b.result==null?null:b.result.productionKg/1000,2)} <small>tonnes</small></strong><em>{sown==null?'Surface semée à confirmer':`${fmt(sown/10000,3)} ha semés`} <span aria-hidden="true">↗</span></em></button>
+   <button onClick={()=>onAction(fertilizer?'fertilizer':'yield')}><span>{fertilizer?'RENDEMENT AVEC ENGRAIS PRÉVUS':'RENDEMENT ESTIMÉ'}</span><strong>{fertilizer?span(fertilizer.yieldWithKgHa):fmt(b.result?.yieldKgHaSown==null?null:b.result.yieldKgHaSown/1000,2)} <small>t/ha semé</small></strong><em>{fertilizer?'Transfert exploratoire · grain à 15 %':stale||loading?'Recalcul en cours':b.result?(b.estimate?.method==='fao-seasonal'?'Scénario selon le déficit d’eau':'À partir de votre hypothèse'):'Référence à documenter'} <span aria-hidden="true">↗</span></em></button>
+   <button onClick={()=>onAction(fertilizer?'fertilizer':'yield')}><span>{fertilizer?'RÉCOLTE AVEC ENGRAIS PRÉVUS':'RÉCOLTE ESTIMÉE'}</span><strong>{fertilizer?span(fertilizer.productionWithKg):fmt(b.result==null?null:b.result.productionKg/1000,2)} <small>tonnes</small></strong><em>{fertilizer?(fertilizer.areaM2===null?'Surface semée à confirmer':`${fmt(fertilizer.areaM2/10000,3)} ha semés · exploratoire`):sown==null?'Surface semée à confirmer':`${fmt(sown/10000,3)} ha semés`} <span aria-hidden="true">↗</span></em></button>
    <button onClick={()=>onAction('water')}><span>EAU À PRÉVOIR SUR LE CYCLE</span><strong>{fmt(b.usable?plan?.totals.remainingSourceM3:null)} <small>m³ à la source</small></strong><em>{b.usable?'Volume restant proposé, à répartir':'Bilan à compléter'} <span aria-hidden="true">↗</span></em></button>
    <button onClick={()=>onAction('notes')}><span>STADE INDICATIF</span><strong className="field-stage-name">{b.stage}</strong><em>Selon le calendrier · à vérifier au champ <span aria-hidden="true">↗</span></em></button>
   </div>
+  {fertilizer&&<p className="notice info">Sans nouvel apport prévu : {span(fertilizer.yieldWithoutKgHa)} t/ha. Supplément simulé : {span(fertilizer.deltaKgHa)} t/ha. Plage entre deux profils nigérians, sans intervalle prédictif ni validation locale. <button className="qs-text-button" onClick={()=>onAction('fertilizer')}>Voir les hypothèses et les limites →</button></p>}
   <div className="field-cockpit">
    <ParcelLayers config={c} assessment={plan?.land??c.landAssessment} onMap={()=>onAction('map')}/>
    <section className="field-priorities"><div className="field-panel-title"><h3>Mes prochaines actions</h3><span className="field-status">{b.actions.length} à examiner</span></div>{b.actions.length?<ol>{b.actions.slice(0,3).map(a=><li key={a.id} className={'field-priority '+a.level}><span className="field-priority-dot" aria-label={a.level==='urgent'?'Urgent':a.level==='planned'?'Proposé':'À vérifier'}/><div><button onClick={()=>onAction(a.target)}>{a.title} <span aria-hidden="true">↗</span></button><p>{a.reason}</p><details><summary>Sur quoi repose cette action ?</summary><p>{a.source}</p></details></div></li>)}</ol>:<p>Aucune action automatique prioritaire dans les données disponibles. Continuez les observations au champ.</p>}{b.actions.length>3&&<details className="field-more-actions"><summary>{b.actions.length-3} autre(s) point(s) à vérifier</summary>{b.actions.slice(3).map(a=><div key={a.id}><button className="qs-text-button" onClick={()=>onAction(a.target)}>{a.title} ↗</button><p>{a.reason} {a.source}</p></div>)}</details>}</section>

@@ -33,7 +33,7 @@ export default function QuickSimulation({landProgress,config,plan,stale,onChange
  const sections=[['overview','Vue du champ'],['water','Eau et semis'],['fertilizer','Engrais'],['notes','Suivi et essais']];
  function fieldAction(target:FieldAction['target']){
   if(target==='map'){onMap();return;}if(target==='soil'){onAdvanced('sol');return;}
-  setSection(target==='water'?'water':target==='notes'?'notes':'overview');
+  setSection(target==='water'?'water':target==='notes'?'notes':target==='fertilizer'?'fertilizer':'overview');
   if(target==='yield'){setHarvestOpen(true);requestAnimationFrame(()=>document.getElementById('field-harvest-details')?.scrollIntoView({behavior:'smooth',block:'start'}));}
  }
  const progress=landProgress??sectorJob;
@@ -101,7 +101,7 @@ export default function QuickSimulation({landProgress,config,plan,stale,onChange
   <InterventionComparison config={config} events={events}/>
   {usable?<WaterChart config={config} plan={plan}/>:<section className="qs-card qs-chart-placeholder"><h2>Le bilan d’eau attend ses données</h2><p>{indicator.message}</p></section>}
   </div>}
-  {section==='fertilizer'&&<div role="tabpanel" id="field-panel-fertilizer" aria-labelledby="field-tab-fertilizer"><ManagementPlanner initialKind="fertilizer" config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/><FertilizerPanel config={config} onAdvanced={onAdvanced}/><InterventionComparison config={config} events={events}/></div>}
+  {section==='fertilizer'&&<div role="tabpanel" id="field-panel-fertilizer" aria-labelledby="field-tab-fertilizer"><ManagementPlanner initialKind="fertilizer" config={config} plan={plan} stale={stale} onChange={onChange} onActual={()=>onAdvanced('suivi')}/><FertilizerPanel config={config} plan={plan} stale={stale} onChange={onChange} onAdvanced={onAdvanced}/><InterventionComparison config={config} events={events}/></div>}
   {section==='notes'&&<div role="tabpanel" id="field-panel-notes" aria-labelledby="field-tab-notes"><FieldNotebook config={config} onChange={onChange}/><section className="qs-card"><div className="field-panel-title"><div><h2>Pluies et arrosages réalisés</h2><p>{events.filter(e=>e.status==='measured'||e.status==='declared').length} observation(s) ou apport(s) enregistré(s).</p></div><button className="btn secondary" onClick={()=>onAdvanced('suivi')}>Ouvrir le carnet d’eau →</button></div></section><details className="field-harvest-details"><summary>Organiser un essai et comparer les résultats</summary><FieldTrials config={config} onChange={onChange}/></details></div>}
   <details className="qs-settings" id="simulation-settings"><summary><span><Pencil/> Réglages et données</span><small>Sol, météo, sources et méthodes</small></summary><div className="qs-settings-content">
    <details onToggle={e=>{if(e.currentTarget.open)setTerrainOpened(true);}}><summary>Vérifier le terrain, le sol et les réglages d’arrosage</summary>{terrainOpened&&<><InputStatus config={config} onChange={onChange}/>
