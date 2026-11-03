@@ -26,17 +26,17 @@ function fixture(){
  c.landAssessment=assessLandGeometry(c.parcelGeometry,[{id:'worldcover',status:'available',provider:'Synthetic',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:'2026-11-01T00:00:00Z',resolutionM:10,crs:'EPSG:4326',cells:[{id:'land',geometry:c.parcelGeometry,value:40}],reason:null,assets:[],limitations:[]}]);
  return migrateInputs(c);
 }
-const render=(config,stale=false)=>renderToStaticMarkup(React.createElement(Quick,{config,plan:planSeason(config),stale,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
+const render=(config,stale=false,initialSection)=>renderToStaticMarkup(React.createElement(Quick,{config,plan:planSeason(config),stale,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[],initialSection}));
 test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',()=>{
  const c=declareScenario(fixture()),plan=planSeason(c);
- const html=render(c)+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
- assert.match(render(c),/L’essentiel pour décider/);
- assert.match(render(c),/role="tab"[^>]*aria-selected="true"[^>]*>Vue du champ/);
- assert.match(render(c),/role="tab"[^>]*>Eau et semis/);
- assert.match(render(c),/role="tab"[^>]*>Engrais/);
- assert.match(render(c),/role="tab"[^>]*>Suivi et essais/);
- assert.match(html,/besoins couverts si le plan est réalisé/);
- assert.match(html,/Surface utilisée pour ce bilan/);
+ const html=render(c)+render(c,false,'yield')+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
+ assert.match(render(c),/Les résultats de votre scénario/);
+ assert.match(render(c),/id="field-tab-overview"[^>]*role="tab"[^>]*aria-selected="true"/);
+ assert.match(render(c),/id="field-tab-water"[^>]*role="tab"/);
+ assert.match(render(c),/id="field-tab-fertilizer"[^>]*role="tab"/);
+ assert.match(render(c),/id="field-tab-notes"[^>]*role="tab"/);
+ assert.doesNotMatch(render(c),/besoins couverts si le plan est réalisé/,'method details stay on demand');
+ assert.match(render(c),/Sources et limites de cette simulation/);
  assert.match(html,/SEMENCES À PRÉVOIR/);
  assert.match(html,/Modifier ma culture/);
  assert.match(html,/Modifier date de semis/);
@@ -67,14 +67,14 @@ test('overview displays the opted-in fertilizer range and hides it during recalc
 });
 test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',()=>{
  const config=declareScenario(fixture());
- const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
+ const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:true,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
  assert.match(html,/Calcul interrompu/);assert.match(html,/Relancer le calcul/);
  assert.doesNotMatch(html,/Recalcul en cours…|Recalcul du bilan d’eau en cours/);
- assert.match(html,/role="tab"[^>]*>Engrais/);
+ assert.match(html,/id="field-tab-fertilizer"[^>]*role="tab"/);
  const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,plan:null,stale:false,onChange:()=>{},onAdvanced:()=>{}}));
  assert.match(fertilizerHtml,/Voir les références et le bilan d’engrais/);
- assert.match(html,/modifier l’arrosage ne change pas le rendement saisi/);
- assert.match(html,/Méthode de calcul/);
+ assert.match(render(config,false,'yield'),/modifier l’arrosage ne change pas le rendement saisi/);
+ assert.match(render(config,false,'yield'),/Méthode de calcul/);
  assert.match(fertilizerHtml,/prévision parcellaire validée et la dose optimale restent indisponibles/);
  assert.match(fertilizerHtml,/Scénario exploratoire/);
 });

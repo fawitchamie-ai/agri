@@ -12,7 +12,7 @@ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 test('seasonal effects wait for terrain on restored parcels and retries; invalid edits make no API call',async()=>{
  const built=await build({entryPoints:['components/agri/seasonal.tsx'],bundle:true,platform:'node',format:'cjs',write:false,jsx:'automatic',external:['react','react/jsx-runtime'],loader:{'.css':'empty'},plugins:[{name:'view-only-stubs',setup(b){
   b.onLoad({filter:/\/components\/agri\/quick-simulation\.tsx$/},()=>({contents:'export default function View(props){globalThis.__seasonalView=props;return null}',loader:'js'}));
-  b.onLoad({filter:/\/components\/agri\/(parcel-explorer|crop-reference)\.tsx$/},()=>({contents:'export const MapIcon=()=>null;export const CropReference=()=>null;export default ()=>null;',loader:'js'}));
+  b.onLoad({filter:/\/components\/agri\/(parcel-explorer|crop-reference)\.tsx$/},args=>({contents:args.path.includes('parcel-explorer')?'export const MapIcon=()=>null;export default function View(props){globalThis.__parcelView=props;return null;}':'export const CropReference=()=>null;export default ()=>null;',loader:'js'}));
  }}]});
  const module={exports:{}};new Function('module','exports','require',built.outputFiles[0].text)(module,module.exports,require);
  const Seasonal=module.exports.default,window=new Window({url:'http://agri.test'}),previous=new Map();
@@ -40,10 +40,20 @@ test('seasonal effects wait for terrain on restored parcels and retries; invalid
   await act(async()=>wait(400));assert.equal(lands.length,2);assert.equal(lands[1].body.refresh,true);assert.equal(simulations.length,1,'Retry must wait for the refreshed terrain');
   await act(async()=>lands[1].resolve(Response.json({assessment:landFixture(testParcel,40)})));
   await act(async()=>wait(400));assert.equal(simulations.length,2);
+  await act(async()=>view().onMap());assert.equal(view().paused,true,'Drawing suspends automatic acquisition');
+  await act(async()=>wait(400));assert.equal(simulations.length,2);
+  await act(async()=>globalThis.__parcelView.onPrepare('sorghum',config.sowingDate));
+  assert.equal(view().paused,false);assert.equal(view().config.cropProfile.id,'sorghum');
+  await act(async()=>wait(400));assert.equal(view().config.stages.length,0);assert.equal(simulations.length,2,'An unparameterised crop must not invent a cycle');
+  await act(async()=>view().onMap());
+  const chosenDate=new Date(Date.parse(config.sowingDate)+7*86400000).toISOString().slice(0,10);
+  await act(async()=>globalThis.__parcelView.onPrepare('maize',chosenDate));
+  assert.equal(view().config.sowingDate,chosenDate);assert.equal(view().paused,false);
+  await act(async()=>wait(400));assert.equal(simulations.length,3,'Preparing a parameterised crop resumes the calculation: '+view().calculationError);
   await act(async()=>view().onChange({...view().config,system:{...view().config.system,minIntervalDays:0}}));
-  await act(async()=>wait(400));assert.equal(simulations.length,2);assert.match(view().calculationError,/Intervalle/);
+  await act(async()=>wait(400));assert.equal(simulations.length,3);assert.match(view().calculationError,/Intervalle/);
  }finally{
-  await act(async()=>root.unmount());globalThis.fetch=originalFetch;delete globalThis.__seasonalView;
+  await act(async()=>root.unmount());globalThis.fetch=originalFetch;delete globalThis.__seasonalView;delete globalThis.__parcelView;
   for(const [key,descriptor] of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];
   await window.happyDOM.close();
  }
