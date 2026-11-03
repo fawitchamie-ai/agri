@@ -96,4 +96,4 @@ export async function loadLandAssessment(input:unknown,fetcher:typeof fetch=fetc
   if(fetcher===fetch)inflight.set(key,task);
   try{return structuredClone(await task);}finally{if(fetcher===fetch)inflight.delete(key);}
 }
-const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days+nativeRectangles3+sphericalLinearEdges1+polyclip0168';
+export const LAND_SOURCES='WorldCover2021v200+JRC1.5seasonality2024+WOfS90days+nativeRectangles3+sphericalLinearEdges1+polyclip0168';

@@ -3,7 +3,7 @@ import * as clipping from './geometry-ops.ts';
 import {bbox,multiArea,LAND_CLASSES,LAND_VERSION,type LandAssessment,type MultiShape} from './land.ts';
 import {validateParcel,parcelMetrics,type ParcelPolygon} from './parcel.ts';
 import {scopeId,geometryIdentity} from './provenance.ts';
-import {loadLandAssessment} from './land-provider.ts';
+import {loadLandAssessment,LAND_SOURCES} from './land-provider.ts';
 import {database,digest,HttpError,PreparationPending} from '../server-db.ts';
 import type {session} from '../server-auth.ts';
 type Identity=Awaited<ReturnType<typeof session>>;
@@ -82,8 +82,38 @@ export async function stepLandJob(id:unknown,s:Identity){
  }
  return landJobStatus(id,s);
 }
-export async function authoritativeLand(shape:ParcelPolygon,s:Identity):Promise<LandAssessment>{
- if(parcelMetrics(shape).areaM2<SECTOR_AREA_THRESHOLD_M2)return loadLandAssessment(shape);
+const smallAcquisitions=new Map<string,Promise<LandAssessment>>();
+/** Public raster results are retained server-side, scoped to their owner and
+ * source version. A new isolate must not decode the same TIFFs on every edit.
+ * Never accept the client's landAssessment as authoritative evidence. */
+async function smallAuthoritativeLand(shape:ParcelPolygon,s:Identity,refresh:boolean):Promise<LandAssessment>{
+ const id=await digest(JSON.stringify(['land-cache-1',LAND_SOURCES,AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape)]));
+ const pending=smallAcquisitions.get(id);if(pending)return pending;
+ const task=(async()=>{
+  const db=database();
+  if(!refresh){
+   const row=await db.prepare('SELECT result FROM land_jobs WHERE id=? AND coop_id=? AND owner_id=?').bind(id,s.coopId,s.userId).first<{result:string|null}>();
+   if(row?.result){
+    const result=JSON.parse(row.result) as LandAssessment;
+    const incomplete=result.analysis||result.sources.some(l=>l.id==='worldcover'&&l.status==='missing');
+    const age=Date.now()-Date.parse(result.assessedAt);
+    if(result.areaMethod===AREA_METHOD&&age>=0&&age<(incomplete?60000:1800000))return result;
+   }
+  }
+  const result=await loadLandAssessment(shape,fetch,new Date().toISOString(),refresh),serialized=JSON.stringify(result);
+  // D1 has a 2 MB row limit. An unusually fragmented result remains usable for
+  // this request, but is not partially persisted or simplified to fit a cache.
+  if(new TextEncoder().encode(serialized).byteLength<1500000){
+   const now=new Date().toISOString();
+   await db.prepare('INSERT INTO land_jobs (id,coop_id,owner_id,geometry,created_at,completed_at,total,result) VALUES (?,?,?,?,?,?,0,?) ON CONFLICT(id) DO UPDATE SET result=excluded.result,completed_at=excluded.completed_at').bind(id,s.coopId,s.userId,JSON.stringify(shape),now,now,serialized).run();
+  }
+  return result;
+ })();
+ smallAcquisitions.set(id,task);
+ try{return await task;}finally{if(smallAcquisitions.get(id)===task)smallAcquisitions.delete(id);}
+}
+export async function authoritativeLand(shape:ParcelPolygon,s:Identity,options:{refresh?:boolean}={}):Promise<LandAssessment>{
+ if(parcelMetrics(shape).areaM2<SECTOR_AREA_THRESHOLD_M2)return smallAuthoritativeLand(shape,s,options.refresh===true);
  const row=await database().prepare('SELECT result FROM land_jobs WHERE coop_id=? AND owner_id=? AND geometry=? AND result IS NOT NULL AND completed_at>=? ORDER BY completed_at DESC LIMIT 1').bind(s.coopId,s.userId,JSON.stringify(shape),new Date(Date.now()-86400000).toISOString()).first<{result:string}>();
  if(!row)throw new PreparationPending({code:'LAND_ANALYSIS_PENDING',job:await startLandJob(shape,s)});
  const result=JSON.parse(row.result);

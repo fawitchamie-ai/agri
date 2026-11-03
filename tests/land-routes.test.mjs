@@ -12,15 +12,18 @@ test('Serveur : contrôle avant simulation et sauvegarde, rapport client favorab
   const result=await request({action:'simulate',config:c});assert.equal(result.plan.status,'blocked');assert.equal(result.plan.days.length,0);assert.equal(result.plan.land.status,'excluded');assert.equal(result.plan.totals.fieldM3,null);
   const saved=await request({action:'save',id:'water-contour',expectedRevision:0,config:c},201);assert.equal(saved.campaign.plan.status,'blocked');assert.equal(saved.campaign.config.landAssessment.status,'excluded');
   globalThis.__agriLandClass=0;
+  await request({action:'land',geometry:testParcel,refresh:true});
   const unknown=await request({action:'simulate',config:c});assert.equal(unknown.plan.status,'blocked');assert.equal(unknown.plan.land.unknownAreaM2,unknown.plan.land.areaM2);
   await request({action:'environment',country:'TGO',start:c.sowingDate,days:125,latitude:9.5,longitude:1.2},400);
   const unlocated=await request({action:'simulate',config:{...c,parcelGeometry:undefined}});assert.equal(unlocated.plan.status,'blocked');assert.match(unlocated.plan.missing[0],/Contour complet/);
   globalThis.__agriLandClass=40;
+  await request({action:'land',geometry:testParcel,refresh:true});
   const dry=await request({action:'simulate',config:c});assert.equal(dry.plan.status,'conditional');assert.ok(dry.plan.days.length>0);
   const forged={...c,landSelection:'potentialLand',landAssessment:{...landFixture(testParcel,40),candidateAreaM2:1e9}};
   const selected=await request({action:'simulate',config:forged});
   assert.equal(selected.plan.complete,true);assert.equal(selected.plan.calculationArea.areaM2,selected.plan.land.candidateAreaM2);assert.ok(selected.plan.calculationArea.areaM2<1e9);
   globalThis.__agriLandClass=80;
+  await request({action:'land',geometry:testParcel,refresh:true});
   const waterSelection=await request({action:'simulate',config:forged});assert.equal(waterSelection.plan.status,'blocked');assert.equal(waterSelection.plan.days.length,0);
 
  }finally{delete globalThis.__agriLandClass;closeHarness();}

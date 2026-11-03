@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {seasonalRequest} from '../lib/seasonal/request.ts';
 test('simulation: timeout covers a stalled body, aborts and allows a fresh retry',async()=>{
  let signal;
- await assert.rejects(seasonalRequest({action:'simulate'},undefined,20,async(_url,options)=>{signal=options.signal;return {ok:true,json:()=>new Promise(()=>{})};}),/trop de temps/);
+ await assert.rejects(seasonalRequest({action:'simulate'},undefined,20,async(_url,options)=>{signal=options.signal;return {ok:true,text:()=>new Promise(()=>{})};}),/trop de temps/);
  assert.equal(signal.aborted,true);
  const result=await seasonalRequest({requestId:'retry'},undefined,100,async()=>Response.json({requestId:'retry',plan:{complete:true}}));
  assert.equal(result.requestId,'retry');assert.equal(result.plan.complete,true);
@@ -12,6 +12,12 @@ test('simulation: network and session failures explain recovery without a raw Fa
  await assert.rejects(seasonalRequest({},undefined,100,async()=>{throw new TypeError('Failed to fetch');}),/Connexion.*saisies sont conservées/);
  await assert.rejects(seasonalRequest({},undefined,100,async()=>new Response('<html>login</html>',{status:401})),/session.*saisies sont conservées/);
  await assert.rejects(seasonalRequest({},undefined,100,async()=>Response.json({error:'Terrain indisponible'},{status:503})),/Terrain indisponible/);
+});
+test('Cloudflare 1102 HTML is diagnosed once and never automatically retried',async()=>{
+ let calls=0;
+ await assert.rejects(seasonalRequest({action:'simulate'},undefined,100,async()=>{calls++;return new Response('<title>Worker exceeded resource limits</title><span class="cf-error-code">1102</span>',{status:503});}),e=>e.code==='CLOUDFLARE_RESOURCE_LIMIT'&&e.action==='simulate'&&e.status===503&&/1102/.test(e.message));
+ assert.equal(calls,1);
+ await assert.rejects(seasonalRequest({action:'simulate'},undefined,100,async()=>Response.json({error:'Humidité initiale invalide'},{status:400})),e=>e.status===400&&/Humidité/.test(e.message));
 });
 test('simulation: cancellation is immediate even when transport ignores AbortSignal',async()=>{
  const controller=new AbortController();

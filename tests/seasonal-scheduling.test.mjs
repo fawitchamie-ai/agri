@@ -1,0 +1,50 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {Window} from 'happy-dom';
+import React,{act} from 'react';
+import {exampleCampaign} from '../lib/seasonal/example.ts';
+import {planSeason} from '../lib/seasonal/yield.ts';
+import {testParcel,landFixture} from './support/land-fixtures.mjs';
+const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler'));
+const {build}=wr('esbuild');
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+test('seasonal effects wait for terrain on restored parcels and retries; invalid edits make no API call',async()=>{
+ const built=await build({entryPoints:['components/agri/seasonal.tsx'],bundle:true,platform:'node',format:'cjs',write:false,jsx:'automatic',external:['react','react/jsx-runtime'],loader:{'.css':'empty'},plugins:[{name:'view-only-stubs',setup(b){
+  b.onLoad({filter:/\/components\/agri\/quick-simulation\.tsx$/},()=>({contents:'export default function View(props){globalThis.__seasonalView=props;return null}',loader:'js'}));
+  b.onLoad({filter:/\/components\/agri\/(parcel-explorer|crop-reference)\.tsx$/},()=>({contents:'export const MapIcon=()=>null;export const CropReference=()=>null;export default ()=>null;',loader:'js'}));
+ }}]});
+ const module={exports:{}};new Function('module','exports','require',built.outputFiles[0].text)(module,module.exports,require);
+ const Seasonal=module.exports.default,window=new Window({url:'http://agri.test'}),previous=new Map();
+ for(const [key,value] of Object.entries({window,document:window.document,navigator:window.navigator,localStorage:window.localStorage,IS_REACT_ACT_ENVIRONMENT:true})){
+  previous.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{value,configurable:true,writable:true});
+ }
+ const originalFetch=globalThis.fetch,lands=[],simulations=[];
+ globalThis.fetch=async(_url,options)=>{
+  if(!options?.body)return Response.json({campaigns:[]});
+  const body=JSON.parse(options.body);
+  if(body.action==='land')return new Promise(resolve=>lands.push({resolve,body}));
+  assert.equal(body.action,'simulate');simulations.push(body);
+  return Response.json({plan:planSeason({...body.config,landAssessment:landFixture(testParcel,40)},body.events),requestId:body.requestId});
+ };
+ const {createRoot}=await import('react-dom/client'),element=window.document.createElement('div');window.document.body.append(element);
+ const root=createRoot(element),view=()=>globalThis.__seasonalView;
+ try{
+  await act(async()=>root.render(React.createElement(Seasonal,{workspace:{session:{coopId:'test-coop',userId:'test-user'}},science:null})));
+  const config={...exampleCampaign(),parcelGeometry:testParcel,landAssessment:landFixture(testParcel,40)};
+  await act(async()=>view().onChange(config));
+  await act(async()=>wait(400));assert.equal(lands.length,1);assert.equal(simulations.length,0,'A restored client assessment must not skip server preparation');
+  await act(async()=>lands[0].resolve(Response.json({assessment:landFixture(testParcel,40)})));
+  await act(async()=>wait(400));assert.equal(simulations.length,1);
+  await act(async()=>view().onRetry());
+  await act(async()=>wait(400));assert.equal(lands.length,2);assert.equal(lands[1].body.refresh,true);assert.equal(simulations.length,1,'Retry must wait for the refreshed terrain');
+  await act(async()=>lands[1].resolve(Response.json({assessment:landFixture(testParcel,40)})));
+  await act(async()=>wait(400));assert.equal(simulations.length,2);
+  await act(async()=>view().onChange({...view().config,system:{...view().config.system,minIntervalDays:0}}));
+  await act(async()=>wait(400));assert.equal(simulations.length,2);assert.match(view().calculationError,/Intervalle/);
+ }finally{
+  await act(async()=>root.unmount());globalThis.fetch=originalFetch;delete globalThis.__seasonalView;
+  for(const [key,descriptor] of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];
+  await window.happyDOM.close();
+ }
+});
