@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {satelliteDates,satelliteBounds,satelliteMapUrl,satelliteImage,SATELLITE_WMS} from '../lib/seasonal/satellite.ts';
+import {satelliteDates,satelliteBounds,satelliteMapUrl,satelliteImage,satelliteBasemapUrl,satelliteTilePlan,SATELLITE_WMS} from '../lib/seasonal/satellite.ts';
 const caps='<WMS_Capabilities><Capability><Layer><Title>Test only</Title><Layer><Name>s2_l2a</Name><Dimension name="time">2026-11-03,2026-10-13,2026-10-12</Dimension><Style><Name>simple_rgb</Name></Style><Style><Name>ndvi</Name></Style><Style><Name>scl</Name></Style></Layer><Layer><Name>ndvi_anomaly</Name><Dimension name="time">2026-09-01,2026-08-01</Dimension><Style><Name>style_ndvi_anomaly</Name></Style><Style><Name>style_count</Name></Style></Layer></Layer></Capability></WMS_Capabilities>';
 const shape={type:'Polygon' as const,coordinates:[[[1,8],[1.001,8],[1.001,8.001],[1,8.001],[1,8]]] as [number,number][][]};
 test('satellite dates come from published capabilities, exclude future dates, retain native resolution',()=>{
@@ -27,4 +27,27 @@ test('real-world WMS timestamps, namespace and interval dimensions do not become
  const stamp=caps.replace('2026-11-03,2026-10-13,2026-10-12','2026-10-12T00:00:00.000Z/2026-11-03T00:00:00.000Z/P1D').replace('2026-09-01,2026-08-01','2026-08-01T00:00:00Z,2026-09-01T00:00:00Z');
  const d=satelliteDates(stamp,'2026-11-02');assert.equal(d.rgb.dates[0],'2026-11-02');assert.equal(d.rgb.dates.at(-1),'2026-10-12');assert.deepEqual(d.anomaly.dates,['2026-09-01','2026-08-01']);
  const older=stamp.replaceAll('Dimension','Extent');assert.deepEqual(satelliteDates(older,'2026-11-02').rgb.dates,d.rgb.dates);
+});
+
+
+test('high resolution preview uses four seam-free requests within the WMS cap, preserving geographic alignment',()=>{
+ const bounds=satelliteBounds(shape,1000),tiles=satelliteTilePlan('ndvi','2026-10-13',bounds);
+ assert.equal(tiles.length,4);
+ const [nw,ne,sw,se]=tiles.map(t=>t.bounds);
+ assert.equal(nw[0],bounds[0]);assert.equal(nw[3],bounds[3]);
+ assert.equal(se[2],bounds[2]);assert.equal(se[1],bounds[1]);
+ assert.equal(nw[2],ne[0]);assert.equal(nw[1],sw[3]);assert.equal(sw[2],se[0]);assert.equal(ne[1],se[3]);
+ for(const tile of tiles){
+  const direct=new URL(tile.direct),proxy=new URL(tile.src,'https://agri.test');
+  assert.equal(direct.origin,'https://ows.digitalearth.africa');
+  assert.equal(direct.searchParams.get('width'),'512');assert.equal(direct.searchParams.get('height'),'320');
+  assert.equal(proxy.searchParams.get('bbox'),tile.bounds.join(','));
+  assert.equal(direct.searchParams.get('bbox'),[tile.bounds[1],tile.bounds[0],tile.bounds[3],tile.bounds[2]].join(','));
+  assert.equal(direct.searchParams.get('time'),'2026-10-13');
+ }
+ const narrow=satelliteBounds(shape);assert.ok(bounds[3]-bounds[1]>(narrow[3]-narrow[1])*3);
+ assert.throws(()=>satelliteBounds(shape,1));assert.throws(()=>satelliteBounds(shape,Infinity));
+ const hd=new URL(satelliteBasemapUrl(narrow));assert.equal(hd.searchParams.get('size'),'1600,1000');
+ assert.equal(hd.searchParams.get('bbox'),narrow.join(','));assert.equal(hd.searchParams.get('imageSR'),'4326');
+ assert.throws(()=>satelliteTilePlan('ndvi','2026-10-13',[0,0,360,80]));
 });

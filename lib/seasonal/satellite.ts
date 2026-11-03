@@ -71,10 +71,11 @@ export async function satelliteCatalog(asOf:string,fetcher:typeof fetch=fetch){
  if(fetcher===fetch)parsedCatalog={xml,asOf,layers};
  return {provider:'Digital Earth Africa',license:'Données Copernicus Sentinel-2 / produits DE Africa CC BY 4.0',source:SATELLITE_SOURCE,asOf,layers,scope:'Dates du catalogue régional ; une acquisition peut être nuageuse ou absente sur le champ. Les zones transparentes restent sans donnée.'};
 }
-export function satelliteBounds(input:unknown):[number,number,number,number]{
+export function satelliteBounds(input:unknown,contextM=200):[number,number,number,number]{
  const shape=validateParcel(input),[w,s,e,n]=bbox(shape),lat=(s+n)/2,k=Math.max(.2,Math.cos(lat*Math.PI/180));
- // Minimum 200 m context avoids presenting magnified pixels as finer imagery.
- let width=Math.max((e-w)*1.2,.002/k),height=Math.max((n-s)*1.2,.002);const cx=(w+e)/2,cy=(s+n)/2;
+ // Wider analytical context keeps native 10–30 m cells readable without inventing detail.
+ if(!Number.isFinite(contextM)||contextM<200||contextM>10000)throw new Error('Contexte satellite invalide.');
+ let width=Math.max((e-w)*1.2,contextM/111320/k),height=Math.max((n-s)*1.2,contextM/111320);const cx=(w+e)/2,cy=(s+n)/2;
  if(width*k/height<1.6)width=height*1.6/k;else height=width*k/1.6;
  return [cx-width/2,cy-height/2,cx+width/2,cy+height/2];
 }
@@ -107,9 +108,20 @@ export async function satelliteScenes(input:unknown,asOf:string,fetcher:typeof f
 }
 
 /** Public undated basemap, distinct from a dated Sentinel observation or index. */
-export function satelliteBasemapUrl(bounds:number[]){
+export function satelliteBasemapUrl(bounds:number[],width:1600|1024|640=1600){
+ if(![1600,1024,640].includes(width))throw new Error('Taille de fond satellite invalide.');
  // Reuse the exact same geographic bounds validation as WMS.
  satelliteMapUrl('rgb','2026-01-01',bounds);
  const u=new URL('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export');
- u.search=new URLSearchParams({bbox:bounds.join(','),bboxSR:'4326',imageSR:'4326',size:'640,400',format:'png32',transparent:'false',f:'image'}).toString();return u.toString();
+ u.search=new URLSearchParams({bbox:bounds.join(','),bboxSR:'4326',imageSR:'4326',size:`${width},${width/1.6}`,format:'png32',transparent:'false',f:'image'}).toString();return u.toString();
+}
+
+/** Four bounded requests, each within the provider's 512 px limit.
+ * Together they render 1024×640 actual output pixels, with no invented source detail. */
+export function satelliteTilePlan(layer:SatelliteLayer,date:string,bounds:number[]){
+ satelliteMapUrl(layer,date,bounds);
+ const [w,s,e,n]=bounds,mx=(w+e)/2,my=(s+n)/2;
+ return [[w,my,mx,n],[mx,my,e,n],[w,s,mx,my],[mx,s,e,my]].map((b,index)=>({index,bounds:b,
+  direct:satelliteMapUrl(layer,date,b),
+  src:'/api/seasonal?'+new URLSearchParams({satellite:'image',layer,date,bbox:b.join(',')})}));
 }

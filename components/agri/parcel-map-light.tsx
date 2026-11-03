@@ -4,6 +4,7 @@ import type * as L from 'leaflet';
 import {COUNTRY_VIEWS,type Position} from '../../lib/seasonal/parcel';
 import type {ParcelMapProps,MapController,CountriesGeo} from './parcel-map';
 import 'leaflet/dist/leaflet.css';
+import {availableImageryLevel} from '../../lib/seasonal/imagery-quality';
 import {LAND_COLORS} from '../../lib/seasonal/land-display';
 
 /** Leaflet owns the moving map. React only receives settled viewport changes.
@@ -13,6 +14,7 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
  const lib=useRef<typeof L|null>(null),markers=useRef<L.Marker[]>([]),line=useRef<L.Polyline|null>(null),fill=useRef<L.Polygon|null>(null);
  const terrain=useRef<L.LayerGroup|null>(null);
  const bases=useRef<{satellite?:L.TileLayer;plan?:L.GridLayer;loading?:boolean}>({});
+ const [detailLimit,setDetailLimit]=useState(false);
  const [ready,setReady]=useState(false),[error,setError]=useState(''),[viewport,setViewport]=useState({center:[1.1,8.65] as Position,zoom:6});
  const changeBase=useRef<()=>void>(()=>{});
  useEffect(()=>{
@@ -22,18 +24,18 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
    if(disposed||!host.current)return;
    const l=module.default??module;lib.current=l;
    const view=COUNTRY_VIEWS[latest.current.selected as keyof typeof COUNTRY_VIEWS]??COUNTRY_VIEWS.TGO;
-   const m=l.map(host.current,{center:[view.center[1],view.center[0]],zoom:Math.round(view.zoom),minZoom:2,maxZoom:20,zoomControl:false,attributionControl:false,worldCopyJump:true,zoomAnimation:true,markerZoomAnimation:false,fadeAnimation:false,doubleClickZoom:false,tapTolerance:12,preferCanvas:true});map.current=m;
+   const m=l.map(host.current,{center:[view.center[1],view.center[0]],zoom:Math.round(view.zoom),minZoom:2,maxZoom:22,zoomControl:false,attributionControl:false,worldCopyJump:true,zoomAnimation:true,markerZoomAnimation:false,fadeAnimation:false,doubleClickZoom:false,tapTolerance:12,preferCanvas:true});map.current=m;
    m.createPane('terrain');m.getPane('terrain')!.style.zIndex='350';terrain.current=l.layerGroup().addTo(m);
    l.control.zoom({position:'topright',zoomInTitle:'Rapprocher la carte',zoomOutTitle:'Éloigner la carte'}).addTo(m);
    l.control.scale({position:'bottomleft',imperial:false}).addTo(m);
    l.control.attribution({position:'bottomright',prefix:false}).addTo(m);
-   bases.current.satellite=l.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20,keepBuffer:1,updateWhenIdle:true,attribution:'Imagerie : Esri, Vantor, Earthstar Geographics, GIS User Community'});
+   bases.current.satellite=l.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:l.Browser.retina?17:18,maxZoom:l.Browser.retina?23:22,detectRetina:true,keepBuffer:2,updateWhenIdle:true,attribution:'Imagerie : Esri, Vantor, Earthstar Geographics, GIS User Community'});
    bases.current.satellite.on('tileerror',()=>{if(latest.current.basemap==='satellite')setError('Image satellite indisponible ici. Essayez « Plan » : vos coins sont conservés.');});
    changeBase.current=()=>{
     if(disposed)return;
     const name=latest.current.basemap,b=bases.current;
     const chosen=b[name],other=name==='satellite'?b.plan:b.satellite;
-    if(chosen){if(other&&m.hasLayer(other))m.removeLayer(other);if(!m.hasLayer(chosen))chosen.addTo(m);return;}
+    if(chosen){if(other&&m.hasLayer(other))m.removeLayer(other);if(!m.hasLayer(chosen))chosen.addTo(m);if(name==='satellite')m.fire('moveend');return;}
     if(name==='plan'&&!b.loading){
      b.loading=true;
      import('./vector-basemap').then(v=>v.createVectorBasemap(l,abort.signal)).then(layer=>{
@@ -44,9 +46,21 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
     }
    };
    changeBase.current();
-   fill.current=l.polygon([],{color:'#f2ffc3',weight:0,fillColor:'#b9ee66',fillOpacity:.22,interactive:false}).addTo(m);
-   line.current=l.polyline([],{color:'#f2ffc3',weight:3,interactive:false}).addTo(m);
-   const settled=()=>{const c=m.getCenter(),center:Position=[c.lng,c.lat],zoom=m.getZoom();setViewport({center,zoom});latest.current.onViewport?.(center,zoom);};
+   fill.current=l.polygon([],{color:'#e1f2ff',weight:0,fillColor:'#69b9ff',fillOpacity:.07,interactive:false}).addTo(m);
+   line.current=l.polyline([],{color:'#e1f2ff',weight:3,interactive:false}).addTo(m);
+   let qualityRequest=0,qualityAbort:AbortController|undefined;abort.signal.addEventListener('abort',()=>qualityAbort?.abort(),{once:true});const qualityCache=new Map<string,number>();
+   const settled=()=>{const c=m.getCenter(),center:Position=[c.lng,c.lat],zoom=m.getZoom();setViewport({center,zoom});latest.current.onViewport?.(center,zoom);
+    qualityAbort?.abort();qualityAbort=new AbortController();
+    const request=++qualityRequest,offset=l.Browser.retina?1:0;
+    if(latest.current.basemap!=='satellite'||zoom<17){setDetailLimit(false);return;}
+    const desired=Math.min(23,Math.round(zoom)+offset),cacheKey=`${c.lng.toFixed(3)},${c.lat.toFixed(3)}:${desired}`;
+    const apply=(native:number|undefined)=>{if(disposed||request!==qualityRequest||native===undefined)return;const layer=bases.current.satellite;if(!layer)return;
+     const limit=native-offset;if(layer.options.maxNativeZoom!==limit){layer.options.maxNativeZoom=limit;layer.redraw();}
+     setDetailLimit(zoom+offset>native);
+    };
+    if(qualityCache.has(cacheKey)){apply(qualityCache.get(cacheKey));return;}
+    availableImageryLevel(c.lng,c.lat,desired,qualityAbort.signal).then(native=>{if(native!==undefined){if(qualityCache.size>100)qualityCache.clear();qualityCache.set(cacheKey,native);}apply(native);}).catch(()=>{/* Keep the conservative last known level if metadata is unavailable. */});
+   };
    m.on('moveend',settled);
    m.on('click',(e:L.LeafletMouseEvent)=>{
     const p=latest.current;
@@ -65,7 +79,7 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
    fetch('/maps/africa-countries.geojson',{signal:abort.signal}).then(r=>{if(!r.ok)throw new Error();return r.json() as Promise<CountriesGeo>;}).then(geo=>{
     if(disposed)return;latest.current.onCountries(geo);
     const pane=m.createPane('country-boundaries');pane.style.pointerEvents='none';pane.style.zIndex='250';
-    l.geoJSON(geo as any,{pane:'country-boundaries',interactive:false,style:{color:'#e5edc2',weight:1,fill:false,opacity:.65}}).addTo(m);
+    l.geoJSON(geo as any,{pane:'country-boundaries',interactive:false,style:{color:'#d0e6ff',weight:1,fill:false,opacity:.65}}).addTo(m);
     const show=()=>{pane.style.display=m.getZoom()>10?'none':'';};m.on('zoomend',show);show();
    }).catch(()=>{if(!disposed)setError('Contours des pays indisponibles. Le dessin et la saisie GPS restent possibles.');});
   }).catch(()=>{if(!disposed)setError('La carte ne peut pas être chargée. Utilisez les points GPS ci-dessous.');});
@@ -100,5 +114,5 @@ export default memo(function ParcelMapLight(props:ParcelMapProps){
   if(!props.showLand||props.drawing||!props.closed||!props.landAssessment)return;
   for(const [cls,part] of Object.entries(props.landAssessment.fractions))if(part.geometry.coordinates.length)l.geoJSON(part.geometry as GeoJSON.MultiPolygon,{pane:'terrain',interactive:false,style:{fillColor:LAND_COLORS[cls as keyof typeof LAND_COLORS],fillOpacity:cls==='unknown'?.3:.55,color:LAND_COLORS[cls as keyof typeof LAND_COLORS],weight:.5}}).addTo(group);
  },[props.landAssessment,props.showLand,props.closed,props.drawing,ready]);
- return <div className="parcel-canvas-wrap map-light"><div ref={host} className="parcel-canvas" aria-label="Carte interactive du champ. Déplacez la carte, puis posez les coins avec le bouton."/>{!ready&&!error&&<div className="map-loading" role="status"><span className="map-loader"/>La carte arrive…</div>}{error&&<div className="map-service-message" role="status">{error}<button type="button" aria-label="Fermer le message de carte" onClick={()=>setError('')}>×</button></div>}<div className="map-coordinate-readout" aria-live="off">{Math.abs(viewport.center[1]).toFixed(5)}° {viewport.center[1]>=0?'N':'S'} · {Math.abs(viewport.center[0]).toFixed(5)}° {viewport.center[0]>=0?'E':'O'} <span>Zoom {viewport.zoom.toFixed(0)}</span></div></div>;
+ return <div className="parcel-canvas-wrap map-light"><div ref={host} className="parcel-canvas" aria-label="Carte interactive du champ. Déplacez la carte, puis posez les coins avec le bouton."/>{!ready&&!error&&<div className="map-loading" role="status"><span className="map-loader"/>La carte arrive…</div>}{detailLimit&&props.basemap==='satellite'&&<span className="map-quality-note" role="status">Détail maximal disponible ici · le zoom agrandit l’image</span>}{error&&<div className="map-service-message" role="status">{error}<button type="button" aria-label="Fermer le message de carte" onClick={()=>setError('')}>×</button></div>}<div className="map-coordinate-readout" aria-live="off">{Math.abs(viewport.center[1]).toFixed(5)}° {viewport.center[1]>=0?'N':'S'} · {Math.abs(viewport.center[0]).toFixed(5)}° {viewport.center[0]>=0?'E':'O'} <span>Zoom {viewport.zoom.toFixed(0)}</span></div></div>;
 });

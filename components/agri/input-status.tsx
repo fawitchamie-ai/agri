@@ -4,7 +4,7 @@ import type {SeasonalConfig} from '../../lib/seasonal/types';
 import {declareScenario,migrateInputs} from '../../lib/seasonal/provenance';
 import type {LandClass} from '../../lib/seasonal/land';
 const labels:Record<LandClass,string>={permanentWater:'Eau permanente cartographiée',seasonalWater:'Eau saisonnière ou récemment observée',wetland:'Zone humide',incompatible:'Bâti / surface incompatible',potentialLand:'Terre potentielle, aptitude à vérifier',unknown:'Inconnu'};
-const colors:Record<LandClass,string>={permanentWater:'#2876a8',seasonalWater:'#79b7cf',wetland:'#8f82ad',incompatible:'#a26554',potentialLand:'#a4bd7b',unknown:'#c3c3c3'};
+const colors:Record<LandClass,string>={permanentWater:'#2876a8',seasonalWater:'#719bd7',wetland:'#7e92b1',incompatible:'#4d78a9',potentialLand:'#7598c3',unknown:'#c3c3c3'};
 const fmt=(n:number)=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:1}).format(n);
 const statusLabels={measured:'Mesuré / déclaré mesuré',estimated:'Estimé',forecast:'Prévision',scenario:'Scénario / saisie',assumed:'Hypothèse',missing:'Manquant'};
 const inputLabel=(path:string)=>path.replace('soil.layers.','Horizon ').replace('.thetaFC',' · capacité au champ').replace('.thetaWP',' · flétrissement').replace('.initialTheta',' · humidité initiale').replace('.thicknessM',' · épaisseur').replace('soil.infiltrationMmDay','Infiltration journalière').replace('system.applicationEfficiency','Efficacité d’arrosage').replace('system.transportEfficiency','Efficacité de transport').replace('system.maxNetMmPerDay','Apport maximal par jour').replace('system.minIntervalDays','Intervalle minimal').replace('system.allowedWeekdays','Jours autorisés').replace('system.targetDepletionFraction','Déficit cible');
