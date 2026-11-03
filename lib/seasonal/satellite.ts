@@ -11,16 +11,39 @@ export const SATELLITE_LAYERS={
 } as const;
 export type SatelliteLayer=keyof typeof SATELLITE_LAYERS;
 const iso=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
-/** Metadata only: queries global service capabilities without sending a parcel. */
+/** Normalize advertised dates only; timestamps and declared ISO intervals are
+ * valid WMS time dimensions. Never fill missing months outside those intervals. */
+export function advertisedSatelliteDates(value:string,asOf:string){
+ const out=new Set<string>();
+ const date=(raw:string)=>{const t=raw.trim();const d=t.slice(0,10);return iso(d)&&(t.length===10||/^\d{4}-\d{2}-\d{2}T/.test(t)&&Number.isFinite(Date.parse(t)))?d:null;};
+ for(const token of value.split(',')){
+  const parts=token.trim().split('/');
+  if(parts.length===1){const d=date(token);if(d&&d<=asOf)out.add(d);continue;}
+  if(parts.length!==3)continue;
+  const from=date(parts[0]),to=date(parts[1]),step=parts[2].match(/^P(\d+)(D|M|Y)$/);
+  if(!from||!to||!step||Number(step[1])<1||from>to)continue;
+  const count=Number(step[1]),unit=step[2];
+  let current=from;
+  for(let i=0;i<20000&&current<=to&&current<=asOf;i++){
+   out.add(current);const d=new Date(current+'T00:00:00Z');
+   if(unit==='D')d.setUTCDate(d.getUTCDate()+count);
+   else if(unit==='M')d.setUTCMonth(d.getUTCMonth()+count);
+   else d.setUTCFullYear(d.getUTCFullYear()+count);
+   const next=d.toISOString().slice(0,10);if(next<=current)break;current=next;
+  }
+ }
+ return [...out].sort().reverse();
+}
+/** Metadata only: no parcel sent to the regional capabilities service. */
 export function satelliteDates(xml:string,asOf:string){
  if(xml.length>8_000_000||!iso(asOf))throw new Error('Métadonnées satellite ou date invalides.');
  const found:Record<string,{dates:string[];styles:string[]}>={};
  for(const block of xml.split(/<(?:\w+:)?Layer(?:\s[^>]*)?>/).slice(1)){
   const name=block.match(/<(?:\w+:)?Name>\s*([^<]+)\s*<\/(?:\w+:)?Name>/)?.[1]?.trim();
   if(!name||!['s2_l2a','ndvi_anomaly'].includes(name))continue;
-  const time=block.match(/<(?:\w+:)?Dimension\b[^>]*name=["']time["'][^>]*>([^<]+)<\/(?:\w+:)?Dimension>/)?.[1]??'';
-  const styles=[...block.matchAll(/<(?:\w+:)?Style>[\s\S]*?<(?:\w+:)?Name>([^<]+)<\/(?:\w+:)?Name>/g)].map(x=>x[1].trim());
-  found[name]={dates:[...new Set(time.split(',').map(s=>s.trim()).filter(d=>iso(d)&&d<=asOf))].sort().reverse(),styles};
+  const times=[...block.matchAll(/<(?:\w+:)?(?:Dimension|Extent)\b[^>]*name=["']time["'][^>]*>([^<]+)<\/(?:\w+:)?(?:Dimension|Extent)>/gi)].map(m=>m[1]);
+  const styles=[...block.matchAll(/<(?:\w+:)?Style\b[^>]*>[\s\S]*?<(?:\w+:)?Name>([^<]+)<\/(?:\w+:)?Name>/g)].map(x=>x[1].trim());
+  found[name]={dates:advertisedSatelliteDates(times.join(','),asOf),styles};
  }
  return Object.fromEntries(Object.entries(SATELLITE_LAYERS).map(([id,l])=>[id,{...l,dates:found[l.name]?.styles.includes(l.style)?found[l.name].dates.slice(0,l.period==='month'?24:120):[]}])) as Record<SatelliteLayer,{name:string;style:string;label:string;resolutionM:number;period:string;dates:string[]}>;
 }
@@ -29,7 +52,7 @@ let inflight:Promise<string>|undefined;
 async function capabilities(fetcher:typeof fetch){
  if(fetcher===fetch&&cache&&cache.until>Date.now())return cache.xml;
  if(fetcher===fetch&&inflight)return inflight;
- const task=(async()=>{const r=await fetcher(SATELLITE_WMS+'?service=WMS&request=GetCapabilities',{signal:AbortSignal.timeout(25000),redirect:'error'});if(!r.ok)throw new Error('Catalogue satellite temporairement indisponible.');const xml=await r.text();if(!xml.includes('WMS_Capabilities')&&!xml.includes('WMT_MS_Capabilities'))throw new Error('Catalogue satellite illisible.');if(xml.length>8_000_000)throw new Error('Catalogue satellite trop volumineux.');if(fetcher===fetch)cache={until:Date.now()+6*3600000,xml};return xml;})();
+ const task=(async()=>{const r=await fetcher(SATELLITE_WMS+'?service=WMS&version=1.3.0&request=GetCapabilities',{signal:AbortSignal.timeout(25000),redirect:'error'});if(!r.ok)throw new Error('Catalogue satellite temporairement indisponible.');const xml=await r.text();if(!xml.includes('WMS_Capabilities')&&!xml.includes('WMT_MS_Capabilities'))throw new Error('Catalogue satellite illisible.');if(xml.length>8_000_000)throw new Error('Catalogue satellite trop volumineux.');if(fetcher===fetch)cache={until:Date.now()+6*3600000,xml};return xml;})();
  if(fetcher===fetch)inflight=task;
  try{return await task;}finally{if(fetcher===fetch)inflight=undefined;}
 }
@@ -70,4 +93,12 @@ export async function satelliteScenes(input:unknown,asOf:string,fetcher:typeof f
  const dates=new Map<string,{date:string;sceneCloudMin:number|null;sceneCloudMax:number|null}>();
  for(const item of data.features){const p=item.properties,date=p?.datetime?.slice(0,10);if(!date||!iso(date)||date>asOf||date<from.slice(0,10))continue;const cloud=p?.['eo:cloud_cover'],qualified=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;const old=dates.get(date);dates.set(date,{date,sceneCloudMin:qualified===null?old?.sceneCloudMin??null:old?.sceneCloudMin==null?qualified:Math.min(qualified,old.sceneCloudMin),sceneCloudMax:qualified===null?old?.sceneCloudMax??null:old?.sceneCloudMax==null?qualified:Math.max(qualified,old.sceneCloudMax)});}
  return {dates:[...dates.values()].sort((a,b)=>b.date.localeCompare(a.date)),source:'Digital Earth Africa STAC / Sentinel-2 L2A',scope:'Scènes intersectant l’emprise. La couverture nuageuse concerne la scène entière, pas une mesure sur votre parcelle.'};
+}
+
+/** Public undated basemap, distinct from a dated Sentinel observation or index. */
+export function satelliteBasemapUrl(bounds:number[]){
+ // Reuse the exact same geographic bounds validation as WMS.
+ satelliteMapUrl('rgb','2026-01-01',bounds);
+ const u=new URL('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export');
+ u.search=new URLSearchParams({bbox:bounds.join(','),bboxSR:'4326',imageSR:'4326',size:'640,400',format:'png32',transparent:'false',f:'image'}).toString();return u.toString();
 }
