@@ -8,6 +8,6 @@ test('live public satellite service: catalogue and PNG for a fixed public Togo s
  assert.ok(catalog.rgb.dates.length,'Published RGB time/style was not decoded');assert.ok(catalog.ndvi.dates.length,'Published NDVI time/style was not decoded');assert.ok(catalog.anomaly.dates.length,'Monthly time/style was not decoded');
  const url=satelliteMapUrl('rgb',catalog.rgb.dates[0],[1,8,1.01,8.01]);let r;
  try{r=await fetch(url,{signal:AbortSignal.timeout(20000)});}catch(e){t.skip('Image provider unavailable: '+e.message);return;}
- if(!r.ok){t.skip('Image HTTP '+r.status);return;}
+ if(!r.ok){const body=await r.text();t.diagnostic('Image response '+r.status+' '+body.slice(0,2000));t.diagnostic('Requested '+url);t.skip('Image HTTP '+r.status);return;}
  const data=new Uint8Array(await r.arrayBuffer());assert.deepEqual([...data.slice(0,8)],[137,80,78,71,13,10,26,10]);t.diagnostic('Public PNG received, '+data.length+' bytes. Coverage/cloudiness still require parcel inspection.');
 });
