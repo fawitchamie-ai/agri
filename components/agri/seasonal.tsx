@@ -58,20 +58,23 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [nutrientResult,setNutrientResult]=useState<ReturnType<typeof nutrientBalance>|null>(null);
   const capabilities = seasonalCapabilities(config.country, config.cropProfile?.id);
   const terrainIdentity=JSON.stringify(config.parcelGeometry??null);
+  const terrainKey=JSON.stringify([scope,simulationRetry,terrainIdentity]);
+  const preparedTerrain=useRef('');
   useEffect(()=>{
     if(loadedScope!==scope||!config.parcelGeometry||parcelDraft)return;
+    preparedTerrain.current='';setSimulationError('');setPlanStale(true);
     const geometry=config.parcelGeometry,controller=new AbortController();let alive=true;
     seasonalRequest<{assessment:NonNullable<SeasonalConfig['landAssessment']>}>({action:'land',geometry,refresh:simulationRetry>0},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}})
-      .then(r=>{if(alive&&r.assessment)setConfig(old=>JSON.stringify(old.parcelGeometry)===JSON.stringify(geometry)?{...old,landAssessment:r.assessment}:old);})
+      .then(r=>{if(alive&&r.assessment){preparedTerrain.current=terrainKey;setConfig(old=>JSON.stringify(old.parcelGeometry)===JSON.stringify(geometry)?{...old,landAssessment:r.assessment}:old);}})
       .catch(e=>{if(alive&&e.name!=='AbortError'){setSimulationError(e.message);setPlanStale(false);}});
-    return()=>{alive=false;controller.abort();};
+    return()=>{alive=false;preparedTerrain.current='';controller.abort();};
   },[terrainIdentity,parcelDraft,simulationRetry,scope,loadedScope]);
   useEffect(()=>{
     if(loadedScope!==scope||!config.parcelGeometry||parcelDraft||!config.stages.length){setPlan(null);setPlanStale(false);setSimulationError('');return;}
     // The terrain effect prepares authoritative evidence first. Starting both
     // operations together doubled the initial raster work, and the terrain
     // response then cancelled and restarted the still-running simulation.
-    if(!config.landAssessment||geometryIdentity(config.landAssessment.geometry)!==geometryIdentity(config.parcelGeometry)){
+    if(preparedTerrain.current!==terrainKey||!config.landAssessment||geometryIdentity(config.landAssessment.geometry)!==geometryIdentity(config.parcelGeometry)){
       setPlan(null);setPlanStale(true);return;
     }
     setPlanStale(true);setSimulationError('');
