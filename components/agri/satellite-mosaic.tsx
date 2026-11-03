@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {satelliteTilePlan,type SatelliteLayer} from '../../lib/seasonal/satellite';
+import {satelliteTilePlan,SATELLITE_LAYERS,type SatelliteLayer} from '../../lib/seasonal/satellite';
 
 /** Assemble bounded provider images on the client, rather than stretching one 512 px request. */
 export default function SatelliteMosaic({layer,date,bounds,onLoad,onError}:{layer:SatelliteLayer;date:string;bounds:number[];onLoad:(canvas:HTMLCanvasElement)=>void;onError:()=>void}){
@@ -21,5 +21,5 @@ export default function SatelliteMosaic({layer,date,bounds,onLoad,onError}:{laye
  // The key includes every extent coordinate; geometry changes cancel all previous requests.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[key]);
- return <canvas ref={canvas} width={1024} height={640} className={`parcel-raster-image${layer==='rgb'?'':' analytical-raster'}${layer==='classification'?' categorical':''}`} style={{visibility:ready?'visible':'hidden'}} role="img" aria-label={`${layer}, observation du ${date}, palette bleue de présentation`}/>;
+ return <canvas ref={canvas} width={1024} height={640} className={`parcel-raster-image${layer==='classification'?' categorical':''}`} style={{visibility:ready?'visible':'hidden'}} role="img" aria-label={`${SATELLITE_LAYERS[layer].label}, observation du ${date}, couleurs d’origine du fournisseur`}/>;
 }
