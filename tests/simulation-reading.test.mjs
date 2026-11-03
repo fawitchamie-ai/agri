@@ -9,6 +9,7 @@ import {planSeason} from '../lib/seasonal/yield.ts';
 import {assessLandGeometry} from '../lib/seasonal/land.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
 import {declareScenario,migrateInputs} from '../lib/seasonal/provenance.ts';
+import {fertilizerScope} from '../lib/seasonal/fertilizer-scenario.ts';
 // Compile the actual client component for SSR; no browser, identity or remote sources mocked here.
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler'));
 const {build}=wr('esbuild');
@@ -58,15 +59,22 @@ test('blocked and stale simulations display the action needed without showing a 
  const blocked=render(c);assert.match(blocked,/Confirmer les hypothèses/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé/);
  const stale=render(declareScenario(c),true);assert.match(stale,/Recalcul en cours/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé/);
 });
+test('overview displays the opted-in fertilizer range and hides it during recalculation',()=>{
+ const c=declareScenario(fixture());c.asOfDate='2026-11-02';
+ c.fertilizerScenario={version:'quefts-scenario-1',scope:fertilizerScope(c),acceptedTransfer:true,ceilingKgHa:6000,ceilingSource:'Synthetic UI ceiling',availableOn:c.asOfDate,control:null};
+ const html=render(c);assert.match(html,/RENDEMENT AVEC ENGRAIS PRÉVUS/);assert.match(html,/Sans nouvel apport prévu/);assert.match(html,/sans intervalle prédictif ni validation locale/);
+ assert.doesNotMatch(render(c,true),/RENDEMENT AVEC ENGRAIS PRÉVUS|Sans nouvel apport prévu/);
+});
 test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',()=>{
  const config=declareScenario(fixture());
  const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
  assert.match(html,/Calcul interrompu/);assert.match(html,/Relancer le calcul/);
  assert.doesNotMatch(html,/Recalcul en cours…|Recalcul du bilan d’eau en cours/);
  assert.match(html,/role="tab"[^>]*>Engrais/);
- const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,onAdvanced:()=>{}}));
+ const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,plan:null,stale:false,onChange:()=>{},onAdvanced:()=>{}}));
  assert.match(fertilizerHtml,/Voir les références et le bilan d’engrais/);
  assert.match(html,/modifier l’arrosage ne change pas le rendement saisi/);
  assert.match(html,/Méthode de calcul/);
- assert.match(fertilizerHtml,/effet sur le rendement n’est pas calculé/);
+ assert.match(fertilizerHtml,/prévision parcellaire validée et la dose optimale restent indisponibles/);
+ assert.match(fertilizerHtml,/Scénario exploratoire/);
 });

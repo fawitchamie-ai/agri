@@ -1,13 +1,14 @@
 'use client';
 import {seasonalRequest} from '../../lib/seasonal/request';
 import {useEffect,useState} from 'react';
-import type {SeasonalConfig} from '../../lib/seasonal/types';
+import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
+import FertilizerSimulator from './fertilizer-simulator';
 import type {fertilizerEvidence,nextFertilizerInformation} from '../../lib/seasonal/fertilizer-evidence';
 type Evidence=ReturnType<typeof fertilizerEvidence>;
 const fmt=(v:number|null|undefined,d=2)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 async function post(body:unknown,signal?:AbortSignal){return seasonalRequest<any>(body,signal);}
 
-export default function FertilizerPanel({config,onAdvanced}:{config:SeasonalConfig;onAdvanced:(tab:string)=>void}){
+export default function FertilizerPanel({config,plan,stale,onChange,onAdvanced}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onAdvanced:(tab:string)=>void}){
  const [data,setData]=useState<Evidence|null>(null),[error,setError]=useState(''),[action,setAction]=useState<ReturnType<typeof nextFertilizerInformation>|null>(null);
  const cropId=config.cropProfile?.id??'';
  useEffect(()=>{setData(null);setError('');if(!cropId)return;const c=new AbortController();post({action:'fertilizer-evidence',country:config.country,cropId,asOfDate:config.asOfDate},c.signal).then(setData).catch(e=>{if(!c.signal.aborted)setError(e.message);});return()=>c.abort();},[config.country,cropId,config.asOfDate]);
@@ -17,7 +18,8 @@ export default function FertilizerPanel({config,onAdvanced}:{config:SeasonalConf
  const min=Math.min(0,...obs.flatMap(r=>r.deltaObserved80)),max=Math.max(1,...obs.flatMap(r=>r.deltaObserved80)),x=(n:number)=>160+(n-min)/(max-min)*360;
  return <section className="qs-card" aria-label="Engrais et preuves expérimentales"><div className="qs-card-heading"><h2>Mes engrais et leurs effets</h2><span className="qs-tag">Réponse parcellaire non validée</span></div>
   {ready?.nationalReference&&<p><strong>Repère national {ready.nationalReference.year} : {fmt(ready.nationalReference.kgHa!/1000)} t/ha récolté.</strong> {ready.nationalReference.context} <a href={ready.nationalReference.source} target="_blank" rel="noreferrer">Source FAOSTAT</a>. Moyenne de pratiques diverses, y compris fertilisées ; ce repère n’est ni un témoin sans engrais ni un rendement garanti pour votre champ.</p>}
-  <p>Vos produits, doses et dates permettent de calculer les quantités de nutriments. Leur effet sur le rendement n’est pas calculé : le modèle de gain n’a pas franchi les critères de validation ; aucune dose optimale personnalisée n’est proposée.</p>
+  <p>Vos produits, doses et dates permettent de calculer les quantités de nutriments. Pour le maïs, vous pouvez explorer leur effet avec deux profils publiés de nutrition N–P–K. La prévision parcellaire validée et la dose optimale restent indisponibles.</p>
+  <FertilizerSimulator config={config} plan={plan} stale={stale} onChange={onChange} onAdvanced={onAdvanced}/>
   {error&&<p role="alert">{error} Les références ne sont pas disponibles pour le moment.</p>}
   {ready&&(cropId==='maize'||!ready.extension?.observations.length)&&<details><summary>{obs.length?'Voir les comparaisons réellement observées':'Consulter les données et limites pour cette culture'}</summary>
    {!obs.length?<p>Aucune comparaison témoin–NPK suffisamment appariée dans la version intégrée pour ce pays et cette culture. Une absence de données ne signifie pas une absence de réponse.</p>:<>
@@ -31,7 +33,7 @@ export default function FertilizerPanel({config,onAdvanced}:{config:SeasonalConf
     <p>Les médianes des deux bras ne sont pas nécessairement séparées de la médiane des différences. Les différences négatives valides restent présentes ; elles ne prouvent pas à elles seules une toxicité.</p>
     {obs.map(r=><p key={r.site}>{r.location} : N {r.doseReported.N}, P {r.doseReported.P}, K {r.doseReported.K} kg/ha tels que rapportés. Base P/K non qualifiée pour une conversion en produit commercial ; humidité, année et surface de référence non vérifiées.</p>)}
    </>}
-   {ready.calibration&&<p>Évaluation de recherche sur {ready.calibration.test.pairs} paires dans {ready.calibration.test.localities} groupes de localités tenus à l’écart : MAE {fmt(ready.calibration.test.MAE)} t/ha sur le supplément, RMSE {fmt(ready.calibration.test.RMSE)} t/ha. {config.country==='TGO'&&<>Au Togo : MAE {fmt(ready.calibration.byCountry.Togo.MAE)} t/ha, sur 21 paires dans deux localités.</>} L’intervalle prédictif à 95 % reste indisponible et le modèle reste désactivé. Une correction d’alias de localités a invalidé un premier découpage ; cette évaluation est un diagnostic de recherche.</p>}
+   {ready.calibration&&<p>Évaluation de recherche sur {ready.calibration.test.pairs} paires dans {ready.calibration.test.localities} groupes de localités tenus à l’écart : MAE {fmt(ready.calibration.test.MAE)} t/ha sur le supplément, RMSE {fmt(ready.calibration.test.RMSE)} t/ha. {config.country==='TGO'&&<>Au Togo : MAE {fmt(ready.calibration.byCountry.Togo.MAE)} t/ha, sur 21 paires dans deux localités.</>} L’intervalle prédictif à 95 % reste indisponible et cet ancien modèle statistique reste désactivé. Une correction d’alias de localités a invalidé un premier découpage ; cette évaluation est un diagnostic de recherche.</p>}
    {ready.limits.map(l=><p key={l}>{l}</p>)}<p>{ready.attribution} · {ready.license} · <a href={ready.source} target="_blank" rel="noreferrer">Données et citation</a>.</p>
   </details>}
   {ready?.extension&&<RiceEvidence extension={ready.extension}/>}

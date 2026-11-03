@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  fertilizerScenario?: import('./fertilizer-scenario.ts').FertilizerScenarioInput;
   fieldTrials?: import('./field-trials.ts').FieldTrial[];
   managementPlan?: import('./management.ts').ManagementPlan;
   sowingPlan?: import('./sowing.ts').SowingInput;
@@ -79,6 +80,7 @@ export type WaterPeriod = {
 };
 export type WaterPlan = {
   response?: ReturnType<typeof import('./intervention-outcome.ts').interventionOutcome>;
+  fertilizerScenario?: ReturnType<typeof import('./fertilizer-scenario.ts').fertilizerScenario>;
   management?: ReturnType<typeof import('./management.ts').managementSummary>;
   sowingPlan?: import('./sowing.ts').SowingEstimate;
   salinity?: {status:'unavailable';missing:string[]}|ReturnType<typeof import('./salinity.ts').salinityScenario>;

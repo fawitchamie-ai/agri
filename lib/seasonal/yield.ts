@@ -1,4 +1,5 @@
 import {interventionOutcome} from './intervention-outcome.ts';
+import {fertilizerScenario} from './fertilizer-scenario.ts';
 import {managementSummary} from './management.ts';
 import {estimateSowing} from './sowing.ts';
 import {cropById} from './catalog.ts';
@@ -172,6 +173,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
  return attachSalinity(plan,c);
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
+ if(c.fertilizerScenario)plan.fertilizerScenario=fertilizerScenario(c,plan);
  if(c.yieldEstimation||c.managementPlan)plan.response=interventionOutcome(c,plan);
  plan.sowingPlan=estimateSowing(c);
  if(c.managementPlan)plan.management=managementSummary(c,plan);

@@ -4,7 +4,7 @@ import type {SeasonalConfig,WaterPlan,WaterEvent,WeatherDay} from './types.ts';
 
 const DAY=86400000;
 const shift=(d:string,n:number)=>new Date(Date.parse(d)+n*DAY).toISOString().slice(0,10);
-export type FieldAction={id:string;level:'urgent'|'check'|'planned';title:string;reason:string;source:string;target:'map'|'water'|'yield'|'notes'|'soil'};
+export type FieldAction={id:string;level:'urgent'|'check'|'planned';title:string;reason:string;source:string;target:'map'|'water'|'yield'|'notes'|'soil'|'fertilizer'};
 /** A reading aid for existing evidence; no additional yield or diagnostic model. */
 export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[],stale=false,loading=false){
  const flooded=c.waterCondition==='waterlogged'||c.waterCondition==='submerged';
