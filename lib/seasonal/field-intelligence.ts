@@ -23,7 +23,7 @@ export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[]
  const realWeather=weather.filter(x=>x.day&&x.day.status!=='scenario');
  const covered=realWeather.filter(x=>x.day!.rainMm!==null).length;
  const rain=covered===7?realWeather.reduce((n,x)=>n+x.day!.rainMm!,0):null;
- const mode=c.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded';
+ const mode=c.yieldScenario??(c.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded');
  const estimate=current?.yieldEstimation;
  const result=estimate?.scenarios.find(s=>s.id===mode)?.totals??null;
  const actions:FieldAction[]=[];

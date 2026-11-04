@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  yieldScenario?: 'rainfed'|'recorded'|'proposed';
   fertilizerScenario?: import('./fertilizer-scenario.ts').FertilizerScenarioInput;
   fieldTrials?: import('./field-trials.ts').FieldTrial[];
   managementPlan?: import('./management.ts').ManagementPlan;
