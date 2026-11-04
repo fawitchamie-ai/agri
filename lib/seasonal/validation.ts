@@ -108,6 +108,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   const validated:SeasonalConfig = {
     ...(cropProfile?{cropProfile}:{}),...(c.adjustDepletionToEtc===undefined?{}:{adjustDepletionToEtc:c.adjustDepletionToEtc}),...(c.soilAnalyses===undefined?{}:{soilAnalyses}),
     ...(c.landSelection?{landSelection:c.landSelection}:{}),country: c.country, ...(c.waterCondition!==undefined?{waterCondition:c.waterCondition}:{}), systemDomain: c.systemDomain, name: str(c.name, 'Parcelle', 120), territory: str(c.territory, 'Localité', 160), crop: str(c.crop, 'Culture', 100), variety: str(c.variety, 'Variété ou mention inconnue', 100), sowingDate, asOfDate,
+    ...(['rainfed','recorded','proposed'].includes(c.yieldScenario??'')?{yieldScenario:c.yieldScenario}:{}),
     areaM2: optional(c.areaM2, 'Surface en m²', .01, 1e9), latitude: optional(c.latitude, 'Latitude', -90, 90), longitude: optional(c.longitude, 'Longitude', -180, 180),
     parameterSource: str(c.parameterSource, 'Source des paramètres culturaux', 600),
     soil: { source: str(soil.source, 'Source du sol', 600), layers, infiltrationMmDay: optional(soil.infiltrationMmDay, 'Infiltration journalière', .01, 2000) }, stages,
