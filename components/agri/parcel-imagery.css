@@ -1,0 +1,19 @@
+.parcel-layer-card .parcel-raster-frame{max-width:960px;background:#e7ecec;border:1px solid #d4dfe4;isolation:isolate}
+.parcel-layer-card .parcel-raster-image{background:transparent}
+.basemap-mosaic{overflow:hidden;z-index:1;background:#e7ecec!important}
+.basemap-mosaic img{position:absolute;display:block;max-width:none;max-height:none;margin:0;padding:0;border:0}
+.imagery-nodata-pattern{position:absolute;inset:0;z-index:2;background:repeating-linear-gradient(135deg,#fff4 0px,#fff4 1px,transparent 1px,transparent 9px);pointer-events:none}
+.imagery-index-layer{position:absolute;inset:0;z-index:3}
+.parcel-layer-card .parcel-raster-outline{z-index:4}
+.imagery-view-switch{display:flex;border:1px solid #d2dfe8;border-radius:5px;overflow:hidden}
+.imagery-view-switch button{background:#fff;border:0;cursor:pointer;padding:10px 13px;font-size:11px;color:#395c78}
+.imagery-view-switch [aria-pressed=true]{background:#183f68;color:white}
+.imagery-resolution{display:flex;gap:13px 25px;align-items:baseline;flex-wrap:wrap;padding:12px 15px;background:#f1f5f8;border-left:3px solid #8aa1ad;margin:0 0 14px;max-width:960px;font-size:11px;line-height:1.7}
+.imagery-resolution strong{font-size:12px;color:#254e6b}.imagery-resolution span{color:#678093}
+.imagery-overlay-controls{display:flex;align-items:center;gap:12px 25px;flex-wrap:wrap;max-width:960px;margin:15px 0;font-size:11px;color:#45677f}
+.imagery-overlay-controls label{display:flex;align-items:center;gap:8px}.imagery-overlay-controls input[type=range]{width:100px}
+.imagery-overlay-controls>span{margin-left:auto}.imagery-reading-note{font-size:11px;color:#687e8f;line-height:1.8;max-width:760px}
+.imagery-empty{position:absolute;z-index:5;left:50%;top:50%;transform:translate(-50%,-50%);background:#fffffff5;padding:22px;max-width:85%;width:350px;box-shadow:0 3px 25px #18395122;border:1px solid #d8e1e8;border-radius:6px;color:#25475f}
+.imagery-empty strong{font-size:15px}.imagery-empty p{font-size:12px;line-height:1.8}.imagery-empty .btn{font-size:11px;min-height:40px}
+.parcel-layer-card .satellite-loading{z-index:6}
+@media(max-width:600px){.imagery-overlay-controls{gap:14px}.imagery-overlay-controls>span{margin-left:0;width:100%}.imagery-empty{padding:16px;width:290px}.imagery-empty strong{font-size:13px}.imagery-empty p{font-size:11px}.imagery-empty .btn{padding:8px 12px}.imagery-resolution{gap:5px}.imagery-view-switch{width:100%}.imagery-view-switch button{flex:1}.parcel-layer-card .satellite-controls{align-items:start}}

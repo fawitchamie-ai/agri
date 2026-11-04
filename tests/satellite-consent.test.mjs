@@ -5,7 +5,7 @@ import React,{act} from 'react';
 import {Window} from 'happy-dom';
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler')),{build}=wr('esbuild');
 test('imagery requires consent for each geometry; HD skips observation metadata and public indices avoid simulation CPU',async()=>{
- const built=await build({entryPoints:['components/agri/parcel-layers.tsx'],bundle:true,platform:'node',format:'cjs',write:false,jsx:'automatic',external:['react','react/jsx-runtime']});
+ const built=await build({entryPoints:['components/agri/parcel-layers.tsx'],bundle:true,platform:'node',format:'cjs',write:false,jsx:'automatic',external:['react','react/jsx-runtime'],loader:{'.css':'empty'}});
  const module={exports:{}};new Function('module','exports','require',built.outputFiles[0].text)(module,module.exports,require);
  const Layers=module.exports.default,window=new Window({url:'https://agri.test'}),previous=new Map(),calls=[],fetchBefore=globalThis.fetch;
  for(const [key,value] of Object.entries({window,document:window.document,navigator:window.navigator,IS_REACT_ACT_ENVIRONMENT:true})){
@@ -19,7 +19,9 @@ test('imagery requires consent for each geometry; HD skips observation metadata 
  try{
   await act(async()=>root.render(render(0)));await click('Satellite');assert.equal(calls.length,0);
   assert.equal(host.querySelectorAll('img').length,0,'No provider image before consent');
-  await click('Charger les images de cette parcelle');assert.equal(calls.length,0,'Undated HD does not request the catalogue or scene geometry');assert.match(host.querySelector('.parcel-raster-image').src,/arcgisonline/);
+  await click('Charger les images de cette parcelle');assert.equal(calls.length,0,'Undated HD does not request the catalogue or scene geometry');
+  const tiles=[...host.querySelectorAll('.basemap-mosaic img')];assert.ok(tiles.length>0&&tiles.length<=30);
+  assert.ok(tiles.every(t=>t.src.startsWith('https://services.arcgisonline.com/')&&t.src.includes('/tile/')&&!t.src.includes('/export')),'HD uses existing public image tiles instead of the failing export endpoint');
   await click('Vigueur');assert.equal(calls.length,2);assert.ok(calls.some(u=>u.startsWith('https://ows.digitalearth.africa/')));assert.ok(calls.some(u=>u.startsWith('https://explorer.digitalearth.africa/')));assert.ok(calls.every(u=>!u.startsWith('/api/')));
   await act(async()=>root.render(render(.01)));assert.equal(calls.length,2,'A new geometry never inherits consent, including during the first effects pass');assert.equal(host.querySelectorAll('img').length,0);
   await click('Vigueur');assert.ok(host.textContent.includes('Charger les images de cette parcelle'));assert.equal(calls.length,2);

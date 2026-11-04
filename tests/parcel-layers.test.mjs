@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {createRequire} from 'node:module';import React from 'react';import {renderToStaticMarkup} from 'react-dom/server';
 import {exampleCampaign} from '../lib/seasonal/example.ts';import {assessLandGeometry} from '../lib/seasonal/land.ts';import {COUNTRIES} from '../lib/seasonal/types.ts';
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler')),{build}=wr('esbuild');
-const bundle=await build({entryPoints:['components/agri/parcel-layers.tsx'],bundle:true,format:'cjs',platform:'node',packages:'external',write:false,jsx:'automatic'}),compiled={exports:{}};new Function('require','module','exports',bundle.outputFiles[0].text)(require,compiled,compiled.exports);const Layers=compiled.exports.default;
+const bundle=await build({entryPoints:['components/agri/parcel-layers.tsx'],bundle:true,format:'cjs',platform:'node',packages:'external',write:false,jsx:'automatic',loader:{'.css':'empty'}}),compiled={exports:{}};new Function('require','module','exports',bundle.outputFiles[0].text)(require,compiled,compiled.exports);const Layers=compiled.exports.default;
 const shape={type:'Polygon',coordinates:[[[1,8],[1.002,8],[1.002,8.002],[1,8.002],[1,8]]]};
 const cell=value=>({id:'worldcover',status:'available',provider:'Synthetic test',product:'Test land',version:'test',referencePeriod:null,observedAt:'2026-10-01',acquiredAt:'2026-10-02',resolutionM:10,crs:'EPSG:4326',cells:[{id:'one',geometry:shape,value}],reason:null,assets:[],limitations:[]});
 test('water is visible as water in each country, native sources and area stay explicit',()=>{
