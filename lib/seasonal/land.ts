@@ -3,7 +3,7 @@ import * as clipping from './geometry-ops.ts';
 import {validateParcel,parcelMetrics,type ParcelPolygon,type Position} from './parcel.ts';
 import {scopeId,geometryIdentity} from './provenance.ts';
 
-export const LAND_VERSION='land-1' as const;
+export const LAND_VERSION='land-2' as const;
 export type LandClass='permanentWater'|'seasonalWater'|'wetland'|'incompatible'|'potentialLand'|'unknown';
 export const LAND_CLASSES:LandClass[]=['permanentWater','seasonalWater','wetland','incompatible','potentialLand','unknown'];
 export type MultiShape={type:'MultiPolygon';coordinates:Position[][][]};
@@ -36,7 +36,8 @@ function wcClass(v:number|null):LandClass {
   if(v===80)return 'permanentWater'; // WorldCover definition: permanent water bodies (historical 2021).
   if(v===90||v===95)return 'wetland';
   if(v===50||v===70)return 'incompatible';
-  if(v!==null&&[10,20,30,40,60,100].includes(v))return 'potentialLand';
+  // Class 60 mixes soil, sand and rock. It cannot establish usable soil.
+  if(v!==null&&[10,20,30,40,100].includes(v))return 'potentialLand';
   return 'unknown';
 }
 function layerClass(id:LandLayer['id'],v:number|null):LandClass|null {
@@ -93,6 +94,7 @@ export function assessLandGeometry(input:unknown,layers:LandLayer[],now=new Date
   if(excludedAreaM2>tolerance)messages.push('Eau permanente ou surface incompatible cartographiée : cette partie est exclue du calcul terrestre standard.');
   if(fractions.wetland.areaM2>tolerance||fractions.seasonalWater.areaM2>tolerance)messages.push('Zone humide ou eau saisonnière : diagnostic de culture, saison, nappe et drainage nécessaire.');
   if(unknownAreaM2>tolerance)messages.push('Couverture inconnue : absence de classement ne signifie pas terre cultivable.');
+  if(layers.some(l=>l.id==='worldcover'&&l.status==='available'&&l.cells.some(c=>c.value===60)))messages.push('Sol nu / végétation clairsemée : sol, sable et roches non distingués par WorldCover. Cette classe reste à vérifier et n’est pas incluse dans la surface terrestre proposée.');
   if(layers.some(l=>l.id==='jrc'&&l.status==='available'))messages.push('La saisonnalité JRC 2024 précise la classe historique de 2021 ; une contradiction eau permanente / sec reste à vérifier.');
   messages.push('Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.');
   for(const l of layers)if(l.status==='missing')messages.push(`${l.product} indisponible : ${l.reason}`);

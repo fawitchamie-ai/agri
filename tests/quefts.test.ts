@@ -93,3 +93,12 @@ test('verified sown area used exactly once; baseline water outputs are unchanged
  near(r.productionWithKg![0],r.yieldWithKgHa[0]*.1);near(r.extraProductionKg![1],r.deltaKgHa[1]*.1);
  const q=planSeason({...c,fertilizerScenario:undefined});assert.deepEqual(q.yieldEstimation,p.yieldEstimation);assert.deepEqual(q.totals,p.totals);
 });
+
+test('planned surface supports fertilizer comparison without a sowing declaration or arithmetic yield',()=>{
+ const c=scenario();c.landAssessment=landFixture(c.parcelGeometry);c.managementPlan!.products=[fertilizer(c)];
+ c.yieldEstimation={version:'yield-input-1',method:'automatic',areaBasis:'planned',scopeGeometryId:geometryIdentity(c.parcelGeometry),homogeneityAssumption:'Synthetic single unit',units:[{id:'u1',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic planned area',reference:null}]};
+ const p=planSeason(c),r=p.fertilizerScenario!.results!;
+ assert.equal(p.yieldEstimation!.surface.sownM2,null);assert.equal(p.yieldEstimation!.scenarios.length,0);
+ assert.equal(r.areaBasis,'planned');assert.equal(r.denominator,'planned');assert.equal(r.areaM2,1000);
+ near(r.productionWithKg![0],r.yieldWithKgHa[0]*.1);
+});

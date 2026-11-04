@@ -51,10 +51,10 @@ export async function startLandJob(input:unknown,s:Identity){
  const legacy=await database().prepare('SELECT id,result FROM land_jobs WHERE id=? AND coop_id=? AND owner_id=?').bind(legacyId,s.coopId,s.userId).first<{id:string;result:string|null}>();
  if(legacy){
   const parts=await database().prepare('SELECT result FROM land_sectors WHERE job_id=? AND result IS NOT NULL').bind(legacyId).all<{result:string}>();
-  const compatible=(!legacy.result||JSON.parse(legacy.result).areaMethod===AREA_METHOD)&&parts.results.every(p=>JSON.parse(p.result).areaMethod===AREA_METHOD);
+  const compatible=parts.results.length>0&&(!legacy.result||(JSON.parse(legacy.result).version===LAND_VERSION&&JSON.parse(legacy.result).areaMethod===AREA_METHOD))&&parts.results.every(p=>JSON.parse(p.result).version===LAND_VERSION&&JSON.parse(p.result).areaMethod===AREA_METHOD);
   if(compatible)return landJobStatus(legacyId,s);
  }
- const id=await digest(JSON.stringify(['land-sectors-3',AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
+ const id=await digest(JSON.stringify(['land-sectors-3',LAND_VERSION,AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape),now.slice(0,10)]));
  const existing=await database().prepare('SELECT id FROM land_jobs WHERE id=?').bind(id).first();if(existing)return landJobStatus(id,s);
  const sectors=splitLandSectors(shape),db=database();
  // Job and rows are atomic. Bounded 256 rows; D1 batch is transactional.
@@ -87,7 +87,7 @@ const smallAcquisitions=new Map<string,Promise<LandAssessment>>();
  * source version. A new isolate must not decode the same TIFFs on every edit.
  * Never accept the client's landAssessment as authoritative evidence. */
 async function smallAuthoritativeLand(shape:ParcelPolygon,s:Identity,refresh:boolean):Promise<LandAssessment>{
- const id=await digest(JSON.stringify(['land-cache-1',LAND_SOURCES,AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape)]));
+ const id=await digest(JSON.stringify(['land-cache-1',LAND_VERSION,LAND_SOURCES,AREA_METHOD,s.coopId,s.userId,geometryIdentity(shape)]));
  const pending=smallAcquisitions.get(id);if(pending)return pending;
  const task=(async()=>{
   const db=database();

@@ -1,3 +1,6 @@
+import {waterImpact} from './water-impact.ts';
+import {SEASONAL_KY,KY_VERSION,seasonalWaterFactor} from './water-response.ts';
+export {SEASONAL_KY,KY_VERSION,FAO_SOURCE} from './water-response.ts';
 import {interventionOutcome} from './intervention-outcome.ts';
 import {fertilizerScenario} from './fertilizer-scenario.ts';
 import {managementSummary} from './management.ts';
@@ -12,11 +15,7 @@ import {validateConfig,validateEvents,InputError} from './validation.ts';
 import {planWater} from './engine.ts';
 import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
 
-export const YIELD_VERSION='conditional-yield-1.2.0';
-export const KY_VERSION='FAO56-table24-seasonal-2';
-export const FAO_SOURCE='https://www.fao.org/4/x0490e/x0490e0e.htm';
-/** Whole-cycle values only. No interpolation to unlisted crops, no stage products. */
-export const SEASONAL_KY:Record<string,number>={maize:1.25,sorghum:.9,soybean:.85,groundnut:.7,tomato:1.05,cabbage:.95,watermelon:1.1,onion:1.1,'bell-pepper':1.1};
+export const YIELD_VERSION='conditional-yield-2.0.0';
 export type YieldReference={
   kind:'scenario'|'attainable';kgHa:number;denominator:'sown'|'harvested';source:string;
   availableOn:string;context:string;cropId:string;
@@ -25,13 +24,15 @@ export type YieldReference={
 };
 export type YieldUnit={id:string;geometry?:MultiShape;sownAreaM2:number|null;harvestedAreaM2:number|null;areaSource:string;
  reference:YieldReference|null;conditions?:Pick<SeasonalConfig,'soil'|'weather'|'waterCondition'>};
-export type YieldInput={version:'yield-input-1';method:'declared-scenario'|'fao-seasonal';scopeGeometryId:string;
+// sownAreaM2 is the legacy wire field for the calculation area. areaBasis keeps
+// a planned scenario distinct from an actual sowing declaration; old inputs are sown.
+export type YieldInput={version:'yield-input-1';method:'automatic'|'declared-scenario'|'fao-seasonal';areaBasis?:'planned'|'sown';scopeGeometryId:string;
  homogeneityAssumption:string;units:YieldUnit[]};
 export type YieldNumbers={productionKg:number;yieldKgHaSown:number|null;productionKgHaContour:number|null};
 export type YieldScenario={id:'rainfed'|'recorded'|'proposed';label:string;status:'conditional'|'unavailable';missing:string[];
  totals:YieldNumbers|null;units:{id:string;reference:YieldReference|null;sownAreaM2:number;harvestedAreaM2:number|null;productionKg:number|null;yieldKgHaSown:number|null;sourceDenominator:'sown'|'harvested'|null;sourceKgHa:number|null;etaMm:number|null;etmMm:number|null;ky:number|null}[]};
 export type YieldEstimate={cropId:string|null;version:string;method:YieldInput['method']|null;status:'conditional'|'unavailable';
- surface:{drawnM2:number|null;potentialLandM2:number|null;sownM2:number|null;harvestedM2:number|null;notPlantedPotentialM2:number|null;fractions:Record<string,number>|null};
+ surface:{drawnM2:number|null;potentialLandM2:number|null;areaBasis?:'planned'|'sown';simulationM2?:number|null;plannedM2?:number|null;sownM2:number|null;harvestedM2:number|null;notPlantedPotentialM2:number|null;fractions:Record<string,number>|null};
  coverage:{processedM2:number;requestedM2:number|null;complete:boolean};
  versions:{water:string;land:string|null;ky:string;crop:string|null};dataSources:{provider:string;product:string;version:string;acquiredAt:string}[];
  missing:string[];limits:string[];scenarios:YieldScenario[]};
@@ -44,10 +45,11 @@ const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='numbe
 export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undefined{
  if(value===undefined)return undefined;
  const v=value as YieldInput;
- if(!v||v.version!=='yield-input-1'||!['declared-scenario','fao-seasonal'].includes(v.method)||!text(v.scopeGeometryId)||!text(v.homogeneityAssumption)||!Array.isArray(v.units)||!v.units.length||v.units.length>32)throw new InputError('Paramètres du rendement invalides ; 1 à 32 unités et hypothèse spatiale requises.');
+ if(!v||v.version!=='yield-input-1'||!['automatic','declared-scenario','fao-seasonal'].includes(v.method)||(v.areaBasis!==undefined&&!['planned','sown'].includes(v.areaBasis))||!text(v.scopeGeometryId)||!text(v.homogeneityAssumption)||!Array.isArray(v.units)||!v.units.length||v.units.length>32)throw new InputError('Paramètres du rendement invalides ; 1 à 32 unités et hypothèse spatiale requises.');
  const units=v.units.map(u=>{
   if(!u||!text(u.id,100)||!text(u.areaSource))throw new InputError('Identifiant et provenance de surface requis.');
   const sownAreaM2=area(u.sownAreaM2),harvestedAreaM2=area(u.harvestedAreaM2);
+  if(v.areaBasis==='planned'&&harvestedAreaM2!==null)throw new InputError('Une surface prévue ne peut pas porter une récolte réalisée. Déclarez d’abord le semis.');
   if(harvestedAreaM2!==null&&(sownAreaM2===null||harvestedAreaM2>sownAreaM2))throw new InputError('La surface récoltée doit être documentée et ne pas dépasser la surface initialement semée.');
   let geometry:MultiShape|undefined;
   if(u.geometry){
@@ -71,7 +73,7 @@ export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undef
   return {id:u.id,geometry,sownAreaM2,harvestedAreaM2,areaSource:u.areaSource,reference,...(conditions?{conditions}:{})};
  });
  if(new Set(units.map(u=>u.id)).size!==units.length)throw new InputError('Unités spatiales dupliquées.');
- return {version:v.version,method:v.method,scopeGeometryId:v.scopeGeometryId,homogeneityAssumption:v.homogeneityAssumption,units};
+ return {version:v.version,method:v.method,...(v.areaBasis?{areaBasis:v.areaBasis}:{}),scopeGeometryId:v.scopeGeometryId,homogeneityAssumption:v.homogeneityAssumption,units};
 }
 export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):YieldEstimate{
  const y=c.yieldEstimation,a=c.landAssessment,domain=plan.calculationArea?.geometry;
@@ -86,7 +88,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  'L’eau voisine n’impose aucune pénalité. La surface récoltée ne réduit pas une seconde fois un rendement déjà exprimé par hectare semé.',
  'Le scénario proposé suppose l’exécution des arrosages et leurs contraintes connues ; énergie et accès non renseignés restent à vérifier.'],scenarios:[]};
  if(c.agronomic&&c.agronomic.system!=='single'){out.missing.push('Cultures associées, successions ou récoltes multiples non prises en charge.');return out;}
- if(!y){out.missing.push('Renseignez la surface effectivement semée et une référence de rendement explicite.');return out;}
+ if(!y){out.missing.push('Estimation automatique indisponible : le moteur de rendement parcellaire et ses paramètres locaux ne sont pas raccordés. Aucun rendement à saisir pour poursuivre le plan de culture.');return out;}
  if(!c.parcelGeometry||y.scopeGeometryId!==geometryIdentity(c.parcelGeometry))out.missing.push('Le contour a changé : redéfinissez les surfaces et unités du rendement.');
  const block=landBlockReason(c);if(block)out.missing.push(block);
  if(!domain||!a)out.missing.push('Analyse spatiale complète requise.');
@@ -106,12 +108,17 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  }
  if(multiArea(clipping.difference(domain!.coordinates,joined))>tolerance)out.missing.push('Partition incomplète : ajoutez les secteurs manquants, avec surface semée nulle si non plantés.');
  const known=y.units.every(u=>u.sownAreaM2!==null),sown=known?y.units.reduce((n,u)=>n+u.sownAreaM2!,0):null;
- out.surface.sownM2=sown;out.surface.harvestedM2=y.units.every(u=>u.harvestedAreaM2!==null)?y.units.reduce((n,u)=>n+u.harvestedAreaM2!,0):null;
- out.surface.notPlantedPotentialM2=sown===null?null:Math.max(0,a!.candidateAreaM2-sown);
+ out.surface.areaBasis=y.areaBasis??'sown';out.surface.simulationM2=sown;
+ out.surface.plannedM2=y.areaBasis==='planned'?sown:null;
+ out.surface.sownM2=y.areaBasis==='planned'?null:sown;out.surface.harvestedM2=y.units.every(u=>u.harvestedAreaM2!==null)?y.units.reduce((n,u)=>n+u.harvestedAreaM2!,0):null;
+ out.surface.notPlantedPotentialM2=y.areaBasis==='planned'||sown===null?null:Math.max(0,a!.candidateAreaM2-sown);
  if(!known)out.missing.push('Surface effectivement semée manquante ; la terre cartographiée ne suffit pas.');
  if(sown===0)out.missing.push('Aucune surface semée dans le domaine terrestre.');
  if(out.missing.length)return out;
  out.coverage={processedM2:multiArea(joined),requestedM2:multiArea(domain!.coordinates),complete:true};
+ if(y.areaBasis==='planned')out.limits.unshift('Production simulée sur une surface prévue ; aucun semis réalisé ni aucune récolte ne sont attestés. Les rendements sont exprimés par hectare prévu.');
+ if(y.method==='declared-scenario'){out.missing.push('Le mode de multiplication simple a été retiré. Les anciennes références restent archivées ; utilisez la comparaison des effets de l’eau ou des engrais.');return out;}
+ if(y.method==='automatic'){out.missing.push('Estimation automatique indisponible : le moteur de rendement parcellaire et ses paramètres locaux ne sont pas raccordés. Aucun rendement à saisir pour poursuivre le plan de culture.');return out;}
  const modes=[['rainfed','Pluvial, sans irrigation ajoutée'],['recorded','Apports réalisés uniquement'],['proposed','Apports réalisés et irrigation future proposée']] as const;
  for(const [id,label] of modes){
   const scenario:YieldScenario={id,label,status:'unavailable',missing:[],totals:null,units:[]};
@@ -135,8 +142,8 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
     row.etaMm=eta;row.etmMm=etm;row.ky=ky;
     if(!Number.isFinite(etm)||!Number.isFinite(eta)||etm<=0||eta<0||eta>etm+1e-7){scenario.missing.push(`${u.id} : ETa/ETm incompatible.`);continue;}
     // Conservative declared operating range, not a claim that clipping validates extreme stress.
-    const ratio=eta/etm,factor=1-ky*(1-ratio);
-    if(ratio<.5||factor<0||factor>1){scenario.missing.push(`${u.id} : déficit trop sévère pour cette approximation (ETa/ETm < 0,5 ou réponse non physique) ; modèle spécialisé requis.`);continue;}
+    const factor=seasonalWaterFactor(eta,etm,ky);
+    if(factor===null){scenario.missing.push(`${u.id} : déficit trop sévère pour cette approximation (ETa/ETm < 0,5 ou réponse non physique) ; modèle spécialisé requis.`);continue;}
     kgHa*=factor;
    }
    if(r.denominator==='harvested'&&u.harvestedAreaM2===null){scenario.missing.push(`${u.id} : surface récoltée documentée requise pour la référence par hectare récolté.`);continue;}
@@ -146,8 +153,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
   if(!scenario.missing.length){scenario.totals=aggregateProduction(scenario.units.map((r,i)=>({sownAreaM2:y.units[i].sownAreaM2!,productionKg:r.productionKg!})),c.areaM2!);scenario.status='conditional';}
   out.scenarios.push(scenario);
  }
- if(y.method==='declared-scenario')out.limits.unshift('Rendement imposé par hypothèse : les trois scénarios ont les mêmes résultats ; aucun effet de l’irrigation, du sol ou de la météo n’est déduit.');
- else out.limits.unshift('FAO56 équation 90, Ky saisonnier ; ETm = somme(Kc × ET0), ETa = somme ET réelle du bilan simple. Évaporation et transpiration non séparées ; précision limitée. Domaine conservateur ETa/ETm ≥ 0,5.');
+ out.limits.unshift('FAO56 équation 90, Ky saisonnier ; ETm = somme(Kc × ET0), ETa = somme ET réelle du bilan simple. Évaporation et transpiration non séparées ; précision limitée. Domaine conservateur ETa/ETm ≥ 0,5.');
  out.limits.push(`Hypothèse spatiale : ${y.homogeneityAssumption}`);
  out.status=out.scenarios.some(s=>s.status==='conditional')?'conditional':'unavailable';return out;
 }
@@ -162,24 +168,26 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
 
  if(c.yieldEstimation){
   const estimate=estimateYield(c,events,plan);
-  if(estimate.coverage.complete&&estimate.surface.sownM2!>0&&c.yieldEstimation.units.length===1){
+  const calculationM2=estimate.surface.simulationM2??estimate.surface.sownM2;
+  if(estimate.coverage.complete&&calculationM2!>0&&c.yieldEstimation.units.length===1){
    const conditions=c.yieldEstimation.units[0].conditions;
-   const scoped=planWater(conditions?validateConfig({...c,...conditions,inputs:undefined}):c,events, {...options,unitAreaM2:estimate.surface.sownM2!,unitGeometry:c.yieldEstimation.units[0].geometry??plan.calculationArea?.geometry});
-   scoped.yieldEstimation=estimate;return attachSalinity(scoped,c);
+   const scoped=planWater(conditions?validateConfig({...c,...conditions,inputs:undefined}):c,events, {...options,unitAreaM2:calculationM2!,unitGeometry:c.yieldEstimation.units[0].geometry??plan.calculationArea?.geometry});
+   scoped.yieldEstimation=estimate;return attachSalinity(scoped,c,events);
   }
   plan.yieldEstimation=estimate;
-  if(multi||estimate.surface.sownM2===0){plan.status='blocked';plan.complete=false;plan.days=[];plan.weeks=[];plan.decades=[];plan.stages=[];plan.nextWindows=[];plan.totals={demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null};plan.missing.push(multi?'Calendrier global multi-unités indisponible : les bilans de rendement sont calculés par unité ; allocation partagée de l’eau à définir.':'Aucune surface semée : aucun arrosage proposé.');}
+  if(multi||calculationM2===0){plan.status='blocked';plan.complete=false;plan.days=[];plan.weeks=[];plan.decades=[];plan.stages=[];plan.nextWindows=[];plan.totals={demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null};plan.missing.push(multi?'Calendrier global multi-unités indisponible : les bilans de rendement sont calculés par unité ; allocation partagée de l’eau à définir.':'Aucune surface prévue ou semée : aucun arrosage proposé.');}
  }
- return attachSalinity(plan,c);
+ return attachSalinity(plan,c,events);
 }
-function attachSalinity(plan:WaterPlan,c:SeasonalConfig):WaterPlan{
+function attachSalinity(plan:WaterPlan,c:SeasonalConfig,events:WaterEvent[]):WaterPlan{
+ plan.waterImpact=waterImpact(c,events,plan);
  if(c.fertilizerScenario)plan.fertilizerScenario=fertilizerScenario(c,plan);
  if(c.yieldEstimation||c.managementPlan)plan.response=interventionOutcome(c,plan);
  plan.sowingPlan=estimateSowing(c);
  if(c.managementPlan)plan.management=managementSummary(c,plan);
  if(!c.salinity)return plan;
  // Reuse only spatial coverage checks; salinity is not a second water penalty.
- const spatial=estimateYield({...c,yieldEstimation:c.yieldEstimation?{...c.yieldEstimation,method:'declared-scenario'}:undefined},[],plan);
+ const spatial=estimateYield({...c,yieldEstimation:c.yieldEstimation?{...c.yieldEstimation,method:'automatic'}:undefined},[],plan);
  if(!spatial.coverage.complete){plan.salinity={status:'unavailable',missing:spatial.missing};return plan;}
  try{plan.salinity=salinityScenario(c,c.salinity);}catch(e){if(!(e instanceof InputError))throw e;plan.salinity={status:'unavailable',missing:[e.message]};}
  return plan;

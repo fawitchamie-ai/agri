@@ -45,13 +45,13 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/La pluie face aux besoins/);
  assert.doesNotMatch(html,/Aucune dose de semis référencée/);
  assert.match(render(c),/EAU À PRÉVOIR SUR LE CYCLE/);
- assert.match(html,/La récolte n’est pas encore calculée/);
+ assert.match(html,/Quel effet ont mes interventions/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
  assert.match(html,/<title>[^<]+ : besoin [0-9]/);
  assert.doesNotMatch(html,/<title><\/title>/);
  assert.doesNotMatch(html,/Plus loin du centre|100 \/ 100|Provenance de toutes les entrées/);
- assert.match(html,/Surface réellement semée \(m²\)<\/span><input[^>]*value=""/);
- assert.match(html,/placeholder="À renseigner avec une référence connue"[^>]*value=""/);
+ assert.match(html,/Surface prévue \(m²\)<\/span><input[^>]*value=""/);
+ assert.match(html,/Référence indépendante sans déficit d’eau \(t\/ha\)<\/span><input[^>]*value=""/);
  assert.doesNotMatch(html,/<details open=""/,'expert panels start collapsed');
 });
 test('blocked and stale simulations display the action needed without showing a new water percentage',()=>{
@@ -73,8 +73,8 @@ test('failed recalculation exposes retry and fertilizer references instead of an
  assert.match(html,/id="field-tab-fertilizer"[^>]*role="tab"/);
  const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,plan:null,stale:false,onChange:()=>{},onAdvanced:()=>{}}));
  assert.match(fertilizerHtml,/Voir les références et le bilan d’engrais/);
- assert.match(render(config,false,'yield'),/modifier l’arrosage ne change pas le rendement saisi/);
- assert.match(render(config,false,'yield'),/Méthode de calcul/);
+ assert.match(render(config,false,'yield'),/Aucun rendement à saisir/);
+ assert.doesNotMatch(render(config,false,'yield'),/option value="declared-scenario"/);
  assert.match(fertilizerHtml,/prévision parcellaire validée et la dose optimale restent indisponibles/);
  assert.match(fertilizerHtml,/Scénario exploratoire/);
 });

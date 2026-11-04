@@ -41,3 +41,10 @@ test('Sources : noms des tuiles respectent longitude négative, latitude et fron
  assert.throws(()=>assessLandGeometry({type:'Polygon',coordinates:[[[0,0],[1,1],[0,1],[1,0],[0,0]]]},[]),/croisent/);
  const g=rect(1,7),a=assessLandGeometry(g,[layer(g,40)],now);assert.equal(a.areaM2,parcelMetrics(g).areaM2);assert.equal(a.legalStatus,'not_assessed');
 });
+
+test('bare/sparse class cannot distinguish rock from soil and is excluded from proposed usable land',()=>{
+ const g=rect(1,7),a=assessLandGeometry(g,[layer(g,60)],now);
+ assert.equal(a.candidateAreaM2,0);assert.equal(a.fractions.unknown.fraction,1);
+ assert.match(a.messages.join(' '),/roches non distingués/);
+ assert.ok(landBlockReason({parcelGeometry:g,landAssessment:a,landSelection:'potentialLand'}));
+});

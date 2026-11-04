@@ -12,11 +12,12 @@ const base='https://agri.test';
 async function req(body,status=200,path='/api/seasonal'){const r=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const data=await r.json();assert.equal(r.status,status,JSON.stringify(data).slice(0,500));return data;}
 test('server recalculates yield, retains revisions/permissions, resumes durable sector analysis',async()=>{try{
  setIdentity({userId:'yield-owner',email:'owner@example.test',displayName:'Owner'});
- const c=applyCropProfile(exampleCampaign(),'maize');c.parcelGeometry=testParcel;c.landSelection='potentialLand';
- c.yieldEstimation={version:'yield-input-1',method:'declared-scenario',scopeGeometryId:geometryIdentity(testParcel),homogeneityAssumption:'Synthetic field',units:[{id:'field',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Synthetic scenario',availableOn:c.asOfDate,context:'Test only',cropId:'maize',independentYm:false}}]};
+ const c=applyCropProfile(exampleCampaign(),'maize');c.fallback={label:'Synthetic wet cycle',et0MmDay:4,rainMmDay:5};c.waterCondition='drained';c.parcelGeometry=testParcel;c.landSelection='potentialLand';
+ c.yieldEstimation={version:'yield-input-1',method:'fao-seasonal',scopeGeometryId:geometryIdentity(testParcel),homogeneityAssumption:'Synthetic field',units:[{id:'field',sownAreaM2:1000,harvestedAreaM2:null,areaSource:'Synthetic',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Synthetic scenario',availableOn:c.asOfDate,context:'Test only',cropId:'maize',independentYm:true}}]};
  const forged={...c,areaM2:1e8,landAssessment:landFixture(testParcel)};
  forged.landAssessment.candidateAreaM2=1e8;
  const computed=await req({action:'simulate',config:forged,plan:{yieldEstimation:{productionKg:999999}}});assert.equal(computed.plan.yieldEstimation.scenarios[0].totals.productionKg,400);assert.ok(computed.config.areaM2<1e8);
+ const legacy=structuredClone(c);legacy.yieldEstimation.method='declared-scenario';const retired=await req({action:'simulate',config:legacy});assert.equal(retired.plan.yieldEstimation.status,'unavailable');assert.deepEqual(retired.plan.yieldEstimation.scenarios,[]);assert.equal(retired.plan.response.productionKg,null);assert.equal(retired.plan.waterImpact.status,'conditional');
  const huge=structuredClone(forged);huge.yieldEstimation.units[0].sownAreaM2=1e8;await req({action:'simulate',config:huge},400);
  const saved=await req({action:'save',id:'yield-campaign',expectedRevision:0,config:c},201);assert.equal(saved.campaign.plan.yieldEstimation.scenarios[0].totals.productionKg,400);
  c.yieldEstimation.units[0].reference.kgHa=2000;await req({action:'save',id:'yield-campaign',expectedRevision:1,config:c});

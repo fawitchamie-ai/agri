@@ -8,7 +8,7 @@ const {applyCropProfile}=await import('../lib/seasonal/catalog.ts');
 const {seasonalCapabilities}=await import('../lib/seasonal/capabilities.ts');
 const base='http://agri.test';
 // New seed planning metadata is tested separately; the entire legacy water balance stays identical.
-function sameWater(actual,expected){const {sowingPlan,...water}=actual;assert.ok(sowingPlan.version);assert.deepEqual(water,expected);}
+function sameWater(actual,expected){const {sowingPlan,waterImpact,...water}=actual;assert.ok(sowingPlan.version);assert.deepEqual(water,expected);}
 async function req(path,body,status=200){const res=await localFetch(base+path,body?{method:'POST',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(body)}:{});const json=await res.json();assert.equal(res.status,status,JSON.stringify(json).slice(0,250));return json;}
 test('Campagnes : routes, persistance, révisions, idempotence, accès et corrections tardives',async()=>{
   try{

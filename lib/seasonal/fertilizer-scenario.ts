@@ -60,17 +60,17 @@ export function fertilizerScenario(c:SeasonalConfig,plan:WaterPlan){
  });
  const y=plan.yieldEstimation;
  // Multi-unit nutrient heterogeneity is not collapsed into a single response.
- const areaM2=!landBlockReason(c)&&y?.coverage.complete&&(c.yieldEstimation?.units.length??0)===1?y.surface.sownM2:null;
+ const areaM2=!landBlockReason(c)&&y?.coverage.complete&&(c.yieldEstimation?.units.length??0)===1?(y.surface.simulationM2??y.surface.sownM2):null;
  const yieldWithout=range(profiles.map(p=>p.withoutKgHa)),yieldWith=range(profiles.map(p=>p.withKgHa)),delta=range(profiles.map(p=>p.deltaKgHa));
  const production=(r:[number,number])=>areaM2===null?null:r.map(n=>n*areaM2/10000) as [number,number];
  return {...base,status:'exploratory_transfer' as const,missing:[],results:{
-  country:c.country,cropId:'maize',moisturePercent:15,denominator:'sown',ceilingKgHa:v.ceilingKgHa,ceilingSource:v.ceilingSource,
+  country:c.country,cropId:'maize',moisturePercent:15,denominator:y?.surface.areaBasis==='planned'?'planned':'sown',areaBasis:y?.surface.areaBasis??'sown',ceilingKgHa:v.ceilingKgHa,ceilingSource:v.ceilingSource,
   soilMethod:v.control?'control_anchor_fixed_ratios':'published_mean_soil_analogs',control:v.control,
   profiles,realizedKgHa:realized,plannedKgHa:planned,areaM2,
   yieldWithoutKgHa:yieldWithout,yieldWithKgHa:yieldWith,deltaKgHa:delta,
   productionWithoutKg:production(yieldWithout),productionWithKg:production(yieldWith),extraProductionKg:production(delta),
   calendar:products.map(p=>({id:p.id,date:p.date,product:p.product,dose:p.dose,unit:p.unit,status:p.status,totalProduct:areaM2===null?null:p.dose*areaM2/10000})),
   anchorWarning:v.control?'Un rendement témoin ne détermine pas séparément N/P/K. Deux ratios de fourniture restent imposés ; ce n’est pas une validation.':null,
-  areaWarning:areaM2===null?'Production totale indisponible : renseigner une seule unité semée avec couverture spatiale vérifiée.':null,
+  areaWarning:areaM2===null?'Production totale indisponible : renseigner une seule unité prévue ou semée avec couverture spatiale vérifiée.':null,
  }};
 }

@@ -30,10 +30,10 @@ test('cycle water bars update the hydric yield and keep the declared hypothesis 
   assert.equal(m.config.managementPlan.irrigation.applications.every(a=>a.fieldM3Ha===0),true);
  }finally{await m.close();}
  c.yieldEstimation.method='declared-scenario';const fixed=await mount(c);try{
-  const before=planSeason(fixed.config).yieldEstimation.scenarios[2].totals;
+  assert.deepEqual(planSeason(fixed.config).yieldEstimation.scenarios,[]);
   await enter(fixed.host.querySelector('.mp-editor input[type=number]'),'0');
-  assert.deepEqual(planSeason(fixed.config).yieldEstimation.scenarios[2].totals,before);
-  assert.match(fixed.host.textContent,/calcul simple conserve votre hypothèse/);
+  assert.deepEqual(planSeason(fixed.config).yieldEstimation.scenarios,[]);
+  assert.match(fixed.host.textContent,/sans rendement à saisir/);
   assert.equal(fixed.host.querySelector('.mp-help a').getAttribute('href'),'#harvest-summary');
  }finally{await fixed.close();}
 });
