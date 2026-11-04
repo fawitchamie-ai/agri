@@ -1,5 +1,7 @@
 # AgriPrévision — campagnes, irrigation et rendements
 
+Le mode de multiplication simple a été retiré : les anciennes références sont conservées mais ne produisent plus de résultat lors du recalcul. La comparaison hydrique utilise FAO56 pour montrer un indice relatif (base 100 sans déficit), sans rendement saisi ; les valeurs en t/ha nécessitent une référence indépendante facultative. Les scénarios NPK QUEFTS restent exploratoires, séparés des résultats hydriques ; les effets des autres produits ne sont pas quantifiés.
+
 Le parcours « Préparer et suivre ma culture » permet de calculer et suivre un plan d’irrigation conditionnel du semis à la récolte, conserver les observations et leurs révisions, comparer des scénarios et vérifier un bilan d’engrais documenté. Six pays sont configurables ; la validation agronomique locale reste à conduire. Voir [le fonctionnement et les limites du module](docs/IRRIGATION.md) et le [notebook du moteur partagé](science-source/seasonal/planification_saisonniere.ipynb).
 
 Le catalogue comporte 23 fiches culturales et neuf références de fertilisation conditionnelles. Les analyses conservent leurs méthodes, horizons, unités et dates de disponibilité ; elles ne déclenchent pas de dose personnalisée sans méthode locale calibrée. Voir [les règles agronomiques](docs/AGRONOMY.md), [l’audit de couverture des pays](docs/refonte/INVENTAIRE_EXISTANT.md) et [l’avancement vérifié de la refonte](AVANCEMENT.md).

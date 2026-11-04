@@ -10,10 +10,10 @@ import type {SeasonalConfig,WaterEvent} from '../lib/seasonal/types.ts';
 const now=new Date().toISOString(),today=now.slice(0,10);
 const box=(x=1,y=8,w=.001,h=.001):ParcelPolygon=>({type:'Polygon',coordinates:[[[x,y],[x+w,y],[x+w,y+h],[x,y+h],[x,y]]]});
 function fixture(shape:ParcelPolygon=box(),mixed=false):SeasonalConfig{
- const c=applyCropProfile(exampleCampaign(today),'maize');c.parcelGeometry=shape;c.areaM2=parcelMetrics(shape).areaM2;c.waterCondition='drained';
+ const c=applyCropProfile(exampleCampaign(today),'maize');c.fallback={label:'Synthetic wet cycle',et0MmDay:4,rainMmDay:5};c.parcelGeometry=shape;c.areaM2=parcelMetrics(shape).areaM2;c.waterCondition='drained';
  const layer:LandLayer={id:'worldcover',status:'available',provider:'Synthetic',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:now,resolutionM:10,crs:'EPSG:4326',cells:mixed?[{id:'land',geometry:box(1,8,.0004),value:40},{id:'water',geometry:box(1.0004,8,.0006),value:80}]:[{id:'land',geometry:shape,value:40}],reason:null,assets:[],limitations:[]};
  c.landAssessment=assessLandGeometry(shape,[layer],now);if(mixed)c.landSelection='potentialLand';
- c.yieldEstimation={version:'yield-input-1',method:'declared-scenario',scopeGeometryId:geometryIdentity(shape),homogeneityAssumption:'Synthetic uniform unit',units:[{id:'field',sownAreaM2:c.landAssessment.candidateAreaM2,harvestedAreaM2:null,areaSource:'Synthetic known area',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Hypothetical 4 t/ha',availableOn:today,context:'Synthetic, not validated',cropId:'maize',independentYm:false}}]};
+ c.yieldEstimation={version:'yield-input-1',method:'fao-seasonal',scopeGeometryId:geometryIdentity(shape),homogeneityAssumption:'Synthetic uniform unit',units:[{id:'field',sownAreaM2:c.landAssessment.candidateAreaM2,harvestedAreaM2:null,areaSource:'Synthetic known area',reference:{kind:'scenario',kgHa:4000,denominator:'sown',source:'Hypothetical 4 t/ha',availableOn:today,context:'Synthetic, not validated',cropId:'maize',independentYm:true}}]};
  return c;
 }
 const result=(c:SeasonalConfig,events:WaterEvent[]=[])=>planSeason(c,events).yieldEstimation!;
@@ -32,7 +32,7 @@ test('holes preserved and disjoint components retained; overlap/outside/partial 
  assert.ok(Math.abs(e.surface.drawnM2!-(parcelMetrics(box()).areaM2-parcelMetrics({type:'Polygon',coordinates:[hole]}).areaM2))<1e-6);
  assert.equal(c.landAssessment!.fractions.potentialLand.geometry.coordinates[0].length,2);
  const d=fixture(),u=d.yieldEstimation!.units[0];d.yieldEstimation!.units=[{...u,id:'west',geometry:{type:'MultiPolygon',coordinates:[box(1,8,.0005).coordinates]},sownAreaM2:1000},{...u,id:'east',geometry:{type:'MultiPolygon',coordinates:[box(1.0005,8,.0005).coordinates]},sownAreaM2:1000,reference:{...u.reference!,kgHa:2000}}];
- const r=result(d);assert.equal(r.scenarios[0].totals!.productionKg,600);assert.equal(r.scenarios[0].totals!.yieldKgHaSown,3000);
+ const r=result(d);assert.ok(Math.abs(r.scenarios[0].totals!.productionKg-600)<1e-8);assert.equal(r.scenarios[0].totals!.yieldKgHaSown,3000);
  d.yieldEstimation!.units[1].geometry=d.yieldEstimation!.units[0].geometry;assert.throws(()=>result(d),/chevauchent/);
  d.yieldEstimation!.units=[d.yieldEstimation!.units[0]];assert.match(result(d).missing.join(' '),/incomplète/);
  d.yieldEstimation!.units[0].geometry={type:'MultiPolygon',coordinates:[box(2,9).coordinates]};assert.throws(()=>result(d),/dépasse/);
@@ -46,11 +46,11 @@ test('missing reference, sown area, water-only, unknown and unparameterised crop
  for(const value of [80,null]){const d=fixture();d.landAssessment=assessLandGeometry(d.parcelGeometry!,[{...d.landAssessment!.sources[0],cells:[{id:'water',value,geometry:d.parcelGeometry!}]}]);assert.equal(result(d).status,'unavailable');}
  const d=fixture();d.yieldEstimation!.method='fao-seasonal';d.cropProfile!.id='millet';d.crop='Mil perlé';assert.match(result(d).missing.join(' '),/sans modèle/);
 });
-test('harvested denominator documented; destruction is never charged twice',()=>{
+test('retired arithmetic mode retains spatial scope but produces no yield, even with a supplied reference',()=>{
  const c=fixture(),u=c.yieldEstimation!.units[0];u.sownAreaM2=1000;u.harvestedAreaM2=500;
- const initial=result(c);assert.equal(initial.scenarios[0].totals!.productionKg,400);
- u.reference!.denominator='harvested';assert.equal(result(c).scenarios[0].totals!.productionKg,200);assert.equal(result(c).scenarios[0].totals!.yieldKgHaSown,2000);
- u.harvestedAreaM2=null;assert.match(result(c).scenarios[0].missing.join(' '),/récoltée/);
+ c.yieldEstimation!.method='declared-scenario';
+ const e=result(c);assert.equal(e.status,'unavailable');assert.deepEqual(e.scenarios,[]);assert.equal(e.coverage.complete,true);
+ assert.match(e.missing.join(' '),/retiré/);assert.equal(planSeason(c).response!.productionKg,null);
  u.harvestedAreaM2=1100;assert.throws(()=>result(c),/dépasser/);
 });
 test('FAO full cycle, independent Ym, no pH multiplier; planned irrigation is never recorded',()=>{

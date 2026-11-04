@@ -8,7 +8,7 @@ export type YieldMode='rainfed'|'recorded'|'proposed';
 /** Rank only comparable, complete responses from the SAME water model.
  * Never mix QUEFTS ranges, national harvested-area statistics and water outputs. */
 export function scenarioComparison(c:SeasonalConfig,p:WaterPlan|null,stale=false){
- const estimate=!stale?p?.yieldEstimation:null;
+ const estimate=!stale&&p?.yieldEstimation?.method==='fao-seasonal'?p.yieldEstimation:null;
  const labels:Record<YieldMode,string>={rainfed:'Sans irrigation ajoutée',recorded:'Avec mes apports réalisés',proposed:'Avec le plan d’arrosage'};
  const rows=(['rainfed','recorded','proposed'] as const).map(id=>{
   const s=estimate?.scenarios.find(s=>s.id===id);
@@ -37,8 +37,9 @@ export function prepareYieldHypothesis(c:SeasonalConfig,v:{kgHa:number;source:st
  // Historical harvested-area references are never upgraded into independent Ym.
  if(reference&&(!reference.independentYm||reference.denominator!=='sown'))throw new Error('Documentez une référence indépendante sans manque d’eau dans Rendement ; votre référence actuelle est conservée.');
  const supportsWater=SEASONAL_KY[cropId]!==undefined;
+ if(!supportsWater)throw new Error('Réponse hydrique non paramétrée pour cette culture. Aucun calcul simple de remplacement.');
  return declareScenario({...c,landSelection:'potentialLand',waterCondition:'drained',yieldScenario:'proposed',yieldEstimation:{
-  version:'yield-input-1',method:supportsWater?'fao-seasonal':'declared-scenario',scopeGeometryId:geometryIdentity(c.parcelGeometry),
+  version:'yield-input-1',method:'fao-seasonal',areaBasis:old?.areaBasis??(u?.sownAreaM2!=null?'sown':'planned'),scopeGeometryId:geometryIdentity(c.parcelGeometry),
   homogeneityAssumption:old?.homogeneityAssumption??'Une unité supposée homogène pour la simulation ; surface semée hypothétique, non déclarée comme observation.',
   units:[{...u,id:u?.id??'champ',sownAreaM2:v.areaM2,harvestedAreaM2:u?.harvestedAreaM2??null,areaSource:u?.areaSource??'Hypothèse utilisateur : surface terrestre prévue supposée semée pour ce scénario, semis réalisé non attesté.',
    reference:reference&&reference.kgHa===v.kgHa&&reference.source===v.source.trim()?reference:{kind:'scenario',kgHa:v.kgHa,denominator:'sown',source:v.source.trim(),context:'Hypothèse indépendante du bilan hydrique : rendement sans déficit d’eau, autres facteurs supposés non limitants ; aucune validation locale.',cropId,availableOn:c.asOfDate,independentYm:supportsWater}}]

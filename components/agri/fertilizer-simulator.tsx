@@ -33,7 +33,7 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
   <h3>Simuler l’effet de mes engrais sur le maïs</h3>
   <p><strong>Scénario exploratoire · paramètres transférés du Nigeria.</strong> Le calcul représente les interactions entre azote, phosphore et potassium. Un apport d’azote peut rester peu efficace si le phosphore ou le potassium limite la croissance.</p>
   <details><summary>Définir les hypothèses du scénario</summary>
-   <p>Indiquez un plafond de rendement dans les conditions d’eau envisagées, avec une nutrition suffisante. Ce n’est ni une moyenne nationale ni votre rendement actuel avec engrais. Toutes les valeurs concernent le grain à 15 % d’humidité, par hectare effectivement semé.</p>
+   <p>Indiquez un plafond de rendement dans les conditions d’eau envisagées, avec une nutrition suffisante. Ce n’est ni une moyenne nationale ni votre rendement actuel avec engrais. Toutes les valeurs concernent le grain à 15 % d’humidité, par hectare de la surface prévue ou semée du scénario.</p>
    <button type="button" className="qs-text-button" onClick={()=>{setCeiling('10');setSource('Hypothèse transférée : plafond de paramétrage 10 t/ha, Shehu et al. 2019, '+QUEFTS_SOURCE+' ; à adapter au contexte hydrique local, aucune récolte garantie.');}}>Préremplir l’exemple publié du modèle (10 t/ha, Nigeria)</button>
    <p>Ce plafond publié est une hypothèse de potentiel du modèle, pas un rendement attendu dans votre champ. Réduisez-le si votre référence agronomique et vos conditions d’eau le justifient.</p>
    <div className="form-grid">
@@ -56,14 +56,14 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
   {result?.missing.map(m=><p key={m}>{m}</p>)}
   {r&&<div aria-live="polite">
    <p><strong>Rendements simulés, grain à 15 % · plage entre deux profils.</strong> Les apports déjà réalisés sont conservés dans les deux situations.</p>
-   <div className="table-wrap"><table className="data-table"><thead><tr><th>Situation</th><th>Rendement (t/ha semé)</th><th>Production (kg)</th></tr></thead><tbody>
+   <div className="table-wrap"><table className="data-table"><thead><tr><th>Situation</th><th>Rendement (t/ha du scénario)</th><th>Production (kg)</th></tr></thead><tbody>
     <tr><td>Sans nouvel apport prévu</td><td>{range(r.yieldWithoutKgHa,1000)}</td><td>{range(r.productionWithoutKg)}</td></tr>
     <tr><td>Avec les engrais prévus</td><td>{range(r.yieldWithKgHa,1000)}</td><td>{range(r.productionWithKg)}</td></tr>
     <tr><td>Supplément simulé</td><td>{range(r.deltaKgHa,1000)}</td><td>{range(r.extraProductionKg)}</td></tr>
    </tbody></table></div>
    <p>N–P–K élémentaires prévus : {r.plannedKgHa.map(n=>fmt(n,1)).join(' / ')} kg/ha. Déjà réalisés : {r.realizedKgHa.map(n=>fmt(n,1)).join(' / ')} kg/ha.</p>
    {r.areaWarning&&<p>{r.areaWarning}</p>}{r.anchorWarning&&<p>{r.anchorWarning}</p>}
-   {r.areaM2!==null&&<p>Surface semée utilisée une seule fois : {fmt(r.areaM2/10000)} ha.</p>}
+   {r.areaM2!==null&&<p>Surface {r.areaBasis==='planned'?'prévue':'semée'} utilisée une seule fois : {fmt(r.areaM2/10000)} ha.</p>}
    <details><summary>Voir les profils, produits et limites</summary>
     {r.profiles.map(p=><p key={p.id}><strong>{p.label}</strong> : {fmt(p.withoutKgHa/1000)} → {fmt(p.withKgHa/1000)} t/ha. Fourniture du sol N/P/K : {p.supplyKgHa.map(n=>fmt(n,1)).join(' / ')} kg/ha ; récupération N/P/K : {p.recovery.map(n=>fmt(n*100,0)+' %').join(' / ')}.</p>)}
     {r.calendar.map(p=><p key={p.id}>{p.date} · {p.product} · {fmt(p.dose)} {p.unit} · {p.status==='declared'?'réalisé':'prévu'}{p.totalProduct!==null?` · total ${fmt(p.totalProduct)} ${p.unit==='kg/ha'?'kg':'L'}`:''}.</p>)}

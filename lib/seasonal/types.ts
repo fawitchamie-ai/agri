@@ -80,6 +80,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  waterImpact?: import('./water-impact.ts').WaterImpact;
   response?: ReturnType<typeof import('./intervention-outcome.ts').interventionOutcome>;
   fertilizerScenario?: ReturnType<typeof import('./fertilizer-scenario.ts').fertilizerScenario>;
   management?: ReturnType<typeof import('./management.ts').managementSummary>;

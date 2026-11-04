@@ -1,3 +1,4 @@
+import {LAND_VERSION} from './land.ts';
 import {parseManagement} from './management.ts';
 import {parseFertilizerScenario} from './fertilizer-scenario.ts';
 import {parseFieldTrials} from './field-trials.ts';
@@ -132,7 +133,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   }
   try{validated.inputs=parseInputLedger(c.inputs);}catch(e){throw new InputError((e as Error).message);}
   if(c.inputPolicy!==undefined){if(typeof c.inputPolicy?.allowAssumptions!=='boolean'||typeof c.inputPolicy?.allowStale!=='boolean')throw new InputError('Politique des données invalide.');validated.inputPolicy={allowAssumptions:c.inputPolicy.allowAssumptions,allowStale:c.inputPolicy.allowStale};}
-  if(c.landAssessment?.version==='land-1'&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
+  if(c.landAssessment?.version===LAND_VERSION&&c.landAssessment?.scopeId&&c.landAssessment.geometry)validated.landAssessment=c.landAssessment;
   validated.sowingPlan=parseSowingInput(c.sowingPlan,validated);
   validated.agronomic=parseAgronomic(c.agronomic,validated);
   validated.yieldEstimation=parseYieldInput(c.yieldEstimation,validated);

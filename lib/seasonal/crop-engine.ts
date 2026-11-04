@@ -4,7 +4,7 @@ export const DAILY_MODEL='Wofost81_NWLP_MLWB_SNOMIN';
 /** All values describe this exact model, not the whole PCSE suite. */
 export function cropEngineManifest(){return {
  version:CROP_ENGINE_VERSION,selected:{model:DAILY_MODEL,runtime:'Python 3.12 / PCSE 6.0.13',license:'EUPL-1.2',role:'research_scenario',validatedCountries:[],operationalForecast:false},
- reference:{model:'declared-scenario / FAO56 seasonal Ky',role:'existing_conditional_reference',coupledToDailyModel:false},
+ reference:{model:'FAO56 seasonal Ky',role:'existing_conditional_reference',coupledToDailyModel:false},
  seasonalNpk:{model:'QUEFTS',status:'not_enabled',reason:'Fournitures NPK, paramètres culturaux et calibration de domaine non établis. Aucune réponse aux dates intra-cycle.'},
  effects:[
   {effect:'Eau et racines par horizon',daily:'simulated',worker:'existing_daily_water_balance',unit:'cm, cm³/cm³'},
