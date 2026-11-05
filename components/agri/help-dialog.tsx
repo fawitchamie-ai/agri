@@ -49,8 +49,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
       >
         ?
       </button>
-      {open && (
-        <div className="app-help-backdrop" onMouseDown={(event) => {
+      <div hidden={!open} className="app-help-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setOpen(false);
         }}>
           <section className="app-help-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
@@ -60,8 +59,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
             </header>
             <div className="app-help-dialog-content">{children}</div>
           </section>
-        </div>
-      )}
+      </div>
     </>
   );
 }
