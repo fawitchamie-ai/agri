@@ -1,6 +1,6 @@
 'use client';
 
-import { isValidElement, useEffect, useId, useState, type HTMLAttributes, type ReactElement, type ReactNode } from 'react';
+import { isValidElement, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactElement, type ReactNode } from 'react';
 
 function countText(node: ReactNode): number {
   if (node === null || node === undefined || typeof node === 'boolean') return 0;
@@ -16,6 +16,8 @@ function countText(node: ReactNode): number {
 function HelpDialog({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -23,11 +25,13 @@ function HelpDialog({ children }: { children: ReactNode }) {
       if (event.key === 'Escape') setOpen(false);
     };
     const previousOverflow = document.body.style.overflow;
+    closeRef.current?.focus();
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKeyDown);
+      triggerRef.current?.focus();
     };
   }, [open]);
 
@@ -35,6 +39,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
     <>
       <button
         type="button"
+        ref={triggerRef}
         className="app-help-trigger"
         aria-label="Afficher l’explication"
         aria-haspopup="dialog"
@@ -51,7 +56,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
           <section className="app-help-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <header className="app-help-dialog-header">
               <h2 id={titleId}>Information détaillée</h2>
-              <button type="button" className="app-help-close" aria-label="Fermer" onClick={() => setOpen(false)}>×</button>
+              <button type="button" ref={closeRef} className="app-help-close" aria-label="Fermer" onClick={() => setOpen(false)}>×</button>
             </header>
             <div className="app-help-dialog-content">{children}</div>
           </section>
@@ -63,7 +68,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
 
 export function HelpParagraph({ children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   const critical = props.role === 'alert' || props.role === 'status' ||
-    /(?:^|\\s)(?:notice-warning|notice--warning|warning-banner)(?:\\s|$)/.test(props.className ?? '');
+    /(?:^|\\s)warning-banner(?:\\s|$)/.test(props.className ?? '') || /(?:^|\\s)notice\\s+warning(?:\\s|$)/.test(props.className ?? '');
 
   if (critical || countText(children) < 150) {
     return <p {...props}>{children}</p>;
