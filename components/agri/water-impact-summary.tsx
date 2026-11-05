@@ -24,7 +24,7 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
     Un score de 80 signifie que le modèle estime 80 % de la référence hydrique.</p>
   </div>
 
-  {stale?<p className="water-impact-status" role="status">Calcul de l’effet de l’eau en cours…</p>
+  {stale?<p className="water-impact-status" role="status">Recalcul de l’effet hydrique…</p>
    :incomplete?<div className="water-impact-warning" role="status">
      <strong>Comparaison indisponible pour le moment</strong>
      <p>Vérifie les éléments suivants pour lancer le calcul :</p>
