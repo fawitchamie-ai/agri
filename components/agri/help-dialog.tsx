@@ -65,7 +65,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
 }
 
 export function HelpParagraph({ children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  const critical = props.role === 'alert' || props.role === 'status' ||
+  const critical = props.role === 'alert' || props.role === 'status' || props.className?.split(/\s+/).includes('mp-help') ||
     /(?:^|\s)warning-banner(?:\s|$)/.test(props.className ?? '') || /(?:^|\s)notice\s+warning(?:\s|$)/.test(props.className ?? '');
 
   if (critical || countText(children) < 150) {
