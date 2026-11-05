@@ -141,3 +141,5 @@ body{font-family:'Lato',sans-serif}
 .app-help-dialog-content p:last-child{margin-bottom:0}
 .app-help-dialog-content a{color:#175ca5;text-decoration:underline}
 @media(max-width:600px){.app-help-backdrop{align-items:flex-end;padding:10px}.app-help-dialog{width:100%;max-height:88dvh;border-radius:16px 16px 10px 10px}.app-help-dialog-header{padding:15px 17px}.app-help-dialog-content{padding:17px;font-size:14px}}
+
+.app-help-backdrop[hidden]{display:none}
