@@ -181,3 +181,49 @@ body{font-family:'Lato',sans-serif}
   .app-help-summary { gap:8px; }
   .app-help-summary-text { font-size:15px; }
 }
+
+
+/* Clear, compact layout for the seasonal irrigation-effect comparison. */
+.agri-shell .water-impact-panel {
+  margin:22px 0 30px; padding:24px; border:1px solid #cbd7e5; border-radius:14px;
+  background:#fff; color:#263b55; box-shadow:0 3px 12px #183a5b0a;
+}
+.water-impact-heading { margin-bottom:18px; }
+.water-impact-eyebrow { color:#526985; display:block; font-size:12px; font-weight:800; letter-spacing:1.1px; }
+.agri-shell .water-impact-heading h3 { margin:7px 0 5px; color:#1d3554; font-size:21px; line-height:1.3; }
+.agri-shell .water-impact-heading p { margin:0; color:#43566d; font-size:15px; line-height:1.55; }
+.water-impact-reading {
+  display:flex; align-items:center; gap:16px; margin:18px 0; padding:14px 17px;
+  border:1px solid #d6e3f1; border-radius:10px; background:#f2f7fd;
+}
+.water-impact-reference { min-width:155px; display:flex; align-items:baseline; gap:8px; }
+.water-impact-reference strong { color:#153c6b; font-size:28px; line-height:1; }
+.water-impact-reference span { color:#344b66; font-size:13px; font-weight:700; }
+.agri-shell .water-impact-reading p { margin:0; color:#34465c; font-size:14px; line-height:1.5; }
+.agri-shell .water-impact-caption { margin:18px 0 10px; color:#394e68; font-size:14px; line-height:1.5; }
+.water-impact-table-wrap { max-width:100%; overflow-x:auto; border:1px solid #dbe3ed; border-radius:9px; }
+.agri-shell .water-impact-table { min-width:540px; margin:0; }
+.agri-shell .water-impact-table th { background:#f5f8fc; color:#354b66; font-weight:700; }
+.agri-shell .water-impact-table td { color:#2f4259; vertical-align:top; }
+.agri-shell .water-impact-table tr.water-impact-reference-row td { background:#f8fbff; }
+.water-impact-score { color:#163f70; font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.water-impact-row-note { display:block; margin-top:5px; color:#5a6b80; font-size:13px; line-height:1.45; }
+.agri-shell .water-impact-status { margin:14px 0; color:#3c5069; font-size:15px; }
+.water-impact-warning { margin:16px 0; padding:15px 18px; border:1px solid #d8b66c; border-radius:9px; background:#fff8e7; color:#4b3b1a; }
+.water-impact-warning>strong { color:#392d17; font-size:15px; }
+.agri-shell .water-impact-warning p { margin:5px 0; color:#4b3b1a; font-size:14px; }
+.water-impact-warning ul { margin:7px 0 0; padding-left:21px; color:#4b3b1a; }
+.water-impact-warning li { margin:4px 0; line-height:1.5; }
+.water-impact-method { margin-top:18px; border-top:1px solid #e0e7f0; padding-top:13px; }
+.water-impact-method>summary { color:#24486f; cursor:pointer; font-size:14px; font-weight:700; }
+.water-impact-method-content { margin-top:10px; color:#3d5067; }
+.water-impact-method-content ul { margin:0; padding-left:20px; }
+.water-impact-method-content li { margin:7px 0; font-size:14px; line-height:1.55; }
+.agri-shell .water-impact-source { margin:12px 0 0; color:#51647b; font-size:13px; line-height:1.5; }
+.water-impact-source a { color:#155da5; font-weight:700; text-decoration:underline; }
+@media(max-width:650px) {
+  .agri-shell .water-impact-panel { padding:17px; }
+  .water-impact-reading { align-items:flex-start; flex-direction:column; gap:10px; }
+  .water-impact-reference { min-width:0; }
+  .agri-shell .water-impact-table { min-width:520px; }
+}
