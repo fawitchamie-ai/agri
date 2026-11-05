@@ -32,7 +32,7 @@ function firstEmphasis(node: ReactNode): string {
 }
 
 function conciseSummary(node: ReactNode): string {
-  const text = textContent(node).replace(/\\s+/g, ' ').trim();
+  const text = textContent(node).replace(/\s+/g, ' ').trim();
   if (text.length <= 150) return text;
   const sentenceEnd = text.search(/[.!?](?=\\s|$)/);
   const sentence = sentenceEnd >= 0 ? text.slice(0, sentenceEnd + 1) : text;
@@ -103,9 +103,10 @@ function HelpDialog({ children, title, summary }: { children: ReactNode; title: 
 export function HelpParagraph({ children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   const critical = props.role === 'alert' || props.role === 'status' || props.className?.split(/\\s+/).includes('mp-help') ||
     /(?:^|\\s)warning-banner(?:\\s|$)/.test(props.className ?? '') || /(?:^|\\s)notice\\s+warning(?:\\s|$)/.test(props.className ?? '');
+  const completeText = textContent(children).replace(/\s+/g, ' ').trim();
   const summary = conciseSummary(children);
 
-  if (critical || summary.length <= 150) {
+  if (critical || completeText.length <= 150) {
     return <p {...props}>{children}</p>;
   }
 
