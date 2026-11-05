@@ -66,7 +66,7 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
    {r.areaWarning&&<HelpParagraph>{r.areaWarning}</HelpParagraph>}{r.anchorWarning&&<HelpParagraph>{r.anchorWarning}</HelpParagraph>}
    {r.areaM2!==null&&<HelpParagraph>Surface {r.areaBasis==='planned'?'prévue':'semée'} utilisée une seule fois : {fmt(r.areaM2/10000)} ha.</HelpParagraph>}
    <details><summary>Voir les profils, produits et limites</summary>
-    {r.profiles.map(p=><HelpParagraph key={p.id}><strong>{p.label}</strong> : {fmt(p.withoutKgHa/1000)} → {fmt(p.withKgHa/1000)} t/ha. Fourniture du sol N/P/K : {p.supplyKgHa.map(n=>fmt(n,1)).join(' / ')} kg/ha ; récupération N/P/K : {p.recovery.map(n=>fmt(n*100,0)+' %').join(' / ')}.</HelpParagraph>)}
+    {r.profiles.map(p=><article className="fertilizer-profile-summary" key={p.id}><div><h4>{p.label}</h4><p>{fmt(p.withoutKgHa/1000)} → {fmt(p.withKgHa/1000)} t/ha</p></div><HelpDialog title={p.label}>Fourniture du sol N/P/K : {p.supplyKgHa.map(n=>fmt(n,1)).join(' / ')} kg/ha. Récupération N/P/K : {p.recovery.map(n=>fmt(n*100,0)+' %').join(' / ')}.</HelpDialog></article>)}
     {r.calendar.map(p=><HelpParagraph key={p.id}>{p.date} · {p.product} · {fmt(p.dose)} {p.unit} · {p.status==='declared'?'réalisé':'prévu'}{p.totalProduct!==null?` · total ${fmt(p.totalProduct)} ${p.unit==='kg/ha'?'kg':'L'}`:''}.</HelpParagraph>)}
     <HelpParagraph>Calendrier repris de vos saisies ; effet des dates et du fractionnement non simulé.</HelpParagraph>
    </details>
