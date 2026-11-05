@@ -227,3 +227,13 @@ body{font-family:'Lato',sans-serif}
   .water-impact-reference { min-width:0; }
   .agri-shell .water-impact-table { min-width:520px; }
 }
+
+
+/* Make the fertilizer quantity table distinct from the exploratory yield response. */
+.fertilizer-comparison-note {
+  margin:14px 0; padding:12px 16px; border-left:4px solid #3875ff; border-radius:7px;
+  background:#f1f6fc; color:#30445d;
+}
+.agri-shell .fertilizer-comparison-note p { margin:4px 0; color:#30445d; font-size:14px; line-height:1.55; }
+.agri-shell .fertilizer-comparison-note strong { color:#1d3554; }
+.fertilizer-comparison-next { margin:14px 0 0; }
