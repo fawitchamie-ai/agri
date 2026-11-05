@@ -143,3 +143,41 @@ body{font-family:'Lato',sans-serif}
 @media(max-width:600px){.app-help-backdrop{align-items:flex-end;padding:10px}.app-help-dialog{width:100%;max-height:88dvh;border-radius:16px 16px 10px 10px}.app-help-dialog-header{padding:15px 17px}.app-help-dialog-content{padding:17px;font-size:14px}}
 
 .app-help-backdrop[hidden]{display:none}
+
+
+/* Readability and contextual help across every application surface. */
+.welcome-page { color:#26364b; }
+.welcome-page p,.welcome-page .welcome-section-heading>p,.welcome-page .welcome-features>div>p,
+.welcome-page .welcome-how-grid p,.welcome-page .welcome-feature-list p,.welcome-page .welcome-evidence p {
+  color:#40536b; font-size:15px; line-height:1.65;
+}
+.agri-shell { --muted:#4b5d73; font-size:15px; line-height:1.65; }
+.agri-shell p { color:#35465b; font-size:15px; line-height:1.65; }
+.agri-shell .field,.agri-shell .field>span { color:#34485f; font-size:14px; }
+.agri-shell .field small,.agri-shell small,.agri-shell .source-note {
+  color:#4b5e75; font-size:13px; line-height:1.55;
+}
+.agri-shell .page-heading>div>p,.agri-shell .card-header p {
+  color:#43566d; font-size:15px; line-height:1.65;
+}
+.agri-shell .data-table td,.agri-shell .data-table th {
+  color:#30435b; font-size:14px; line-height:1.55;
+}
+.app-help-summary { display:flex; align-items:flex-start; gap:10px; margin:10px 0 14px; color:#263a54; }
+.app-help-summary-text { flex:1; margin:2px 0 0; color:#263a54; font-size:15px; font-weight:600; line-height:1.55; }
+.app-help-trigger {
+  display:inline-grid; flex:0 0 30px; place-items:center; width:30px; height:30px; margin:0;
+  padding:0; border:1px solid #244d7c; border-radius:50%; background:#1b3c68; color:#fff;
+  font-size:16px; font-weight:800; line-height:1; cursor:pointer;
+  box-shadow:0 2px 5px #102a481c;
+}
+.app-help-trigger:hover,.app-help-trigger:focus-visible {
+  border-color:#123257; background:#102f55; color:#fff; outline:3px solid #3875ff55; outline-offset:2px;
+}
+.app-help-dialog { color:#20344f; }
+.app-help-dialog-content { color:#293c53; font-size:15px; line-height:1.65; }
+.app-help-dialog-content p { color:inherit; font-size:15px; line-height:1.65; }
+@media(max-width:700px) {
+  .app-help-summary { gap:8px; }
+  .app-help-summary-text { font-size:15px; }
+}
