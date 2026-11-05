@@ -2,7 +2,7 @@
 
 import { isValidElement, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactElement, type ReactNode } from 'react';
 
-function countText(node: ReactNode): number {
+function textContent(node: ReactNode): string {\n  if (node === null || node === undefined || typeof node === 'boolean') return '';\n  if (typeof node === 'string' || typeof node === 'number') return String(node);\n  if (Array.isArray(node)) return node.map(textContent).join(' ');\n  if (isValidElement(node)) return textContent((node as ReactElement<{ children?: ReactNode }>).props.children);\n  return '';\n}\n\nfunction countText(node: ReactNode): number {
   if (node === null || node === undefined || typeof node === 'boolean') return 0;
   if (typeof node === 'string' || typeof node === 'number') return String(node).length;
   if (Array.isArray(node)) return node.reduce((total, child) => total + countText(child), 0);
@@ -13,7 +13,7 @@ function countText(node: ReactNode): number {
   return 0;
 }
 
-function HelpDialog({ children }: { children: ReactNode }) {
+export function HelpDialog({ children, title = 'Information détaillée' }: { children: ReactNode; title?: string }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -54,7 +54,7 @@ function HelpDialog({ children }: { children: ReactNode }) {
         }}>
           <section className="app-help-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <header className="app-help-dialog-header">
-              <h2 id={titleId}>Information détaillée</h2>
+              <h2 id={titleId}>{title}</h2>
               <button type="button" ref={closeRef} className="app-help-close" aria-label="Fermer" onClick={() => setOpen(false)}>×</button>
             </header>
             <div className="app-help-dialog-content">{children}</div>
@@ -72,5 +72,7 @@ export function HelpParagraph({ children, ...props }: HTMLAttributes<HTMLParagra
     return <p {...props}>{children}</p>;
   }
 
-  return <HelpDialog>{children}</HelpDialog>;
+  const summary = textContent(children).split(/(?<=[.!?])\s+/)[0]?.trim() ?? '';
+  const concise = summary.length > 115 ? summary.slice(0, 112).trimEnd() + '…' : summary;
+  return <p className="app-help-summary"><HelpDialog>{children}</HelpDialog><span>{concise || 'Afficher les détails'}</span></p>;
 }
