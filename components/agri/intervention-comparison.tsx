@@ -8,6 +8,7 @@ const fmt=(n:number|null)=>n===null?'Inconnu':new Intl.NumberFormat('fr-FR',{max
 type Props={config:SeasonalConfig;events:WaterEvent[];scope?:'water'|'fertilizer';onOpenFertilizer?:()=>void};
 export default function InterventionComparison({config,events,scope='water',onOpenFertilizer}:Props){
  const isFertilizer=scope==='fertilizer';
+ const isMaize=config.cropProfile?.id==='maize';
  const [resultKey,setResultKey]=useState('');
  const [result,setResult]=useState<ReturnType<typeof comparePlannedProducts>|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const controller=useRef<AbortController|null>(null),key=JSON.stringify([config,events]);
@@ -22,7 +23,7 @@ export default function InterventionComparison({config,events,scope='water',onOp
   {isFertilizer
    ?<div className="fertilizer-comparison-note">
      <p>Ce tableau compare les quantités d’azote prévues. Les apports déjà réalisés restent inclus.</p>
-     <p><strong>Il ne calcule pas l’effet sur le rendement.</strong> Pour le maïs, ouvre la simulation exploratoire dans « Effet sur le rendement ».</p>
+     <p><strong>Il ne calcule pas l’effet sur le rendement.</strong> {isMaize?<>Pour le maïs, ouvre la simulation exploratoire dans « Effet sur le rendement ».</>:<>La simulation exploratoire est actuellement disponible pour le maïs seulement.</>}</p>
     </div>
    :<HelpParagraph>Les apports réalisés sont conservés. Les masses apportées sont calculables ; leur effet sur le rendement exige un modèle local qualifié.</HelpParagraph>}
   <button className="btn secondary" disabled={busy} onClick={compare}>{busy?'Calcul serveur en cours…':'Comparer les scénarios'}</button>
@@ -32,7 +33,7 @@ export default function InterventionComparison({config,events,scope='water',onOp
     <thead><tr><th>Scénario</th><th>N total apporté (kg/ha)</th><th>{isFertilizer?'Effet sur le rendement':'Réponse du rendement aux engrais'}</th></tr></thead>
     <tbody>{result.scenarios.map(s=><tr key={s.id}><td>{s.label}</td><td>{fmt(s.totalNitrogenKgHa)}</td><td>{isFertilizer?'Non évalué ici':'Non calculée'}</td></tr>)}</tbody>
    </table></div>
-   {isFertilizer
+   {isFertilizer&&isMaize
     ?<button type="button" className="btn secondary fertilizer-comparison-next" disabled={!onOpenFertilizer} onClick={onOpenFertilizer}>Voir la simulation exploratoire du maïs</button>
     :<HelpParagraph>Le N total inclut les formes minérales et organiques ; il n’est pas entièrement disponible pendant le cycle. Aucun apport optimal n’est recommandé sans objectif, coûts et contraintes documentés.</HelpParagraph>}
   </>}
