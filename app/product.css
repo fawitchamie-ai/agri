@@ -126,3 +126,20 @@ body{font-family:'Lato',sans-serif}
 @media(prefers-reduced-motion:reduce){.welcome-v2 *{scroll-behavior:auto!important;transition:none!important}}
 .agri-shell .product-sidebar .product-nav-item:not(.active),.agri-shell .product-sidebar .product-nav-group>summary{color:#bed5ee}.agri-shell .product-sidebar .product-nav-item:not(.active):hover,.agri-shell .product-sidebar .product-nav-group>summary:hover{color:#fff;background:#173e69}.agri-shell .product-sidebar .product-nav-group summary>b{color:#9bbde1}
 .map-quality-note{position:absolute;left:12px;bottom:38px;z-index:450;padding:8px 11px;background:#0b2f54e8;color:#e3f2ff;border:1px solid #90bce345;border-radius:7px;font-size:10px;line-height:1.5;max-width:calc(100% - 24px);pointer-events:none}
+
+/* Contextual help for long explanations across the application */
+.app-help-trigger{display:inline-grid;place-items:center;vertical-align:middle;width:25px;height:25px;margin:3px 0;padding:0;border:1px solid #9aabc0;border-radius:50%;background:#fff;color:#315579;font-size:15px;font-weight:800;line-height:1;cursor:pointer;box-shadow:0 1px 2px #142b4112}
+.app-help-trigger:hover,.app-help-trigger:focus-visible{border-color:#2676df;background:#eef5ff;color:#174c8d;outline:3px solid #2676df35;outline-offset:2px}
+.app-help-backdrop{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;background:#10243dcc;backdrop-filter:blur(3px)}
+.app-help-dialog{display:flex;flex-direction:column;width:min(100%,680px);max-height:min(84dvh,780px);overflow:hidden;border:1px solid #d9e2ee;border-radius:14px;background:#fff;color:#20344f;box-shadow:0 24px 80px #071a3460}
+.app-help-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid #e4ebf3}
+.app-help-dialog-header h2{margin:0;font-size:18px;line-height:1.35}
+.app-help-close{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:0;border-radius:50%;background:#f0f4f8;color:#304966;font-size:26px;line-height:1;cursor:pointer}
+.app-help-close:hover,.app-help-close:focus-visible{background:#e2ebf6;outline:3px solid #2676df35}
+.app-help-dialog-content{overflow:auto;padding:20px 24px 24px;font-size:14px;line-height:1.65}
+.app-help-dialog-content p{margin:0 0 12px}
+.app-help-dialog-content p:last-child{margin-bottom:0}
+.app-help-dialog-content a{color:#175ca5;text-decoration:underline}
+@media(max-width:600px){.app-help-backdrop{align-items:flex-end;padding:10px}.app-help-dialog{width:100%;max-height:88dvh;border-radius:16px 16px 10px 10px}.app-help-dialog-header{padding:15px 17px}.app-help-dialog-content{padding:17px;font-size:14px}}
+
+.app-help-backdrop[hidden]{display:none}
