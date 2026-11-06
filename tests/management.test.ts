@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {emptyManagement,editableIrrigation,managementCsv} from '../lib/seasonal/management.ts';
+import {emptyManagement,editableIrrigation,managementCsv,rebaseManagementPlan,rebasePlannedEvents} from '../lib/seasonal/management.ts';
 import {exampleCampaign} from '../lib/seasonal/example.ts';import {applyCropProfile} from '../lib/seasonal/catalog.ts';
 import {planWater,waterPlanCsv} from '../lib/seasonal/engine.ts';import {planSeason} from '../lib/seasonal/yield.ts';
 import {addDays,validateConfig} from '../lib/seasonal/validation.ts';import {geometryIdentity} from '../lib/seasonal/provenance.ts';import {assessLandGeometry} from '../lib/seasonal/land.ts';import {parcelMetrics} from '../lib/seasonal/parcel.ts';
@@ -38,4 +38,29 @@ test('forged scope, future actuals, dates outside the cycle, duplicate dates and
  c.managementPlan!.products=[];c.managementPlan!.irrigation={mode:'automatic',applications:[]};c.fallback={label:'Synthetic dry cycle',rainMmDay:0,et0MmDay:5};const auto=planSeason(c);const copied=editableIrrigation(c,auto);assert.ok(copied.length>8,'whole cycle, not just the eight nextWindows');assert.equal(copied.length,auto.days.filter(d=>d.intervention?.type==='proposed'&&d.intervention.fieldMm!>0).length);
  const changedCrop=applyCropProfile(c,'soybean');assert.equal(changedCrop.managementPlan,undefined);assert.ok(c.managementPlan,'applying another crop does not mutate the original campaign');
  c.managementPlan=undefined;const legacy=planWater(c);assert.equal(legacy.management,undefined);
+});
+
+test('a sowing-date shift rebases planned inputs and cancelled calendar entries but preserves realized dates',()=>{
+ const c=fixture(),shiftDays=6,plan=emptyManagement(c);
+ plan.irrigation.mode='manual';
+ plan.irrigation.applications=[{date:addDays(c.sowingDate,4),fieldM3Ha:120}];
+ plan.products=[
+  {id:'planned',date:addDays(c.sowingDate,9),kind:'fertilizer',product:'Synthetic fertilizer',dose:50,unit:'kg/ha',status:'planned',source:'Synthetic label',npkPercent:[46,null,null]},
+  {id:'declared',date:addDays(c.sowingDate,10),kind:'fertilizer',product:'Realized fertilizer',dose:40,unit:'kg/ha',status:'declared',source:'Recorded receipt',npkPercent:[46,null,null]}
+ ];
+ const rebased=rebaseManagementPlan(plan,shiftDays)!;
+ assert.equal(rebased.irrigation.applications[0].date,addDays(plan.irrigation.applications[0].date,shiftDays));
+ assert.equal(rebased.products.find(p=>p.id==='planned')!.date,addDays(plan.products[0].date,shiftDays));
+ assert.equal(rebased.products.find(p=>p.id==='declared')!.date,plan.products[1].date);
+ assert.equal(plan.products[0].date,addDays(c.sowingDate,9),'rebasing must not mutate the saved plan');
+ const events:WaterEvent[]=[
+  {id:'planned',date:addDays(c.sowingDate,3),kind:'irrigation',amount:2,unit:'mm',point:'field',status:'planned',source:'Schedule',recordedAt:'2026-11-01T00:00:00Z'},
+  {id:'cancelled',date:addDays(c.sowingDate,5),kind:'irrigation',amount:2,unit:'mm',point:'field',status:'cancelled',source:'Cancelled schedule',recordedAt:'2026-11-01T00:00:00Z'},
+  {id:'measured',date:addDays(c.sowingDate,7),kind:'irrigation',amount:2,unit:'mm',point:'field',status:'measured',source:'Field log',recordedAt:'2026-11-01T00:00:00Z'}
+ ];
+ const rebasedEvents=rebasePlannedEvents(events,shiftDays);
+ assert.equal(rebasedEvents[0].date,addDays(events[0].date,shiftDays));
+ assert.equal(rebasedEvents[1].date,addDays(events[1].date,shiftDays));
+ assert.equal(rebasedEvents[2].date,events[2].date,'measured dates are historical facts');
+ assert.equal(events[0].date,addDays(c.sowingDate,3),'rebasing must not mutate event history');
 });
