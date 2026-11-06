@@ -57,6 +57,7 @@ export default function ManagementPlanner({config,plan,stale,onChange,onActual,i
  const [forms,setForms]=useState(['','','','']);
  const [manufacturer,setManufacturer]=useState(''),[lot,setLot]=useState(''),[analysisDate,setAnalysisDate]=useState(''),[applicationMode,setApplicationMode]=useState('Mode non renseigné');
  useEffect(()=>{setNpk(['','','']);setForms(['','','','']);setNewProduct('');setNewDose('');setNewSource('');setProfileScenario(null);setProposalNotice('');setNewDate(firstDate);setAdding(false);},[editScope,kind]);
+  useEffect(()=>{if(newDate<config.sowingDate||newDate>end)setNewDate(firstDate);},[newDate,config.sowingDate,end,firstDate]);
  const nutrientResult=product?current?.management?.products.find(a=>a.id===product.id)?.nutrients:null;
  function commit(next:typeof p,remember=true){
   const changed=p.products.some(a=>a.status==='declared'&&JSON.stringify(a)!==JSON.stringify(next.products.find(n=>n.id===a.id)));
