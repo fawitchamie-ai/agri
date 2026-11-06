@@ -103,7 +103,38 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
   function edit(next: SeasonalConfig) { simulationSequence.current++;setNutrientResult(null);setConfig(next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next));setDirty(true);setPlanStale(true); }
-  function change<K extends keyof SeasonalConfig>(key:K,value:SeasonalConfig[K]) { if(key==='crop'){edit({...config,crop:String(value),cropProfile:undefined,nutritionReference:undefined,stages:[],parameterSource:''});return;}edit({...config,[key]:value,...(['country','territory','variety','systemDomain'].includes(key)?{nutritionReference:undefined}:{}),...(key==='stages'&&config.cropProfile?{cropProfile:{...config.cropProfile,mode:'custom' as const}}:{})}); }
+  function change<K extends keyof SeasonalConfig>(key:K,value:SeasonalConfig[K]) {
+    if(key==='crop'){edit({...config,crop:String(value),cropProfile:undefined,nutritionReference:undefined,stages:[],parameterSource:''});return;}
+    if(key==='sowingDate'){
+      const nextSowingDate=String(value),deltaDays=Math.round((Date.parse(nextSowingDate)-Date.parse(config.sowingDate))/86400000);
+      if(!Number.isFinite(deltaDays)){setError('Date de semis invalide.');return;}
+      if(config.managementPlan?.products.some(p=>p.status==='declared')){
+        setError('Cette campagne contient des apports réalisés liés au cycle actuel. Créez une nouvelle campagne pour modifier la date du semis.');
+        return;
+      }
+      const cycleDays=config.stages.reduce((n,s)=>n+s.days,0),nextEnd=addDays(nextSowingDate,Math.max(0,cycleDays-1));
+      const recordedOutside=events.some(e=>['measured','declared'].includes(e.status)&&(e.date<nextSowingDate||e.date>nextEnd));
+      if(recordedOutside){
+        setError('La nouvelle date placerait un apport réalisé hors du cycle. Conservez la date actuelle ou créez une nouvelle campagne.');
+        return;
+      }
+      if(deltaDays!==0){
+        const shift=(date:string)=>addDays(date,deltaDays);
+        const previous=config.managementPlan;
+        const managementPlan=previous?{
+          ...previous,
+          irrigation:{...previous.irrigation,applications:previous.irrigation.applications.map(a=>({...a,date:shift(a.date)}))},
+          products:previous.products.map(p=>p.status==='planned'?{...p,date:shift(p.date)}:p)
+        }:undefined;
+        setEvents(current=>current.map(e=>e.status==='planned'?{...e,date:shift(e.date)}:e));
+        const shifted=(previous?.irrigation.applications.length??0)+(previous?.products.filter(p=>p.status==='planned').length??0)+events.filter(e=>e.status==='planned').length;
+        if(shifted)setNotice(`Date de semis modifiée : ${shifted} apport(s) ou événement(s) planifié(s) décalé(s) de ${Math.abs(deltaDays)} jour(s). Vérifiez le calendrier avant de l’utiliser.`);
+        edit({...config,sowingDate:nextSowingDate,...(managementPlan?{managementPlan}:{})});
+        return;
+      }
+    }
+    edit({...config,[key]:value,...(['country','territory','variety','systemDomain'].includes(key)?{nutritionReference:undefined}:{}),...(key==='stages'&&config.cropProfile?{cropProfile:{...config.cropProfile,mode:'custom' as const}}:{})});
+  }
   function sys<K extends keyof SeasonalConfig['system']>(key:K,value:SeasonalConfig['system'][K]) { edit({...config,system:{...config.system,[key]:value}}); }
   function adopt(c:Campaign) { setLandProgress(null);setNutrientResult(null); setActive({id:c.id,revision:c.revision});setConfig(migrateInputs(c.config));setEvents(c.events);setPlan(null);setDirty(false);setPlanStale(true); }
   async function open(id:string) { if(dirty&&config.parcelGeometry&&active?.id!==id&&!window.confirm('Ouvrir cette campagne remplacera les modifications non enregistrées. Continuer ?'))return;setLibraryOpen(false);setTab('simulation');setBusy(true);setError('');try {const r=await api('/api/seasonal?id='+encodeURIComponent(id));adopt(r.campaign);setHistory(r.history);setNotice('Campagne chargée.');}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
