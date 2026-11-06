@@ -1,3 +1,4 @@
+import {integratedGrowth} from './growth.ts';
 import {waterImpact} from './water-impact.ts';
 import {SEASONAL_KY,KY_VERSION,seasonalWaterFactor} from './water-response.ts';
 export {SEASONAL_KY,KY_VERSION,FAO_SOURCE} from './water-response.ts';
@@ -181,6 +182,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig,events:WaterEvent[]):WaterPlan{
  plan.waterImpact=waterImpact(c,events,plan);
+ if(c.growth)plan.growth=integratedGrowth(c,events,plan);
  if(c.fertilizerScenario)plan.fertilizerScenario=fertilizerScenario(c,plan);
  if(c.yieldEstimation||c.managementPlan)plan.response=interventionOutcome(c,plan);
  plan.sowingPlan=estimateSowing(c);

@@ -23,15 +23,15 @@ export default function InterventionComparison({config,events,scope='water',onOp
   {isFertilizer
    ?<div className="fertilizer-comparison-note">
      <p>Ce tableau compare les quantités d’azote prévues. Les apports déjà réalisés restent inclus.</p>
-     <p><strong>Il ne calcule pas l’effet sur le rendement.</strong> {isMaize?<>Pour le maïs, ouvre la simulation exploratoire dans « Effet sur le rendement ».</>:<>La simulation exploratoire est actuellement disponible pour le maïs seulement.</>}</p>
+     <p><strong>{config.growth?'Le rendement est simulé par le profil de croissance intégré, sans validation locale.':'Il ne calcule pas l’effet sur le rendement.'}</strong> {isMaize?<>Pour le maïs, ouvre la simulation exploratoire dans « Effet sur le rendement ».</>:<>La simulation exploratoire est actuellement disponible pour le maïs seulement.</>}</p>
     </div>
    :<HelpParagraph>Les apports réalisés sont conservés. Les masses apportées sont calculables ; leur effet sur le rendement exige un modèle local qualifié.</HelpParagraph>}
   <button className="btn secondary" disabled={busy} onClick={compare}>{busy?'Calcul serveur en cours…':'Comparer les scénarios'}</button>
   {error&&<HelpParagraph role="alert">{error}</HelpParagraph>}
   {result&&resultKey===key&&<>
    <div className="table-wrap"><table className="data-table">
-    <thead><tr><th>Scénario</th><th>N total apporté (kg/ha)</th><th>{isFertilizer?'Effet sur le rendement':'Réponse du rendement aux engrais'}</th></tr></thead>
-    <tbody>{result.scenarios.map(s=><tr key={s.id}><td>{s.label}</td><td>{fmt(s.totalNitrogenKgHa)}</td><td>{isFertilizer?'Non évalué ici':'Non calculée'}</td></tr>)}</tbody>
+    <thead><tr><th>Scénario</th><th>N total apporté (kg/ha)</th><th>{config.growth?'Rendement intégré simulé':'Réponse du rendement aux engrais'}</th></tr></thead>
+    <tbody>{result.scenarios.map(s=><tr key={s.id}><td>{s.label}</td><td>{fmt(s.totalNitrogenKgHa)}</td><td>{s.integrated?`${fmt(s.integrated.yieldKgHa/1000)} t/ha · exploratoire`:isFertilizer?'Non évalué ici':'Non calculée'}</td></tr>)}</tbody>
    </table></div>
    {isFertilizer&&isMaize
     ?<button type="button" className="btn secondary fertilizer-comparison-next" disabled={!onOpenFertilizer} onClick={onOpenFertilizer}>Voir la simulation exploratoire du maïs</button>

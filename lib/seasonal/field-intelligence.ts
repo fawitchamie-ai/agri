@@ -26,6 +26,7 @@ export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[]
  const mode=c.yieldScenario??(c.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded');
  const estimate=current?.yieldEstimation?.method==='fao-seasonal'?current.yieldEstimation:undefined;
  const result=estimate?.scenarios.find(s=>s.id===mode)?.totals??null;
+ const growth=current?.growth?.status==='scenario'?current.growth.scenarios.find(s=>s.id===mode):undefined;
  const actions:FieldAction[]=[];
  if(flooded)actions.push({id:'flood',level:'urgent',title:'Vérifier l’eau stagnante',reason:'Arrosage suspendu. Relevez la durée et l’étendue de l’engorgement ; faites vérifier le drainage et l’état des plantes.',source:'État du champ déclaré par vous ; mortalité et perte de rendement non calculées.',target:'soil'});
  const land=(!stale&&!loading?p?.land:undefined)??c.landAssessment;
@@ -35,11 +36,11 @@ export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[]
  if(!flooded&&indicator.kind!=='ready')actions.push({id:'water-inputs',level:'check',title:stale||loading?'Actualisation des calculs':'Compléter le bilan d’eau',reason:indicator.message,source:'État du moteur de bilan hydrique.',target:'water'});
  const next=current?.nextWindows.find(w=>w.from>=c.asOfDate);
  if(!flooded&&next)actions.push({id:'irrigate',level:'planned',title:`Arrosage proposé le ${next.from}`,reason:next.volume.fieldM3===null?'Quantité non disponible. Vérifiez les contraintes d’accès à l’eau.':`${new Intl.NumberFormat('fr-FR',{maximumFractionDigits:1}).format(next.volume.fieldM3)} m³ au champ. Vérifiez la pluie réelle et l’humidité avant l’intervention.`,source:'Scénario hydrique conditionnel ; intervention non réalisée.',target:'water'});
- if(!result&&!stale&&!loading)actions.push({id:'yield',level:'check',title:'Comparer les effets des interventions',reason:'Explorez la réponse hydrique et les scénarios d’engrais disponibles pour cette culture.',source:'Aucun rendement parcellaire validé automatiquement.',target:'yield'});
+ if(!result&&!growth&&!stale&&!loading)actions.push({id:'yield',level:'check',title:'Comparer les effets des interventions',reason:'Explorez la réponse hydrique et les scénarios d’engrais disponibles pour cette culture.',source:'Aucun rendement parcellaire validé automatiquement.',target:'yield'});
  const notes=fieldNotes(c);
  if(!notes.length)actions.push({id:'scout',level:'check',title:'Faire un premier tour du champ',reason:'Observez la levée, les adventices, les symptômes et l’eau stagnante, puis gardez une note datée.',source:'Aucune observation visuelle enregistrée dans cette campagne.',target:'notes'});
  const measured=c.soilAnalyses?.some(a=>a.status==='measured')??false;
- return {stage,stages,elapsed,duration,progress:duration?Math.min(100,Math.max(0,elapsed/duration*100)):0,weather,sources,covered,rain,result,estimate,mode,actions,notes,measured,recordedEvents:events.filter(e=>e.status==='measured'||e.status==='declared').length,usable:!!current};
+ return {stage,stages,elapsed,duration,progress:duration?Math.min(100,Math.max(0,elapsed/duration*100)):0,weather,sources,covered,rain,result,growth,estimate,mode,actions,notes,measured,recordedEvents:events.filter(e=>e.status==='measured'||e.status==='declared').length,usable:!!current};
 }
 export const NOTE_METHOD='Observation visuelle au champ';
 export const NOTE_PARAMETERS=['Levée','Adventices','Ravageurs','Maladies','Drainage','Stades'] as const;

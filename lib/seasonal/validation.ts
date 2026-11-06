@@ -1,3 +1,4 @@
+import {parseGrowth} from './growth.ts';
 import {LAND_VERSION} from './land.ts';
 import {parseManagement} from './management.ts';
 import {parseFertilizerScenario} from './fertilizer-scenario.ts';
@@ -141,6 +142,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.managementPlan=parseManagement(c.managementPlan,validated);
   validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
+  validated.growth=parseGrowth(c.growth,validated);
   return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {
