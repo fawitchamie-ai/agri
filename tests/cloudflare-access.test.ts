@@ -53,6 +53,20 @@ test('Access: démonstration anonyme strictement locale et identité toujours ab
  }
 });
 
+test('mode public: ouvre le site et la démo, mais refuse les données réelles et les routes sensibles sans JWT',async()=>{
+ const publicEnv={...env,AUTH_PUBLIC_DEMO:'true'};
+ for(const [method,path] of [['GET','/'],['HEAD','/assets/app.js'],['GET','/api/science'],['POST','/api/demo'],['DELETE','/api/demo'],['GET','/api/workspace'],['POST','/api/workspace'],['POST','/api/seasonal'],['POST','/api/import'],['GET','/api/report'],['GET','/api/export?kind=forecast']]){
+  const auth=await authorizeAccessRequest(new Request('https://agri.example.test'+path,{method}),publicEnv,resolver);
+  assert(!(auth instanceof Response),`${method} ${path} doit être accessible au parcours public/démo`);assert.equal(auth.identity,null);
+ }
+ for(const [method,path] of [['GET','/api/health'],['POST','/api/access'],['DELETE','/api/session'],['GET','/api/export?kind=harvest'],['GET','/api/export?kind=member'],['POST','/api/science'],['PUT','/api/workspace'],['POST','/api/unknown']]){
+  const auth=await authorizeAccessRequest(new Request('https://agri.example.test'+path,{method}),publicEnv,resolver);
+  assert(auth instanceof Response,`${method} ${path} ne doit pas être public`);assert.equal(auth.status,401);
+ }
+ const protectedPath=await authorizeAccessRequest(request('/api/workspace',await token()),publicEnv,resolver);
+ assert(!(protectedPath instanceof Response));assert.equal(protectedPath.identity?.userId,'cf:person-01');
+});
+
 test('Access: service JWT limité au GET santé, jamais transformé en compte humain',async()=>{
  const signed=await token({sub:undefined,email:undefined,name:undefined,common_name:'CI service'});
  const health=await authorizeAccessRequest(request('/api/health',signed),env,resolver);assert(!(health instanceof Response));assert.equal(health.identity,null);

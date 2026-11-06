@@ -18,13 +18,13 @@ Les prompts 4–5 ajoutent le pipeline de calibration par groupes et campagnes, 
 
 Version indépendante pour le dépôt `fawitchamie-ai/agri`. Le socle agricole reste identique à la version livrée : 1 092 prévisions v24, CSV conforme à l’empreinte du notebook exécuté, six parcours, base persistante et exports PDF/CSV. Aucun entraînement n’est lancé lors du déploiement ou de la consultation.
 
-Cette version remplace la passerelle ChatGPT Sites par **Cloudflare Access**. Le Worker vérifie la signature et les claims du JWT avant d’ouvrir les routes. Elle ne doit pas être déployée sur l’ancien projet Sites.
+Cette version remplace la passerelle ChatGPT Sites par Cloudflare Workers. En production, le Worker vérifie les JWT Cloudflare Access pour les espaces personnels et les routes qui touchent aux données réelles. Le mode public expose les références publiques et une démonstration isolée sans JWT ; les routes métier continuent d’exiger un espace de démonstration valide ou une identité vérifiée.
 
 ## Nom du Worker et publication
 
 Le Worker Cloudflare cible est **`agri`**, celui protégé par votre application Access. Le dépôt est `fawitchamie-ai/agri`; le nom du produit reste AgriPrévision Togo. La base conserve son nom `agriprevision-db` et son binding `DB`. `APP_URL` doit contenir l’adresse HTTPS réelle de ce Worker `agri`. L’audience `CF_ACCESS_AUD` doit venir de l’application Access qui protège ce même Worker.
 
-La publication utilise GitHub Actions. Désactiver la publication Git automatique Workers Builds sur ce Worker : un simple `vite build` suivi de `wrangler deploy` utiliserait la configuration de test, avec son UUID factice et ses paramètres Access vides. Le workflow GitHub génère la configuration réelle avant la compilation et applique les migrations avant publication.
+La publication utilise GitHub Actions. Désactiver la publication Git automatique Workers Builds sur ce Worker : un simple `vite build` suivi de `wrangler deploy` utiliserait la configuration de test, avec son UUID factice et ses paramètres Access vides. Le workflow GitHub génère la configuration réelle avant la compilation et applique les migrations avant publication. Pour rendre l’application accessible sans connexion Cloudflare, désactiver également l’application Cloudflare Access qui protège le hostname : une règle Access active intercepte la requête avant le Worker. Le Worker autorise alors seulement les pages publiques, les références, les exports publics et les parcours de démonstration sans JWT ; les routes personnelles ou communautaires réelles restent refusées sans identité vérifiée.
 
 ## État de préparation
 
