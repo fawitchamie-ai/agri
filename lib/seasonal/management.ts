@@ -1,4 +1,4 @@
-import type {SeasonalConfig,WaterPlan} from './types.ts';
+import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
 import {landBlockReason} from './land.ts';
 import {geometryIdentity} from './provenance.ts';
 import {addDays,isoDate,InputError} from './validation.ts';
@@ -8,6 +8,20 @@ export type PlannedIrrigation={date:string;fieldM3Ha:number};
 export type ProductApplication={id:string;date:string;kind:'fertilizer'|'pesticide'|'other';product:string;dose:number;unit:'kg/ha'|'L/ha';status:'planned'|'declared';source:string;npkPercent:[number|null,number|null,number|null];composition?:ProductComposition;applicationMode?:string};
 export type ManagementPlan={version:typeof MANAGEMENT_VERSION;geometryId:string;cropId:string;irrigation:{mode:'automatic'|'manual';applications:PlannedIrrigation[]};products:ProductApplication[];recordedCorrection?:{id:string;reason:string}};
 export function emptyManagement(c:SeasonalConfig):ManagementPlan{return {version:MANAGEMENT_VERSION,geometryId:geometryIdentity(c.parcelGeometry),cropId:c.cropProfile?.id??'',irrigation:{mode:'automatic',applications:[]},products:[]};}
+export function rebaseManagementPlan(plan:ManagementPlan|undefined,days:number):ManagementPlan|undefined{
+ if(!plan||days===0)return plan;
+ const shift=(date:string)=>addDays(date,days);
+ return {
+  ...plan,
+  irrigation:{...plan.irrigation,applications:plan.irrigation.applications.map(a=>({...a,date:shift(a.date)}))},
+  products:plan.products.map(p=>p.status==='planned'?{...p,date:shift(p.date)}:p)
+ };
+}
+export function rebasePlannedEvents(events:WaterEvent[],days:number):WaterEvent[]{
+ if(days===0)return events;
+ const shift=(date:string)=>addDays(date,days);
+ return events.map(e=>e.status==='planned'||e.status==='cancelled'?{...e,date:shift(e.date)}:e);
+}
 export function parseManagement(input:unknown,c:SeasonalConfig):ManagementPlan|undefined{
  if(input===undefined)return undefined;
  const p=input as ManagementPlan,end=addDays(c.sowingDate,c.stages.reduce((n,s)=>n+s.days,0)-1);
