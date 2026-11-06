@@ -118,6 +118,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
         setError('La nouvelle date placerait un apport réalisé hors du cycle. Conservez la date actuelle ou créez une nouvelle campagne.');
         return;
       }
+      setError('');
       if(deltaDays!==0){
         const shift=(date:string)=>addDays(date,deltaDays);
         const previous=config.managementPlan;
