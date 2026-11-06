@@ -125,7 +125,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
         const managementPlan=rebaseManagementPlan(previous,deltaDays);
         setEvents(current=>rebasePlannedEvents(current,deltaDays));
         const shifted=(previous?.irrigation.applications.length??0)+(previous?.products.filter(p=>p.status==='planned').length??0)+events.filter(e=>e.status==='planned'||e.status==='cancelled').length;
-        if(shifted)setNotice(`Date de semis modifiée : ${shifted} apport(s) ou événement(s) planifié(s) décalé(s) de ${Math.abs(deltaDays)} jour(s). Vérifiez le calendrier avant de l’utiliser.`);
+        if(shifted)setNotice(`Date de semis modifiée : ${shifted} élément(s) du calendrier décalé(s) de ${Math.abs(deltaDays)} jour(s). Vérifiez le calendrier avant de l’utiliser.`);
         edit({...config,sowingDate:nextSowingDate,...(managementPlan?{managementPlan}:{})});
         return;
       }
