@@ -2,12 +2,21 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey, type JWTPayload } from 'jose';
 
 export type AccessIdentity = { userId:string; email:string; displayName:string; fullName:string|null };
-export type AccessEnvironment = { CF_ACCESS_TEAM_DOMAIN?:string; CF_ACCESS_AUD?:string; AUTH_DEMO_ONLY?:string };
+export type AccessEnvironment = { CF_ACCESS_TEAM_DOMAIN?:string; CF_ACCESS_AUD?:string; AUTH_DEMO_ONLY?:string; AUTH_PUBLIC_DEMO?:string };
 type AccessConfiguration = { issuer:string; audience:string };
 const identityContext = new AsyncLocalStorage<AccessIdentity|null>();
 const keySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 const localHosts = new Set(['localhost','127.0.0.1','[::1]','::1']);
 const localPaths = new Set(['/','/api/health','/api/seasonal','/api/science','/api/demo','/api/workspace','/api/export','/api/import','/api/report','/api/session','/api/access']);
+const publicDemoApi = new Map<string,Set<string>>([
+  ['/api/science',new Set(['GET'])],
+  ['/api/demo',new Set(['POST','DELETE'])],
+  ['/api/workspace',new Set(['GET','POST','DELETE'])],
+  ['/api/seasonal',new Set(['GET','POST'])],
+  ['/api/import',new Set(['POST'])],
+  ['/api/report',new Set(['GET'])],
+  ['/api/export',new Set(['GET'])],
+]);
 
 export function runWithAccessIdentity<T>(identity:AccessIdentity|null, callback:()=>T):T {
   return identityContext.run(identity, callback);
@@ -50,13 +59,24 @@ export function sanitizedRequest(request:Request):Request {
   return new Request(request,{headers});
 }
 function denied(message:string,status:number){return new Response(message,{status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
+function publicDemoRequest(request:Request):boolean {
+  const url=new URL(request.url),method=request.method.toUpperCase();
+  if(method==='GET'||method==='HEAD'){
+    if(url.pathname==='/cdn-cgi'||url.pathname.startsWith('/cdn-cgi/'))return false;
+    if(!url.pathname.startsWith('/api/'))return true;
+  }
+  if(!publicDemoApi.get(url.pathname)?.has(method))return false;
+  if(url.pathname==='/api/export')return ['forecast','observation'].includes(url.searchParams.get('kind')||'forecast');
+  return true;
+}
 export async function authorizeAccessRequest(request:Request,env:AccessEnvironment,keyResolver?:JWTVerifyGetKey):Promise<Response|{request:Request;identity:AccessIdentity|null}> {
   const url=new URL(request.url),clean=sanitizedRequest(request);
   if(env.AUTH_DEMO_ONLY==='true'&&(localHosts.has(url.hostname)||(import.meta.env?.DEV===true&&url.hostname==='terminal.local'))&&localPaths.has(url.pathname))
     return {request:clean,identity:null};
+  const token=request.headers.get('cf-access-jwt-assertion');
+  if(!token&&env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))return {request:clean,identity:null};
   let config:AccessConfiguration;
   try{config=accessConfiguration(env);}catch{return denied('Authentification Cloudflare Access non configurée.',503);}
-  const token=request.headers.get('cf-access-jwt-assertion');
   if(!token)return denied('Connexion Cloudflare Access requise.',401);
   try{
     const payload=await verifyAccessToken(token,config,keyResolver),identity=identityFromClaims(payload);
