@@ -19,6 +19,7 @@ import QuickSimulation from './quick-simulation';
 import {ProductIcon} from './product-ui';
 import {migrateInputs,reconcileInputs,geometryIdentity} from '../../lib/seasonal/provenance';
 import {automaticCampaign} from '../../lib/seasonal/automatic';
+import {rebaseManagementPlan,rebasePlannedEvents} from '../../lib/seasonal/management';
 import { seasonalCapabilities } from '../../lib/seasonal/capabilities';
 
 const fmt = (v: number | null | undefined, digits = 1) => v === null || v === undefined ? 'Indisponible' : new Intl.NumberFormat('fr-FR', { maximumFractionDigits: digits }).format(v);
@@ -120,15 +121,10 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       }
       setError('');
       if(deltaDays!==0){
-        const shift=(date:string)=>addDays(date,deltaDays);
         const previous=config.managementPlan;
-        const managementPlan=previous?{
-          ...previous,
-          irrigation:{...previous.irrigation,applications:previous.irrigation.applications.map(a=>({...a,date:shift(a.date)}))},
-          products:previous.products.map(p=>p.status==='planned'?{...p,date:shift(p.date)}:p)
-        }:undefined;
-        setEvents(current=>current.map(e=>e.status==='planned'?{...e,date:shift(e.date)}:e));
-        const shifted=(previous?.irrigation.applications.length??0)+(previous?.products.filter(p=>p.status==='planned').length??0)+events.filter(e=>e.status==='planned').length;
+        const managementPlan=rebaseManagementPlan(previous,deltaDays);
+        setEvents(current=>rebasePlannedEvents(current,deltaDays));
+        const shifted=(previous?.irrigation.applications.length??0)+(previous?.products.filter(p=>p.status==='planned').length??0)+events.filter(e=>e.status==='planned'||e.status==='cancelled').length;
         if(shifted)setNotice(`Date de semis modifiée : ${shifted} apport(s) ou événement(s) planifié(s) décalé(s) de ${Math.abs(deltaDays)} jour(s). Vérifiez le calendrier avant de l’utiliser.`);
         edit({...config,sowingDate:nextSowingDate,...(managementPlan?{managementPlan}:{})});
         return;
