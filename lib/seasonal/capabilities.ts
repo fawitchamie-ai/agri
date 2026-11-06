@@ -33,6 +33,7 @@ export function seasonalCapabilities(country: Country, cropId?: string) {
       reason: references.length ? 'Périmètre de chaque fiche à vérifier : pays, territoire, variété et système. Les analyses saisies ne personnalisent pas la dose.' : 'Aucune recette chiffrée qualifiée pour ce pays et cette culture.'},
     personalizedFertilization: {status: 'blocked', reason: 'Relation locale sol–culture, fournitures, eau, apports antérieurs et réponse aux nutriments à qualifier.'},
     conditionalYieldSimulation:{status:cropId&&SEASONAL_KY[cropId]!==undefined?'requires_reference':'declared_scenario_only',version:YIELD_VERSION,reason:'Surface semée et référence explicites ; approximation FAO limitée aux cultures paramétrées, cycle complet et Ym indépendant. Aucune validation parcellaire.'},
+    integratedGrowth:{status:cropId&&['maize','sorghum','millet','rice-upland'].includes(cropId)?'explicit_scenario':'unsupported_product',version:'daily-rue-npk-1',validated:false,reason:'Profil explicite : RUE, couvert, température, bilan eau et N/P/K ; satellite et calibration de l’indice de récolte facultatifs. Aucun pays calibré.'},
     seasonalYieldForecast: {status: 'blocked', reason: 'Jeu disponible à date, paramètres et évaluation saisonnière/parcellaire absents.'},
     chemicalCropProtection: {status: 'blocked', reason: 'Diagnostic et autorisations/étiquettes qualifiés pour le pays, l’usage et la date absents.'},
     prospectiveValidation: {status: 'not_started', reason: 'Observations de terrain et récoltes prospectives requises.'},

@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  growth?: import('./growth.ts').GrowthInput;
   yieldScenario?: 'rainfed'|'recorded'|'proposed';
   fertilizerScenario?: import('./fertilizer-scenario.ts').FertilizerScenarioInput;
   fieldTrials?: import('./field-trials.ts').FieldTrial[];
@@ -80,6 +81,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  growth?: import('./growth.ts').GrowthResult;
   waterImpact?: import('./water-impact.ts').WaterImpact;
   response?: ReturnType<typeof import('./intervention-outcome.ts').interventionOutcome>;
   fertilizerScenario?: ReturnType<typeof import('./fertilizer-scenario.ts').fertilizerScenario>;
