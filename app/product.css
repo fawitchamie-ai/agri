@@ -237,3 +237,29 @@ body{font-family:'Lato',sans-serif}
 .agri-shell .fertilizer-comparison-note p { margin:4px 0; color:#30445d; font-size:14px; line-height:1.55; }
 .agri-shell .fertilizer-comparison-note strong { color:#1d3554; }
 .fertilizer-comparison-next { margin:14px 0 0; }
+
+/* Beginner-first campaign flow with the expert controls kept one level deeper. */
+.agri-shell .simulation-start-copy .start-country { display:grid; gap:8px; max-width:360px; margin:10px 0 0; }
+.agri-shell .simulation-start-copy .start-country>span { color:#38536f; font-size:13px; font-weight:700; }
+.agri-shell .simulation-start-copy .start-country select { min-height:46px; padding:10px 12px; font-size:15px; }
+.agri-shell .simulation-start-copy .start-country-note { max-width:360px; margin:8px 0 19px; color:#526981; font-size:13px; line-height:1.6; }
+.simulation-modules>button { min-height:54px; }
+.expert-subnav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; padding:12px; border:1px solid #dce6f1; border-radius:11px; background:#f7faff; }
+.expert-subnav>button { min-height:42px; padding:9px 14px; border:1px solid #d1deec; border-radius:8px; background:#fff; color:#3f5e80; font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+.expert-subnav>button[aria-pressed=true] { border-color:#176fba; background:#176fba; color:#fff; }
+.expert-subnav>button:hover { border-color:#176fba; }
+.result-explainer { display:grid; grid-template-columns:minmax(210px,.7fr) minmax(0,1.5fr); gap:8px 22px; margin:0 0 22px; padding:18px 21px; border:1px solid #cbdcf0; border-left:4px solid #2676c9; border-radius:11px; background:#f4f8fd; }
+.result-explainer-heading { display:grid; align-content:start; gap:5px; }
+.result-explainer-heading>span { color:#5e7896; font-size:10px; font-weight:800; letter-spacing:1px; }
+.result-explainer-heading>strong { color:#183c63; font-size:15px; line-height:1.45; }
+.agri-shell .result-explainer>p { margin:0; color:#344f6c; font-size:14px; line-height:1.65; }
+.result-explainer details { grid-column:1/-1; border-top:1px solid #dce7f3; margin-top:7px; padding-top:10px; }
+.result-explainer details>summary { color:#315a84; cursor:pointer; font-weight:700; }
+.result-explainer details>div { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 20px; margin-top:8px; }
+.agri-shell .result-explainer details p { margin:5px 0; color:#425a74; font-size:13px; line-height:1.55; }
+@media(max-width:780px) {
+  .result-explainer { grid-template-columns:1fr; gap:8px; padding:16px; }
+  .result-explainer details>div { grid-template-columns:1fr; }
+  .expert-subnav { display:grid; grid-template-columns:1fr; }
+  .expert-subnav>button { text-align:left; }
+}
