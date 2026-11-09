@@ -34,7 +34,11 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(render(c),/id="field-tab-overview"[^>]*role="tab"[^>]*aria-selected="true"/);
  assert.match(render(c),/id="field-tab-water"[^>]*role="tab"/);
  assert.match(render(c),/id="field-tab-fertilizer"[^>]*role="tab"/);
- assert.match(render(c),/id="field-tab-notes"[^>]*role="tab"/);
+ const expert=render(c,false,'settings');
+ assert.doesNotMatch(render(c),/id="field-tab-(?:notes|images)"[^>]*role="tab"/);
+ assert.match(expert,/class="expert-subnav"/);
+ assert.match(expert,/Carnet et essais/);
+ assert.match(expert,/Images du champ/);
  assert.doesNotMatch(render(c),/besoins couverts si le plan est réalisé/,'method details stay on demand');
  assert.match(render(c),/Sources et limites de cette simulation/);
  assert.match(html,/SEMENCES À PRÉVOIR/);
