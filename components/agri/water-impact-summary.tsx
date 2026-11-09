@@ -3,6 +3,7 @@ import type {WaterPlan} from '../../lib/seasonal/types';
 const fmt=(n:number|null,d=1)=>n===null?'—':n.toLocaleString('fr-FR',{maximumFractionDigits:d});
 const score=(n:number|null)=>n===null?'—':`${fmt(n)} / 100`;
 const difference=(n:number|null)=>n===null?'—':`${n>0?'+':''}${fmt(n)} pts`;
+const waterCoverage=(eta:number|null,etm:number|null)=>eta===null||etm===null||etm<=0?'—':`${fmt(eta/etm*100,1)} %`;
 
 export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;stale:boolean}){
  const impact=stale?undefined:plan?.waterImpact;
@@ -21,7 +22,7 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
     <span>référence sans déficit d’eau</span>
    </div>
    <p><strong>Ce score n’est pas un rendement en tonnes.</strong><br/>
-    Un score de 80 signifie que le modèle estime 80 % de la référence hydrique.</p>
+    Un score de 80 signifie que le modèle estime 80 % de la référence hydrique. Le taux d’eau ci-dessous montre l’ET réelle rapportée au besoin saisonnier (ETa/ETm).</p>
   </div>
 
   {stale?<p className="water-impact-status" role="status">Recalcul de l’effet hydrique…</p>
@@ -34,9 +35,10 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
      <p className="water-impact-caption">Compare les 3 scénarios ci-dessous. L’écart est calculé par rapport au cas sans irrigation ajoutée.</p>
      <div className="water-impact-table-wrap">
       <table className="data-table water-impact-table">
-       <thead><tr><th>Situation</th><th>Score hydrique</th><th>Écart vs sans irrigation</th></tr></thead>
+       <thead><tr><th>Situation</th><th>Besoins en eau couverts</th><th>Score hydrique</th><th>Écart vs sans irrigation</th></tr></thead>
        <tbody>{impact.scenarios.map(s=><tr key={s.id} className={s.id==='rainfed'?'water-impact-reference-row':undefined}>
         <td><strong>{s.label}</strong>{s.missing.length>0&&<span className="water-impact-row-note">{s.missing.join(' ')}</span>}</td>
+        <td>{waterCoverage(s.etaMm,s.etmMm)}</td>
         <td><span className="water-impact-score">{score(s.relativeYieldPercent)}</span></td>
         <td>{difference(s.deltaPointsVsRainfed)}</td>
        </tr>)}</tbody>
