@@ -171,7 +171,7 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
-  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);return json({plan:planSeason(config,b.events??[],{requireGeometry:true}),requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
+  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);const plan=planSeason(config,b.events??[],{requireGeometry:true});const responseConfig={...config};delete responseConfig.landAssessment;return json({plan,config:responseConfig,requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
