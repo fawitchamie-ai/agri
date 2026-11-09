@@ -45,12 +45,13 @@ test('NPK additions act through limiting stocks, timing matters, recorded inputs
  c.asOfDate=addDays(c.sowingDate,15);c.managementPlan!.products[0].date=c.asOfDate;c.managementPlan!.products[0].status='declared';
  const recorded=planSeason(c).growth!;assert.equal(recorded.scenarios.find(s=>s.id==='proposed')!.yieldKgHa,recorded.scenarios.find(s=>s.id==='without-planned-fertilizer')!.yieldKgHa);
 });
-test('pH requires a declared curve and matching laboratory method; no hidden pH multiplier',()=>{
+test('pH stays diagnostic and legacy response curves cannot change the simulated yield',()=>{
  const c=fixture();c.growth!.soilSupply.initialKgHa=[0,0,0];c.soilAnalyses=[{source:'Synthetic pH',date:c.asOfDate,availableOn:c.asOfDate,topCm:0,bottomCm:20,status:'declared',measurements:[{parameter:'pH',value:4,unit:'pH',method:'water'}]}];
  const baseline=proposed(c).yieldKgHa;
  c.growth!.parameters.phResponse={analysisIndex:0,measurementIndex:0,method:'water',curve:[3,5.5,7,9],source:'Synthetic response hypothesis'};
- assert.ok(proposed(c).yieldKgHa<baseline);
- c.growth!.parameters.phResponse.method='KCl';assert.equal(planSeason(c).growth!.status,'unavailable');
+ const withLegacyCurve=proposed(c),result=planSeason(c).growth!;assert.equal(withLegacyCurve.yieldKgHa,baseline);assert.equal(result.status,'scenario');assert.equal(result.phFactor,null);
+ assert.equal(parseGrowth(c.growth,c)!.parameters.phResponse,null);
+ c.growth!.parameters.phResponse.method='KCl';assert.equal(planSeason(c).growth!.status,'scenario');
 });
 test('satellite assimilation is past-only, age-limited, quality-gated and changes interception',()=>{
  const c=fixture();c.asOfDate=addDays(c.sowingDate,30);const base=proposed(c).yieldKgHa;

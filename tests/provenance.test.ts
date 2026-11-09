@@ -9,7 +9,7 @@ import {testParcel,landFixture} from './support/land-fixtures.mjs';
 const now='2026-10-31T08:00:00Z';
 function environment(c:ReturnType<typeof emptyCampaign>,fc=.24):Environment {
  const id=c.inputs!.scope.id;
- return {scope:{id,geometry:c.parcelGeometry??null},context:environmentContext(c),soil:{ph:6.3,organicC:10,totalN:1,cec:12,sand:60,clay:20,source:'ISRIC SoilGrids',depth:'5–15 cm',resolutionM:250,retrievedAt:now,
+ return {scope:{id,geometry:c.parcelGeometry??null},context:environmentContext(c),soil:{ph:6.3,organicC:10,organicCarbonDensity:null,organicCarbonStock:null,totalN:1,cec:12,bulkDensity:null,coarseFragments:null,sand:60,silt:null,clay:20,waterContent10kPa:null,source:'ISRIC SoilGrids',depth:'5–15 cm',resolutionM:250,retrievedAt:now,
  hydraulicLayers:[{thicknessM:1.2,thetaFC:fc,thetaWP:.11,initialTheta:.11+.6*(fc-.11)}],provenance:{ph:valueEvidence(6.3,'pH',id,{origin:'automatic',status:'estimated',rawValue:63,rawUnit:'pH × 10',acquiredAt:now,provider:'ISRIC',product:'SoilGrids',productVersion:'2.0',depthCm:[5,15]})}},weather:[],temperatures:[],warnings:[],retrievedAt:now,historicalYears:'2023–2025'};
 }
 test('Migration : valeurs anciennes conservées, dates de téléchargement jamais promues en mesures',()=>{

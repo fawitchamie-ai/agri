@@ -1,6 +1,6 @@
 import * as clipping from './geometry-ops.ts';
 import {multiArea,terrestrialSoilPoint,type LandAssessment,type MultiShape} from './land.ts';
-import {loadSoil} from './environment.ts';
+import {loadSoil,type SoilEstimate} from './environment.ts';
 import {geometryIdentity} from './provenance.ts';
 
 const SOIL_PROPERTIES=[
@@ -22,7 +22,7 @@ export async function sampleParcelSoil(a:LandAssessment,fetcher:typeof fetch=fet
    const rect=[[[left,s],[right,s],[right,n],[left,n],[left,s]]] as MultiShape['coordinates'][number];const cut=clipping.intersection([polygon],[rect]);if(cut.length)parts.push({type:'MultiPolygon',coordinates:cut});
   }
  }
- const samples=[];for(const geometry of parts.slice(0,8)){
+ const samples:{geometry:MultiShape;point:ReturnType<typeof terrestrialSoilPoint>;areaM2:number;soil:SoilEstimate|null}[]=[];for(const geometry of parts.slice(0,8)){
   const point=terrestrialSoilPoint({fractions:{potentialLand:{geometry}}} as LandAssessment);
   const soil=point?await loadSoil(point[1],point[0],fetcher):null;samples.push({geometry,point,areaM2:multiArea(geometry.coordinates),soil});
  }

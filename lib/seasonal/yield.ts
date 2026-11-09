@@ -105,9 +105,9 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
   if(multiArea(clipping.intersection(joined,shape))>tolerance)throw new InputError('Les unités spatiales se chevauchent.');
   joined=clipping.union(joined,shape);
   const mapped=multiArea(shape),sown=y.units[i].sownAreaM2;
-  if(sown!==null&&sown>mapped+tolerance)throw new InputError(y.areaBasis==='planned'?'La surface prévue dépasse la surface géométrique de son unité.':'La surface effectivement semée dépasse la surface géométrique de son unité.');
+  if(sown!==null&&sown>mapped+tolerance)throw new InputError(y.areaBasis==='planned'?'La surface prévue est supérieure à la surface géométrique de son unité.':'La surface effectivement semée est supérieure à la surface géométrique de son unité.');
  }
- if(multiArea(clipping.difference(domain!.coordinates,joined))>tolerance)out.missing.push(y.areaBasis==='planned'?'La partition de la surface prévue ne couvre pas toute la zone de calcul ; ajoutez les secteurs du scénario.':'La partition de la surface semée ne couvre pas toute la zone de calcul ; ajoutez les secteurs manquants, avec une surface nulle pour les secteurs non semés.');
+ if(multiArea(clipping.difference(domain!.coordinates,joined))>tolerance)out.missing.push(y.areaBasis==='planned'?'Partition incomplète de la surface prévue : ajoutez les secteurs du scénario manquants.':'Partition incomplète de la surface semée : ajoutez les secteurs manquants, avec une surface nulle pour les secteurs non semés.');
  const known=y.units.every(u=>u.sownAreaM2!==null),sown=known?y.units.reduce((n,u)=>n+u.sownAreaM2!,0):null;
  out.surface.areaBasis=y.areaBasis??'sown';out.surface.simulationM2=sown;
  out.surface.plannedM2=y.areaBasis==='planned'?sown:null;
