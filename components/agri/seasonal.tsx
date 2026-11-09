@@ -49,6 +49,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
   const [planStale,setPlanStale]=useState(true);
   const simulationSequence=useRef(0);
+  const simulationDebounce=useRef(350);
   const [parcelDraft,setParcelDraft]=useState(false);
   const [period,setPeriod]=useState('weeks'), [allDays,setAllDays]=useState(false);
   const [weatherText,setWeatherText]=useState('');
@@ -93,7 +94,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       const result=await seasonalRequest<{plan:WaterPlan;requestId:string}>({action:'simulate',config,events,requestId},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}});
       if(result.requestId!==requestId||!result.plan)throw new Error('Réponse de calcul incomplète. Relancez le calcul ; vos saisies sont conservées.');
       if(alive&&requestId===String(simulationSequence.current)){setPlan(result.plan);setPlanStale(false);setSimulationError('');}
-    }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlanStale(true);setSimulationError((e as Error).message);}}},1000);
+    }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlanStale(true);setSimulationError((e as Error).message);}}},simulationDebounce.current);
     return()=>{alive=false;clearTimeout(timer);controller.abort();};
   },[config,events,parcelDraft,simulationRetry,scope,loadedScope,isMapping]);
 
@@ -103,7 +104,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     if(workspace) api('/api/seasonal').then(r=>setList(r.campaigns)).catch(e=>setError(e.message));
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
-  function edit(next: SeasonalConfig) { simulationSequence.current++;setNutrientResult(null);setConfig(next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next));setDirty(true);setPlanStale(true); }
+  function edit(next: SeasonalConfig) { const updated=next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next);const withoutIrrigation=(c:SeasonalConfig)=>JSON.stringify({...c,managementPlan:c.managementPlan?{...c.managementPlan,irrigation:null}:c.managementPlan});const irrigationOnly=JSON.stringify(config.managementPlan?.irrigation)!==JSON.stringify(updated.managementPlan?.irrigation)&&withoutIrrigation(config)===withoutIrrigation(updated);simulationDebounce.current=irrigationOnly?1000:350;simulationSequence.current++;setNutrientResult(null);setConfig(updated);setDirty(true);setPlanStale(true); }
   function change<K extends keyof SeasonalConfig>(key:K,value:SeasonalConfig[K]) {
     if(key==='crop'){edit({...config,crop:String(value),cropProfile:undefined,nutritionReference:undefined,stages:[],parameterSource:''});return;}
     if(key==='sowingDate'){
