@@ -4,7 +4,7 @@ import type {Position,ParcelPolygon} from './parcel.ts';
 import type {LandAssessment} from './land.ts';
 import {addDays,InputError,isoDate} from './validation.ts';
 
-export type SoilEstimate = {provenance?:Record<string,InputValue>;hydraulicLayers?:SoilLayer[];ph:number|null;organicC:number|null;totalN:number|null;cec:number|null;sand:number|null;clay:number|null;source:string;depth:string;resolutionM:number;retrievedAt:string};
+export type SoilEstimate = {provenance?:Record<string,InputValue>;hydraulicLayers?:SoilLayer[];ph:number|null;organicC:number|null;organicCarbonDensity:number|null;organicCarbonStock:number|null;totalN:number|null;cec:number|null;bulkDensity:number|null;coarseFragments:number|null;sand:number|null;silt:number|null;clay:number|null;waterContent10kPa:number|null;source:string;depth:string;resolutionM:number;retrievedAt:string};
 export type Environment = {context?:string;scope?:{id:string;geometry:ParcelPolygon|null};landAssessment?:LandAssessment;soil:SoilEstimate;weather:WeatherDay[];temperatures:{date:string;value:number;status:'forecast'|'estimated'|'scenario'}[];warnings:string[];retrievedAt:string;historicalYears:string};
 const finite=(v:unknown,min:number,max:number):number|null=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max?v:null;
 
@@ -55,8 +55,8 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
  let active=0;const queue:(()=>void)[]=[];
  async function limited<T>(work:()=>Promise<T>):Promise<T>{if(active>=4)await new Promise<void>(resolve=>queue.push(resolve));active++;try{return await work();}finally{active--;queue.shift()?.();}}
  const read=(property:string,depth:string,statistic='mean')=>limited(()=>budget.aborted?Promise.resolve(null):soilValue(property,depth,latitude,longitude,fetcher,statistic,budget));
- const specs=[['ph','phh2o',10,0,14],['organicC','soc',10,0,1000],['totalN','nitrogen',100,0,1000],['cec','cec',10,0,1000],['sand','sand',10,0,100],['clay','clay',10,0,100]] as const;
- const result:SoilEstimate={ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'ISRIC SoilGrids 2.0 — prédiction cartographique au point représentatif, CC BY 4.0',depth:'5–15 cm',resolutionM:250,retrievedAt:now,provenance:{}};
+ const specs=[['ph','phh2o',10,0,14,'pH','5-15',[5,15]],['organicC','soc',10,0,1000,'g/kg','5-15',[5,15]],['organicCarbonDensity','ocd',10,0,1000,'kg/m³','5-15',[5,15]],['organicCarbonStock','ocs',10,0,1000,'kg/m²','0-30',[0,30]],['totalN','nitrogen',100,0,1000,'g/kg','5-15',[5,15]],['cec','cec',10,0,1000,'cmol(+)/kg','5-15',[5,15]],['bulkDensity','bdod',100,0,3,'kg/dm³','5-15',[5,15]],['coarseFragments','cfvo',10,0,100,'% vol.','5-15',[5,15]],['sand','sand',10,0,100,'%','5-15',[5,15]],['silt','silt',10,0,100,'%','5-15',[5,15]],['clay','clay',10,0,100,'%','5-15',[5,15]],['waterContent10kPa','wv0010',1000,0,1,'m³/m³ à 10 kPa','5-15',[5,15]]] as const;
+ const result:SoilEstimate={ph:null,organicC:null,organicCarbonDensity:null,organicCarbonStock:null,totalN:null,cec:null,bulkDensity:null,coarseFragments:null,sand:null,silt:null,clay:null,waterContent10kPa:null,source:'ISRIC SoilGrids 2.0 — prédiction cartographique à 250 m au point représentatif, CC BY 4.0',depth:'5–15 cm pour les propriétés générales (OCS : 0–30 cm) ; rétention hydrique par six horizons',resolutionM:250,retrievedAt:now,provenance:{}};
  const id=scopeId(null,[longitude,latitude]);
  const ev=(value:number|null,raw:number|null,unit:string,rawUnit:string,method:string,depth:[number,number])=>valueEvidence(value,unit,id,{rawValue:raw,rawUnit,method,depthCm:depth,provider:'ISRIC',product:'SoilGrids',productVersion:'2.0',acquiredAt:now,observedAt:null,status:value===null?'missing':'estimated',origin:'automatic',spatial:{point:[longitude,latitude],cell:`WCS query at ${longitude},${latitude}; native cell id not supplied`,resolutionM:250,crs:'EPSG:4326'},replacementReason:value===null?'Source inaccessible ou pixel sans donnée.':'Date de mesure du profil inconnue ; prédiction cartographique.'});
  const depths=[[0,5],[5,15],[15,30],[30,60],[60,100],[100,200]];
@@ -71,11 +71,10 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
    result.provenance![`layers.${idx}.initialTheta`]=valueEvidence(wp/1000+.6*(fc-wp)/1000,'m³/m³',id,{origin:'default',status:'assumed',method:'WP + 0,60 × (FC − WP)',depthCm:[top,bottom],acquiredAt:now,replacementReason:'Réserve initiale supposée à 60 %, non mesurée.'});
    return {thicknessM:(bottom-top)/100,thetaFC:fc/1000,thetaWP:wp/1000,initialTheta:wp/1000+.6*(fc-wp)/1000};
   })),
-  Promise.allSettled(specs.map(async([key,property,div,min,max])=>{
-   const [pixel,low,high]=await Promise.all([read(property,'5-15'),read(property,'5-15','Q0.05'),read(property,'5-15','Q0.95')]);
+  Promise.allSettled(specs.map(async([key,property,div,min,max,unit,depth,depthCm])=>{
+   const [pixel,low,high]=await Promise.all([read(property,depth),read(property,depth,'Q0.05'),read(property,depth,'Q0.95')]);
    if(pixel!==null)result[key]=finite(pixel/div,min,max);
-   const units={ph:'pH',organicC:'g/kg',totalN:'g/kg',cec:'cmol(+)/kg',sand:'%',clay:'%'};
-   result.provenance![key]=ev(result[key],pixel,units[key],`encoded ${property} / ${div}`,property==='phh2o'?'pH eau, prédiction':'Prédiction cartographique moyenne',[5,15]);
+   result.provenance![key]=ev(result[key],pixel,unit,`encoded ${property} / ${div}`,property==='phh2o'?'pH eau, prédiction':'Prédiction SoilGrids moyenne',[depthCm[0],depthCm[1]]);
    if(low!==null&&high!==null&&low<=high&&finite(low/div,min,max)!==null&&finite(high/div,min,max)!==null)result.provenance![key].uncertainty={lower:low/div,upper:high/div,level:.9,method:'Intervalle prédictif SoilGrids Q0.05–Q0.95'};
    else result.provenance![key].replacementReason+=' Incertitude non récupérée.';
   })),
@@ -83,7 +82,7 @@ export async function loadSoil(latitude:number,longitude:number,fetcher:typeof f
  // Do not splice missing horizons together or apply topsoil values to the subsoil.
  if(hydraulics.every(h=>h.status==='fulfilled'))result.hydraulicLayers=hydraulics.map(h=>(h as PromiseFulfilledResult<SoilLayer>).value);
 
- if(fetcher===fetch&&result.hydraulicLayers&&specs.every(([key])=>result[key]!==null)){if(soilCache.size>=16)soilCache.delete(soilCache.keys().next().value!);soilCache.set(cacheKey,{until:Date.now()+86400000,value:structuredClone(result)});}
+ if(fetcher===fetch&&result.hydraulicLayers&&specs.some(([key])=>result[key]!==null)){if(soilCache.size>=16)soilCache.delete(soilCache.keys().next().value!);soilCache.set(cacheKey,{until:Date.now()+86400000,value:structuredClone(result)});}
  return result;
 }
 async function weatherJson(url:URL,fetcher:typeof fetch){
@@ -101,8 +100,8 @@ async function acquireEnvironment(latitude:number,longitude:number,country:Count
  const year=Number(now.slice(0,4)),common={latitude:String(latitude),longitude:String(longitude),timezone:COUNTRIES[country].timezone,daily:'precipitation_sum,et0_fao_evapotranspiration,temperature_2m_mean'};
  const forecastUrl=new URL('https://api.open-meteo.com/v1/forecast');forecastUrl.search=new URLSearchParams({...common,forecast_days:'16',past_days:'92'}).toString();
  const historyUrl=new URL('https://archive-api.open-meteo.com/v1/archive');historyUrl.search=new URLSearchParams({...common,start_date:`${year-3}-01-01`,end_date:`${year-1}-12-31`}).toString();
- const [soil,forecast,history]=await Promise.allSettled([soilPoint===null?Promise.resolve({ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'Aucun point terrestre cartographié disponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now} as SoilEstimate):loadSoil(soilPoint?.[1]??latitude,soilPoint?.[0]??longitude,fetcher,now),weatherJson(forecastUrl,fetcher),weatherJson(historyUrl,fetcher)]);
- const empty:SoilEstimate={ph:null,organicC:null,totalN:null,cec:null,sand:null,clay:null,source:'Sol indisponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now};
+ const [soil,forecast,history]=await Promise.allSettled([soilPoint===null?Promise.resolve({ph:null,organicC:null,organicCarbonDensity:null,organicCarbonStock:null,totalN:null,cec:null,bulkDensity:null,coarseFragments:null,sand:null,silt:null,clay:null,waterContent10kPa:null,source:'Aucun point terrestre cartographié disponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now} as SoilEstimate):loadSoil(soilPoint?.[1]??latitude,soilPoint?.[0]??longitude,fetcher,now),weatherJson(forecastUrl,fetcher),weatherJson(historyUrl,fetcher)]);
+ const empty:SoilEstimate={ph:null,organicC:null,organicCarbonDensity:null,organicCarbonStock:null,totalN:null,cec:null,bulkDensity:null,coarseFragments:null,sand:null,silt:null,clay:null,waterContent10kPa:null,source:'Sol indisponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now};
  const s=soil.status==='fulfilled'?soil.value:empty,warnings:string[]=[],weather:WeatherDay[]=[],temperatures:Environment['temperatures']=[];
  if(soilPoint===null)warnings.push('Sol non interrogé : aucune partie terrestre cartographiée exploitable.');
  if(soilPoint)warnings.push('Sol estimé sur un point de la partie terrestre cartographiée ; maille de 250 m susceptible de mêler terre et eau, sans moyenne du contour.');
