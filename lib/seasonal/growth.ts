@@ -113,7 +113,7 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  const weather=new Map(config.weather.map(w=>{const copy={...w};for(const k of ['temperatureMeanC','temperatureMinC','temperatureMaxC','radiationMj'] as const)if(config.inputs?.values[`weather.${w.date}.${k}`]?.status==='missing')copy[k]=null;return [w.date,copy];}));
  for(const d of plan.days){const w=weather.get(d.date),t=w?.temperatureMeanC??(w?.temperatureMinC!=null&&w?.temperatureMaxC!=null?(w.temperatureMinC+w.temperatureMaxC)/2:undefined)??v.weatherScenario?.temperatureMeanC,r=w?.radiationMj??v.weatherScenario?.radiationMj;if(t==null||r==null)out.missing.push(`${d.date} : température moyenne et rayonnement journaliers requis ou scénario explicite.`);}
  if(out.missing.length){out.missing=[...new Set(out.missing)];return out;}
- const definitions=[['rainfed','Sans irrigation ni engrais prévus','rainfed',false],['recorded','Apports réalisés uniquement','recorded',false],['proposed','Eau et engrais prévus','proposed',true],['without-planned-fertilizer','Même eau, sans engrais prévu','proposed',false]] as const;
+ const definitions=[['rainfed','Sans irrigation ni engrais prévus','rainfed',false],['recorded','Apports réalisés uniquement','recorded',false],['without-planned-water','Engrais prévus, sans arrosage futur','recorded',true],['proposed','Eau et engrais prévus','proposed',true],['without-planned-fertilizer','Même eau, sans engrais prévu','proposed',false]] as const;
  for(const [id,label,irrigationMode,includePlanned] of definitions){
  const ev=events.filter(e=>irrigationMode!=='rainfed'||e.kind==='rain');
  const water=planWater(config,ev,{irrigationMode,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
