@@ -42,7 +42,7 @@ export function aggregateProduction(rows:{sownAreaM2:number;productionKg:number}
  return {productionKg,yieldKgHaSown:sown>0?productionKg/(sown/10000):null,productionKgHaContour:drawnM2>0?productionKg/(drawnM2/10000):null};
 }
 const text=(v:unknown,max=1200)=>typeof v==='string'&&v.trim()&&v.length<=max?v.trim():null;
-const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>1e9)throw new InputError('Surface semée/récoltée invalide en m².');return v;};
+const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>1e9)throw new InputError('Surface de scénario ou surface récoltée invalide en m².');return v;};
 export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undefined{
  if(value===undefined)return undefined;
  const v=value as YieldInput;
@@ -50,7 +50,7 @@ export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undef
  const units=v.units.map(u=>{
   if(!u||!text(u.id,100)||!text(u.areaSource))throw new InputError('Identifiant et provenance de surface requis.');
   const sownAreaM2=area(u.sownAreaM2),harvestedAreaM2=area(u.harvestedAreaM2);
-  if(v.areaBasis==='planned'&&harvestedAreaM2!==null)throw new InputError('Une surface prévue ne peut pas porter une récolte réalisée. Déclarez d’abord le semis.');
+  if(v.areaBasis==='planned'&&harvestedAreaM2!==null)throw new InputError('Une campagne en prévision ne peut pas contenir une récolte. Après semis, passez en surface effectivement semée pour l’enregistrer.');
   if(harvestedAreaM2!==null&&(sownAreaM2===null||harvestedAreaM2>sownAreaM2))throw new InputError('La surface récoltée doit être documentée et ne pas dépasser la surface initialement semée.');
   let geometry:MultiShape|undefined;
   if(u.geometry){
