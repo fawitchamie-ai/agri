@@ -31,7 +31,7 @@ export default function YieldSummary({config,plan,stale,onChange,onFertilizer}:{
  const comparison=other?.scenarios.find(s=>s.id===mode),comparable=estimate?.method==='fao-seasonal'&&other?.method==='fao-seasonal'&&estimate.version===other.version&&estimate.cropId===other.cropId;
  function exportCsv(){if(!estimate)return;const url=URL.createObjectURL(new Blob([yieldCsv(estimate)],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='effets-rendement.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  return <section className="qs-card" id="harvest-summary" aria-label="Effets sur le rendement">
-  <div className="qs-card-heading"><div><span className="qs-eyebrow">03 · COMPARER LES EFFETS</span><h2>Impact sur ma culture</h2></div><div className="qs-heading-tools"><span className="qs-tag">{stale?'Recalcul…':'Simulation conditionnelle'}</span><EditButton label="la surface et les références avancées" expanded={editing} onClick={()=>setEditing(!editing)}/></div></div>
+  <div className="qs-card-heading"><div><span className="qs-eyebrow">RÉSULTATS DE LA SIMULATION</span><h2>Rendement et effets simulés</h2></div><div className="qs-heading-tools"><span className="qs-tag">{stale?'Recalcul…':'Simulation conditionnelle'}</span><EditButton label="la surface et les références avancées" expanded={editing} onClick={()=>setEditing(!editing)}/></div></div>
   <GrowthPanel config={config} plan={plan} stale={stale} onChange={onChange}/>
   <WaterImpactSummary plan={plan} stale={stale}/>
   <section aria-label="Impact des engrais sur le rendement"><h3>Effet simulé des engrais NPK</h3>
