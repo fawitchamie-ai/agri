@@ -12,7 +12,7 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
   <header className="water-impact-heading">
    <span className="water-impact-eyebrow">EFFET DE L’EAU SUR LE RENDEMENT</span>
    <h3 id="water-impact-title">Que change l’arrosage ?</h3>
-   <p>Même parcelle, même sol et même météo. Seul le scénario d’irrigation change. Aucun rendement à saisir.</p>
+   <p>Compare les scénarios sans arrosage ajouté, avec les apports réalisés et avec le plan proposé, pour le même champ, le même sol et la même météo. Après un changement d’irrigation, le score hydrique est recalculé ici.</p>
   </header>
 
   <div className="water-impact-reading">
