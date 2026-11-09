@@ -3,7 +3,7 @@ import type {WaterPlan} from '../../lib/seasonal/types';
 const fmt=(n:number|null,d=1)=>n===null?'—':n.toLocaleString('fr-FR',{maximumFractionDigits:d});
 const score=(n:number|null)=>n===null?'—':`${fmt(n)} / 100`;
 const difference=(n:number|null)=>n===null?'—':`${n>0?'+':''}${fmt(n)} pts`;
-const waterCoverage=(eta:number|null,etm:number|null)=>eta===null||etm===null||etm<=0?'—':`${fmt(eta/etm*100,1)} %`;
+const waterCoverage=(eta:number|null,etm:number|null)=>eta===null||etm===null||etm<=0?'—':`${fmt(eta/etm*100,2)} %`;
 
 export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;stale:boolean}){
  const impact=stale?undefined:plan?.waterImpact;
