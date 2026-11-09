@@ -21,7 +21,7 @@ Pour chaque jour `d` :
 7. `fNPK = min(1, stock[k] / besoinPotentiel[k])`. `ΔB = ΔBpot × fNPK`. L'absorption est retirée des stocks avec les besoins déclarés en kg élément/t de biomasse. Les bilans fournis/absorbés/restants et leurs résidus sont exportés ; une masse de nutriments ne peut pas être consommée deux fois.
 8. `rendement sec = ΣΔB × indice de récolte`. Le rendement à l'humidité de référence vaut `rendement sec / (1 − humidité/100)`. `production = rendement × superficie/10000`. La surface prévue reste distincte du semis réalisé.
 
-La réponse pH est **facultative et déclarée**, liée à une analyse et sa méthode. Elle limite les fournitures de fond quotidiennes et les fractions récupérées des apports ; elle ne pénalise pas de nouveau les stocks initiaux déjà déclarés accessibles. Le pH seul ne permet pas de déduire cette courbe. Aucun pH optimal EcoCrop n'est converti automatiquement en rendement. Sans courbe, le pH reste un diagnostic, ce que l'interface indique.
+Le pH reste **diagnostique seulement**. Les plages EcoCrop sont des repères d'aptitude et ne donnent pas de courbe mesurée de perte de rendement ou de disponibilité N/P/K par variété. Aucune courbe pH n'est appliquée. Les profils historiques qui contiennent une courbe pH sont normalisés sans cette courbe lors du chargement ; elle ne modifie ni la fourniture du sol, ni la récupération des engrais, ni l'identifiant du profil.
 
 Les contraintes d'eau, température et nutriments s'appliquent à la croissance quotidienne. Il n'y a pas de seconde multiplication du rendement final par un facteur Ky ou QUEFTS.
 

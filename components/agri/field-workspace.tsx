@@ -5,6 +5,7 @@ import {fertilizerScope} from '../../lib/seasonal/fertilizer-scenario';
 import {ProductIcon,ParcelFootprint,Disclosure} from './product-ui';
 import {addFieldNote,fieldBrief,fieldNotes,NOTE_PARAMETERS,weatherLabel,type FieldAction} from '../../lib/seasonal/field-intelligence';
 import {COUNTRIES,type SeasonalConfig,type WaterPlan,type WaterEvent} from '../../lib/seasonal/types';
+import {seasonalCapabilities} from '../../lib/seasonal/capabilities';
 const fmt=(n:number|null|undefined,d=1)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
 const date=(d:string)=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
 type Props={config:SeasonalConfig;plan:WaterPlan|null;events:WaterEvent[];stale:boolean;loading:boolean;failed?:boolean;onAction:(target:FieldAction['target'])=>void};
@@ -15,6 +16,16 @@ export function FieldOverview({config:c,plan,events,stale,loading,failed=false,o
  const water=!failed&&!stale&&!loading?plan?.waterImpact?.scenarios.find(s=>s.id===b.mode):undefined;
  const relative=!integrated&&!b.result&&water?.relativeYieldPercent!=null;
  const fertilizer=!integrated&&!failed&&!stale&&!loading&&c.fertilizerScenario?.scope===fertilizerScope(c)&&plan?.fertilizerScenario?.status==='exploratory_transfer'?plan.fertilizerScenario.results:null;
+ const capability=seasonalCapabilities(c.country,c.cropProfile?.id);
+ const resultMeaning=integrated
+  ?'Ce rendement vient d’un scénario de croissance intégré. Les paramètres et les interactions ne sont pas validés localement pour cette culture et cette zone.'
+  :fertilizer
+   ?'L’effet des engrais est exploratoire et transféré de profils de culture hors de votre zone. Il ne constitue pas une recommandation locale et ne s’ajoute pas au calcul de l’eau.'
+   :relative
+    ?'Ce score sur 100 exprime uniquement l’effet simulé du manque d’eau par rapport à une référence sans déficit. Ce n’est pas un rendement en tonnes.'
+    :b.result
+     ?'Le rendement en t/ha dépend d’une référence indépendante et du stress hydrique simulé. Les effets des nutriments et des autres contraintes ne sont pas intégrés.'
+     :'Aucune prévision de récolte validée n’est disponible pour cette combinaison pays-culture. Vous pouvez tout de même préparer le bilan d’eau et comparer les scénarios hydriques.';
  const span=(v:[number,number]|null)=>v?`${fmt(v[0]/1000,2)} – ${fmt(v[1]/1000,2)}`:'—';
  return <section className="field-overview product-overview" aria-label="Synthèse de la parcelle">
   <div className="overview-heading"><div><span className="product-eyebrow">VOTRE CAMPAGNE EN UN COUP D’ŒIL</span><h2>Les résultats de votre scénario</h2></div><span>Au {date(c.asOfDate)}</span></div>
@@ -23,6 +34,11 @@ export function FieldOverview({config:c,plan,events,stale,loading,failed=false,o
    <button onClick={()=>onAction(fertilizer?'fertilizer':'yield')}><span><ProductIcon name="basket" size={17}/>{fertilizer?'RÉCOLTE AVEC ENGRAIS PRÉVUS':'PRODUCTION SIMULÉE'}</span><strong>{integrated?fmt(growth?growth.productionKg/1000:null,2):fertilizer?span(fertilizer.productionWithKg):fmt(b.result==null?null:b.result.productionKg/1000,2)} <small>tonnes</small></strong><em>{integrated?(growth?`${fmt(sown==null?null:sown/10000,3)} ha · produit à ${plan?.growth?.moisturePercent} % d’humidité`:'Compléter la simulation intégrée'):fertilizer?(fertilizer.areaM2===null?'Surface semée à confirmer':`${fmt(fertilizer.areaM2/10000,3)} ha ${fertilizer.areaBasis==='planned'?'prévus':'semés'}`):sown==null?'Référence indépendante facultative':`${fmt(sown/10000,3)} ha ${b.estimate?.surface.areaBasis==='planned'?'prévus':'semés'}`} <ProductIcon name="arrow" size={14}/></em></button>
    <button onClick={()=>onAction('water')}><span><ProductIcon name="water" size={17}/>EAU À PRÉVOIR SUR LE CYCLE</span><strong>{fmt(b.usable?plan?.totals.remainingSourceM3:null,0)} <small>m³</small></strong><em>{b.usable?'Restant proposé à la source':'Bilan d’eau à compléter'} <ProductIcon name="arrow" size={14}/></em></button>
   </div>
+  <section className="result-explainer" aria-label="Comment interpréter les résultats">
+   <div className="result-explainer-heading"><span>À RETENIR POUR VOTRE CAMPAGNE</span><strong>{integrated||fertilizer||relative||b.result?'Simulation conditionnelle':'Prévision de récolte non disponible'}</strong></div>
+   <p>{resultMeaning}</p>
+   <details><summary>Pourquoi ce résultat a-t-il ce statut ?</summary><div><p><strong>Lieu et culture :</strong> {COUNTRIES[c.country].name} · {c.crop}.</p><p><strong>Bilan d’eau :</strong> {capability.waterSimulation.reason}</p><p><strong>Prévision de rendement :</strong> {capability.seasonalYieldForecast.reason}</p><p><strong>Engrais :</strong> {capability.personalizedFertilization.reason}</p></div></details>
+  </section>
   {fertilizer?<section className="fertilizer-overview"><div><span>Sans nouvel apport prévu</span><strong>{span(fertilizer.yieldWithoutKgHa)} <small>t/ha</small></strong></div><div><span>Supplément simulé</span><strong>+ {span(fertilizer.deltaKgHa)} <small>t/ha</small></strong></div><div><HelpParagraph>Deux profils nigérians, sans intervalle prédictif ni validation locale.</HelpParagraph><button onClick={()=>onAction('fertilizer')}>Voir la comparaison <ProductIcon name="arrow" size={15}/></button></div></section>:!b.result&&!growth&&!stale&&!loading&&<div className="yield-reference-prompt"><ProductIcon name="chart"/><div><strong>Quel effet ont mes interventions ?</strong><HelpParagraph>Comparez la réponse au manque d’eau et explorez l’effet des engrais, sans saisir le rendement attendu.</HelpParagraph></div><button className="btn secondary" onClick={()=>onAction('yield')}>Comparer les effets <ProductIcon name="arrow" size={15}/></button></div>}
   <div className="overview-grid">
    <section className="overview-parcel"><div className="overview-card-header"><h3>Ma parcelle</h3><button onClick={()=>onAction('map')}>Ouvrir la carte <ProductIcon name="arrow" size={15}/></button></div><button className="overview-map" onClick={()=>onAction('map')} aria-label="Ouvrir la carte de ma parcelle"><ParcelFootprint geometry={c.parcelGeometry}/><span>Contour dessiné · {fmt(c.areaM2==null?null:c.areaM2/10000,3)} ha</span></button><div className="overview-parcel-bottom"><span><i/>{COUNTRIES[c.country].name}</span><span>{c.crop}</span><span>Semis le {date(c.sowingDate)}</span></div></section>

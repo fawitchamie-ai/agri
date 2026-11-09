@@ -42,7 +42,7 @@ export function aggregateProduction(rows:{sownAreaM2:number;productionKg:number}
  return {productionKg,yieldKgHaSown:sown>0?productionKg/(sown/10000):null,productionKgHaContour:drawnM2>0?productionKg/(drawnM2/10000):null};
 }
 const text=(v:unknown,max=1200)=>typeof v==='string'&&v.trim()&&v.length<=max?v.trim():null;
-const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>1e9)throw new InputError('Surface semée/récoltée invalide en m².');return v;};
+const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='number'||!Number.isFinite(v)||v<0||v>1e9)throw new InputError('Surface de scénario ou surface récoltée invalide en m².');return v;};
 export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undefined{
  if(value===undefined)return undefined;
  const v=value as YieldInput;
@@ -50,7 +50,7 @@ export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undef
  const units=v.units.map(u=>{
   if(!u||!text(u.id,100)||!text(u.areaSource))throw new InputError('Identifiant et provenance de surface requis.');
   const sownAreaM2=area(u.sownAreaM2),harvestedAreaM2=area(u.harvestedAreaM2);
-  if(v.areaBasis==='planned'&&harvestedAreaM2!==null)throw new InputError('Une surface prévue ne peut pas porter une récolte réalisée. Déclarez d’abord le semis.');
+  if(v.areaBasis==='planned'&&harvestedAreaM2!==null)throw new InputError('Une campagne en prévision ne peut pas contenir une récolte. Après semis, passez en surface effectivement semée pour l’enregistrer.');
   if(harvestedAreaM2!==null&&(sownAreaM2===null||harvestedAreaM2>sownAreaM2))throw new InputError('La surface récoltée doit être documentée et ne pas dépasser la surface initialement semée.');
   let geometry:MultiShape|undefined;
   if(u.geometry){
@@ -105,19 +105,19 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
   if(multiArea(clipping.intersection(joined,shape))>tolerance)throw new InputError('Les unités spatiales se chevauchent.');
   joined=clipping.union(joined,shape);
   const mapped=multiArea(shape),sown=y.units[i].sownAreaM2;
-  if(sown!==null&&sown>mapped+tolerance)throw new InputError('Surface semée supérieure à la surface géométrique de son unité.');
+  if(sown!==null&&sown>mapped+tolerance)throw new InputError(y.areaBasis==='planned'?'La surface prévue est supérieure à la surface géométrique de son unité.':'La surface effectivement semée est supérieure à la surface géométrique de son unité.');
  }
- if(multiArea(clipping.difference(domain!.coordinates,joined))>tolerance)out.missing.push('Partition incomplète : ajoutez les secteurs manquants, avec surface semée nulle si non plantés.');
+ if(multiArea(clipping.difference(domain!.coordinates,joined))>tolerance)out.missing.push(y.areaBasis==='planned'?'Partition incomplète de la surface prévue : ajoutez les secteurs du scénario manquants.':'Partition incomplète de la surface semée : ajoutez les secteurs manquants, avec une surface nulle pour les secteurs non semés.');
  const known=y.units.every(u=>u.sownAreaM2!==null),sown=known?y.units.reduce((n,u)=>n+u.sownAreaM2!,0):null;
  out.surface.areaBasis=y.areaBasis??'sown';out.surface.simulationM2=sown;
  out.surface.plannedM2=y.areaBasis==='planned'?sown:null;
  out.surface.sownM2=y.areaBasis==='planned'?null:sown;out.surface.harvestedM2=y.units.every(u=>u.harvestedAreaM2!==null)?y.units.reduce((n,u)=>n+u.harvestedAreaM2!,0):null;
  out.surface.notPlantedPotentialM2=y.areaBasis==='planned'||sown===null?null:Math.max(0,a!.candidateAreaM2-sown);
- if(!known)out.missing.push('Surface effectivement semée manquante ; la terre cartographiée ne suffit pas.');
- if(sown===0)out.missing.push('Aucune surface semée dans le domaine terrestre.');
+ if(!known)out.missing.push(y.areaBasis==='planned'?'Surface prévue à semer manquante ; renseignez la surface que vous envisagez pour ce scénario.':'Surface effectivement semée manquante pour le suivi après semis.');
+ if(sown===0)out.missing.push(y.areaBasis==='planned'?'La surface prévue pour ce scénario est nulle.':'Aucune surface effectivement semée n’est déclarée.');
  if(out.missing.length)return out;
  out.coverage={processedM2:multiArea(joined),requestedM2:multiArea(domain!.coordinates),complete:true};
- if(y.areaBasis==='planned')out.limits.unshift('Production simulée sur une surface prévue ; aucun semis réalisé ni aucune récolte ne sont attestés. Les rendements sont exprimés par hectare prévu.');
+ if(y.areaBasis==='planned')out.limits.unshift('Simulation avant semis sur la surface que l’utilisateur prévoit de cultiver. C’est une hypothèse de scénario, pas une observation de semis ou de récolte ; les rendements sont exprimés par hectare prévu.');
  if(y.method==='declared-scenario'){out.missing.push('Le mode de multiplication simple a été retiré. Les anciennes références restent archivées ; utilisez la comparaison des effets de l’eau ou des engrais.');return out;}
  if(y.method==='automatic'){out.missing.push('Estimation automatique indisponible : le moteur de rendement parcellaire et ses paramètres locaux ne sont pas raccordés. Aucun rendement à saisir pour poursuivre le plan de culture.');return out;}
  const modes=[['rainfed','Pluvial, sans irrigation ajoutée'],['recorded','Apports réalisés uniquement'],['proposed','Apports réalisés et irrigation future proposée']] as const;

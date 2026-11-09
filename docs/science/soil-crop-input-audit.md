@@ -1,0 +1,45 @@
+# Audit des propriétés du sol et de la culture dans le calcul
+
+État du dépôt : 9 novembre 2026. Cet audit distingue une donnée **récupérée**, une donnée **affichée**, une donnée **utilisée par une équation** et une relation **validée pour prévoir un rendement**. Ces états ne sont pas interchangeables.
+
+## Réponse à « les données ont-elles déjà été prises ? »
+
+Oui, une partie des sources citées est déjà acquise ou raccordée. SoilGrids fournit une carte de propriétés, et les horizons de rétention hydrique sont transmis au bilan d’eau. Les paramètres FAO-56 disponibles sont déjà utilisés dans le calendrier hydrique et certains calculs relatifs de rendement. Des références EcoCrop, des essais Carob et des fonctions OFRA ont aussi été examinés. En revanche, la présence d’une analyse ou d’une fonction de réponse dans le dépôt ne signifie pas qu’elle est automatiquement transformée en rendement.
+
+| Propriété ou source | Acquisition / affichage actuel | Effet utilisé dans le modèle |
+|---|---|---|
+| SoilGrids : pH eau, SOC, OCD, OCS, N total, CEC, densité apparente, éléments grossiers, sable, limon, argile, eau à 10 kPa | Valeurs cartographiques, provenance et incertitude affichées dans l’application. Les propriétés générales sont interrogées à 5–15 cm, OCS à 0–30 cm, à une maille nominale de 250 m. | **Pas de multiplicateur autonome de rendement.** Ces valeurs sont descriptives. N total n’est pas assimilé à du N minéral disponible ; aucune conversion de SOC, CEC, texture ou teneur totale en fourniture N/P/K n’est faite. |
+| Rétention hydrique SoilGrids à 33 et 1500 kPa | Six horizons jusqu’à 200 cm ; l’humidité initiale peut être estimée à 60 % de l’eau disponible et reste signalée comme hypothèse. | **Utilisée** dans le bilan d’eau avec les profondeurs racinaires de la culture, la pluie, l’ET0 et les irrigations. La réserve sur 0–200 cm n’est pas intégralement attribuée à une culture dont les racines sont moins profondes. |
+| Infiltration | Valeur configurable, avec provenance ou hypothèse explicite. Elle n’est pas déduite automatiquement de la texture. | **Utilisée** pour borner l’infiltration quotidienne et calculer le ruissellement estimé. |
+| Pluie datée et ET0 | Acquises par les sources météo retenues ou déclarées avec leurs dates et statuts. L’ET0 NASA peut être calculée selon FAO-56 Penman–Monteith. | **Utilisées** dans le bilan hydrique journalier et la demande ETc. L’ET0 résume déjà des facteurs météo ; humidité et vent bruts ne sont pas ajoutés une deuxième fois comme pénalités. |
+| Température et rayonnement | Récupérables et conservés avec leur provenance. | Température et rayonnement alimentent la **simulation intégrée exploratoire** si elle est activée et complète. Le rendement hydrique standard n’a pas de fonction de stérilité thermique ni de phénologie en degrés-jours. Les paramètres thermiques du profil intégré sont déclarés par l’utilisateur et ne sont pas des coefficients locaux calibrés. |
+| FAO-56 : Kc, profondeur racinaire, fraction p et stades génériques | Références figurant dans le catalogue avec leur contexte et leurs limites. | **Utilisées** dans les profils hydriques existants lorsque la culture a une fiche compatible. Maïs, sorgho et mil ont des exemples génériques ; le sorgho demande une durée de stades à confirmer. Aucun Kc de rizière submergée n’est transféré au riz pluvial. |
+| FAO-56 : Ky saisonnier | Paramètres du tableau 24 présents dans le code pour plusieurs cultures. | **Scénario hydrique séparé**, avec Ym indépendant et bilan d’eau complet. Pour les quatre céréales visées, le tableau pris en charge fournit maïs 1,25 et sorgho 0,90 ; aucun Ky n’est interpolé pour mil ou riz pluvial. Ce résultat relatif n’est pas ajouté au moteur de croissance journalier. |
+| FAO-56 : ECe et salinité | Analyse exigée avec méthode, profondeur racinaire et période compatibles. | **Scénario salinité isolé** quand un profil existe, notamment maïs et sorgho. Il suppose les autres facteurs non limitants et n’est pas multiplié avec le scénario hydrique. SoilGrids ne fournit pas automatiquement cette ECe de la zone racinaire. |
+| EcoCrop : plages de pH, températures et pluie | Fiches écologiques consultées et présentées comme repères d’aptitude. | Elles ne fournissent pas une perte de rendement journalière mesurée par variété. **Elles ne deviennent donc pas des multiplicateurs de rendement.** La courbe pH préremplie de l’ancien formulaire a été retirée ; les anciennes courbes sont ignorées lors de la normalisation des profils. |
+| Analyses de sol N minéral, P assimilable et K échangeable | Peuvent être enregistrées avec méthode, unité, profondeur et source. | Elles ne sont pas converties en stocks accessibles automatiquement. Dans la simulation intégrée, les stocks et récupérations N/P/K sont des paramètres séparés, déclarés et encore exploratoires. |
+| Engrais minéraux et organiques | Masse de produit et composition peuvent être calculées lorsque la composition est complète. | Un effet de rendement n’apparaît que dans la simulation intégrée exploratoire à partir d’un stock accessible, d’une récupération minérale et, pour un produit organique, d’un profil de libération déclaré. Il ne constitue pas une réponse locale qualifiée. |
+| OFRA et essais publiés | Les fonctions de réponse OFRA et plusieurs jeux d’essais ont déjà été acquis/inspectés dans le volet de recherche du dépôt. | **Pas injectés dans le rendement opérationnel.** Les unités et domaines de validité de plusieurs fonctions restent à qualifier ; les tests de réponse disponibles n’atteignent pas les seuils préétablis de précision et de couverture. Les fonctions déjà ajustées ne sont pas traitées comme des répétitions brutes ni comme des validations indépendantes. |
+| AquaCrop 7.3, iSDAsoil, GAEZ et Virtual Agronomist | Références documentaires examinées ; certaines requièrent un accès, une authentification ou des paramètres de parcelle spécifiques. | **Pas raccordés comme nouveaux calculs de rendement** dans cette branche. AquaCrop requiert un modèle distinct et des paramètres culturaux compatibles ; iSDAsoil/Virtual Agronomist nécessitent un jeton. GAEZ sert de repère régional, pas de Ym parcellaire indépendant. |
+
+## Ce que calcule chaque moteur
+
+1. **Bilan hydrique journalier** : horizons hydrauliques, humidité initiale, racines/stades, Kc, pluie, ET0, infiltration, drainage et apports d’eau.
+2. **Réponse hydrique FAO-56 saisonnière** : perte relative à partir de Ky seulement pour les cultures paramétrées, ETa/ETm compatibles et Ym indépendant. Elle reste séparée des engrais et de la salinité.
+3. **Croissance intégrée expérimentale** : rayonnement, température, interception du couvert, stress hydrique et stocks N/P/K saisis. Ses paramètres sont génériques ou déclarés et ne forment pas une prévision calibrée dans les six pays.
+4. **Réponse à la salinité** : équation isolée, seulement si la mesure ECe et le profil cultural sont compatibles.
+5. **Rendement automatique local** : indisponible tant qu’un moteur de rendement et des paramètres validés par culture, variété et domaine local ne sont pas raccordés.
+
+Le panneau « Paramètres, sources et effets réellement calculés » expose maintenant le rôle précis de chaque ligne et les valeurs SoilGrids qui étaient absentes de la matrice. Le rapport précise notamment que pH, SOC, N total, texture, densité, éléments grossiers et eau à 10 kPa sont des diagnostics, tandis que rétention à 33/1500 kPa, infiltration, pluie et ET0 alimentent le bilan correspondant.
+
+## Pourquoi aucun coefficient supplémentaire n’est importé ici
+
+Un paramètre n’entre dans une équation de rendement que si la source donne une relation chiffrée, son unité, son produit cultural, sa méthode et son domaine de validité. Une carte de concentration, une plage d’aptitude, une recommandation de dose ou une fonction ajustée dont les coefficients et le dénominateur ne sont pas qualifiés ne suffit pas à calculer une perte ou un gain fiable. Les données disponibles ne justifient pas encore un modèle combiné sol × eau × chaleur × engrais pour les quatre cultures dans chacun des six pays.
+
+## Sources principales
+
+- [SoilGrids : données et quantiles](https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_01.html) et [WCS](https://docs.isric.org/globaldata/soilgrids/wcs.html).
+- [FAO-56, chapitre 6 : coefficients culturaux](https://www.fao.org/4/x0490e/x0490e0b.htm), [chapitre 8 : racines, seuils p, Ky et ECe](https://www.fao.org/4/x0490e/x0490e0e.htm).
+- [FAO EcoCrop](https://ecocrop.apps.fao.org/) : paramètres écologiques et aptitude, pas courbes locales de rendement.
+- Registre local des sources culturales : `lib/seasonal/sources.ts` et `docs/refonte/REGISTRE_SOURCES.csv`.
+- Inventaire des essais et de leurs limites : [`docs/calibration/INVENTAIRE.md`](../calibration/INVENTAIRE.md), [`docs/calibration/fertilizer/DELIVERY.md`](../calibration/fertilizer/DELIVERY.md) et [`docs/calibration/MOTEUR_SOL_EAU_NUTRITION.md`](../calibration/MOTEUR_SOL_EAU_NUTRITION.md).

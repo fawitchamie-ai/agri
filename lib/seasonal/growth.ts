@@ -18,6 +18,7 @@ export type GrowthInput={
  parameters:{rueGPerMj:number;harvestIndex:number;moisturePercent:number;temperatureC:[number,number,number,number];
   stages:{faparStart:number;faparEnd:number;waterSensitivity:number}[];
   nutrientKgPerTonneBiomass:Triple;fertilizerRecovery:Triple;
+  /** Legacy field accepted for old exports, then cleared by parseGrowth. */
   phResponse:null|{analysisIndex:number;measurementIndex:number;method:string;curve:[number,number,number,number];source:string};
  };
  soilSupply:{initialKgHa:Triple;releaseKgHaDay:Triple;source:string};
@@ -54,7 +55,10 @@ export function parseGrowth(value:unknown,c:SeasonalConfig):GrowthInput|undefine
  if(p.stages.some(s=>!s||!num(s.faparStart,0,1)||!num(s.faparEnd,0,1)||!num(s.waterSensitivity,.1,5)))fail('interception ou sensibilité hydrique de stade invalide.');
  if(!triple(p.nutrientKgPerTonneBiomass,.001,200)||!triple(p.fertilizerRecovery,0,1))fail('besoins N/P/K et récupération invalides.');
  if(!v.soilSupply||!triple(v.soilSupply.initialKgHa,0,10000)||!triple(v.soilSupply.releaseKgHaDay,0,100)||!text(v.soilSupply.source))fail('fourniture accessible du sol requise avec source.');
- if(p.phResponse!==null){const h=p.phResponse;if(!h||!Number.isInteger(h.analysisIndex)||!Number.isInteger(h.measurementIndex)||!text(h.method)||!text(h.source)||!curve(h.curve,0,14))fail('courbe pH, analyse et méthode requises.');}
+ if(p.phResponse){const h=p.phResponse;if(!Number.isInteger(h.analysisIndex)||!Number.isInteger(h.measurementIndex)||!text(h.method)||!text(h.source)||!curve(h.curve,0,14))fail('ancienne courbe pH invalide.');}
+ // Retain the legacy wire field for old campaign files, but normalize it away:
+ // EcoCrop suitability bounds are not a quantitative yield-response curve.
+ p.phResponse=null;
  if(v.weatherScenario!==null&&(!v.weatherScenario||!num(v.weatherScenario.temperatureMeanC,-30,60)||!num(v.weatherScenario.radiationMj,0,40)||!text(v.weatherScenario.source)))fail('scénario météo explicite invalide.');
  if(!Array.isArray(v.organicRelease)||v.organicRelease.length>200)fail('profils de libération organique invalides.');
  for(const r of v.organicRelease)if(!r||!text(r.productId)||!triple(r.availableFraction,0,1)||!num(r.halfLifeDays,.1,3660)||!text(r.source))fail('fractions, demi-vie et source de libération organique requises.');
@@ -79,7 +83,7 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  'Stocks N/P/K accessibles simplifiés ; pertes et fourniture quotidienne sont incorporées aux hypothèses. Pas de chimie du sol, toxicité, fixation biologique, ravageurs ou effet structurel du compost.',
  'L’indice de récolte est fixe : stérilité de floraison et pertes de récolte non modélisées. Le rendement de produit est corrigé à l’humidité déclarée.',
  'Couvert satellite observé utilisé uniquement de sa date à son âge maximal, sans extrapolation lointaine. Les contrefactuels conservent ce couvert observé, donc ne mesurent pas un effet causal total.'],
- factors:[{factor:'Sol physique',role:'Horizons, rétention, humidité et infiltration via le bilan d’eau.'},{factor:'pH',role:p?.phResponse?'Courbe de scénario explicite limitant la fourniture quotidienne accessible.':'Diagnostic seulement : courbe de réponse non fournie.'},{factor:'Fertilité / engrais',role:'Bilans quotidiens N/P/K élémentaires ; fournitures et récupérations déclarées.'},{factor:'Météo',role:'Pluie/ET0 via l’eau ; température et rayonnement via la biomasse.'},{factor:'Stades / variété',role:'Paramètres explicites du profil, sans calibration variétale automatique.'},{factor:'Vigueur satellite',role:v?.satellite?'Interception actualisée par des observations qualifiées.':'Couvert paramétré ; aucune image de fond assimilée.'},{factor:'Récoltes passées',role:'Évaluation et calibration séparées sur observations compatibles ; FAOSTAT reste contextuel.'}]};
+ factors:[{factor:'Sol physique',role:'Utilisés : eau au champ, flétrissement, humidité initiale, infiltration et enracinement alimentent le bilan hydrique. Texture, densité apparente et éléments grossiers bruts ne sont pas des pénalités autonomes.'},{factor:'Chimie du sol / pH',role:'Diagnostic seulement : pH, carbone organique, azote total, CEC et teneurs P/K ne sont pas convertis en réponse du rendement ou en nutriments disponibles.'},{factor:'Fertilité / engrais',role:'Utilisés dans ce scénario via les stocks N/P/K élémentaires, les compositions des apports et les récupérations/libérations explicitement déclarées ; ce ne sont pas des paramètres locaux calibrés.'},{factor:'Météo',role:'Pluie et ET0 alimentent le bilan d’eau. Température et rayonnement interviennent dans la croissance journalière uniquement via le profil exploratoire déclaré.'},{factor:'Culture / stades / variété',role:'La culture choisit les paramètres hydriques documentés disponibles ; stades et racines suivent le profil déclaré. La variété n’active pas automatiquement des coefficients spécifiques.'},{factor:'Vigueur satellite',role:v?.satellite?'Utilisée pour actualiser l’interception pendant les seules dates qualifiées.':'Non utilisée ; le couvert reste paramétré.'},{factor:'Récoltes passées',role:'L’indice de récolte peut être ajusté sur des biomasses archivées compatibles ; cela ne calibre pas les autres paramètres.'}]};
  if(calibration)out.calibration=calibration;
  if(v?.weatherScenario)out.limits.push('Température et rayonnement manquants complétés par le scénario explicite : '+v.weatherScenario.source);
  if(!v){out.missing.push('Activez un profil de croissance documenté dans Rendement.');return out;}
@@ -94,9 +98,10 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  out.areaM2=y?(plan.yieldEstimation?.surface.simulationM2??null):c.sowingPlan?.areaM2??plan.calculationArea?.areaM2??null;
  if(!(out.areaM2!>0)||!plan.calculationArea?.geometry)out.missing.push('Surface terrestre positive prévue ou semée requise.');
  if(c.salinity||(c.soilAnalyses??[]).some(a=>a.measurements.some(m=>m.parameter==='EC')))out.missing.push('Analyse de salinité présente : interaction à qualifier ; moteur intégré suspendu.');
- let phFactor=1;
- if(p!.phResponse){const h=p!.phResponse,a=c.soilAnalyses?.[h.analysisIndex],m=a?.measurements[h.measurementIndex];if(!a||!m||m.parameter!=='pH'||m.method!==h.method)out.missing.push('Analyse pH et méthode du profil introuvables.');else phFactor=responseCurve(m.value,h.curve);}
- out.phFactor=p!.phResponse?phFactor:null;
+ // Soil pH is retained as a diagnostic. EcoCrop suitability ranges do not
+ // provide a measured yield-response curve, so user curves must not silently
+ // alter nutrient supply or fertilizer recovery.
+ out.phFactor=null;
  const products=c.managementPlan?.products.filter(a=>a.kind==='fertilizer')??[];
  for(const r of v.organicRelease)if(!products.some(a=>a.id===r.productId&&a.composition?.kind==='organic'))out.missing.push(`Profil organique ${r.productId} sans produit organique correspondant.`);
  for(const a of products){if(a.status==='planned'&&a.date<c.asOfDate)out.missing.push(`${a.product} : apport prévu dans le passé à clarifier.`);
@@ -125,10 +130,10 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  if(satellite&&observation){fapar=clamp((observation.value-satellite.bare)/(satellite.full-satellite.bare));canopySource='satellite';}
  const temperatureFactor=responseCurve(temperatureC,p!.temperatureC),waterFactor=d.demandMm>0?Math.pow(clamp(d.actualEtMm/d.demandMm),s.waterSensitivity):1;
  const potential=radiationMj*fapar*p!.rueGPerMj*10*temperatureFactor*waterFactor;
- for(let k=0;k<3;k++){let addition=v.soilSupply.releaseKgHaDay[k]*phFactor;
+ for(let k=0;k<3;k++){let addition=v.soilSupply.releaseKgHaDay[k];
  for(const a of used){const mass=a.mass[k];if(a.release){
- const r=a.release,age=(Date.parse(d.date)-Date.parse(a.date))/86400000;if(age>=0)addition+=mass*r.availableFraction[k]*(Math.pow(.5,age/r.halfLifeDays)-Math.pow(.5,(age+1)/r.halfLifeDays))*phFactor;
- }else if(a.date===d.date)addition+=mass*p!.fertilizerRecovery[k]*phFactor;}
+ const r=a.release,age=(Date.parse(d.date)-Date.parse(a.date))/86400000;if(age>=0)addition+=mass*r.availableFraction[k]*(Math.pow(.5,age/r.halfLifeDays)-Math.pow(.5,(age+1)/r.halfLifeDays));
+ }else if(a.date===d.date)addition+=mass*p!.fertilizerRecovery[k];}
  stock[k]+=addition;supplied[k]+=addition;}
  const nutrientFactor=potential>0?Math.min(1,...stock.map((n,k)=>n/(potential/1000*p!.nutrientKgPerTonneBiomass[k]))):1,incrementKgHa=potential*nutrientFactor;
  for(let k=0;k<3;k++){const taken=incrementKgHa/1000*p!.nutrientKgPerTonneBiomass[k];stock[k]=Math.max(0,stock[k]-taken);uptake[k]+=taken;}

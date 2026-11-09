@@ -1,13 +1,13 @@
-# Simulation automatique — 30 octobre 2026
+# Simulation automatique — 9 novembre 2026
 
-Navigation principale : Ma simulation et Mes récoltes. Le choix du champ, de la culture et du semis remplace le parcours en sept étapes. Confirmer la parcelle ouvre le résultat ; les ajustements recalculent localement le bilan avec un délai de 220 ms. Les paramètres détaillés et les archives existantes sont conservés sans encombrer la navigation.
+Navigation principale : Ma simulation et Mes récoltes. Le scénario peut être préparé avant semis avec la surface que l’utilisateur prévoit de cultiver. Après semis, la surface effectivement semée et les opérations réelles alimentent le suivi. Confirmer la parcelle ouvre le résultat ; les ajustements recalculent localement le bilan avec un délai de 220 ms.
 
 ## Acquisition
 
 La route authentifiée `POST /api/seasonal`, action `environment`, reçoit les coordonnées du point représentatif, le pays, le début et la durée du cycle (366 jours maximum). Aucun hôte externe n’est accepté en entrée.
 
-- ISRIC SoilGrids WCS : pH eau, carbone organique, azote total, CEC, sable et argile à 5–15 cm ; prédictions à 250 m, au point représentatif, pas une analyse du champ ni une moyenne du polygone.
-- Rétention à 33 et 1500 kPa : six horizons de 0 à 200 cm, unités converties en fractions volumiques. Un profil incomplet n’est pas assemblé en omettant des horizons. La réserve initiale reste une hypothèse à 60 % de l’eau disponible. Infiltration et efficacité d’arrosage restent des hypothèses explicites et modifiables.
+- ISRIC SoilGrids WCS : propriétés récupérées pour l’interprétation du sol : pH eau, carbone organique (SOC), densité et stock de carbone (OCD/OCS), azote total, CEC, densité apparente, éléments grossiers, sable, limon, argile et eau volumique à 10 kPa. Les propriétés générales interrogées ici décrivent 5–15 cm, sauf le stock de carbone OCS qui décrit 0–30 cm ; les propriétés chimiques et physiques ne sont pas toutes interrogées sur les six profondeurs SoilGrids dans cette version. Ce sont des prédictions à 250 m, pas des mesures de la parcelle. Le panneau calcule une synthèse pondérée par aire à partir de profils représentatifs de zones terrestres ; cette estimation parcellaire n’est pas un zonage exhaustif des pixels et ne crée aucune précision sous-maille. pH reste affiché par zone, sans moyenne arithmétique.
+- Rétention à 33 et 1500 kPa : six horizons de 0 à 200 cm. Le panneau affiche, par zone, eau au champ, flétrissement, réserve théorique par horizon et humidité initiale supposée à 60 % de l’eau disponible. La réserve totale sur 0–200 cm n’est pas nécessairement accessible aux racines de la culture. La maille et les profils incomplets sont signalés ; les quantiles Q0.05–Q0.95 sont des intervalles prédictifs par valeur SoilGrids, pas un intervalle de confiance de la moyenne parcellaire.
 - Open-Meteo : pluie, ET0 et température moyenne ; 16 jours de prévisions et historique récent de modèles, sans les déclarer comme mesures de terrain.
 - Au-delà : moyenne du même jour des trois années calendaires complètes précédentes. Chaque jour porte le statut scénario ; il ne s’agit ni d’une normale climatique de 30 ans ni d’une prévision saisonnière calibrée. Le 29 février utilise le 28 février des années de référence.
 
@@ -17,7 +17,9 @@ Le lecteur TIFF n’accepte qu’un pixel entier 16 bits, mono-bande, brut ou De
 
 Le radar présente des axes indépendants : eau satisfaite après les arrosages proposés, proximité indicative du repère pH, part des températures dans la plage optimale, couverture météo et réserve initiale supposée. Il ne produit aucun score global ni rendement. Une valeur inconnue ne devient pas zéro. pH et chimie ne modifient pas artificiellement le rendement ou le bilan hydrique. P/K assimilables, salinité, doses d’engrais et pesticides ne sont pas inventés.
 
-Le graphe hebdomadaire montre les besoins, la pluie retenue et l’irrigation nette. Les segments de besoin utilisant un scénario historique sont en pointillés. Le moteur existant conserve ses limites et bloque l’arrosage lorsque le champ est déclaré engorgé ou submergé ; mortalité et pertes de rendement ne sont pas simulées.
+Les images satellites, NDVI et EVI renseignent surtout la couverture et la vigueur de la végétation visible ; elles ne fournissent pas le pH, le carbone, l’azote disponible, le phosphore ou le potassium du sol. SoilGrids fournit une estimation cartographique de propriétés physiques et chimiques ; il renvoie l’azote total, pas l’azote immédiatement disponible, et ne renvoie pas P/K assimilables. Pour ces diagnostics, afficher et saisir séparément une analyse de laboratoire avec méthode et profondeur.
+
+Le graphe hebdomadaire montre les besoins, la pluie retenue et l’irrigation nette. Le scénario d’apports proposés simule ce qui arriverait s’ils étaient réalisés ; les arrosages saisis dans le carnet restent des observations de suivi. Le moteur existant conserve ses limites et bloque l’arrosage lorsque le champ est déclaré engorgé ou submergé ; mortalité et pertes de rendement ne sont pas simulées.
 
 Les cultures sans paramètres ou durées suffisamment définis restent à compléter au lieu de recevoir les paramètres du maïs.
 
@@ -26,9 +28,12 @@ Les cultures sans paramètres ou durées suffisamment définis restent à compl�
 - https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_01.html — propriétés, horizons et conversions.
 - https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs_02.html — REST suspendu, alternatives WCS.
 - https://docs.isric.org/globaldata/soilgrids/wcs.html — acquisition spatiale WCS.
+- https://www.fao.org/4/X0490E/x0490e0b.htm — FAO-56, Kc et durées d’exemple par contexte.
+- https://www.fao.org/4/X0490E/x0490e0e.htm — FAO-56, racines et seuils p.
+- https://ecocrop.apps.fao.org/ — profils écologiques des cultures.
 - https://open-meteo.com/en/docs — météo et ET0.
 - https://open-meteo.com/en/docs/historical-weather-api — réanalyses historiques et limites spatiales.
 
-## Vérifications
+## État des vérifications
 
-101 tests unitaires passent, ainsi que les tests de routes/persistance et de régression ; TypeScript et compilation de production passent. Les tests ajoutés couvrent TIFF, unités, horizons, pannes, priorité des mesures et sensibilité du bilan à la pluie. Acquisition externe vérifiée à un point de test au Togo : pH 6,3, six horizons, 125 jours météo. Ces vérifications ne constituent pas une validation agronomique au champ. L’aperçu local a un accès sortant restreint : la récupération exécutée dans son Worker peut rester indisponible ; l’affichage est vérifié avec une campagne de test contenant les données réellement récupérées via le transport Node.
+Les résultats ci-dessous décrivent une révision antérieure et ne valident pas les changements de cette mise à jour. Les tests automatisés, le typage et la compilation restent à exécuter sur cette révision. La récupération externe SoilGrids doit être confirmée depuis le Worker de déploiement. Même vérifiés, ces contrôles techniques ne constituent pas une validation agronomique au champ.
