@@ -106,3 +106,14 @@ test('refresh cannot replace manual moisture when new retention is incompatible'
  assert.equal(merged.inputs!.values['soil.layers.0.initialTheta'].value,.23);
  assert.equal(merged.inputs!.values['soil.layers.0.initialTheta'].origin,'manual');
 });
+
+
+test('a retained manual field cannot revive unavailable automatic weather without opt-in',async()=>{
+ const e=await loadEnvironment(9.5,1.2,'TGO','2026-10-30',2,fakeFetch,now);
+ let c=automaticCampaign(emptyCampaign('2026-10-30'));e.context=environmentContext(c);c=mergeEnvironment(c,e);
+ c=reconcileInputs(c,{...c,weather:c.weather.map((w,i)=>i?w:{...w,et0Mm:2})});
+ const missing={...e,weather:[]};
+ const strict=mergeEnvironment(c,missing);assert.equal(strict.weather[0].et0Mm,2);assert.equal(strict.weather[0].rainMm,null);assert.equal(strict.inputs!.values['weather.2026-10-30.rainMm'].status,'missing');
+ const opted=mergeEnvironment({...c,inputPolicy:{...c.inputPolicy!,allowStale:true}},missing);
+ assert.equal(opted.weather[0].et0Mm,2);assert.equal(opted.weather[0].rainMm,1);assert.equal(opted.inputs!.values['weather.2026-10-30.rainMm'].retention,'stale_authorized');
+});

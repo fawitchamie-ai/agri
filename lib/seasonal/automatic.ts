@@ -73,6 +73,14 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
     const ev=values[`weather.${w.date}.${k}`];
     if(w[k]!==null&&w[k]!==undefined&&ev?.status!=='missing'&&(ev?.origin==='manual'||ev?.status==='measured')){selected[k]=w[k];if(ev)selected.provenance[k]=ev;}
    }
+   // A preserved manual field must not accidentally retain the other,
+   // unavailable automatic fields from the same day.
+   if(!incoming)for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const){
+    const path=`weather.${w.date}.${k}`,ev=values[path];
+    if(ev?.origin!=='automatic')continue;
+    if(c.inputPolicy?.allowStale){values[path]={...ev,retention:'stale_authorized',replacementReason:'Nouvelle acquisition indisponible ; conservation explicitement autorisée.'};}
+    else{selected[k]=null;values[path]=missingEvidence(ev,ev.unit,id,'Donnée automatique absente lors de cette actualisation.',false);}
+   }
    if(w.status==='observed')selected.status='observed';
    weather.set(w.date,selected);
   }

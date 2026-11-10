@@ -4,7 +4,7 @@
 
 Les corrections portent sur la conservation des entrées manuelles, l'affichage des résultats après modification/erreur, l'identification du build servi et les diagnostics nutritifs. Aucun paramètre de rendement n'a été ajusté sur les trois moyennes togolaises. Le moteur intégré demeure exploratoire dans les six pays. Les campagnes, migrations, carte et styles sont conservés.
 
-Trois régressions sont reproduites sur `40d1884869172917cfcf8617b25ac84668a774cc` puis protégées par des tests sur le code corrigé. Les bilans du moteur ne justifiaient pas de supprimer la limitation K : sa présence explique le plafond de la reconstitution. Aucune précision parcellaire nouvelle n'est annoncée.
+Les régressions principales sont reproduites sur `40d1884869172917cfcf8617b25ac84668a774cc` puis protégées par des tests sur le code corrigé. Les bilans du moteur ne justifiaient pas de supprimer la limitation K : sa présence explique le plafond de la reconstitution. Aucune précision parcellaire nouvelle n'est annoncée.
 
 ## Version de départ et publication
 
@@ -21,6 +21,7 @@ Les preuves finales de publication et l'appel direct sont consignés dans `resea
 | Cas établi | Avant | Après | Protection |
 |---|---|---|---|
 | ET0/rayonnement corrigés, pluie encore automatique | Une acquisition reprenait toute la ligne météo ; ET0 2 devenait 5 mm/j | Priorité par champ ; ET0 2 et rayonnement 17 conservés avec provenance manuelle | `automatic-simulation.test.ts` |
+| Météo automatique absente et un champ manuel conservé | Les autres champs automatiques pouvaient être repris avec la ligne | Valeurs manquantes explicites ; conservation ancienne uniquement sur choix autorisé, avec statut périmé | même test |
 | Humidité manuelle et nouvelle rétention incompatible | 0,23 m³/m³ devenait 0,188 ; les horizons/rétentions étaient remplacés | Le profil hydrique lié à la mesure manuelle est conservé ; les valeurs acquises restent au registre de source | même test |
 | Modification pendant recalcul ou après échec terrain | Un plan précédent restait transmis à certains panneaux ; le drapeau pouvait redevenir non périmé après erreur | Toutes les vues utilisent uniquement un plan lié à la sérialisation complète espace/configuration/événements ; erreurs et contour en modification masquent les sorties périmées | `seasonal-scheduling.test.mjs` avec réponses inversées et échec 503 |
 | Diagnostic nutritif agrégé | Jours limités par « nutriments », sans identification N/P/K | Nutriment(s) qui bornent effectivement le minimum journalier ; égalités conservées | `growth-water.test.ts` |
@@ -97,7 +98,7 @@ Le service WOFOST 8.1–SNOMIN déjà présent dans le dépôt dispose de tests 
 
 ## Vérifications
 
-- 61 tests ciblés réussis : acquisitions/manuels, diagnostic K, contrôles eau/nutrition/co-limitation, pluie suffisante, irrigation compensatoire, observations conservées, réponses inversées, erreur terrain, métadonnées et refus d'un ancien SHA déployé.
+- 62 tests ciblés réussis : acquisitions/manuels, diagnostic K, contrôles eau/nutrition/co-limitation, pluie suffisante, irrigation compensatoire, observations conservées, réponses inversées, erreur terrain, métadonnées et refus d'un ancien SHA déployé.
 - Tests hydriques synthétiques sur TGO/BEN/BFA/GHA/CIV/SEN et les quatre céréales terrestres déjà paramétrées. Cela vérifie le branchement logiciel, pas la précision locale. Tests existants de masses, humidité, N/P/K versus oxydes, surfaces et tonnes conservés.
 - Vérification TypeScript et compilation locales réussies ; intégration HTTP/persistance et régressions d'autorisations réussies.
 - Suite locale complète : le seul échec est le lancement de Chromium, interdit dans ce conteneur (`socket() failed: Operation not permitted`), sans modification du test pour le masquer. Un test live est ignoré. Le résultat CI complet fait foi pour le navigateur et le moteur Python.
