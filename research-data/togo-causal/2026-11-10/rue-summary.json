@@ -1,0 +1,4557 @@
+{
+  "protocolSha256": "510e8ce059f02305666cb2b863b144829e38bd681cd6003d5c32d319b852bef4",
+  "engines": {
+    "water": "water-balance-1.4.0",
+    "growth": "daily-rue-npk-1.2.0"
+  },
+  "limits": [
+    "Diagnostic scenarios, no calibration or independent validation.",
+    "RUE fAPAR is intercepted radiation fraction, not measured canopy cover.",
+    "Evaporation/transpiration are not separately identifiable in the single-Kc engine."
+  ],
+  "formula": {
+    "suppliedKKgHa": 74.65150000000031,
+    "kDemandKgPerTonneBiomass": 15,
+    "harvestIndex": 0.45,
+    "dryMatterFraction": 0.87,
+    "ceilingTonneHa": 2.574189655172425,
+    "simulatedTonneHa": 2.5741896551724075
+  },
+  "publishedEtcMm": 755.2,
+  "etmReconstructedMm": 757.0914685244236,
+  "observedRatios": {
+    "Y80_YFI": 0.8320759861843301,
+    "Y60_YFI": 0.48550263588438464
+  },
+  "calendars": [
+    {
+      "id": "daily",
+      "interval": 1,
+      "phase": 0
+    },
+    {
+      "id": "pulse3-start",
+      "interval": 3,
+      "phase": 0
+    },
+    {
+      "id": "pulse3-end",
+      "interval": 3,
+      "phase": 2
+    },
+    {
+      "id": "pulse7-start",
+      "interval": 7,
+      "phase": 0
+    },
+    {
+      "id": "pulse7-end",
+      "interval": 7,
+      "phase": 6
+    }
+  ],
+  "records": [
+    {
+      "experiment": "A-original",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.4999999999984,
+        "etaMm": 756.0716779739552,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19603.664830679816
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.79999999999998,
+          "drainageMm": 133.82126425579798,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 101.95942084139477,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.0000000000006,
+          "drainageMm": 125.44066486724523,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 105.35840808073087,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.500000000000014,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.9037701751761597,
+          "waterLimitedDays": 2
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000021,
+        "etaMm": 751.5232634714698,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 5,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19568.1897653956
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.29999999999995,
+          "drainageMm": 95.32126425579797,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.29999999999998,
+          "drainageMm": 47.803553101041395,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000034,
+          "drainageMm": 22.19653260759857,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 100.80999357824554,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46.000000000000014,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.7289707614970208,
+          "waterLimitedDays": 5
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999991,
+        "etaMm": 640.2443925948629,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 16593.839699671276
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 77.82126425579797,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3000000000001,
+          "drainageMm": 11.943342449205467,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 335.5522467445274,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.49999999999994,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.6260027115901351,
+          "waterLimitedDays": 40
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 68.21027334804901,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 33.99999999999999,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.4356667647791278,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-start",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 755.3546190620784,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19599.93458987157
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 137.2254352786511,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.20000000000005,
+          "drainageMm": 112.50013833557183,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507,
+          "drainageMm": 111.49577635021505,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 104.64134916885408,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 4.425380142337701,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.8105234795769729,
+          "waterLimitedDays": 2
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000004,
+        "etaMm": 748.1651654683345,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          2.7755575615628914e-17
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.839395385478838e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 9,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19471.323432934376
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 98.72543527865109,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.30000000000004,
+          "drainageMm": 59.30974214972696,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 410.74161738598104,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.5,
+          "drainageMm": 10.775952541016869,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.8316798722943353,
+          "waterLimitedDays": 4
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 100.94167558006718,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 2.1253801423377006,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.6722163506396,
+          "waterLimitedDays": 5
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999997,
+        "etaMm": 631.3205036085114,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666677,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.64849999999992,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.760636329592671e-13,
+          -2.2426505097428162e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 16277.393076274795
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 81.22543527865109,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.5814077375753,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 18.592414552591535,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.4283065044017,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.9813096882437178,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 320.14295269430625,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.499295262782133,
+          "waterLimitedDays": 40
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 74.84645643782862,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.4072688630976975,
+          "waterLimitedDays": 13
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-end",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.4999999999993,
+        "etaMm": 754.5681829188852,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 4,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19590.620217346284
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.80000000000004,
+          "drainageMm": 140.72639710001815,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.20000000000005,
+          "drainageMm": 95.05428799717461,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.0000000000001,
+          "drainageMm": 125.44066486724519,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 103.85491302566075,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.7996745606224521,
+          "waterLimitedDays": 4
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000001,
+        "etaMm": 749.3508140804805,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 7,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19535.67357442276
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 102.2263971000181,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.30000000000004,
+          "drainageMm": 39.220496570425226,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 413.7207883926835,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000017,
+          "drainageMm": 24.385065292249003,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.9482756726937458,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 99.14815318551068,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.6591939906924661,
+          "waterLimitedDays": 6
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999999,
+        "etaMm": 638.3147943419757,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666675,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.648499999999917,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.725109192804666e-13,
+          -2.0650148258027912e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 50,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 16579.441641573594
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 84.72639710001812,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.447801007002,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 4.9796838725001855,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.0778231955771,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.9689586903141623,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 335.37135671495383,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5000000000001,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5570186829615932,
+          "waterLimitedDays": 35
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 66.7459498812186,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.38893881659378804,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-start",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.189655172408,
+      "yieldDryKgHa": 2239.544999999995,
+      "biomassKgHa": 4976.7666666666555,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 701.4771732860806,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666678,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.64849999999993,
+          0.396483333333296,
+          0
+        ],
+        "residualKgHa": [
+          -4.867217739956686e-13,
+          -2.042810365310288e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 33,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          61
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 18341.056308356798
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 155.7757474933722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 168.1079541203193,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 97.77880653016916,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1904.240204042305,
+          "endBiomassKgHa": 4126.39034672324,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.7717494875238322,
+          "waterLimitedDays": 6
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 380.8446556506446,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.00000000000006,
+          "drainageMm": 164.61400574421293,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.766666666666,
+          "endBiomassKgHa": 4776.76666666666,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5515957461406309,
+          "waterLimitedDays": 14
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 94.9456815009982,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333323,
+          "endBiomassKgHa": 4976.7666666666555,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.49674479607059707,
+          "waterLimitedDays": 8
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.189655172408,
+      "yieldDryKgHa": 2239.544999999995,
+      "biomassKgHa": 4976.7666666666555,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000003,
+        "etaMm": 692.595845840875,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666678,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.648499999999935,
+          0.39648333333329644,
+          0
+        ],
+        "residualKgHa": [
+          -4.902744876744691e-13,
+          -2.0872192862952943e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 35,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          61
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 18175.95397711286
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 117.27574749337221,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 167.3035083559969,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.3,
+          "drainageMm": 50.70499686320694,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1901.6320376786773,
+          "endBiomassKgHa": 4104.094985992569,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.7717494875238322,
+          "waterLimitedDays": 6
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 378.58589813023906,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000006,
+          "drainageMm": 57.351018695903136,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.766666666666,
+          "endBiomassKgHa": 4776.76666666666,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5179193356843315,
+          "waterLimitedDays": 15
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 89.12755734052028,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333323,
+          "endBiomassKgHa": 4976.7666666666555,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.42674829133520903,
+          "waterLimitedDays": 9
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.189655172408,
+      "yieldDryKgHa": 2239.544999999995,
+      "biomassKgHa": 4976.7666666666555,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.6,
+        "etaMm": 611.2003030578244,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666678,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329755,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.19824158875781e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 57,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          60
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 15971.033970889717
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 99.77574749337218,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 156.881464261497,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 17.305618239864636,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1852.2383955661653,
+          "endBiomassKgHa": 3857.0099430358446,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.6080591897427645,
+          "waterLimitedDays": 9
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 333.1923974976291,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.49999999999994,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4475.05402050078,
+          "endBiomassKgHa": 4776.76666666666,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.38904264159299057,
+          "waterLimitedDays": 29
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 63.54755928457995,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333323,
+          "endBiomassKgHa": 4976.7666666666555,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.2685824504553374,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-end",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.1896551724085,
+      "yieldDryKgHa": 2239.5449999999955,
+      "biomassKgHa": 4976.766666666656,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 672.1858566180362,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666678,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.648499999999903,
+          0.3964833333332969,
+          0
+        ],
+        "residualKgHa": [
+          -4.583000645652646e-13,
+          -2.1316282072803006e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 44,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          60
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 17722.52689766968
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 158.0196065418847,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 154.7147822484949,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 117.23761732380419,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1713.4649585102181,
+          "endBiomassKgHa": 3904.8915974235692,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 375.8363911307306,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507,
+          "drainageMm": 171.03675317289645,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.094926030948,
+          "endBiomassKgHa": 4776.766666666661,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.4334592866994183,
+          "waterLimitedDays": 17
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 85.39924323648538,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333325,
+          "endBiomassKgHa": 4976.766666666656,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.45148392989074887,
+          "waterLimitedDays": 11
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.1896551724085,
+      "yieldDryKgHa": 2239.5449999999955,
+      "biomassKgHa": 4976.766666666656,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000001,
+        "etaMm": 666.5641748956687,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000027,
+          12.441916666666678,
+          74.65150000000027
+        ],
+        "remainingKgHa": [
+          26.648499999999903,
+          0.3964833333332969,
+          0
+        ],
+        "residualKgHa": [
+          -4.583000645652646e-13,
+          -2.1316282072803006e-14,
+          4.263256414560601e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 46,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          60
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 17655.49282193297
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 119.51960654188471,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 154.7147822484949,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.3,
+          "drainageMm": 61.33761732380421,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1713.4649585102181,
+          "endBiomassKgHa": 3904.8915974235692,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 375.8363911307306,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.49999999999994,
+          "drainageMm": 69.53675317289645,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.094926030948,
+          "endBiomassKgHa": 4776.766666666661,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.4334592866994183,
+          "waterLimitedDays": 17
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 79.77756151411769,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333325,
+          "endBiomassKgHa": 4976.766666666656,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.39524790772463636,
+          "waterLimitedDays": 13
+        }
+      ]
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.1896551724085,
+      "yieldDryKgHa": 2239.5449999999955,
+      "biomassKgHa": 4976.766666666656,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999999,
+        "etaMm": 610.8981632872589,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999906,
+          0.39648333333329666,
+          2.7755575615628914e-17
+        ],
+        "residualKgHa": [
+          -4.760636329592671e-13,
+          -1.9317880628477724e-14,
+          2.839395385478838e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 56,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          60
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 16167.937940443953
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 102.01960654188471,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 152.30408204756696,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 12.466505493564437,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1705.6975603217904,
+          "endBiomassKgHa": 3853.177281745355,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 337.2891126730049,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4474.39925470049,
+          "endBiomassKgHa": 4776.766666666661,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.3256457016463916,
+          "waterLimitedDays": 26
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 65.06952856436139,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.433333333325,
+          "endBiomassKgHa": 4976.766666666656,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.30819421620253534,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 10139.826636558526,
+      "yieldDryKgHa": 8821.649173805918,
+      "biomassKgHa": 19603.664830679816,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.4999999999984,
+        "etaMm": 756.0716779739552,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          294.05497246019746,
+          49.009162076699525,
+          294.05497246019746
+        ],
+        "remainingKgHa": [
+          743.9450275398032,
+          953.6092379233002,
+          718.3965275398032
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          2.2737367544323206e-13,
+          -6.821210263296962e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19603.664830679816
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.79999999999998,
+          "drainageMm": 133.82126425579798,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 101.95942084139477,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.0000000000006,
+          "drainageMm": 125.44066486724523,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 105.35840808073087,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.500000000000014,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18915.82489458839,
+          "endBiomassKgHa": 19603.664830679816,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.9037701751761597,
+          "waterLimitedDays": 2
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 10121.477464859794,
+      "yieldDryKgHa": 8805.685394428021,
+      "biomassKgHa": 19568.1897653956,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000021,
+        "etaMm": 751.5232634714698,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          293.5228464809342,
+          48.920474413489,
+          293.5228464809342
+        ],
+        "remainingKgHa": [
+          744.4771535190663,
+          953.6979255865109,
+          718.9286535190663
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          0,
+          -4.547473508864641e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 5,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19568.1897653956
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.29999999999995,
+          "drainageMm": 95.32126425579797,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.29999999999998,
+          "drainageMm": 47.803553101041395,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000034,
+          "drainageMm": 22.19653260759857,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 100.80999357824554,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46.000000000000014,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18909.416064086035,
+          "endBiomassKgHa": 19568.1897653956,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.7289707614970208,
+          "waterLimitedDays": 5
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 8583.020534312729,
+      "yieldDryKgHa": 7467.227864852074,
+      "biomassKgHa": 16593.839699671276,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999991,
+        "etaMm": 640.2443925948629,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          248.90759549506936,
+          41.4845992491782,
+          248.90759549506936
+        ],
+        "remainingKgHa": [
+          789.0924045049305,
+          961.1338007508217,
+          763.5439045049305
+        ],
+        "residualKgHa": [
+          1.1368683772161603e-13,
+          0,
+          1.1368683772161603e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 16593.839699671276
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 77.82126425579797,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3000000000001,
+          "drainageMm": 11.943342449205467,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 335.5522467445274,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.49999999999994,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9741.477475621316,
+          "endBiomassKgHa": 15092.573762656864,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.6260027115901351,
+          "waterLimitedDays": 40
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 68.21027334804901,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 33.99999999999999,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 16187.860947920313,
+          "endBiomassKgHa": 16593.839699671276,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.4356667647791278,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-start",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 10137.89720165771,
+      "yieldDryKgHa": 8819.970565442207,
+      "biomassKgHa": 19599.93458987157,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 755.3546190620784,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          293.9990188480737,
+          48.999836474678915,
+          293.9990188480737
+        ],
+        "remainingKgHa": [
+          744.0009811519268,
+          953.6185635253207,
+          718.4524811519268
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          3.410605131648481e-13,
+          -4.547473508864641e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19599.93458987157
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 137.2254352786511,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.20000000000005,
+          "drainageMm": 112.50013833557183,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507,
+          "drainageMm": 111.49577635021505,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 104.64134916885408,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 4.425380142337701,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18915.53239679986,
+          "endBiomassKgHa": 19599.93458987157,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.8105234795769729,
+          "waterLimitedDays": 2
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 10071.374189448816,
+      "yieldDryKgHa": 8762.09554482047,
+      "biomassKgHa": 19471.323432934376,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000004,
+        "etaMm": 748.1651654683345,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          292.0698514940157,
+          48.67830858233593,
+          292.0698514940157
+        ],
+        "remainingKgHa": [
+          745.9301485059847,
+          953.940091417664,
+          720.3816485059847
+        ],
+        "residualKgHa": [
+          -3.410605131648481e-13,
+          0,
+          -4.547473508864641e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 9,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19471.323432934376
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 98.72543527865109,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.30000000000004,
+          "drainageMm": 59.30974214972696,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 410.74161738598104,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.5,
+          "drainageMm": 10.775952541016869,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10904.996540512368,
+          "endBiomassKgHa": 17381.91281057639,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.8316798722943353,
+          "waterLimitedDays": 4
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 100.94167558006718,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 2.1253801423377006,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18811.335899016274,
+          "endBiomassKgHa": 19471.323432934376,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.6722163506396,
+          "waterLimitedDays": 5
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 8419.341246349033,
+      "yieldDryKgHa": 7324.826884323658,
+      "biomassKgHa": 16277.393076274795,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999997,
+        "etaMm": 631.3205036085114,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          244.160896144122,
+          40.69348269068701,
+          244.160896144122
+        ],
+        "remainingKgHa": [
+          793.839103855878,
+          961.9249173093126,
+          768.290603855878
+        ],
+        "residualKgHa": [
+          0,
+          3.410605131648481e-13,
+          0
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 16277.393076274795
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 81.22543527865109,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.5814077375753,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 18.592414552591535,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1997.5272627376226,
+          "endBiomassKgHa": 4286.402020329965,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.9813096882437178,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 320.14295269430625,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9491.030803190772,
+          "endBiomassKgHa": 14621.0846047468,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.499295262782133,
+          "waterLimitedDays": 40
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 74.84645643782862,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 15827.062162990507,
+          "endBiomassKgHa": 16277.393076274795,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.4072688630976975,
+          "waterLimitedDays": 13
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-end",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 10133.079422765319,
+      "yieldDryKgHa": 8815.779097805827,
+      "biomassKgHa": 19590.620217346284,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.4999999999993,
+        "etaMm": 754.5681829188852,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          293.85930326019445,
+          48.97655054336571,
+          293.85930326019445
+        ],
+        "remainingKgHa": [
+          744.1406967398059,
+          953.6418494566341,
+          718.5921967398059
+        ],
+        "residualKgHa": [
+          -3.410605131648481e-13,
+          1.1368683772161603e-13,
+          -3.410605131648481e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 4,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19590.620217346284
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.80000000000004,
+          "drainageMm": 140.72639710001815,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.20000000000005,
+          "drainageMm": 95.05428799717461,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.0000000000001,
+          "drainageMm": 125.44066486724519,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 103.85491302566075,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18913.311074468555,
+          "endBiomassKgHa": 19590.620217346284,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.7996745606224521,
+          "waterLimitedDays": 4
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 10104.658745391082,
+      "yieldDryKgHa": 8791.053108490241,
+      "biomassKgHa": 19535.67357442276,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000001,
+        "etaMm": 749.3508140804805,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          293.0351036163416,
+          48.8391839360569,
+          293.0351036163416
+        ],
+        "remainingKgHa": [
+          744.9648963836588,
+          953.779216063943,
+          719.4163963836588
+        ],
+        "residualKgHa": [
+          -3.410605131648481e-13,
+          1.1368683772161603e-13,
+          -4.547473508864641e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 7,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19535.67357442276
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 102.2263971000181,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.30000000000004,
+          "drainageMm": 39.220496570425226,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 413.7207883926835,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000017,
+          "drainageMm": 24.385065292249003,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10968.09762296147,
+          "endBiomassKgHa": 17464.716311066524,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.9482756726937458,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 99.14815318551068,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18888.230921614268,
+          "endBiomassKgHa": 19535.67357442276,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.6591939906924661,
+          "waterLimitedDays": 6
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 8575.573262882894,
+      "yieldDryKgHa": 7460.748738708117,
+      "biomassKgHa": 16579.441641573594,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999999,
+        "etaMm": 638.3147943419757,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          248.6916246236039,
+          41.448604103933974,
+          248.6916246236039
+        ],
+        "remainingKgHa": [
+          789.3083753763959,
+          961.1697958960657,
+          763.7598753763959
+        ],
+        "residualKgHa": [
+          1.1368683772161603e-13,
+          3.410605131648481e-13,
+          2.2737367544323206e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 50,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 16579.441641573594
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 84.72639710001812,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.447801007002,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 4.9796838725001855,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1997.1201242474328,
+          "endBiomassKgHa": 4284.70236488901,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.9689586903141623,
+          "waterLimitedDays": 1
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 335.37135671495383,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5000000000001,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9651.208855097888,
+          "endBiomassKgHa": 15112.87107727831,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5570186829615932,
+          "waterLimitedDays": 35
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 66.7459498812186,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 16180.958313720963,
+          "endBiomassKgHa": 16579.441641573594,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.38893881659378804,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-start",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 9486.753262943172,
+      "yieldDryKgHa": 8253.47533876056,
+      "biomassKgHa": 18341.056308356798,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 701.4771732860806,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          275.11584462535205,
+          45.85264077089198,
+          275.11584462535205
+        ],
+        "remainingKgHa": [
+          762.8841553746485,
+          956.7657592291075,
+          737.3356553746485
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          4.547473508864641e-13,
+          -4.547473508864641e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 33,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 18341.056308356798
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 155.7757474933722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 168.1079541203193,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 97.77880653016916,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1904.240204042305,
+          "endBiomassKgHa": 4126.39034672324,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.7717494875238322,
+          "waterLimitedDays": 6
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 380.8446556506446,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507.00000000000006,
+          "drainageMm": 164.61400574421293,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10220.006340332615,
+          "endBiomassKgHa": 16324.257635559614,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5515957461406309,
+          "waterLimitedDays": 14
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 94.9456815009982,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 17728.52000711484,
+          "endBiomassKgHa": 18341.056308356798,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.49674479607059707,
+          "waterLimitedDays": 8
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 9401.355505403202,
+      "yieldDryKgHa": 8179.179289700786,
+      "biomassKgHa": 18175.95397711286,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000003,
+        "etaMm": 692.595845840875,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          272.63930965669306,
+          45.439884942782136,
+          272.63930965669306
+        ],
+        "remainingKgHa": [
+          765.3606903433074,
+          957.1785150572177,
+          739.8121903433073
+        ],
+        "residualKgHa": [
+          -4.547473508864641e-13,
+          1.1368683772161603e-13,
+          -3.410605131648481e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 35,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 18175.95397711286
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 117.27574749337221,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 167.3035083559969,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.3,
+          "drainageMm": 50.70499686320694,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1901.6320376786773,
+          "endBiomassKgHa": 4104.094985992569,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.7717494875238322,
+          "waterLimitedDays": 6
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 378.58589813023906,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.50000000000006,
+          "drainageMm": 57.351018695903136,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10150.378391971992,
+          "endBiomassKgHa": 16236.570471693813,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.5179193356843315,
+          "waterLimitedDays": 15
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 89.12755734052028,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 17607.147875514864,
+          "endBiomassKgHa": 18175.95397711286,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.42674829133520903,
+          "waterLimitedDays": 9
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 8260.879640115372,
+      "yieldDryKgHa": 7186.965286900373,
+      "biomassKgHa": 15971.033970889717,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.6,
+        "etaMm": 611.2003030578244,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          239.56550956334578,
+          39.927584927224295,
+          239.56550956334578
+        ],
+        "remainingKgHa": [
+          798.4344904366542,
+          962.6908150727758,
+          772.8859904366542
+        ],
+        "residualKgHa": [
+          0,
+          -1.1368683772161603e-13,
+          0
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 57,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 15971.033970889717
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 57.578882014118626,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 99.77574749337218,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.48309325847211,
+          "endBiomassKgHa": 323.42583508295604,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.4541147678262208,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 156.881464261497,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 17.305618239864636,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1852.2383955661653,
+          "endBiomassKgHa": 3857.0099430358446,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.6080591897427645,
+          "waterLimitedDays": 9
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 333.1923974976291,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.49999999999994,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9333.90111678885,
+          "endBiomassKgHa": 14541.218586946163,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.38904264159299057,
+          "waterLimitedDays": 29
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 63.54755928457995,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 15606.30301627925,
+          "endBiomassKgHa": 15971.033970889717,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.2685824504553374,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-end",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 9166.824257415352,
+      "yieldDryKgHa": 7975.137103951356,
+      "biomassKgHa": 17722.52689766968,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 1038.5,
+        "etaMm": 672.1858566180362,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          265.8379034650453,
+          44.30631724417421,
+          265.8379034650453
+        ],
+        "remainingKgHa": [
+          772.1620965349549,
+          958.3120827558255,
+          746.6135965349549
+        ],
+        "residualKgHa": [
+          -2.2737367544323206e-13,
+          2.2737367544323206e-13,
+          -2.2737367544323206e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 44,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 17722.52689766968
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 193.8,
+          "drainageMm": 158.0196065418847,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 154.7147822484949,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 280.2,
+          "drainageMm": 117.23761732380419,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1713.4649585102181,
+          "endBiomassKgHa": 3904.8915974235692,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 375.8363911307306,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 507,
+          "drainageMm": 171.03675317289645,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9858.483560105848,
+          "endBiomassKgHa": 15969.422052156599,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.4334592866994183,
+          "waterLimitedDays": 17
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 85.39924323648538,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 57.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 17188.042890058274,
+          "endBiomassKgHa": 17722.52689766968,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.45148392989074887,
+          "waterLimitedDays": 11
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 9132.151459620502,
+      "yieldDryKgHa": 7944.971769869837,
+      "biomassKgHa": 17655.49282193297,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 831.1000000000001,
+        "etaMm": 666.5641748956687,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          264.83239232899473,
+          44.13873205483244,
+          264.83239232899473
+        ],
+        "remainingKgHa": [
+          773.1676076710054,
+          958.4796679451671,
+          747.6191076710054
+        ],
+        "residualKgHa": [
+          -1.1368683772161603e-13,
+          4.547473508864641e-13,
+          -1.1368683772161603e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 46,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 17655.49282193297
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 155.3,
+          "drainageMm": 119.51960654188471,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 154.7147822484949,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 224.3,
+          "drainageMm": 61.33761732380421,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1713.4649585102181,
+          "endBiomassKgHa": 3904.8915974235692,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 375.8363911307306,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 405.49999999999994,
+          "drainageMm": 69.53675317289645,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9858.483560105848,
+          "endBiomassKgHa": 15969.422052156599,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.4334592866994183,
+          "waterLimitedDays": 17
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 79.77756151411769,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 46,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 17163.012492681897,
+          "endBiomassKgHa": 17655.49282193297,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.39524790772463636,
+          "waterLimitedDays": 13
+        }
+      ]
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 8362.726520919286,
+      "yieldDryKgHa": 7275.572073199779,
+      "biomassKgHa": 16167.937940443953,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 632.5999999999999,
+        "etaMm": 610.8981632872589,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          242.51906910665932,
+          40.419844851109865,
+          242.51906910665932
+        ],
+        "remainingKgHa": [
+          795.4809308933408,
+          962.1985551488904,
+          769.9324308933408
+        ],
+        "residualKgHa": [
+          -1.1368683772161603e-13,
+          -2.2737367544323206e-13,
+          -1.1368683772161603e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 56,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 16167.937940443953
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 137.8,
+          "drainageMm": 102.01960654188471,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 126.83088413482554,
+          "endBiomassKgHa": 309.0236480534426,
+          "meanFapar": 0.075,
+          "minWaterFactor": 0.2920899536538118,
+          "waterLimitedDays": 5
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 152.30408204756696,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 157.3,
+          "drainageMm": 12.466505493564437,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1705.6975603217904,
+          "endBiomassKgHa": 3853.177281745355,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 0.16992791026055779,
+          "waterLimitedDays": 11
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 337.2891126730049,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 303.5,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 9042.522765174046,
+          "endBiomassKgHa": 14763.763291673458,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 0.3256457016463916,
+          "waterLimitedDays": 26
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 65.06952856436139,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 34,
+          "drainageMm": 0,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 15778.582985563016,
+          "endBiomassKgHa": 16167.937940443953,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 0.30819421620253534,
+          "waterLimitedDays": 14
+        }
+      ]
+    },
+    {
+      "experiment": "C-water-unlimited",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    },
+    {
+      "experiment": "C-water-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    },
+    {
+      "experiment": "C-water-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 2574.1896551724076,
+      "yieldDryKgHa": 2239.5449999999946,
+      "biomassKgHa": 4976.766666666655,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          101.29999999999971,
+          12.838399999999954,
+          74.65150000000031
+        ],
+        "uptakeKgHa": [
+          74.65150000000028,
+          12.441916666666677,
+          74.65150000000028
+        ],
+        "remainingKgHa": [
+          26.648499999999924,
+          0.39648333333329977,
+          0
+        ],
+        "residualKgHa": [
+          -4.938272013532696e-13,
+          -2.2426505097428162e-14,
+          2.842170943040401e-14
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          3493.1034482758523,
+          2656.220689655163,
+          2574.1896551724244
+        ],
+        "atNutrientCeiling": true,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1993.7998942544934,
+          "endBiomassKgHa": 4163.43333333334,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4476.7666666666655,
+          "endBiomassKgHa": 4776.766666666659,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 4883.4333333333225,
+          "endBiomassKgHa": 4976.766666666655,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    },
+    {
+      "experiment": "D-both-unlimited",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedKgHa": 2200.4,
+      "yieldKgHa": 10142.911120893956,
+      "yieldDryKgHa": 8824.332675177742,
+      "biomassKgHa": 19609.628167061648,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          294.1444225059249,
+          49.0240704176541,
+          294.1444225059249
+        ],
+        "remainingKgHa": [
+          743.8555774940756,
+          953.5943295823456,
+          718.3070774940757
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          2.2737367544323206e-13,
+          -5.684341886080801e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18916.40858436934,
+          "endBiomassKgHa": 19609.628167061648,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    },
+    {
+      "experiment": "D-both-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedKgHa": 1830.9,
+      "yieldKgHa": 10142.911120893956,
+      "yieldDryKgHa": 8824.332675177742,
+      "biomassKgHa": 19609.628167061648,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          294.1444225059249,
+          49.0240704176541,
+          294.1444225059249
+        ],
+        "remainingKgHa": [
+          743.8555774940756,
+          953.5943295823456,
+          718.3070774940757
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          2.2737367544323206e-13,
+          -5.684341886080801e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18916.40858436934,
+          "endBiomassKgHa": 19609.628167061648,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    },
+    {
+      "experiment": "D-both-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedKgHa": 1068.3,
+      "yieldKgHa": 10142.911120893956,
+      "yieldDryKgHa": 8824.332675177742,
+      "biomassKgHa": 19609.628167061648,
+      "moisturePercent": 13,
+      "harvestIndex": 0.45,
+      "water": {
+        "irrigationNetMm": 11222.547750210073,
+        "etaMm": 757.0914685244236,
+        "etmMm": 757.0914685244236
+      },
+      "balance": {
+        "suppliedKgHa": [
+          1038,
+          1002.6184,
+          1012.4515
+        ],
+        "uptakeKgHa": [
+          294.1444225059249,
+          49.0240704176541,
+          294.1444225059249
+        ],
+        "remainingKgHa": [
+          743.8555774940756,
+          953.5943295823456,
+          718.3070774940757
+        ],
+        "residualKgHa": [
+          -5.684341886080801e-13,
+          2.2737367544323206e-13,
+          -5.684341886080801e-13
+        ]
+      },
+      "diagnostics": {
+        "waterLimitedDays": 0,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          0
+        ],
+        "nutrientYieldCeilingsKgHa": [
+          35793.10344827586,
+          207438.2896551724,
+          34912.12068965518
+        ],
+        "atNutrientCeiling": false,
+        "biomassPotentialBeforeNutritionKgHa": 19609.628167061648
+      },
+      "byStage": [
+        {
+          "name": "Installation (phase hydrique)",
+          "days": 20,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "irrigationNetMm": 2022.080675713528,
+          "drainageMm": 1962.1019399693266,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 138.90379670404414,
+          "endBiomassKgHa": 375.12488150735294,
+          "meanFapar": 0.075,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Développement du couvert",
+          "days": 30,
+          "etaMm": 172.73218576348515,
+          "etmMm": 172.73218576348515,
+          "irrigationNetMm": 3033.121013570294,
+          "drainageMm": 2854.8804344116866,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 1998.022713071078,
+          "endBiomassKgHa": 4290.117897830882,
+          "meanFapar": 0.5000000000000001,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Pleine couverture",
+          "days": 46,
+          "etaMm": 414.231397390938,
+          "etmMm": 414.231397390938,
+          "irrigationNetMm": 4650.78555414112,
+          "drainageMm": 4269.226219008359,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 10979.381270907805,
+          "endBiomassKgHa": 17480.445032446263,
+          "meanFapar": 0.8500000000000006,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        },
+        {
+          "name": "Fin de cycle",
+          "days": 15,
+          "etaMm": 106.37819863119923,
+          "etmMm": 106.37819863119923,
+          "irrigationNetMm": 1516.5605067851461,
+          "drainageMm": 1411.3146456679722,
+          "runoffMm": 0,
+          "meanBiomassKgHa": 18916.40858436934,
+          "endBiomassKgHa": 19609.628167061648,
+          "meanFapar": 0.4749999999999999,
+          "minWaterFactor": 1,
+          "waterLimitedDays": 0
+        }
+      ]
+    }
+  ],
+  "contrasts": [
+    {
+      "experiment": "A-original",
+      "calendar": "daily",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-04-01",
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "daily",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-02-04",
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-02-12",
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-01-31",
+      "firstBiomassDivergence": "2018-01-31",
+      "maxBiomassDifferenceKgHa": 3.7158775009165765,
+      "dateMaxBiomassDifference": "2018-01-31",
+      "lastDivergence": "2018-02-02",
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-02-17",
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-01-30",
+      "firstBiomassDivergence": "2018-01-30",
+      "maxBiomassDifferenceKgHa": 5.415532941872243,
+      "dateMaxBiomassDifference": "2018-01-30",
+      "lastDivergence": "2018-02-02",
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-01-31",
+      "firstBiomassDivergence": "2018-01-31",
+      "maxBiomassDifferenceKgHa": 22.295360730671746,
+      "dateMaxBiomassDifference": "2018-02-01",
+      "lastDivergence": "2018-02-03",
+      "firstKLimited": "2018-02-04",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057414,
+        "rmseKgHa": 993.2944966718076,
+        "biasKgHa": 874.3229885057414,
+        "nrmsePercent": 58.43367107254338
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-01-23",
+      "firstBiomassDivergence": "2018-01-23",
+      "maxBiomassDifferenceKgHa": 269.38040368739576,
+      "dateMaxBiomassDifference": "2018-02-01",
+      "lastDivergence": "2018-02-04",
+      "firstKLimited": "2018-02-05",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057414,
+        "rmseKgHa": 993.2944966718076,
+        "biasKgHa": 874.3229885057414,
+        "nrmsePercent": 58.43367107254338
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-03-28",
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-05",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057417,
+        "rmseKgHa": 993.294496671808,
+        "biasKgHa": 874.3229885057417,
+        "nrmsePercent": 58.43367107254341
+      }
+    },
+    {
+      "experiment": "A-original",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": "2018-01-30",
+      "firstBiomassDivergence": "2018-01-30",
+      "maxBiomassDifferenceKgHa": 78.00088120109695,
+      "dateMaxBiomassDifference": "2018-02-04",
+      "lastDivergence": "2018-02-04",
+      "firstKLimited": "2018-02-05",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057417,
+        "rmseKgHa": 993.294496671808,
+        "biasKgHa": 874.3229885057417,
+        "nrmsePercent": 58.43367107254341
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "ratioVsFI": 0.9981903860532906,
+      "deltaYieldVsFI": -18.34917169873188,
+      "deltaBiomassVsFI": -35.475065284215816,
+      "firstWaterFactorDivergence": "2018-04-01",
+      "firstBiomassDivergence": "2018-04-01",
+      "maxBiomassDifferenceKgHa": 35.475065284215816,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7914.9082119103505,
+        "rmseKgHa": 7921.262414686132,
+        "biasKgHa": 7914.9082119103505,
+        "nrmsePercent": 465.99316111182037
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "ratioVsFI": 0.8464662012432415,
+      "deltaYieldVsFI": -1556.8061022457969,
+      "deltaBiomassVsFI": -3009.8251310085398,
+      "firstWaterFactorDivergence": "2018-02-04",
+      "firstBiomassDivergence": "2018-02-04",
+      "maxBiomassDifferenceKgHa": 3009.8251310085398,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7914.9082119103505,
+        "rmseKgHa": 7921.262414686132,
+        "biasKgHa": 7914.9082119103505,
+        "nrmsePercent": 465.99316111182037
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "ratioVsFI": 0.9934381843802859,
+      "deltaYieldVsFI": -66.52301220889422,
+      "deltaBiomassVsFI": -128.6111569371933,
+      "firstWaterFactorDivergence": "2018-02-12",
+      "firstBiomassDivergence": "2018-02-12",
+      "maxBiomassDifferenceKgHa": 128.6111569371933,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7843.004212485186,
+        "rmseKgHa": 7851.689501816809,
+        "biasKgHa": 7843.004212485186,
+        "nrmsePercent": 461.9003158179156
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "ratioVsFI": 0.8304820101127416,
+      "deltaYieldVsFI": -1718.5559553086769,
+      "deltaBiomassVsFI": -3322.541513596774,
+      "firstWaterFactorDivergence": "2018-01-31",
+      "firstBiomassDivergence": "2018-01-31",
+      "maxBiomassDifferenceKgHa": 3322.541513596774,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7843.004212485186,
+        "rmseKgHa": 7851.689501816809,
+        "biasKgHa": 7843.004212485186,
+        "nrmsePercent": 461.9003158179156
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "ratioVsFI": 0.9971952576123714,
+      "deltaYieldVsFI": -28.42067737423713,
+      "deltaBiomassVsFI": -54.94664292352536,
+      "firstWaterFactorDivergence": "2018-02-17",
+      "firstBiomassDivergence": "2018-02-17",
+      "maxBiomassDifferenceKgHa": 54.94664292352536,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7904.570477013098,
+        "rmseKgHa": 7910.786695917082,
+        "biasKgHa": 7904.570477013098,
+        "nrmsePercent": 465.37689402602643
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "ratioVsFI": 0.8462948828385497,
+      "deltaYieldVsFI": -1557.506159882425,
+      "deltaBiomassVsFI": -3011.1785757726902,
+      "firstWaterFactorDivergence": "2018-01-30",
+      "firstBiomassDivergence": "2018-01-30",
+      "maxBiomassDifferenceKgHa": 3011.1785757726902,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7904.570477013098,
+        "rmseKgHa": 7910.786695917082,
+        "biasKgHa": 7904.570477013098,
+        "nrmsePercent": 465.37689402602643
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "ratioVsFI": 0.9909982103283378,
+      "deltaYieldVsFI": -85.39775753996946,
+      "deltaBiomassVsFI": -165.10233124393926,
+      "firstWaterFactorDivergence": "2018-01-31",
+      "firstBiomassDivergence": "2018-01-31",
+      "maxBiomassDifferenceKgHa": 165.10233124393926,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7349.7961361539155,
+        "rmseKgHa": 7351.551816024842,
+        "biasKgHa": 7349.7961361539155,
+        "nrmsePercent": 432.4781443265065
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "ratioVsFI": 0.8707804884505361,
+      "deltaYieldVsFI": -1225.8736228277994,
+      "deltaBiomassVsFI": -2370.0223374670804,
+      "firstWaterFactorDivergence": "2018-01-23",
+      "firstBiomassDivergence": "2018-01-23",
+      "maxBiomassDifferenceKgHa": 2370.0223374670804,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7349.7961361539155,
+        "rmseKgHa": 7351.551816024842,
+        "biasKgHa": 7349.7961361539155,
+        "nrmsePercent": 432.4781443265065
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "ratioVsFI": 0.9962175779941671,
+      "deltaYieldVsFI": -34.67279779485034,
+      "deltaBiomassVsFI": -67.03407573670847,
+      "firstWaterFactorDivergence": "2018-03-28",
+      "firstBiomassDivergence": "2018-03-28",
+      "maxBiomassDifferenceKgHa": 67.03407573670847,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7187.3674126517135,
+        "rmseKgHa": 7189.065726968194,
+        "biasKgHa": 7187.3674126517135,
+        "nrmsePercent": 422.91938938160996
+      }
+    },
+    {
+      "experiment": "B-nutrition-unlimited",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "ratioVsFI": 0.9122817549550376,
+      "deltaYieldVsFI": -804.0977364960654,
+      "deltaBiomassVsFI": -1554.5889572257256,
+      "firstWaterFactorDivergence": "2018-01-30",
+      "firstBiomassDivergence": "2018-01-30",
+      "maxBiomassDifferenceKgHa": 1554.5889572257256,
+      "dateMaxBiomassDifference": "2018-04-05",
+      "lastDivergence": "2018-04-05",
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 7187.3674126517135,
+        "rmseKgHa": 7189.065726968194,
+        "biasKgHa": 7187.3674126517135,
+        "nrmsePercent": 422.91938938160996
+      }
+    },
+    {
+      "experiment": "C-water-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": null,
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "C-water-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": null,
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": "2018-02-03",
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      }
+    },
+    {
+      "experiment": "D-both-unlimited",
+      "calendar": "daily",
+      "treatment": "80",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": null,
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 8443.044454227289,
+        "rmseKgHa": 8456.192578515882,
+        "biasKgHa": 8443.044454227289,
+        "nrmsePercent": 497.4621094899138
+      }
+    },
+    {
+      "experiment": "D-both-unlimited",
+      "calendar": "daily",
+      "treatment": "60",
+      "ratioVsFI": 1,
+      "deltaYieldVsFI": 0,
+      "deltaBiomassVsFI": 0,
+      "firstWaterFactorDivergence": null,
+      "firstBiomassDivergence": null,
+      "maxBiomassDifferenceKgHa": 0,
+      "dateMaxBiomassDifference": "2017-12-16",
+      "lastDivergence": null,
+      "firstKLimited": null,
+      "metrics": {
+        "n": 3,
+        "maeKgHa": 8443.044454227289,
+        "rmseKgHa": 8456.192578515882,
+        "biasKgHa": 8443.044454227289,
+        "nrmsePercent": 497.4621094899138
+      }
+    }
+  ]
+}

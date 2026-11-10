@@ -1,0 +1,78 @@
+{
+  "service": "https://agri.fawitchamie.workers.dev",
+  "date": "2026-11-10T12:10:04Z",
+  "results": [
+    {
+      "label": "FI",
+      "httpStatus": 200,
+      "engineVersion": "daily-rue-npk-1.1.0",
+      "growthStatus": "scenario",
+      "yieldKgHa": 2574.1896551724076,
+      "productionKg": 216.61934707108975,
+      "areaM2": 841.5050019171239,
+      "missing": [],
+      "diagnostics": {
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ]
+      },
+      "water": {
+        "irrigationNetMm": 1038.4999999999984,
+        "etaMm": 756.0716779739552,
+        "etmMm": 757.0914685244236
+      },
+      "localYieldKgHa": 2574.1896551724076
+    },
+    {
+      "label": "80% FI",
+      "httpStatus": 200,
+      "engineVersion": "daily-rue-npk-1.1.0",
+      "growthStatus": "scenario",
+      "yieldKgHa": 2574.1896551724076,
+      "productionKg": 216.61934707108975,
+      "areaM2": 841.5050019171239,
+      "missing": [],
+      "diagnostics": {
+        "waterLimitedDays": 5,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ]
+      },
+      "water": {
+        "irrigationNetMm": 831.1000000000021,
+        "etaMm": 751.5232634714698,
+        "etmMm": 757.0914685244236
+      },
+      "localYieldKgHa": 2574.1896551724076
+    },
+    {
+      "label": "60% FI",
+      "httpStatus": 200,
+      "engineVersion": "daily-rue-npk-1.1.0",
+      "growthStatus": "scenario",
+      "yieldKgHa": 2574.1896551724076,
+      "productionKg": 216.61934707108975,
+      "areaM2": 841.5050019171239,
+      "missing": [],
+      "diagnostics": {
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": [
+          0,
+          0,
+          62
+        ]
+      },
+      "water": {
+        "irrigationNetMm": 632.5999999999991,
+        "etaMm": 640.2443925948629,
+        "etmMm": 757.0914685244236
+      },
+      "localYieldKgHa": 2574.1896551724076
+    }
+  ]
+}

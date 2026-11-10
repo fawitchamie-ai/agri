@@ -1,0 +1,114 @@
+{
+  "doi": "10.17159/wsa/2020.v46.i1.7894",
+  "transcription": "Numeric printed tables, checked visually; not digitized daily raw observations",
+  "figureReading": "Figures 3,6,7 checked for context; no numerical curve digitization claimed",
+  "stageBasis": "Published stage means; sampling weights/dates not available, not interchangeable with daily calendar means",
+  "table6": {
+    "biomassKgHa": {
+      "FI": [
+        10,
+        370,
+        8260,
+        7190
+      ],
+      "80": [
+        10,
+        610,
+        4320,
+        7170
+      ],
+      "60": [
+        10,
+        420,
+        4730,
+        3960
+      ]
+    },
+    "canopyPercent": {
+      "FI": [
+        0.66,
+        14.16,
+        89.39,
+        78.32
+      ],
+      "80": [
+        0.75,
+        25.03,
+        77.26,
+        79.17
+      ],
+      "60": [
+        0.79,
+        16.86,
+        74.31,
+        64.61
+      ]
+    },
+    "LAI": {
+      "FI": [
+        0.03,
+        0.36,
+        4.15,
+        2.94
+      ],
+      "80": [
+        0.03,
+        0.63,
+        2.93,
+        2.86
+      ],
+      "60": [
+        0.03,
+        0.43,
+        2.57,
+        1.98
+      ]
+    }
+  },
+  "table5": {
+    "harvestIndex": {
+      "FI": 0.2608,
+      "80": 0.2541,
+      "60": 0.2461
+    },
+    "DISIpercent": {
+      "FI": 0,
+      "80": 16.79,
+      "60": 51.45
+    }
+  },
+  "measuredGrainKgHa": {
+    "FI": 2200.4,
+    "80": 1830.9,
+    "60": 1068.3
+  },
+  "grain80Status": "User-provided value, checked against graphical order and rounded DISI; raw exact value not acquired",
+  "grainMoisturePercentRange": [
+    12,
+    14
+  ],
+  "table1": {
+    "emergenceDAP": 7,
+    "maxCanopyDAP": 60,
+    "maxRootDAP": 67,
+    "senescenceDAP": 76,
+    "maturityDAP": 100,
+    "floweringDAP": 54,
+    "floweringDurationDays": 10,
+    "HIbuildDays": 42,
+    "rootMaxM": 1,
+    "rootMinM": 0.3,
+    "HIreference": 0.5,
+    "plantDensity": 62500,
+    "soilFertilityLabel": 65
+  },
+  "observedDurationDays": 111,
+  "actualPlantDensityMethods": 70000,
+  "coverEquation7": "CC = 1.005 * (1 - exp(-0.6 * LAI))^1.2",
+  "limits": [
+    "Table1 includes AquaCrop parameters; its maturity100 differs from observed111, and planting density62500 differs from Methods70000.",
+    "Table5 HI observations are not inserted as treatment-specific prediction parameters.",
+    "Table6 stage means are descriptive constraints, not independent test replications.",
+    "FI and80 grain yields not significantly different in source; no requirement to force statistical separation."
+  ]
+}

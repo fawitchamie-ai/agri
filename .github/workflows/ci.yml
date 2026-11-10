@@ -26,6 +26,27 @@ jobs:
         env:
           PYTHONWARNINGS: ignore::DeprecationWarning,ignore::ResourceWarning
         run: .compute-python/bin/python -m unittest discover -s services/crop-compute -p 'test_*.py' -v
+  aquacrop-benchmark:
+    name: Benchmark AquaCrop versionné et bilan causal Togo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12'
+      - name: Installer le comparateur dans un environnement isolé
+        run: |
+          python -m venv .aquacrop-python
+          .aquacrop-python/bin/python -m pip install -r research-data/togo-causal/2026-11-10/requirements-aquacrop.lock.txt
+      - name: Exécuter le vrai comparateur et contrôler ses bilans
+        env:
+          DEVELOPMENT: DEVELOPMENT
+        run: |
+          .aquacrop-python/bin/python scripts/togo-aquacrop-benchmark.py
+          .aquacrop-python/bin/python scripts/check-togo-benchmark.py
   checks:
     name: TypeScript, tests et compilation
     runs-on: ubuntu-latest
@@ -64,7 +85,7 @@ jobs:
 
   deploy:
     name: Publier en production
-    needs: [checks, crop-compute]
+    needs: [checks, crop-compute, aquacrop-benchmark]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.CLOUDFLARE_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20

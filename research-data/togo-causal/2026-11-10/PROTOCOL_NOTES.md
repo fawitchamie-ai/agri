@@ -1,0 +1,3 @@
+# Écart de mise en œuvre du contrôle hydrique C/D
+
+Le protocole gelé mentionne une eau non limitante calculée par le planificateur automatique. L’exécution utilise plutôt un forçage quotidien explicite : réserve utile maximale du profil + demande journalière maximale. Ce choix garantit le remplissage matinal sans dépendre du seuil de déclenchement de la conduite automatique. Le script et les volumes exacts sont archivés. Les bilans vérifient que le surplus est drainé et que le facteur eau vaut 1. Ce contrôle ne reproduit aucune pratique réelle et ne sert pas à ajuster les rendements. Le protocole original et son empreinte sont conservés ; ses formulations ne sont pas réécrites rétrospectivement.

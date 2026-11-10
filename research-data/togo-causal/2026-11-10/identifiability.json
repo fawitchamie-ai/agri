@@ -1,0 +1,168 @@
+{
+  "calibration": false,
+  "rangeStatus": "Exploratory mathematical perturbation, not a statistical interval",
+  "rows": [
+    {
+      "mode": "supply-only",
+      "q": 0.95,
+      "treatment": "FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2445.480172413798
+    },
+    {
+      "mode": "supply-only",
+      "q": 0.95,
+      "treatment": "80% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2445.480172413798
+    },
+    {
+      "mode": "supply-only",
+      "q": 0.95,
+      "treatment": "60% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2445.480172413798
+    },
+    {
+      "mode": "supply-only",
+      "q": 1,
+      "treatment": "FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-only",
+      "q": 1,
+      "treatment": "80% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-only",
+      "q": 1,
+      "treatment": "60% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-only",
+      "q": 1.05,
+      "treatment": "FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2702.899137931036
+    },
+    {
+      "mode": "supply-only",
+      "q": 1.05,
+      "treatment": "80% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2702.899137931036
+    },
+    {
+      "mode": "supply-only",
+      "q": 1.05,
+      "treatment": "60% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2702.899137931036
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 0.95,
+      "treatment": "FI",
+      "HI": 0.4736842105263158,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2574.189655172419
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 0.95,
+      "treatment": "80% FI",
+      "HI": 0.4736842105263158,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2574.189655172419
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 0.95,
+      "treatment": "60% FI",
+      "HI": 0.4736842105263158,
+      "KsupplyKgHa": 70.91892499999975,
+      "biomassKgHa": 4727.928333333342,
+      "yieldKgHa": 2574.189655172419
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1,
+      "treatment": "FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1,
+      "treatment": "80% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1,
+      "treatment": "60% FI",
+      "HI": 0.45,
+      "KsupplyKgHa": 74.65150000000031,
+      "biomassKgHa": 4976.766666666655,
+      "yieldKgHa": 2574.1896551724076
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1.05,
+      "treatment": "FI",
+      "HI": 0.42857142857142855,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2574.1896551724153
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1.05,
+      "treatment": "80% FI",
+      "HI": 0.42857142857142855,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2574.1896551724153
+    },
+    {
+      "mode": "supply-HI-confounding",
+      "q": 1.05,
+      "treatment": "60% FI",
+      "HI": 0.42857142857142855,
+      "KsupplyKgHa": 78.38407499999961,
+      "biomassKgHa": 5225.605000000003,
+      "yieldKgHa": 2574.1896551724153
+    }
+  ]
+}
