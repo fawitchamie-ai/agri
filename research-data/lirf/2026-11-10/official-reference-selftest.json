@@ -1,0 +1,100 @@
+{
+  "engine": "official AquaCrop 7.3, release v7.3_typofix",
+  "referenceChecks": [
+    {
+      "file": "AllDone.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": []
+    },
+    {
+      "file": "ListProjectsLoaded.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": []
+    },
+    {
+      "file": "OttawaPRM1evaluation.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    },
+    {
+      "file": "OttawaPRM2evaluation.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    },
+    {
+      "file": "OttawaPRM3evaluation.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    },
+    {
+      "file": "OttawaPRMday.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    },
+    {
+      "file": "OttawaPRMharvests.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    },
+    {
+      "file": "OttawaPRMseason.OUT",
+      "matchedExceptCreationTimestamp": true,
+      "differentLines": [
+        1
+      ]
+    }
+  ],
+  "syntheticFertilityDiagnostic": {
+    "stress50": [
+      {
+        "RunNr": "Tot(1)",
+        "FertStr": "50",
+        "BioMass": "9.171",
+        "Y(dry)": "9.012"
+      },
+      {
+        "RunNr": "Tot(2)",
+        "FertStr": "50",
+        "BioMass": "11.943",
+        "Y(dry)": "11.943"
+      },
+      {
+        "RunNr": "Tot(3)",
+        "FertStr": "50",
+        "BioMass": "12.581",
+        "Y(dry)": "12.581"
+      }
+    ],
+    "stress0": [
+      {
+        "RunNr": "Tot(1)",
+        "FertStr": "0",
+        "BioMass": "16.002",
+        "Y(dry)": "15.821"
+      },
+      {
+        "RunNr": "Tot(2)",
+        "FertStr": "0",
+        "BioMass": "20.720",
+        "Y(dry)": "20.720"
+      },
+      {
+        "RunNr": "Tot(3)",
+        "FertStr": "0",
+        "BioMass": "22.903",
+        "Y(dry)": "22.903"
+      }
+    ]
+  },
+  "scope": "Software execution and mechanism check on bundled Ottawa alfalfa example; not field yield validation."
+}

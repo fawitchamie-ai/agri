@@ -11,12 +11,15 @@ import {landBlockReason} from './land.ts';
  * Nutrient supply is explicit plant-accessible kg ELEMENT/ha, never total soil N.
  */
 export const GROWTH_VERSION='daily-rue-npk-1';
-export const GROWTH_ENGINE_VERSION='daily-rue-npk-1.2.0';
+export const GROWTH_ENGINE_VERSION='daily-rue-npk-1.3.0';
 export type Triple=[number,number,number];
 export type GrowthInput={
  version:typeof GROWTH_VERSION;acceptedScenario:true;scope:string;source:string;availableOn:string;
  history?:GrowthHarvestSample[];
  parameters:{rueGPerMj:number;harvestIndex:number;moisturePercent:number;temperatureC:[number,number,number,number];
+  /** Alternative biomass equation B=WP*sum(Tr/ETo), not an extra RUE/Ky penalty.
+   * FAO AquaCrop calculation scheme, biomass step. This is not the full AquaCrop model. */
+  biomassModel?:{kind:'transpiration-normalized';waterProductivityGm2:number;source:string;availableOn:string};
   stages:{faparStart:number;faparEnd:number;waterSensitivity:number}[];
   nutrientKgPerTonneBiomass:Triple;fertilizerRecovery:Triple;
   /** Legacy field accepted for old exports, then cleared by parseGrowth. */
@@ -30,6 +33,8 @@ export type GrowthInput={
 };
 export const growthScope=(c:SeasonalConfig)=>JSON.stringify([c.country,geometryIdentity(c.parcelGeometry),c.cropProfile?.id,c.variety,c.sowingDate,c.stages.map(s=>[s.name,s.days,s.kcStart,s.kcEnd,s.rootStartM,s.rootEndM,s.depletionFraction])]);
 const clamp=(x:number)=>Math.max(0,Math.min(1,x));
+/** WP [g/m2] × Tr/ETo × 10 => above-ground dry matter [kg/ha]. */
+export function biomassFromTranspiration(waterProductivityGm2:number,transpirationMm:number,et0Mm:number){return et0Mm>0?waterProductivityGm2*10*transpirationMm/et0Mm:0;}
 export function responseCurve(value:number,curve:readonly number[]){const [a,b,c,d]=curve;return value<=a||value>=d?0:value<b?(value-a)/(b-a):value<=c?1:(d-value)/(d-c);}
 /** These are deliberately illustrative assumptions, not published maize coefficients.
  * Users must explicitly accept and replace them with a domain-specific parameter set.
@@ -54,6 +59,7 @@ export function parseGrowth(value:unknown,c:SeasonalConfig):GrowthInput|undefine
  const p=v.parameters;
  if(!p||!num(p.rueGPerMj,.01,10)||!num(p.harvestIndex,.01,.9)||!num(p.moisturePercent,0,40)||!curve(p.temperatureC,-30,65)||!Array.isArray(p.stages)||p.stages.length!==c.stages.length)fail('RUE, indice de récolte, humidité, températures et stades invalides.');
  if(p.stages.some(s=>!s||!num(s.faparStart,0,1)||!num(s.faparEnd,0,1)||!num(s.waterSensitivity,.1,5)))fail('interception ou sensibilité hydrique de stade invalide.');
+ if(p.biomassModel){const m=p.biomassModel;if(m.kind!=='transpiration-normalized'||!num(m.waterProductivityGm2,.1,100)||!text(m.source))fail('modèle de productivité de transpiration invalide.');isoDate(m.availableOn);if(m.availableOn>c.asOfDate)fail('productivité indisponible à la date du calcul.');if(!c.waterModel)fail('le modèle de productivité exige la séparation explicite évaporation/transpiration.');}
  if(!triple(p.nutrientKgPerTonneBiomass,.001,200)||!triple(p.fertilizerRecovery,0,1))fail('besoins N/P/K et récupération invalides.');
  if(!v.soilSupply||!triple(v.soilSupply.initialKgHa,0,10000)||!triple(v.soilSupply.releaseKgHaDay,0,100)||!text(v.soilSupply.source))fail('fourniture accessible du sol requise avec source.');
  if(p.phResponse){const h=p.phResponse;if(!Number.isInteger(h.analysisIndex)||!Number.isInteger(h.measurementIndex)||!text(h.method)||!text(h.source)||!curve(h.curve,0,14))fail('ancienne courbe pH invalide.');}
@@ -73,11 +79,12 @@ export function parseGrowth(value:unknown,c:SeasonalConfig):GrowthInput|undefine
 }
 export type GrowthDay={date:string;stage:string;fapar:number;canopySource:'parameter'|'satellite';temperatureC:number;radiationMj:number;temperatureFactor:number;waterFactor:number;nutrientFactor:number;biomassKgHa:number;incrementKgHa:number;uptakeKgHa:Triple;stockKgHa:Triple;limitingNutrients:('N'|'P'|'K')[];water:{rainMm:number;irrigationFieldMm:number|null;irrigationNetMm:number;stockStartMm:number;stockEndMm:number;rootGainMm:number;assimilationMm:number;drainageMm:number;runoffMm:number;demandMm:number;actualEtMm:number};interceptedRadiationMj:number;potentialBeforeWaterKgHa:number;potentialBeforeNutritionKgHa:number;nutrientStockStartKgHa:Triple;nutrientSupplyKgHa:Triple;nutrientUptakeKgHa:Triple;nutrientBalanceResidualKgHa:Triple;assumedHarvestIndex:number};
 export type GrowthScenario={id:string;label:string;water?:{irrigationNetMm:number;etaMm:number;etmMm:number};days:GrowthDay[];biomassKgHa:number;yieldDryKgHa:number;yieldKgHa:number;productionKg:number;diagnostics:{waterLimitedDays:number;nutrientLimitedDays:Triple;nutrientYieldCeilingsKgHa:Triple;atNutrientCeiling:boolean;biomassPotentialBeforeNutritionKgHa:number};balance:{suppliedKgHa:Triple;uptakeKgHa:Triple;remainingKgHa:Triple;residualKgHa:Triple}};
-export type GrowthResult={version:typeof GROWTH_VERSION;engineVersion:typeof GROWTH_ENGINE_VERSION;status:'scenario'|'unavailable';validated:false;predictiveInterval95:null;missing:string[];limits:string[];areaM2:number|null;areaBasis:'planned'|'sown';moisturePercent:number|null;phFactor:number|null;calibration?:ReturnType<typeof fitHarvestIndex>;scenarios:GrowthScenario[];factors:{factor:string;role:string}[]};
+export type GrowthResult={version:typeof GROWTH_VERSION;engineVersion:typeof GROWTH_ENGINE_VERSION;biomassMethod:'rue-global'|'transpiration-normalized';status:'scenario'|'unavailable';validated:false;predictiveInterval95:null;missing:string[];limits:string[];areaM2:number|null;areaBasis:'planned'|'sown';moisturePercent:number|null;phFactor:number|null;calibration?:ReturnType<typeof fitHarvestIndex>;scenarios:GrowthScenario[];factors:{factor:string;role:string}[]};
+function configHasDual(c:SeasonalConfig){return !!c.waterModel;}
 export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):GrowthResult{
  const v=c.growth,p=v?.parameters;
  const calibration=v?.history?fitHarvestIndex(v.history,{country:c.country,cropId:c.cropProfile?.id??'',variety:c.variety,profileId:growthProfileId(p!),asOfDate:c.asOfDate}):undefined;
- const out:GrowthResult={version:GROWTH_VERSION,engineVersion:GROWTH_ENGINE_VERSION,status:'unavailable',validated:false,predictiveInterval95:null,missing:[],areaM2:null,areaBasis:c.yieldEstimation?(c.yieldEstimation.areaBasis??'sown'):'planned',moisturePercent:p?.moisturePercent??null,phFactor:null,scenarios:[],
+ const out:GrowthResult={version:GROWTH_VERSION,engineVersion:GROWTH_ENGINE_VERSION,biomassMethod:p?.biomassModel?'transpiration-normalized':'rue-global',status:'unavailable',validated:false,predictiveInterval95:null,missing:[],areaM2:null,areaBasis:c.yieldEstimation?(c.yieldEstimation.areaBasis??'sown'):'planned',moisturePercent:p?.moisturePercent??null,phFactor:null,scenarios:[],
  limits:['Scénario journalier exploratoire, pas une prévision calibrée localement. Paramètres et fournitures accessibles à justifier.',
  'Biomasse aérienne sèche par rayonnement intercepté ; cycle et stades calendaires déclarés. Pas de phénologie thermique, racines nourries ou croissance de couvert dynamique.',
  'ET réelle/ET demandée est un proxy de stress : évaporation et transpiration ne sont pas séparées. Aucun facteur FAO Ky ni QUEFTS supplémentaire appliqué.',
@@ -85,6 +92,8 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  'L’indice de récolte est fixe : stérilité de floraison et pertes de récolte non modélisées. Le rendement de produit est corrigé à l’humidité déclarée.',
  'Couvert satellite observé utilisé uniquement de sa date à son âge maximal, sans extrapolation lointaine. Les contrefactuels conservent ce couvert observé, donc ne mesurent pas un effet causal total.'],
  factors:[{factor:'Sol physique',role:'Utilisés : eau au champ, flétrissement, humidité initiale, infiltration et enracinement alimentent le bilan hydrique. Texture, densité apparente et éléments grossiers bruts ne sont pas des pénalités autonomes.'},{factor:'Chimie du sol / pH',role:'Diagnostic seulement : pH, carbone organique, azote total, CEC et teneurs P/K ne sont pas convertis en réponse du rendement ou en nutriments disponibles.'},{factor:'Fertilité / engrais',role:'Utilisés dans ce scénario via les stocks N/P/K élémentaires, les compositions des apports et les récupérations/libérations explicitement déclarées ; ce ne sont pas des paramètres locaux calibrés.'},{factor:'Météo',role:'Pluie et ET0 alimentent le bilan d’eau. Température et rayonnement interviennent dans la croissance journalière uniquement via le profil exploratoire déclaré.'},{factor:'Culture / stades / variété',role:'La culture choisit les paramètres hydriques documentés disponibles ; stades et racines suivent le profil déclaré. La variété n’active pas automatiquement des coefficients spécifiques.'},{factor:'Vigueur satellite',role:v?.satellite?'Utilisée pour actualiser l’interception pendant les seules dates qualifiées.':'Non utilisée ; le couvert reste paramétré.'},{factor:'Récoltes passées',role:'L’indice de récolte peut être ajusté sur des biomasses archivées compatibles ; cela ne calibre pas les autres paramètres.'}]};
+ if(p?.biomassModel)out.limits[1]='Biomasse = WP × somme(Tr/ET0), équation alternative au modèle RUE ; WP effectif explicite, sans correction CO2 ni phénologie thermique. Ce calcul ne constitue pas le modèle AquaCrop complet.';
+ if(configHasDual(c))out.limits[2]='Double coefficient FAO56 explicite : croissance limitée par la transpiration réelle/potentielle, évaporation exclue de ce rapport. Couvert encore prescrit, sans sénescence induite par le stress.';
  if(calibration)out.calibration=calibration;
  if(v?.weatherScenario)out.limits.push('Température et rayonnement manquants complétés par le scénario explicite : '+v.weatherScenario.source);
  if(!v){out.missing.push('Activez un profil de croissance documenté dans Rendement.');return out;}
@@ -129,9 +138,13 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  let fapar=s.faparStart+(s.faparEnd-s.faparStart)*f,canopySource:GrowthDay['canopySource']='parameter';
  const satellite=v.satellite,observation=satellite?.observations.filter(o=>o.date<=d.date&&(Date.parse(d.date)-Date.parse(o.date))/86400000<=satellite.maxAgeDays).at(-1);
  if(satellite&&observation){fapar=clamp((observation.value-satellite.bare)/(satellite.full-satellite.bare));canopySource='satellite';}
- const temperatureFactor=responseCurve(temperatureC,p!.temperatureC),waterFactor=d.demandMm>0?Math.pow(clamp(d.actualEtMm/d.demandMm),s.waterSensitivity):1;
- const interceptedRadiationMj=radiationMj*fapar,potentialBeforeWaterKgHa=interceptedRadiationMj*p!.rueGPerMj*10*temperatureFactor;
- const potential=potentialBeforeWaterKgHa*waterFactor,nutrientStockStartKgHa=[...stock] as Triple,nutrientSupplyKgHa:Triple=[0,0,0],nutrientUptakeKgHa:Triple=[0,0,0];
+ const temperatureFactor=responseCurve(temperatureC,p!.temperatureC),waterFactor=d.dualKc?(d.dualKc.transpirationDemandMm>0?Math.pow(clamp(d.dualKc.transpirationMm/d.dualKc.transpirationDemandMm),s.waterSensitivity):1):(d.demandMm>0?Math.pow(clamp(d.actualEtMm/d.demandMm),s.waterSensitivity):1);
+ const interceptedRadiationMj=radiationMj*fapar,model=p!.biomassModel;
+ const et0=w?.et0Mm??config.fallback?.et0MmDay??0;
+ const potentialBeforeWaterKgHa=model?biomassFromTranspiration(model.waterProductivityGm2,d.dualKc!.transpirationDemandMm,et0):interceptedRadiationMj*p!.rueGPerMj*10*temperatureFactor;
+ // Alternative, mutually exclusive production equation. Never count ET stress twice.
+ const potential=model?biomassFromTranspiration(model.waterProductivityGm2,d.dualKc!.transpirationMm,et0):potentialBeforeWaterKgHa*waterFactor;
+ const nutrientStockStartKgHa=[...stock] as Triple,nutrientSupplyKgHa:Triple=[0,0,0],nutrientUptakeKgHa:Triple=[0,0,0];
  for(let k=0;k<3;k++){let addition=v.soilSupply.releaseKgHaDay[k];
  for(const a of used){const mass=a.mass[k];if(a.release){
  const r=a.release,age=(Date.parse(d.date)-Date.parse(a.date))/86400000;if(age>=0)addition+=mass*r.availableFraction[k]*(Math.pow(.5,age/r.halfLifeDays)-Math.pow(.5,(age+1)/r.halfLifeDays));
@@ -153,8 +166,8 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
 
 /** Export the actual daily ledger; no reconstructed transpiration or stage HI. */
 export function growthCsv(result:GrowthResult){
- const header=['engine_version','scenario','date','stage','rain_mm','irrigation_field_mm','irrigation_net_mm','water_stock_start_mm','water_stock_end_mm','root_gain_mm','water_assimilation_mm','drainage_mm','runoff_mm','et_demand_mm','et_actual_mm','water_factor','global_solar_mj_m2','intercepted_solar_mj_m2','thermal_factor','biomass_potential_before_water_kg_ha','biomass_potential_before_nutrition_kg_ha','N_stock_start_kg_ha','P_stock_start_kg_ha','K_stock_start_kg_ha','N_supply_kg_ha','P_supply_kg_ha','K_supply_kg_ha','N_uptake_kg_ha','P_uptake_kg_ha','K_uptake_kg_ha','N_stock_end_kg_ha','P_stock_end_kg_ha','K_stock_end_kg_ha','nutrient_factor','limiting_nutrients','biomass_increment_kg_ha','biomass_cumulative_kg_ha','assumed_fixed_HI','N_balance_residual_kg_ha','P_balance_residual_kg_ha','K_balance_residual_kg_ha'];
+ const header=['engine_version','biomass_method','scenario','date','stage','rain_mm','irrigation_field_mm','irrigation_net_mm','water_stock_start_mm','water_stock_end_mm','root_gain_mm','water_assimilation_mm','drainage_mm','runoff_mm','et_demand_mm','et_actual_mm','water_factor','global_solar_mj_m2','intercepted_solar_mj_m2','thermal_factor','biomass_potential_before_water_kg_ha','biomass_potential_before_nutrition_kg_ha','N_stock_start_kg_ha','P_stock_start_kg_ha','K_stock_start_kg_ha','N_supply_kg_ha','P_supply_kg_ha','K_supply_kg_ha','N_uptake_kg_ha','P_uptake_kg_ha','K_uptake_kg_ha','N_stock_end_kg_ha','P_stock_end_kg_ha','K_stock_end_kg_ha','nutrient_factor','limiting_nutrients','biomass_increment_kg_ha','biomass_cumulative_kg_ha','assumed_fixed_HI','N_balance_residual_kg_ha','P_balance_residual_kg_ha','K_balance_residual_kg_ha'];
  const quote=(v:unknown)=>'"'+(typeof v==='string'?v.replace(/^[\s]*[=+@-]/,"'$&"):String(v??'')).replaceAll('"','""')+'"';
- const rows=result.scenarios.flatMap(s=>s.days.map(d=>[result.engineVersion,s.id,d.date,d.stage,d.water.rainMm,d.water.irrigationFieldMm,d.water.irrigationNetMm,d.water.stockStartMm,d.water.stockEndMm,d.water.rootGainMm,d.water.assimilationMm,d.water.drainageMm,d.water.runoffMm,d.water.demandMm,d.water.actualEtMm,d.waterFactor,d.radiationMj,d.interceptedRadiationMj,d.temperatureFactor,d.potentialBeforeWaterKgHa,d.potentialBeforeNutritionKgHa,...d.nutrientStockStartKgHa,...d.nutrientSupplyKgHa,...d.nutrientUptakeKgHa,...d.stockKgHa,d.nutrientFactor,d.limitingNutrients.join('+'),d.incrementKgHa,d.biomassKgHa,d.assumedHarvestIndex,...d.nutrientBalanceResidualKgHa]));
+ const rows=result.scenarios.flatMap(s=>s.days.map(d=>[result.engineVersion,result.biomassMethod,s.id,d.date,d.stage,d.water.rainMm,d.water.irrigationFieldMm,d.water.irrigationNetMm,d.water.stockStartMm,d.water.stockEndMm,d.water.rootGainMm,d.water.assimilationMm,d.water.drainageMm,d.water.runoffMm,d.water.demandMm,d.water.actualEtMm,d.waterFactor,d.radiationMj,d.interceptedRadiationMj,d.temperatureFactor,d.potentialBeforeWaterKgHa,d.potentialBeforeNutritionKgHa,...d.nutrientStockStartKgHa,...d.nutrientSupplyKgHa,...d.nutrientUptakeKgHa,...d.stockKgHa,d.nutrientFactor,d.limitingNutrients.join('+'),d.incrementKgHa,d.biomassKgHa,d.assumedHarvestIndex,...d.nutrientBalanceResidualKgHa]));
  return [header,...rows].map(r=>r.map(quote).join(',')).join('\n')+'\n';
 }

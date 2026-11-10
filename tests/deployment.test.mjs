@@ -99,3 +99,12 @@ test('health smoke refuses a successful but obsolete deployed build',async()=>{
  const r=await smokeCloudflare({env:{...access,GITHUB_SHA:sha},fetchImpl:async()=>Response.json({...goodHealth,build:{commit:sha}})});
  assert.equal(r.commit,sha);assert.equal(r.status,'PASS');
 });
+
+test('production smoke requires the served numerical scenario when an engine is expected',async()=>{
+ const expected={...access,EXPECTED_GROWTH_ENGINE:'daily-rue-npk-1.3.0'};
+ await assert.rejects(()=>smokeCloudflare({env:expected,fetchImpl:async()=>Response.json(goodHealth)}),/scénario numérique/);
+ const probe={engine:expected.EXPECTED_GROWTH_ENGINE,status:'pass',transpirationMm:3,evaporationMm:0,biomassKgHa:150};
+ const r=await smokeCloudflare({env:expected,fetchImpl:async()=>Response.json({...goodHealth,seasonal:{...goodHealth.seasonal,numericalProbe:probe}})});
+ assert.deepEqual(r.numericalProbe,probe);
+ await assert.rejects(()=>smokeCloudflare({env:expected,fetchImpl:async()=>Response.json({...goodHealth,seasonal:{...goodHealth.seasonal,numericalProbe:{...probe,biomassKgHa:0}}})}),/scénario numérique/);
+});

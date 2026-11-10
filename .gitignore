@@ -69,3 +69,8 @@ research-data/fertilizer/v1/raw/*.xlsx
 research-data/fertilizer/v1/pairs.json
 research-data/fertilizer/v1/rejected.json
 research-data/fertilizer/v1/test-predictions.json
+
+# Detailed replay outputs are generated locally; publish compact inputs and metrics.
+research-data/lirf/*/replay-daily.json.gz
+research-data/lirf/*/official-aquacrop-daily.json.gz
+research-data/lirf/*/togo-current-rue-daily.json.gz

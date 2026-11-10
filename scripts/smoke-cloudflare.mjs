@@ -28,12 +28,13 @@ export async function smokeCloudflare({ env = process.env, fetchImpl = fetch } =
   if (health.status !== 'ok' || health.database !== 'ok' || health.scientific?.forecastCount !== 1092 || health.scientific?.notebookSha256 !== EXPECTED_NOTEBOOK || health.scientific?.predictionCsvSha256 !== EXPECTED_PREDICTIONS) throw new Error('La santé, la base D1 ou la référence scientifique v24 ne concorde pas avec le déploiement attendu.');
   if(env.GITHUB_SHA&&health.build?.commit!==env.GITHUB_SHA)throw new Error('Le commit servi ne correspond pas au build attendu.');
   if(health.seasonal?.version!=='source-models-2026-10-31'||health.seasonal.kyCrops!==9||health.seasonal.nationalCountries!==6||health.seasonal.storage!=='ok')throw new Error('Les modèles saisonniers, les références des six pays ou la sauvegarde ne correspondent pas à la version publiée.');
-  return { status: 'PASS', commit:health.build?.commit??null, scope: 'Réponse JSON authentifiée de /api/health : runtime, base D1, identifiants scientifiques v24, modèles saisonniers, références des six pays et compression/relecture en mémoire. Aucun parcours utilisateur humain n’est simulé.' };
+  if(env.EXPECTED_GROWTH_ENGINE){const p=health.seasonal?.numericalProbe;if(p?.engine!==env.EXPECTED_GROWTH_ENGINE||p.status!=='pass'||p.transpirationMm!==3||p.evaporationMm!==0||p.biomassKgHa!==150)throw new Error('Le scénario numérique servi ne correspond pas au moteur attendu.');}
+  return { status: 'PASS', numericalProbe:health.seasonal?.numericalProbe??null,commit:health.build?.commit??null, scope: 'Réponse JSON authentifiée de /api/health : runtime, base D1, identifiants scientifiques v24, modèles saisonniers, références des six pays et compression/relecture en mémoire. Aucun parcours utilisateur humain n’est simulé.' };
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   smokeCloudflare().then(async result => {
-    const message = result.status === 'PASS' ? `Contrôle de santé réussi. ${result.scope}` : result.reason;
+    const message = result.status === 'PASS' ? `Contrôle de santé réussi. Commit servi : ${result.commit}. Sonde numérique : ${JSON.stringify(result.numericalProbe)}. ${result.scope}` : result.reason;
     if (result.status === 'SKIPPED') console.warn(`::warning::${message}`);
     else console.log(message);
     if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `\n### Vérification après publication : ${result.status}\n${message}\n`);

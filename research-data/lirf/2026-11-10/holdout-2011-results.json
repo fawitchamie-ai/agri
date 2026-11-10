@@ -1,0 +1,683 @@
+{
+  "frozenProfile": {
+    "mode": "dual-wp",
+    "wpRatio": 0.5,
+    "trainingYears": [
+      2012
+    ],
+    "rueGPerGlobalMj": null,
+    "waterProductivityGm2": 24.678564759714902,
+    "harvestIndex": 0.5318307669734743,
+    "years": {
+      "2012": {
+        "grain": {
+          "n": 12,
+          "mae": 622.3407051411782,
+          "rmse": 672.88439287619,
+          "bias": -68.95525484727038,
+          "nrmsePercent": 5.248782634588535
+        },
+        "biomass": {
+          "n": 12,
+          "mae": 1017.3317377296249,
+          "rmse": 1230.5197384739076,
+          "bias": -95.50105797313215,
+          "nrmsePercent": 6.045376048172295
+        },
+        "etAnnual": {
+          "n": 12,
+          "mae": 42.37174269712526,
+          "rmse": 44.09816025619189,
+          "bias": -42.37174269712526,
+          "nrmsePercent": 7.342521860718011
+        },
+        "fieldDailyEtSum": {
+          "n": 12,
+          "mae": 50.23571663278333,
+          "rmse": 51.026111878408564,
+          "bias": -50.23571663278333,
+          "nrmsePercent": 8.386245686319098
+        },
+        "treatmentContrasts": [
+          {
+            "treatment": "100/100",
+            "predictedRatio": 1,
+            "observedRatio": 1
+          },
+          {
+            "treatment": "100/50",
+            "predictedRatio": 0.8212146390862107,
+            "observedRatio": 0.8054984233699378
+          },
+          {
+            "treatment": "80/80",
+            "predictedRatio": 0.9218186368724467,
+            "observedRatio": 0.9499386260701691
+          },
+          {
+            "treatment": "80/65",
+            "predictedRatio": 0.7784481012383686,
+            "observedRatio": 0.8473402643539815
+          },
+          {
+            "treatment": "80/50",
+            "predictedRatio": 0.7241798998513427,
+            "observedRatio": 0.7165754864072752
+          },
+          {
+            "treatment": "80/40",
+            "predictedRatio": 0.7328472706002487,
+            "observedRatio": 0.8139692599452879
+          },
+          {
+            "treatment": "65/80",
+            "predictedRatio": 0.8539258849685799,
+            "observedRatio": 0.9350251646394064
+          },
+          {
+            "treatment": "65/65",
+            "predictedRatio": 0.7252460898958791,
+            "observedRatio": 0.8017982457720364
+          },
+          {
+            "treatment": "65/50",
+            "predictedRatio": 0.6960678344778445,
+            "observedRatio": 0.7651531381139307
+          },
+          {
+            "treatment": "65/40",
+            "predictedRatio": 0.6659904109853322,
+            "observedRatio": 0.7399847904300025
+          },
+          {
+            "treatment": "50/50",
+            "predictedRatio": 0.6565164095855207,
+            "observedRatio": 0.7229926477741107
+          },
+          {
+            "treatment": "40/40",
+            "predictedRatio": 0.5786940960831588,
+            "observedRatio": 0.6791419892737603
+          }
+        ]
+      },
+      "2013": {
+        "grain": {
+          "n": 12,
+          "mae": 969.187623933342,
+          "rmse": 1149.2939862480014,
+          "bias": -289.94928974763724,
+          "nrmsePercent": 8.88389539925854
+        },
+        "biomass": {
+          "n": 0,
+          "status": "unavailable",
+          "mae": null,
+          "rmse": null,
+          "bias": null,
+          "nrmsePercent": null
+        },
+        "etAnnual": {
+          "n": 12,
+          "mae": 39.89728465368078,
+          "rmse": 48.80435606643766,
+          "bias": -39.89728465368078,
+          "nrmsePercent": 9.313024420793798
+        },
+        "fieldDailyEtSum": {
+          "n": 12,
+          "mae": 28.18233996304244,
+          "rmse": 34.97949320585333,
+          "bias": -28.18233996304244,
+          "nrmsePercent": 6.8275428146006405
+        },
+        "treatmentContrasts": [
+          {
+            "treatment": "100/100",
+            "predictedRatio": 1,
+            "observedRatio": 1
+          },
+          {
+            "treatment": "100/50",
+            "predictedRatio": 0.9668373722265585,
+            "observedRatio": 0.832899333403291
+          },
+          {
+            "treatment": "80/80",
+            "predictedRatio": 0.9654241353739698,
+            "observedRatio": 0.9746047146514789
+          },
+          {
+            "treatment": "80/65",
+            "predictedRatio": 0.9487537219244552,
+            "observedRatio": 0.9457905048207932
+          },
+          {
+            "treatment": "80/50",
+            "predictedRatio": 0.9000868642385117,
+            "observedRatio": 0.8322685371265042
+          },
+          {
+            "treatment": "80/40",
+            "predictedRatio": 0.8175235667106023,
+            "observedRatio": 0.6751995062977327
+          },
+          {
+            "treatment": "65/80",
+            "predictedRatio": 0.917796982834818,
+            "observedRatio": 0.961754497392653
+          },
+          {
+            "treatment": "65/65",
+            "predictedRatio": 0.9027255559869267,
+            "observedRatio": 0.8855663571143995
+          },
+          {
+            "treatment": "65/50",
+            "predictedRatio": 0.857907460699738,
+            "observedRatio": 0.7719913210009318
+          },
+          {
+            "treatment": "65/40",
+            "predictedRatio": 0.7850746640293705,
+            "observedRatio": 0.6941829429167491
+          },
+          {
+            "treatment": "50/50",
+            "predictedRatio": 0.8301652576728823,
+            "observedRatio": 0.7684428625725191
+          },
+          {
+            "treatment": "40/40",
+            "predictedRatio": 0.7231252528750041,
+            "observedRatio": 0.5456960388048342
+          }
+        ]
+      }
+    }
+  },
+  "no2011Fitting": true,
+  "results": [
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1210.0287231931527,
+      "maeKgHa": 969.9078731871524,
+      "biasKgHa": 83.06134472666615,
+      "nrmsePercent": 12.517808296142444
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1093.2432047097482,
+      "maeKgHa": 861.8458999377764,
+      "biasKgHa": 86.77867697428898,
+      "nrmsePercent": 11.309656205105263
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1263.881355210389,
+      "maeKgHa": 866.0101888523586,
+      "biasKgHa": 625.9724329124796,
+      "nrmsePercent": 13.07491649606644
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1175.914928654244,
+      "maeKgHa": 761.2749214268973,
+      "biasKgHa": 679.7332716395385,
+      "nrmsePercent": 12.164899367530271
+    }
+  ],
+  "records": [
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "1",
+      "observedGrainKgHa": 13640,
+      "predictedGrainKgHa": 13013.801750026318,
+      "observedBiomassKgHa": 21916.422227550825,
+      "predictedBiomassKgHa": 20678.3221127639,
+      "etMm": 531.0641636588132,
+      "fieldEtMm": 611.4343748392412,
+      "plots": [
+        "C12",
+        "C22",
+        "C34",
+        "C41"
+      ],
+      "maxBalanceResidualMm": 2.842170943040401e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "2",
+      "observedGrainKgHa": 12498.25,
+      "predictedGrainKgHa": 11294.779041931753,
+      "observedBiomassKgHa": 19772.923467194516,
+      "predictedBiomassKgHa": 17946.875456365957,
+      "etMm": 463.46249139241525,
+      "fieldEtMm": 540.8073252165929,
+      "plots": [
+        "C14",
+        "C23",
+        "C36",
+        "C45"
+      ],
+      "maxBalanceResidualMm": 2.842170943040401e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "3",
+      "observedGrainKgHa": 10369,
+      "predictedGrainKgHa": 10041.397926773614,
+      "observedBiomassKgHa": 17343.249665700907,
+      "predictedBiomassKgHa": 15955.311505482596,
+      "etMm": 417.3674053937924,
+      "fieldEtMm": 501.52850787993464,
+      "plots": [
+        "C11",
+        "C24",
+        "C35",
+        "C42"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "4",
+      "observedGrainKgHa": 10293.5,
+      "predictedGrainKgHa": 9790.231695886856,
+      "observedBiomassKgHa": 17131.300920410682,
+      "predictedBiomassKgHa": 15556.220115749788,
+      "etMm": 406.2058769627573,
+      "fieldEtMm": 487.7878708450978,
+      "plots": [
+        "C13",
+        "C21",
+        "C32",
+        "C43"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "5",
+      "observedGrainKgHa": 7231.75,
+      "predictedGrainKgHa": 7918.287373950696,
+      "observedBiomassKgHa": 11945.489817859827,
+      "predictedBiomassKgHa": 12581.788169598693,
+      "etMm": 335.68733034393165,
+      "fieldEtMm": 401.75828927242503,
+      "plots": [
+        "C16",
+        "C25",
+        "C31",
+        "C44"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    },
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "treatment": "6",
+      "observedGrainKgHa": 3966.25,
+      "predictedGrainKgHa": 6438.62027979076,
+      "observedBiomassKgHa": 9993.731004160796,
+      "predictedBiomassKgHa": 10230.666385172044,
+      "etMm": 278.78635933329235,
+      "fieldEtMm": 349.2066423546611,
+      "plots": [
+        "C15",
+        "C26",
+        "C33",
+        "C46"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "1",
+      "observedGrainKgHa": 13640,
+      "predictedGrainKgHa": 13271.703073862283,
+      "observedBiomassKgHa": 21916.422227550825,
+      "predictedBiomassKgHa": 21086.762545223282,
+      "etMm": 546.5126753300852,
+      "fieldEtMm": 611.4343748392412,
+      "plots": [
+        "C12",
+        "C22",
+        "C34",
+        "C41"
+      ],
+      "maxBalanceResidualMm": 2.1316282072803006e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "2",
+      "observedGrainKgHa": 12498.25,
+      "predictedGrainKgHa": 11416.60222523036,
+      "observedBiomassKgHa": 19772.923467194516,
+      "predictedBiomassKgHa": 18139.283169378596,
+      "etMm": 478.66523421217397,
+      "fieldEtMm": 540.8073252165929,
+      "plots": [
+        "C14",
+        "C23",
+        "C36",
+        "C45"
+      ],
+      "maxBalanceResidualMm": 2.842170943040401e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "3",
+      "observedGrainKgHa": 10369,
+      "predictedGrainKgHa": 10031.455339352355,
+      "observedBiomassKgHa": 17343.249665700907,
+      "predictedBiomassKgHa": 15938.490753348082,
+      "etMm": 432.16893364950556,
+      "fieldEtMm": 501.52850787993464,
+      "plots": [
+        "C11",
+        "C24",
+        "C35",
+        "C42"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "4",
+      "observedGrainKgHa": 10293.5,
+      "predictedGrainKgHa": 9755.78769266454,
+      "observedBiomassKgHa": 17131.300920410682,
+      "predictedBiomassKgHa": 15500.495857383705,
+      "etMm": 416.73615409162636,
+      "fieldEtMm": 487.7878708450978,
+      "plots": [
+        "C13",
+        "C21",
+        "C32",
+        "C43"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "5",
+      "observedGrainKgHa": 7231.75,
+      "predictedGrainKgHa": 7814.178053885821,
+      "observedBiomassKgHa": 11945.489817859827,
+      "predictedBiomassKgHa": 12415.566878745189,
+      "etMm": 347.58267295260936,
+      "fieldEtMm": 401.75828927242503,
+      "plots": [
+        "C16",
+        "C25",
+        "C31",
+        "C44"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "treatment": "6",
+      "observedGrainKgHa": 3966.25,
+      "predictedGrainKgHa": 6229.695676850375,
+      "observedBiomassKgHa": 9993.731004160796,
+      "predictedBiomassKgHa": 9898.06001050917,
+      "etMm": 289.8138299100849,
+      "fieldEtMm": 349.2066423546611,
+      "plots": [
+        "C15",
+        "C26",
+        "C33",
+        "C46"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "1",
+      "observedGrainKgHa": 13640,
+      "predictedGrainKgHa": 13366.556389766325,
+      "observedBiomassKgHa": 21916.422227550825,
+      "predictedBiomassKgHa": 21238.83273121566,
+      "etMm": 545.0959756285271,
+      "fieldEtMm": 611.4343748392412,
+      "plots": [
+        "C12",
+        "C22",
+        "C34",
+        "C41"
+      ],
+      "maxBalanceResidualMm": 2.842170943040401e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "2",
+      "observedGrainKgHa": 12498.25,
+      "predictedGrainKgHa": 12051.580342414038,
+      "observedBiomassKgHa": 19772.923467194516,
+      "predictedBiomassKgHa": 19149.397314876645,
+      "etMm": 492.7575312891736,
+      "fieldEtMm": 540.8073252165929,
+      "plots": [
+        "C14",
+        "C23",
+        "C36",
+        "C45"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "3",
+      "observedGrainKgHa": 10369,
+      "predictedGrainKgHa": 10723.763263724872,
+      "observedBiomassKgHa": 17343.249665700907,
+      "predictedBiomassKgHa": 17039.558100528062,
+      "etMm": 443.69807136823226,
+      "fieldEtMm": 501.52850787993464,
+      "plots": [
+        "C11",
+        "C24",
+        "C35",
+        "C42"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "4",
+      "observedGrainKgHa": 10293.5,
+      "predictedGrainKgHa": 10458.862568581657,
+      "observedBiomassKgHa": 17131.300920410682,
+      "predictedBiomassKgHa": 16618.64328967693,
+      "etMm": 431.8964102573282,
+      "fieldEtMm": 487.7878708450978,
+      "plots": [
+        "C13",
+        "C21",
+        "C32",
+        "C43"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "5",
+      "observedGrainKgHa": 7231.75,
+      "predictedGrainKgHa": 8393.381175204297,
+      "observedBiomassKgHa": 11945.489817859827,
+      "predictedBiomassKgHa": 13336.689991895128,
+      "etMm": 353.91745593732276,
+      "fieldEtMm": 401.75828927242503,
+      "plots": [
+        "C16",
+        "C25",
+        "C31",
+        "C44"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "treatment": "6",
+      "observedGrainKgHa": 3966.25,
+      "predictedGrainKgHa": 6760.440857783689,
+      "observedBiomassKgHa": 9993.731004160796,
+      "predictedBiomassKgHa": 10742.02422679893,
+      "etMm": 291.2608465822831,
+      "fieldEtMm": 349.2066423546611,
+      "plots": [
+        "C15",
+        "C26",
+        "C33",
+        "C46"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "1",
+      "observedGrainKgHa": 13640,
+      "predictedGrainKgHa": 13633.353013231877,
+      "observedBiomassKgHa": 21916.422227550825,
+      "predictedBiomassKgHa": 21661.370517805186,
+      "etMm": 560.811826315158,
+      "fieldEtMm": 611.4343748392412,
+      "plots": [
+        "C12",
+        "C22",
+        "C34",
+        "C41"
+      ],
+      "maxBalanceResidualMm": 2.842170943040401e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "2",
+      "observedGrainKgHa": 12498.25,
+      "predictedGrainKgHa": 12260.272037406046,
+      "observedBiomassKgHa": 19772.923467194516,
+      "predictedBiomassKgHa": 19479.74903852229,
+      "etMm": 508.32003171108266,
+      "fieldEtMm": 540.8073252165929,
+      "plots": [
+        "C14",
+        "C23",
+        "C36",
+        "C45"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "3",
+      "observedGrainKgHa": 10369,
+      "predictedGrainKgHa": 10791.262500297404,
+      "observedBiomassKgHa": 17343.249665700907,
+      "predictedBiomassKgHa": 17145.71134092757,
+      "etMm": 458.8930904144866,
+      "fieldEtMm": 501.52850787993464,
+      "plots": [
+        "C11",
+        "C24",
+        "C35",
+        "C42"
+      ],
+      "maxBalanceResidualMm": 1.4210854715202004e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "4",
+      "observedGrainKgHa": 10293.5,
+      "predictedGrainKgHa": 10485.251188515243,
+      "observedBiomassKgHa": 17131.300920410682,
+      "predictedBiomassKgHa": 16659.50487354427,
+      "etMm": 442.4411604769392,
+      "fieldEtMm": 487.7878708450978,
+      "plots": [
+        "C13",
+        "C21",
+        "C32",
+        "C43"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "5",
+      "observedGrainKgHa": 7231.75,
+      "predictedGrainKgHa": 8329.115169709261,
+      "observedBiomassKgHa": 11945.489817859827,
+      "predictedBiomassKgHa": 13233.725379327967,
+      "etMm": 365.49883235437335,
+      "fieldEtMm": 401.75828927242503,
+      "plots": [
+        "C16",
+        "C25",
+        "C31",
+        "C44"
+      ],
+      "maxBalanceResidualMm": 1.7763568394002505e-14
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "treatment": "6",
+      "observedGrainKgHa": 3966.25,
+      "predictedGrainKgHa": 6577.895720677399,
+      "observedBiomassKgHa": 9993.731004160796,
+      "predictedBiomassKgHa": 10451.298099212132,
+      "etMm": 302.18533417205896,
+      "fieldEtMm": 349.2066423546611,
+      "plots": [
+        "C15",
+        "C26",
+        "C33",
+        "C46"
+      ],
+      "maxBalanceResidualMm": 7.105427357601002e-15
+    }
+  ],
+  "limits": [
+    "New season evaluated after freezing the 2012 fit; retrospective earlier-year evaluation at same farm, not a new climate domain.",
+    "2011 irrigation is gross field water; test efficiencies .90 and 1.00 without selecting on yields.",
+    "Effective WP and HI stay frozen; no cultivar reidentification.",
+    "Missing sowing-date measured soil profile still reconstructed from field-balance initial depletion.",
+    "Grain explicitly at 15.5%, distinct from paired dry grain column; maturity R6 distinct from harvest."
+  ]
+}
