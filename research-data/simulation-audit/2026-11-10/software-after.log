@@ -1,0 +1,84 @@
+(node:13) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ SoilGrids : TIFF brut, Deflate tuilé, no-data et formats rejetés (20.797055ms)
+✔ Acquisition automatique : conversions, six horizons, prévision puis scénario explicite (76.272819ms)
+✔ Sources inaccessibles : valeurs inconnues et météo manquante, aucun zéro inventé (2409.361064ms)
+✔ Unités erronées et année historique incomplète ne remplissent pas le cycle (63.900404ms)
+✔ Fusion : mesures prioritaires, ajustements préservés, propriétés hydriques réelles du modèle (54.156129ms)
+✔ Simulation automatique : cycle complet, sensibilité aux apports, pH sans faux effet sur le rendement (68.979151ms)
+✔ incomplete forecast columns and malformed dates degrade to documented history, never a TypeError/503 (114.69666ms)
+✔ soil request deadline also stops queued reads rather than multiplying timeouts by 30 (21.264237ms)
+✔ refresh preserves a manual ET0 or radiation even when rain remains automatic (39.652619ms)
+✔ refresh cannot replace manual moisture when new retention is incompatible (48.783972ms)
+(node:14) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ public version is identity-free, uncached, and does not open other API paths (6.260715ms)
+✔ Publication : configuration réelle, base compilée et paramètres Access doivent concorder (1.634989ms)
+✔ Restauration : point distant obligatoire avant toute mutation, aucun jeton dans les erreurs (3.348466ms)
+Point de restauration D1 vérifié avant migration : 2026-10-28T12:00:00.000Z.
+Publication terminée. La vérification authentifiée de santé est une étape distincte.
+✔ Publication : ordre checkpoint → migrations → déploiement et fichier sans données personnelles (18.195363ms)
+Point de restauration D1 vérifié avant migration : 2026-11-10T11:40:13.594Z.
+✔ Publication : échec checkpoint ou migration bloque la publication (9.823252ms)
+✔ Smoke : absence de secrets = SKIPPED explicite, pas un succès fictif (0.524198ms)
+✔ Smoke : cible HTTPS sans identifiant ni URL détournée (0.305639ms)
+✔ Smoke : une connexion HTML, une redirection et une référence différente échouent (2.36707ms)
+✔ Smoke : preuve JSON v24 et D1 vérifiée, service limité au contrôle de santé (0.403216ms)
+✔ health smoke refuses a successful but obsolete deployed build (0.721796ms)
+(node:21) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ integrated growth activates only after explicit scenario acceptance and shows no hidden weather default (60.079497ms)
+(node:22) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ TGO/maize: zero available water gives zero growth; irrigation changes yield (91.969172ms)
+✔ TGO/sorghum: zero available water gives zero growth; irrigation changes yield (52.334169ms)
+✔ TGO/millet: zero available water gives zero growth; irrigation changes yield (35.250765ms)
+✔ TGO/rice-upland: zero available water gives zero growth; irrigation changes yield (33.050872ms)
+✔ BEN/maize: zero available water gives zero growth; irrigation changes yield (32.182315ms)
+✔ BEN/sorghum: zero available water gives zero growth; irrigation changes yield (33.980499ms)
+✔ BEN/millet: zero available water gives zero growth; irrigation changes yield (20.02933ms)
+✔ BEN/rice-upland: zero available water gives zero growth; irrigation changes yield (20.683744ms)
+✔ BFA/maize: zero available water gives zero growth; irrigation changes yield (29.036295ms)
+✔ BFA/sorghum: zero available water gives zero growth; irrigation changes yield (28.975664ms)
+✔ BFA/millet: zero available water gives zero growth; irrigation changes yield (21.408023ms)
+✔ BFA/rice-upland: zero available water gives zero growth; irrigation changes yield (22.33671ms)
+✔ GHA/maize: zero available water gives zero growth; irrigation changes yield (31.616985ms)
+✔ GHA/sorghum: zero available water gives zero growth; irrigation changes yield (28.812778ms)
+✔ GHA/millet: zero available water gives zero growth; irrigation changes yield (19.801908ms)
+✔ GHA/rice-upland: zero available water gives zero growth; irrigation changes yield (20.7474ms)
+✔ CIV/maize: zero available water gives zero growth; irrigation changes yield (29.283756ms)
+✔ CIV/sorghum: zero available water gives zero growth; irrigation changes yield (26.823738ms)
+✔ CIV/millet: zero available water gives zero growth; irrigation changes yield (18.791929ms)
+✔ CIV/rice-upland: zero available water gives zero growth; irrigation changes yield (22.518538ms)
+✔ SEN/maize: zero available water gives zero growth; irrigation changes yield (31.645348ms)
+✔ SEN/sorghum: zero available water gives zero growth; irrigation changes yield (27.121575ms)
+✔ SEN/millet: zero available water gives zero growth; irrigation changes yield (20.402452ms)
+✔ SEN/rice-upland: zero available water gives zero growth; irrigation changes yield (25.339506ms)
+✔ initial soil water, application efficiency and infiltration actually change dry-season yield (46.693918ms)
+✔ a zero water quota prevents planned irrigation from creating yield (21.111257ms)
+✔ each accessible nutrient can limit yield independently of abundant water (33.065503ms)
+✔ rainfed comparison retains the same observed soil moisture when no irrigation was recorded (11.639423ms)
+✔ a K ceiling can mask irrigation without removing a legitimate nutrient limit (61.368876ms)
+(node:30) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ integrated daily output is immutable, mass balanced and production scales only with area (49.094278ms)
+✔ rain, retention, temperature, radiation and stage canopy actually affect biomass (127.858423ms)
+✔ NPK additions act through limiting stocks, timing matters, recorded inputs survive comparisons (53.606112ms)
+✔ pH stays diagnostic and legacy response curves cannot change the simulated yield (49.021157ms)
+✔ satellite assimilation is past-only, age-limited, quality-gated and changes interception (18.897619ms)
+✔ missing inputs, stale domain, floods, unsupported crops, organic unknowns never fabricate yield (15.393489ms)
+✔ history fits HI on training only, rejects temporal/site leakage, reports held-out error (2.392428ms)
+✔ calibrated HI is connected to the simulation without changing biomass or NPK uptake (19.830741ms)
+✔ organic release conserves product nutrient mass and needs an explicit availability profile (19.471531ms)
+✔ integrated fertilizer comparison computes all variants and keeps water settings and realised inputs (29.47862ms)
+(node:34) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ seasonal effects wait for terrain on restored parcels and retries; invalid edits make no API call (4669.535514ms)
+ℹ tests 61
+ℹ suites 0
+ℹ pass 61
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5309.851361

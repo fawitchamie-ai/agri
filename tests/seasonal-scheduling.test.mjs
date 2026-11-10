@@ -19,13 +19,15 @@ test('seasonal effects wait for terrain on restored parcels and retries; invalid
  for(const [key,value] of Object.entries({window,document:window.document,navigator:window.navigator,localStorage:window.localStorage,IS_REACT_ACT_ENVIRONMENT:true})){
   previous.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{value,configurable:true,writable:true});
  }
- const originalFetch=globalThis.fetch,lands=[],simulations=[];
+ const originalFetch=globalThis.fetch,lands=[],simulations=[],held=[];let hold=false;
  globalThis.fetch=async(_url,options)=>{
   if(!options?.body)return Response.json({campaigns:[]});
   const body=JSON.parse(options.body);
   if(body.action==='land')return new Promise(resolve=>lands.push({resolve,body}));
   assert.equal(body.action,'simulate');simulations.push(body);
-  return Response.json({plan:planSeason({...body.config,landAssessment:landFixture(testParcel,40)},body.events),requestId:body.requestId});
+  const response=()=>Response.json({plan:planSeason({...body.config,landAssessment:landFixture(testParcel,40)},body.events),requestId:body.requestId});
+  if(hold)return new Promise(resolve=>held.push(()=>resolve(response())));
+  return response();
  };
  const {createRoot}=await import('react-dom/client'),element=window.document.createElement('div');window.document.body.append(element);
  const root=createRoot(element),view=()=>globalThis.__seasonalView;
@@ -52,6 +54,19 @@ test('seasonal effects wait for terrain on restored parcels and retries; invalid
   await act(async()=>wait(400));assert.equal(simulations.length,3,'Preparing a parameterised crop resumes the calculation: '+view().calculationError);
   await act(async()=>view().onChange({...view().config,system:{...view().config.system,minIntervalDays:0}}));
   await act(async()=>wait(400));assert.equal(simulations.length,3);assert.match(view().calculationError,/Intervalle/);
+  // A provider ignoring cancellation must never publish its superseded response.
+  hold=true;
+  await act(async()=>view().onChange({...view().config,system:{...view().config.system,minIntervalDays:1},fallback:{label:'First scenario',rainMmDay:1,et0MmDay:4}}));
+  await act(async()=>wait(400));assert.equal(held.length,1);assert.equal(view().plan,null);
+  await act(async()=>view().onChange({...view().config,fallback:{label:'Second scenario',rainMmDay:8,et0MmDay:4}}));
+  await act(async()=>wait(400));assert.equal(held.length,2);
+  await act(async()=>held[1]());assert.equal(view().stale,false);const newest=JSON.stringify(view().plan);
+  await act(async()=>held[0]());assert.equal(JSON.stringify(view().plan),newest);
+  await act(async()=>view().onRetry());
+  await act(async()=>wait(400));assert.equal(view().plan,null);
+  await act(async()=>lands.at(-1).resolve(Response.json({error:'Terrain unavailable'},{status:503})));
+  assert.equal(view().stale,true);assert.equal(view().plan,null);assert.match(view().calculationError,/Terrain unavailable/);
+
  }finally{
   await act(async()=>root.unmount());globalThis.fetch=originalFetch;delete globalThis.__seasonalView;delete globalThis.__parcelView;
   for(const [key,descriptor] of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];

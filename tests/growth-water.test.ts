@@ -57,3 +57,17 @@ test('rainfed comparison retains the same observed soil moisture when no irrigat
  assert.equal(g.scenarios.find(s=>s.id==='rainfed')!.yieldKgHa,g.scenarios.find(s=>s.id==='recorded')!.yieldKgHa);
  assert.equal(p.waterImpact!.scenarios[0].etaMm,p.waterImpact!.scenarios[1].etaMm);
 });
+
+test('a K ceiling can mask irrigation without removing a legitimate nutrient limit',()=>{
+ const c=irrigate(dry(),100);c.growth!.soilSupply.initialKgHa=[1000,1000,1];
+ const wet=proposed(c),partial=proposed(irrigate(structuredClone(c),10));
+ assert.ok(Math.abs(wet.yieldKgHa-partial.yieldKgHa)<1e-7);
+ assert.ok(wet.diagnostics.nutrientLimitedDays[2]>0);
+ assert.deepEqual(wet.diagnostics.nutrientLimitedDays.slice(0,2),[0,0]);
+ assert.ok(wet.days.some(d=>d.limitingNutrients.includes('K')));
+ assert.ok(wet.balance.residualKgHa.every(n=>Math.abs(n)<1e-8));
+ const enriched=structuredClone(c);enriched.growth!.soilSupply.initialKgHa[2]=1000;
+ assert.ok(proposed(enriched).yieldKgHa>wet.yieldKgHa);
+ const rainy=dry();rainy.fallback!.rainMmDay=10;
+ assert.equal(proposed(irrigate(structuredClone(rainy),100)).yieldKgHa,proposed(rainy).yieldKgHa);
+});

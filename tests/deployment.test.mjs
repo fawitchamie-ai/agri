@@ -91,3 +91,11 @@ test('Smoke : preuve JSON v24 et D1 vérifiée, service limité au contrôle de 
   assert.equal(result.status, 'PASS');
   assert.match(result.scope, /Aucun parcours utilisateur humain/);
 });
+
+
+test('health smoke refuses a successful but obsolete deployed build',async()=>{
+ const sha='a'.repeat(40);
+ await assert.rejects(()=>smokeCloudflare({env:{...access,GITHUB_SHA:sha},fetchImpl:async()=>Response.json({...goodHealth,build:{commit:'b'.repeat(40)}})}),/commit servi/);
+ const r=await smokeCloudflare({env:{...access,GITHUB_SHA:sha},fetchImpl:async()=>Response.json({...goodHealth,build:{commit:sha}})});
+ assert.equal(r.commit,sha);assert.equal(r.status,'PASS');
+});

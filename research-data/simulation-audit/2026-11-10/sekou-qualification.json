@@ -1,0 +1,259 @@
+{
+  "source": "10.5281/zenodo.14357601",
+  "license": "CC-BY-4.0",
+  "sheets": {
+    "Maize germination": {
+      "header": [
+        "Expérimentation",
+        "Block",
+        "Climat",
+        "Fertilizer",
+        "Temp",
+        "Statut"
+      ],
+      "dataRows": 892,
+      "blankRows": 0
+    },
+    "Growth_parameters": {
+      "header": [
+        "Date",
+        "Weather_Scenario",
+        "Bloc",
+        "Traitement",
+        "Repetition",
+        "Diameter",
+        "Height",
+        "Number_leaf",
+        "Leaf_length",
+        "Leaf_width"
+      ],
+      "dataRows": 5400,
+      "blankRows": 0
+    },
+    "Yield parameters": {
+      "header": [
+        "Weather_scenario",
+        "Bloc",
+        "Repetition",
+        "Fertilizer",
+        "Nunber _cob",
+        "Cob_length",
+        "Cob_width",
+        "Number_seed",
+        "Freshweight_cob_Spath",
+        "Freshweight_cob"
+      ],
+      "dataRows": 912,
+      "blankRows": 0
+    }
+  },
+  "groups": [
+    {
+      "weather": "W1",
+      "fertilizer": "1_intermediate",
+      "rows": 90,
+      "freshCobWeightNumericN": 71,
+      "freshCobWeightMissingOrText": 19,
+      "meanFreshCobG": 12.929577464788732
+    },
+    {
+      "weather": "W1",
+      "fertilizer": "2_intermediate",
+      "rows": 91,
+      "freshCobWeightNumericN": 68,
+      "freshCobWeightMissingOrText": 23,
+      "meanFreshCobG": 9.852941176470589
+    },
+    {
+      "weather": "W1",
+      "fertilizer": "3_intermediate",
+      "rows": 91,
+      "freshCobWeightNumericN": 72,
+      "freshCobWeightMissingOrText": 19,
+      "meanFreshCobG": 12.069444444444445
+    },
+    {
+      "weather": "W1",
+      "fertilizer": "Chemical",
+      "rows": 90,
+      "freshCobWeightNumericN": 50,
+      "freshCobWeightMissingOrText": 40,
+      "meanFreshCobG": 9.16
+    },
+    {
+      "weather": "W1",
+      "fertilizer": "Organic",
+      "rows": 90,
+      "freshCobWeightNumericN": 74,
+      "freshCobWeightMissingOrText": 16,
+      "meanFreshCobG": 12.513513513513514
+    },
+    {
+      "weather": "W2",
+      "fertilizer": "1_intermediate",
+      "rows": 90,
+      "freshCobWeightNumericN": 55,
+      "freshCobWeightMissingOrText": 35,
+      "meanFreshCobG": 27.554545454545455
+    },
+    {
+      "weather": "W2",
+      "fertilizer": "2_intermediate",
+      "rows": 94,
+      "freshCobWeightNumericN": 67,
+      "freshCobWeightMissingOrText": 27,
+      "meanFreshCobG": 26.98507462686567
+    },
+    {
+      "weather": "W2",
+      "fertilizer": "3_intermediate",
+      "rows": 92,
+      "freshCobWeightNumericN": 49,
+      "freshCobWeightMissingOrText": 43,
+      "meanFreshCobG": 22.79591836734694
+    },
+    {
+      "weather": "W2",
+      "fertilizer": "Chemical",
+      "rows": 90,
+      "freshCobWeightNumericN": 53,
+      "freshCobWeightMissingOrText": 37,
+      "meanFreshCobG": 31.264150943396228
+    },
+    {
+      "weather": "W2",
+      "fertilizer": "Organic",
+      "rows": 93,
+      "freshCobWeightNumericN": 56,
+      "freshCobWeightMissingOrText": 37,
+      "meanFreshCobG": 34.160714285714285
+    }
+  ],
+  "limits": [
+    "Fresh cob weights in grams, not dry grain yield; do not convert to t/ha without grain fraction, grain moisture and compatible area denominator.",
+    "W1/W2 were conducted in separate 2023 phases, not independent site-years.",
+    "Greenhouse microclimate, exact daily irrigation, accessible NPK supply and RUE profile missing; no integrated-model validation metric calculated."
+  ],
+  "duplicateIdentityKeys": [
+    {
+      "key": [
+        "W1",
+        1,
+        11,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W1",
+        2,
+        1,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W1",
+        2,
+        5,
+        "3_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        2,
+        6,
+        "3_intermediate"
+      ],
+      "rows": 3
+    },
+    {
+      "key": [
+        "W2",
+        2,
+        18,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        1,
+        18,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        2,
+        10,
+        "Organic"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        2,
+        17,
+        "Organic"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        2,
+        20,
+        "Organic"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        3,
+        1,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        3,
+        13,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        3,
+        24,
+        "2_intermediate"
+      ],
+      "rows": 2
+    },
+    {
+      "key": [
+        "W2",
+        3,
+        29,
+        "1_intermediate"
+      ],
+      "rows": 2
+    }
+  ],
+  "unclassifiedRows": [
+    837
+  ]
+}

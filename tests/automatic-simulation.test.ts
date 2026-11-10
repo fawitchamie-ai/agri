@@ -86,3 +86,23 @@ test('soil request deadline also stops queued reads rather than multiplying time
  const slow:typeof fetch=async(_input,init)=>{calls++;active++;peak=Math.max(peak,active);try{return await new Promise<Response>((_resolve,reject)=>{const signal=init!.signal!;if(signal.aborted)reject(signal.reason);else signal.addEventListener('abort',()=>reject(signal.reason),{once:true});});}finally{active--;}};
  const keepAlive=setTimeout(()=>{},1000),start=performance.now();try{const soil=await loadSoil(9.5,1.2,slow,now,20);assert.equal(soil.ph,null);assert.equal(soil.hydraulicLayers,undefined);assert.ok(calls<=4);assert.ok(peak<=4);assert.ok(performance.now()-start<900);}finally{clearTimeout(keepAlive);}
 });
+
+test('refresh preserves a manual ET0 or radiation even when rain remains automatic',async()=>{
+ const e=await loadEnvironment(9.5,1.2,'TGO','2026-10-30',2,fakeFetch,now);
+ let c=automaticCampaign(emptyCampaign('2026-10-30'));e.context=environmentContext(c);c=mergeEnvironment(c,e);
+ c=reconcileInputs(c,{...c,weather:c.weather.map((w,i)=>i? w:{...w,et0Mm:2,radiationMj:17})});
+ assert.notEqual(c.inputs!.values['weather.2026-10-30.rainMm'].origin,'manual');
+ const merged=mergeEnvironment(c,e);
+ assert.equal(merged.weather[0].et0Mm,2);assert.equal(merged.weather[0].radiationMj,17);
+ assert.equal(merged.inputs!.values['weather.2026-10-30.et0Mm'].origin,'manual');
+});
+test('refresh cannot replace manual moisture when new retention is incompatible',async()=>{
+ const e=await loadEnvironment(9.5,1.2,'TGO','2026-10-30',2,fakeFetch,now);
+ let c=automaticCampaign(emptyCampaign('2026-10-30'));e.context=environmentContext(c);c=mergeEnvironment(c,e);
+ c=reconcileInputs(c,{...c,soil:{...c.soil,layers:c.soil.layers.map(l=>({...l,initialTheta:.23}))}});
+ const incompatible=structuredClone(e);incompatible.soil.hydraulicLayers![0].thetaFC=.18;
+ const merged=mergeEnvironment(c,incompatible);
+ assert.deepEqual(merged.soil.layers,c.soil.layers);
+ assert.equal(merged.inputs!.values['soil.layers.0.initialTheta'].value,.23);
+ assert.equal(merged.inputs!.values['soil.layers.0.initialTheta'].origin,'manual');
+});

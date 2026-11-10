@@ -1,0 +1,2043 @@
+(node:17) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ SoilGrids : TIFF brut, Deflate tuilé, no-data et formats rejetés (11.536898ms)
+✔ Acquisition automatique : conversions, six horizons, prévision puis scénario explicite (61.58428ms)
+✔ Sources inaccessibles : valeurs inconnues et météo manquante, aucun zéro inventé (2410.155464ms)
+✔ Unités erronées et année historique incomplète ne remplissent pas le cycle (56.787917ms)
+✔ Fusion : mesures prioritaires, ajustements préservés, propriétés hydriques réelles du modèle (53.245159ms)
+✔ Simulation automatique : cycle complet, sensibilité aux apports, pH sans faux effet sur le rendement (68.224906ms)
+✔ incomplete forecast columns and malformed dates degrade to documented history, never a TypeError/503 (113.28151ms)
+✔ soil request deadline also stops queued reads rather than multiplying timeouts by 30 (21.028752ms)
+✖ refresh preserves a manual ET0 or radiation even when rain remains automatic (40.973265ms)
+✖ refresh cannot replace manual moisture when new retention is incompatible (37.33883ms)
+(node:18) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ seasonal effects wait for terrain on restored parcels and retries; invalid edits make no API call (3797.901478ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 8
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4206.583069
+
+✖ failing tests:
+
+test at tests/audit-automatic.test.ts:90:1
+✖ refresh preserves a manual ET0 or radiation even when rain remains automatic (40.973265ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  5 !== 2
+
+      at TestContext.<anonymous> (/workspace/scratch/6af0aa540656/agri-baseline/tests/audit-automatic.test.ts:96:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/audit-automatic.test.ts:99:1
+✖ refresh cannot replace manual moisture when new retention is incompatible (37.33883ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      {
+  +     initialTheta: 0.188,
+  +     thetaFC: 0.18,
+  -     initialTheta: 0.23,
+  -     thetaFC: 0.24,
+        thetaWP: 0.11,
+        thicknessM: 0.05
+      },
+      {
+        initialTheta: 0.23,
+
+      at TestContext.<anonymous> (/workspace/scratch/6af0aa540656/agri-baseline/tests/audit-automatic.test.ts:105:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { thicknessM: 0.05, thetaFC: 0.18, thetaWP: 0.11, initialTheta: 0.188 }, { thicknessM: 0.1, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.15, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.3, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.4, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 1, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 } ],
+    expected: [ { thicknessM: 0.05, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.1, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.15, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.3, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 0.4, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 }, { thicknessM: 1, thetaFC: 0.24, thetaWP: 0.11, initialTheta: 0.23 } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/audit-scheduling.test.mjs:12:1
+✖ seasonal effects wait for terrain on restored parcels and retries; invalid edits make no API call (3797.901478ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + {
+  +   assumptions: [],
+  +   calculationArea: {
+  +     areaM2: 1951.1630685909315,
+  +     geometry: {
+  +       coordinates: [
+  +         [
+  +           [
+  +             [
+  +               1.2,
+  +               9.5
+  +             ],
+  +             [
+  +               1.2004,
+  +               9.5
+  +             ],
+  +             [
+  +               1.2004,
+  +               9.5004
+  +             ],
+  +             [
+  +               1.2,
+  +               9.5004
+  +             ],
+  +             [
+  +               1.2,
+  +               9.5
+  +             ]
+  +           ]
+  +         ]
+  +       ],
+  +       type: 'MultiPolygon'
+  +     },
+  +     selection: 'whole'
+  +   },
+  +   complete: false,
+  +   days: [],
+  +   decades: [],
+  +   engineVersion: 'water-balance-1.4.0',
+  +   horizonEnd: '2027-03-21',
+  +   inputProvenance: {
+  +     migratedFrom: 'unversioned',
+  +     scope: {
+  +       geometry: {
+  +         coordinates: [
+  +           [
+  +             [
+  +               1.2,
+  +               9.5
+  +             ],
+  +             [
+  +               1.2004,
+  +               9.5
+  +             ],
+  +             [
+  +               1.2004,
+  +               9.5004
+  +             ],
+  +             [
+  +               1.2,
+  +               9.5004
+  +             ],
+  +             [
+  +               1.2,
+  +               9.5
+  +             ]
+  +           ]
+  +         ],
+  +         type: 'Polygon'
+  +       },
+  +       id: 'geometry-1:4933960f8c95f395',
+  +       point: [
+  +         1.2002,
+  +         9.5002
+  +       ]
+  +     },
+  +     values: {
+  +       'soil.infiltrationMmDay': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'mm/day',
+  +         rawValue: 30,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'mm/day',
+  +         validUntil: null,
+  +         value: 30,
+  +         version: 'inputs-1'
+  +       },
+  +       'soil.layers.0.initialTheta': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm³/m³',
+  +         rawValue: null,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'missing',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'missing',
+  +         uncertainty: null,
+  +         unit: 'm³/m³',
+  +         validUntil: null,
+  +         value: null,
+  +         version: 'inputs-1'
+  +       },
+  +       'soil.layers.0.thetaFC': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm³/m³',
+  +         rawValue: 0.3,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm³/m³',
+  +         validUntil: null,
+  +         value: 0.3,
+  +         version: 'inputs-1'
+  +       },
+  +       'soil.layers.0.thetaWP': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm³/m³',
+  +         rawValue: 0.15,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm³/m³',
+  +         validUntil: null,
+  +         value: 0.15,
+  +         version: 'inputs-1'
+  +       },
+  +       'soil.layers.0.thicknessM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1.2,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1.2,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.days': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'day',
+  +         rawValue: 20,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'day',
+  +         validUntil: null,
+  +         value: 20,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.depletionFraction': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.55,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.55,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.kcEnd': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 0.3,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 0.3,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.kcStart': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 0.3,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 0.3,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.name': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Installation (phase hydrique)',
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Installation (phase hydrique)',
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.rootEndM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 0.3625,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 0.3625,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.0.rootStartM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 0.15,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 0.15,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.days': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'day',
+  +         rawValue: 35,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'day',
+  +         validUntil: null,
+  +         value: 35,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.depletionFraction': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.55,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.55,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.kcEnd': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 1.2,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 1.2,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.kcStart': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 0.3,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 0.3,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.name': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Développement du couvert',
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Développement du couvert',
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.rootEndM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.1.rootStartM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 0.3625,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 0.3625,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.days': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'day',
+  +         rawValue: 40,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'day',
+  +         validUntil: null,
+  +         value: 40,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.depletionFraction': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.55,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.55,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.kcEnd': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 1.2,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 1.2,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.kcStart': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 1.2,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 1.2,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.name': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Pleine couverture',
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Pleine couverture',
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.rootEndM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.2.rootStartM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.days': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'day',
+  +         rawValue: 30,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'day',
+  +         validUntil: null,
+  +         value: 30,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.depletionFraction': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.55,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.55,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.kcEnd': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 0.35,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 0.35,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.kcStart': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 1.2,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 1.2,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.name': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Fin de cycle',
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Fin de cycle',
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.rootEndM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'stages.3.rootStartM': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: 'FAO56 tableaux 11/12/22 ; scénario Maïs, Nigeria, climat humide, mai. Kc non ajustés au climat. Racines : départ hypothétique 0.15 m, interpolation jusqu’à 1 m limitée par le sol décrit ; p ajusté à ETc (équation 83). À adapter à la variété et aux observations.',
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'catalog',
+  +         product: 'Profil cultural maize',
+  +         productVersion: 'agronomy-2026-10-29.1',
+  +         provider: null,
+  +         rawUnit: 'm',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Paramètre de référence, pas une calibration de la variété au champ.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.allowedWeekdays': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: [
+  +           0,
+  +           1,
+  +           2,
+  +           3,
+  +           4,
+  +           5,
+  +           6
+  +         ],
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: [
+  +           0,
+  +           1,
+  +           2,
+  +           3,
+  +           4,
+  +           5,
+  +           6
+  +         ],
+  +         version: 'inputs-1'
+  +       },
+  +       'system.applicationEfficiency': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.75,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.75,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.hoursPerDay': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'h/day',
+  +         rawValue: 6,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'h/day',
+  +         validUntil: null,
+  +         value: 6,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.maxNetMmPerDay': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 25,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 25,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.minIntervalDays': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'day',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'day',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.sourceBudgetM3': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm³',
+  +         rawValue: 900,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm³',
+  +         validUntil: null,
+  +         value: 900,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.sourceFlowM3h': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm³/h',
+  +         rawValue: 4,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm³/h',
+  +         validUntil: null,
+  +         value: 4,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.targetDepletionFraction': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 0.05,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 0.05,
+  +         version: 'inputs-1'
+  +       },
+  +       'system.transportEfficiency': {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'fraction',
+  +         rawValue: 1,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'fraction',
+  +         validUntil: null,
+  +         value: 1,
+  +         version: 'inputs-1'
+  +       },
+  +       adjustDepletionToEtc: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'boolean',
+  +         rawValue: true,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'boolean',
+  +         validUntil: null,
+  +         value: true,
+  +         version: 'inputs-1'
+  +       },
+  +       areaM2: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: 'm²',
+  +         rawValue: 1951.1630685909315,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: 'm²',
+  +         validUntil: null,
+  +         value: 1951.1630685909315,
+  +         version: 'inputs-1'
+  +       },
+  +       asOfDate: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: '2026-11-10',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: '2026-11-10',
+  +         version: 'inputs-1'
+  +       },
+  +       country: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'TGO',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'TGO',
+  +         version: 'inputs-1'
+  +       },
+  +       crop: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Maïs',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Maïs',
+  +         version: 'inputs-1'
+  +       },
+  +       latitude: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 9.5002,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 9.5002,
+  +         version: 'inputs-1'
+  +       },
+  +       longitude: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 1.2002,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 1.2002,
+  +         version: 'inputs-1'
+  +       },
+  +       sowingDate: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: '2026-11-17',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: '2026-11-17',
+  +         version: 'inputs-1'
+  +       },
+  +       systemDomain: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'upland',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'upland',
+  +         version: 'inputs-1'
+  +       },
+  +       variety: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: 'Non renseignée — démonstration',
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'fresh',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'assumed',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: 'Non renseignée — démonstration',
+  +         version: 'inputs-1'
+  +       },
+  +       waterCondition: {
+  +         acquiredAt: null,
+  +         depthCm: null,
+  +         interval: null,
+  +         method: null,
+  +         model: null,
+  +         observedAt: null,
+  +         origin: 'legacy',
+  +         product: null,
+  +         productVersion: null,
+  +         provider: null,
+  +         rawUnit: '1',
+  +         rawValue: null,
+  +         referencePeriod: null,
+  +         replacementReason: 'Origine historique non documentée ; aucune mesure déduite du libellé.',
+  +         retention: 'missing',
+  +         runAt: null,
+  +         scopeId: 'geometry-1:4933960f8c95f395',
+  +         spatial: {
+  +           cell: null,
+  +           crs: null,
+  +           point: null,
+  +           resolutionM: null
+  +         },
+  +         status: 'missing',
+  +         uncertainty: null,
+  +         unit: '1',
+  +         validUntil: null,
+  +         value: null,
+  +         version: 'inputs-1'
+  +       }
+  +     },
+  +     version: 'inputs-1'
+  +   },
+  +   intervalDays: null,
+  +   land: {
+  +     areaM2: 1951.1630685909315,
+  +     areaMethod: 'spherical-linear-edges-1',
+  +     assessedAt: '2026-11-10T11:39:01.187Z',
+  +     boundaryUncertaintyM: null,
+  +     candidateAreaM2: 1951.1630685909315,
+  +     excludedAreaM2: 0,
+  +     fractions: {
+  +       incompatible: {
+  +         areaM2: 0,
+  +         fraction: 0,
+  +         geometry: {
+  +           coordinates: [],
+  +           type: 'MultiPolygon'
+  +         }
+  +       },
+  +       permanentWater: {
+  +         areaM2: 0,
+  +         fraction: 0,
+  +         geometry: {
+  +           coordinates: [],
+  +           type: 'MultiPolygon'
+  +         }
+  +       },
+  +       potentialLand: {
+  +         areaM2: 1951.1630685909315,
+  +         fraction: 1,
+  +         geometry: {
+  +           coordinates: [
+  +             [
+  +               [
+  +                 [
+  +                   1.2,
+  +                   9.5
+  +                 ],
+  +                 [
+  +                   1.2004,
+  +                   9.5
+  +                 ],
+  +                 [
+  +                   1.2004,
+  +                   9.5004
+  +                 ],
+  +                 [
+  +                   1.2,
+  +                   9.5004
+  +                 ],
+  +                 [
+  +                   1.2,
+  +                   9.5
+  +                 ]
+  +               ]
+  +             ]
+  +           ],
+  +           type: 'MultiPolygon'
+  +         }
+  +       },
+  +       seasonalWater: {
+  +         areaM2: 0,
+  +         fraction: 0,
+  +         geometry: {
+  +           coordinates: [],
+  +           type: 'MultiPolygon'
+  +         }
+  +       },
+  +       unknown: {
+  +         areaM2: 0,
+  +         fraction: 0,
+  +         geometry: {
+  +           coordinates: [],
+  +           type: 'MultiPolygon'
+  +         }
+  +       },
+  +       wetland: {
+  +         areaM2: 0,
+  +         fraction: 0,
+  +         geometry: {
+  +           coordinates: [],
+  +           type: 'MultiPolygon'
+  +         }
+  +       }
+  +     },
+  +     geometry: {
+  +       coordinates: [
+  +         [
+  +           [
+  +             1.2,
+  +             9.5
+  +           ],
+  +           [
+  +             1.2004,
+  +             9.5
+  +           ],
+  +           [
+  +             1.2004,
+  +             9.5004
+  +           ],
+  +           [
+  +             1.2,
+  +             9.5004
+  +           ],
+  +           [
+  +             1.2,
+  +             9.5
+  +           ]
+  +         ]
+  +       ],
+  +       type: 'Polygon'
+  +     },
+  +     legalStatus: 'not_assessed',
+  +     messages: [
+  +       'Occupation historique et observations disponibles ; potentiel biophysique et droit de cultiver non établis. Une absence d’eau détectée ne prouve pas le drainage.'
+  +     ],
+  +     scopeId: 'geometry-1:4933960f8c95f395',
+  +     sources: [
+  +       {
+  +         acquiredAt: '2026-11-10T11:39:01.187Z',
+  +         assets: [],
+  +         crs: 'EPSG:4326',
+  +         id: 'worldcover',
+  +         limitations: [
+  +           'Synthetic test only'
+  +         ],
+  +         observedAt: null,
+  +         product: 'Synthetic fixture, not satellite acquisition',
+  +         provider: 'Test only',
+  +         reason: null,
+  +         referencePeriod: null,
+  +         resolutionM: 10,
+  +         status: 'available',
+  +         version: 'test-1'
+  +       }
+  +     ],
+  +     status: 'conditional',
+  +     unknownAreaM2: 0,
+  +     version: 'land-2'
+  +   },
+  +   levelOfEvidence: 'simulation_non_validee',
+  +   missing: [
+  +     'Les paramètres hypothétiques doivent être acceptés explicitement : sol initial, infiltration, irrigation et calendrier.',
+  +     'Entrée indisponible : soil.layers.0.initialTheta.'
+  +   ],
+  +   nextWindows: [],
+  +   sowingPlan: {
+  +     areaBasis: 'mapped-scenario',
+  +     areaM2: 1951.1630685909315,
+  +     cropId: 'maize',
+  +     limits: [
+  +       'Estimation de quantité pour préparer un semis en culture pure ; pas un optimum calculé pour la parcelle.',
+  +       'La surface proposée suppose l’usage de la terre cartographiée ; ni semis effectué, ni aptitude, ni autorisation de cultiver établis.',
+  +       'La variété, le poids des graines et la germination sont à vérifier. Aucune réserve supplémentaire pour pertes n’est ajoutée automatiquement.',
+  +       'La dose de semences ne modifie pas le rendement dans les modèles actuels.'
+  +     ],
+  +     missing: [],
+  +     rangeKg: [
+  +       3.9023261371818627,
+  +       4.877907671477328
+  +     ],
+  +     rateBasis: 'reference',
+  +     reference: {
+  +       checkedOn: '2026-11-01',
+  +       context: 'Maïs grain hybride au Nigeria, culture pure. 20–25 kg/ha selon la taille des graines. Repère choisi : 25 kg/ha ; adapter à la variété, à la germination et aux conditions locales.',
+  +       cropId: 'maize',
+  +       defaultKgHa: 25,
+  +       id: 'seedco-ng-maize-2026',
+  +       rangeKgHa: [
+  +         20,
+  +         25
+  +       ],
+  +       title: 'Seed Co Nigeria · Good agronomic practices for maize farming',
+  +       url: 'https://seedcogroup.com/ng/fieldcrops/good-agronomics-practices-for-maize-farming/'
+  +     },
+  +     seedKg: 4.877907671477328,
+  +     seedRateKgHa: 25,
+  +     source: 'Seed Co Nigeria · Good agronomic practices for maize farming',
+  +     status: 'indicative',
+  +     version: 'sowing-1.0.0'
+  +   },
+  +   stages: [],
+  +   status: 'blocked',
+  +   totals: {
+  +     actualEtMm: 0,
+  +     demandMm: 0,
+  +     fieldM3: null,
+  +     netMm: 0,
+  +     recordedSourceM3: null,
+  +     remainingBudgetM3: null,
+  +     remainingSourceM3: null,
+  +     sourceM3: null,
+  +     unmetEtMm: 0
+  +   },
+  +   waterImpact: {
+  +     areaBasis: 'planned',
+  +     areaM2: 1951.1630685909315,
+  +     ky: 1.25,
+  +     limits: [
+  +       'Indice hydrique relatif : 100 correspond au rendement de référence sans déficit d’eau, pas à une récolte garantie. Aucun rendement en tonnes par hectare n’est déduit sans référence indépendante.',
+  +       'FAO56 saisonnier, non calibré localement. Le sol et la météo interviennent par le bilan d’eau ; aucune perte due à la nutrition, au pH, aux ravageurs ou aux produits phytosanitaires n’est calculée.',
+  +       'Les trois scénarios conservent le sol, la météo et les apports réalisés. Le scénario pluvial retire seulement l’irrigation. Les arrosages futurs restent des hypothèses.',
+  +       'Calcul limité à une unité homogène, sol drainé, cycle complet et ETa/ETm ≥ 0,5. Aucun intervalle prédictif à 95 % établi.'
+  +     ],
+  +     missing: [
+  +       'Les paramètres hypothétiques doivent être acceptés explicitement : sol initial, infiltration, irrigation et calendrier.',
+  +       'Entrée indisponible : soil.layers.0.initialTheta.',
+  +       'Système terrestre et absence d’engorgement à confirmer.'
+  +     ],
+  +     scenarios: [],
+  +     source: 'https://www.fao.org/4/x0490e/x0490e0e.htm',
+  +     status: 'unavailable',
+  +     version: 'FAO56-table24-seasonal-2'
+  +   },
+  +   weeks: []
+  + }
+  - null
+
+      at TestContext.<anonymous> (file:///workspace/scratch/6af0aa540656/agri-baseline/tests/audit-scheduling.test.mjs:60:68)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { calculationArea: { selection: 'whole', areaM2: 1951.1630685909315, geometry: [Object] }, engineVersion: 'water-balance-1.4.0', levelOfEvidence: 'simulation_non_validee', status: 'blocked', complete: false, horizonEnd: '2027-03-21', assumptions: [], missing: [ 'Les paramètres hypothétiques doivent être acceptés explicitement : sol initial, infiltration, irrigation et calendrier.', 'Entrée indisponible : soil.layers.0.initialTheta.' ], days: [], weeks: [], decades: [], stages: [], nextWindows: [], intervalDays: null, totals: { demandMm: 0, actualEtMm: 0, unmetEtMm: 0, netMm: 0, recordedSourceM3: null, remainingSourceM3: null, sourceM3: null, fieldM3: null, remainingBudgetM3: null }, inputProvenance: { version: 'inputs-1', migratedFrom: 'unversioned', scope: [Object], values: [Object] }, land: { version: 'land-2', areaMethod: 'spherical-linear-edges-1', scopeId: 'geometry-1:4933960f8c95f395', geometry: [Object], assessedAt: '2026-11-10T11:39:01.187Z', areaM2: 1951.1630685909315, fractions: [Object], sources: [Array], status: 'conditional', candidateAreaM2: 1951.1630685909315, excludedAreaM2: 0, unknownAreaM2: 0, messages: [Array], boundaryUncertaintyM: null, legalStatus: 'not_assessed' }, waterImpact: { version: 'FAO56-table24-seasonal-2', status: 'unavailable', ky: 1.25, source: 'https://www.fao.org/4/x0490e/x0490e0e.htm', areaBasis: 'planned', areaM2: 1951.1630685909315, missing: [Array], scenarios: [], limits: [Array] }, sowingPlan: { version: 'sowing-1.0.0', status: 'indicative', cropId: 'maize', areaM2: 1951.1630685909315, areaBasis: 'mapped-scenario', seedRateKgHa: 25, seedKg: 4.877907671477328, rangeKg: [Array], reference: [Object], rateBasis: 'reference', source: 'Seed Co Nigeria · Good agronomic practices for maize farming', missing: [], limits: [Array] } },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
