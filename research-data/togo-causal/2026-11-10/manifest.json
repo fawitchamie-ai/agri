@@ -1,0 +1,92 @@
+[
+  {
+    "path": "AQUACROP_ADAPTER.md",
+    "bytes": 2067,
+    "sha256": "8213924fe76cd130cbe8c4ec094a18d03637332a74e62c04699ddfe7ca37486b"
+  },
+  {
+    "path": "IDENTIFIABILITY_PROTOCOL.md",
+    "bytes": 766,
+    "sha256": "e27fdbf73b141287dfb2d0cf7be0f50682845280b4c4cae5c1757f1c0f8d3629"
+  },
+  {
+    "path": "PROTOCOL.md",
+    "bytes": 3322,
+    "sha256": "510e8ce059f02305666cb2b863b144829e38bd681cd6003d5c32d319b852bef4"
+  },
+  {
+    "path": "PROTOCOL_NOTES.md",
+    "bytes": 729,
+    "sha256": "a1b892c6907023e51c22ca0db98f12a8e0be27da02350c41aad019b8e2050421"
+  },
+  {
+    "path": "README.md",
+    "bytes": 1343,
+    "sha256": "5081f241c824236ac17197112821fe6db287a108f5357247bf1a9b2f8263411f"
+  },
+  {
+    "path": "aquacrop-daily.json.gz",
+    "bytes": 464189,
+    "sha256": "20c5167c037d9bf6f2ab9995f58cd83ab71b65475194d06582b0b0948842bc56"
+  },
+  {
+    "path": "aquacrop-summary.json",
+    "bytes": 25695,
+    "sha256": "dc46e062a1390a76850046628770f82bbdcc25057842ae567db46e5c40165dee"
+  },
+  {
+    "path": "causal-water-nutrients.png",
+    "bytes": 287420,
+    "sha256": "0f5e1e4d78d6ebfd3a3d4c14a987bb1e87dd08e84e361bd9dc9ecf90b42b688a"
+  },
+  {
+    "path": "deployed-before-causal.json",
+    "bytes": 376,
+    "sha256": "c7c840a01aed904a06fb0cb79f0f77cd704c246f78438626f22e48cec562c222"
+  },
+  {
+    "path": "identifiability.json",
+    "bytes": 4287,
+    "sha256": "8eccecc94a7f53fa03b300772151738632167f6439b6d9fb18106d8c073aa545"
+  },
+  {
+    "path": "protocol.sha256",
+    "bytes": 115,
+    "sha256": "da498c2027bd48eded66834c0d9fc76ec7892143b10935496b34d4084eeb3248"
+  },
+  {
+    "path": "published-intermediates.json",
+    "bytes": 2531,
+    "sha256": "8232367d840769730217571d8869d00515ca4a66a7f2e8749fc12be3e3a01a3a"
+  },
+  {
+    "path": "remote-after-software.json",
+    "bytes": 1940,
+    "sha256": "6e572b079f1a51d95fa0de8c526a9893d8d1005042bc5a7545c84d2108ba6b06"
+  },
+  {
+    "path": "remote-before-software.json",
+    "bytes": 1573,
+    "sha256": "e8ffe90c39efd4894a0d704047133781a6a38e1cdd0fd5b82a11d216391cbf79"
+  },
+  {
+    "path": "requirements-aquacrop.lock.txt",
+    "bytes": 246,
+    "sha256": "cb3d6a92a71608882452ced5e2c1f9c483ff970a0108181a6f077affbd0fec37"
+  },
+  {
+    "path": "rue-daily.csv.gz",
+    "bytes": 460062,
+    "sha256": "6125e9ced5ee0f23ed9083740707aa79315b2da457ebc8c78ca049947a8859fc"
+  },
+  {
+    "path": "rue-daily.json.gz",
+    "bytes": 698553,
+    "sha256": "d39885bf7ddb62430b2c7987e5e4bb0c2e79d09bd79bdc206c657d6ddcff2739"
+  },
+  {
+    "path": "rue-summary.json",
+    "bytes": 135486,
+    "sha256": "908865e57bcfcb471c429983614dd257c2586837e514d2ed0602441f43f1fa39"
+  }
+]

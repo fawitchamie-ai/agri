@@ -1,0 +1,1 @@
+{"commit":"1dceedd95c93135509890f26989ba69a133d2578","builtAt":"2026-11-10T12:06:32.065Z","engines":{"water":"water-balance-1.4.0","growth":"daily-rue-npk-1.1.0","waterResponse":"FAO56-table24-seasonal-2","nasa":"POWER-daily-FAO56-1"},"parameters":{"catalog":"agronomy-2026-10-29.1","growthSchema":"daily-rue-npk-1","growthDefaults":"illustrative-1"},"localCalibration":false}

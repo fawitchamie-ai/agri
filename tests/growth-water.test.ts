@@ -4,7 +4,7 @@ import {applyCropProfile,cropById} from '../lib/seasonal/catalog.ts';
 import {exampleCampaign} from '../lib/seasonal/example.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
 import {landFixture,testParcel} from './support/land-fixtures.mjs';
-import {growthTemplate,growthScope,parseGrowth} from '../lib/seasonal/growth.ts';
+import {growthTemplate,growthScope,parseGrowth,growthCsv} from '../lib/seasonal/growth.ts';
 import {fitHarvestIndex,growthProfileId,type GrowthHarvestSample} from '../lib/seasonal/growth-calibration.ts';
 import {planSeason} from '../lib/seasonal/yield.ts';
 import {addDays,validateConfig} from '../lib/seasonal/validation.ts';
@@ -47,7 +47,7 @@ test('a zero water quota prevents planned irrigation from creating yield',()=>{
 });
 test('each accessible nutrient can limit yield independently of abundant water',()=>{
  const c=irrigate(dry(),100),base=proposed(c).yieldKgHa;
- for(let k=0;k<3;k++){const limited=structuredClone(c);limited.growth!.soilSupply.initialKgHa[k]=0;assert.equal(proposed(limited).yieldKgHa,0);}
+ for(let k=0;k<3;k++){const limited=structuredClone(c);limited.growth!.soilSupply.initialKgHa[k]=0;const result=proposed(limited);assert.equal(result.yieldKgHa,0);assert.equal(result.diagnostics.atNutrientCeiling,true);}
  assert.ok(base>0);
 });
 test('rainfed comparison retains the same observed soil moisture when no irrigation was recorded',()=>{
@@ -70,4 +70,36 @@ test('a K ceiling can mask irrigation without removing a legitimate nutrient lim
  assert.ok(proposed(enriched).yieldKgHa>wet.yieldKgHa);
  const rainy=dry();rainy.fallback!.rainMmDay=10;
  assert.equal(proposed(irrigate(structuredClone(rainy),100)).yieldKgHa,proposed(rainy).yieldKgHa);
+});
+
+test('daily growth export reconciles water, radiation and NPK without changing the calculation',()=>{
+ const c=irrigate(dry(),30),p=planSeason(c),s=p.growth!.scenarios.find(s=>s.id==='proposed')!;
+ for(const d of s.days){
+  assert.ok(Math.abs(d.interceptedRadiationMj-d.radiationMj*d.fapar)<1e-9);
+  assert.ok(Math.abs(d.potentialBeforeNutritionKgHa-d.potentialBeforeWaterKgHa*d.waterFactor)<1e-9);
+  assert.ok(Math.abs(d.incrementKgHa-d.potentialBeforeNutritionKgHa*d.nutrientFactor)<1e-9);
+  assert.ok(d.nutrientBalanceResidualKgHa.every(n=>Math.abs(n)<1e-8));
+  const w=p.days.find(w=>w.date===d.date)!;assert.equal(d.water.actualEtMm,w.actualEtMm);assert.equal(d.water.irrigationNetMm,w.irrigationNetMm);
+  assert.equal(d.water.irrigationFieldMm,w.intervention?.fieldMm??0);
+ }
+ assert.ok(Math.abs(s.days.reduce((n,d)=>n+d.incrementKgHa,0)-s.biomassKgHa)<1e-8);
+ assert.ok(Math.abs(s.yieldDryKgHa-s.biomassKgHa*c.growth!.parameters.harvestIndex)<1e-8);
+});
+
+test('recorded gross irrigation loses application and source transport exactly once',()=>{
+ const c=dry();c.system.applicationEfficiency=.5;c.system.transportEfficiency=.8;
+ const event={id:'known-water',date:c.sowingDate,kind:'irrigation',amount:10,unit:'mm',point:'field',status:'declared',source:'Synthetic dimensional check',recordedAt:c.asOfDate+'T00:00:00Z',landSelection:c.landSelection};
+ const p=planSeason(c,[event]);const d=p.growth!.scenarios.find(s=>s.id==='proposed')!.days[0];
+ assert.equal(d.water.irrigationFieldMm,10);assert.equal(d.water.irrigationNetMm,5);
+ assert.equal(p.days[0].intervention!.sourceM3,10*c.areaM2!/.8/1000);
+ const upstream=planSeason(c,[{...event,point:'source'}]);assert.equal(upstream.days[0].irrigationNetMm,4);
+});
+
+
+test('the daily CSV exposes the real ledgers and protects spreadsheet cells',()=>{
+ const c=irrigate(dry(),30);c.stages[0].name='=UNSAFE';c.growth!.scope=growthScope(c);
+ const g=planSeason(c).growth!,csv=growthCsv(g),lines=csv.trim().split('\n');
+ assert.ok(lines[0].includes('"K_supply_kg_ha"'));assert.ok(lines[0].includes('"assumed_fixed_HI"'));
+ assert.equal(lines.length,1+g.scenarios.reduce((n,s)=>n+s.days.length,0));
+ assert.ok(csv.includes('"\'=UNSAFE"'));assert.ok(!csv.includes(',"=UNSAFE",'));
 });
