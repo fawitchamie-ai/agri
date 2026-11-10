@@ -71,7 +71,7 @@ export function parseGrowth(value:unknown,c:SeasonalConfig):GrowthInput|undefine
  return v;
 }
 export type GrowthDay={date:string;stage:string;fapar:number;canopySource:'parameter'|'satellite';temperatureC:number;radiationMj:number;temperatureFactor:number;waterFactor:number;nutrientFactor:number;biomassKgHa:number;incrementKgHa:number;uptakeKgHa:Triple;stockKgHa:Triple};
-export type GrowthScenario={id:string;label:string;days:GrowthDay[];biomassKgHa:number;yieldDryKgHa:number;yieldKgHa:number;productionKg:number;balance:{suppliedKgHa:Triple;uptakeKgHa:Triple;remainingKgHa:Triple;residualKgHa:Triple}};
+export type GrowthScenario={id:string;label:string;water?:{irrigationNetMm:number;etaMm:number;etmMm:number};days:GrowthDay[];biomassKgHa:number;yieldDryKgHa:number;yieldKgHa:number;productionKg:number;balance:{suppliedKgHa:Triple;uptakeKgHa:Triple;remainingKgHa:Triple;residualKgHa:Triple}};
 export type GrowthResult={version:typeof GROWTH_VERSION;status:'scenario'|'unavailable';validated:false;predictiveInterval95:null;missing:string[];limits:string[];areaM2:number|null;areaBasis:'planned'|'sown';moisturePercent:number|null;phFactor:number|null;calibration?:ReturnType<typeof fitHarvestIndex>;scenarios:GrowthScenario[];factors:{factor:string;role:string}[]};
 export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):GrowthResult{
  const v=c.growth,p=v?.parameters;
@@ -115,7 +115,7 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  if(out.missing.length){out.missing=[...new Set(out.missing)];return out;}
  const definitions=[['rainfed','Sans irrigation ni engrais prévus','rainfed',false],['recorded','Apports réalisés uniquement','recorded',false],['proposed','Eau et engrais prévus','proposed',true],['without-planned-fertilizer','Même eau, sans engrais prévu','proposed',false]] as const;
  for(const [id,label,irrigationMode,includePlanned] of definitions){
- const ev=events.filter(e=>irrigationMode!=='rainfed'||e.kind==='rain');
+ const ev=events.filter(e=>irrigationMode!=='rainfed'||e.kind!=='irrigation');
  const water=planWater(config,ev,{irrigationMode,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
  if(!water.complete||water.status==='blocked'){out.missing.push(...water.missing);continue;}
  const stock=[...v.soilSupply.initialKgHa] as Triple,supplied=[...stock] as Triple,uptake:Triple=[0,0,0];
@@ -140,7 +140,7 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  biomass+=incrementKgHa;days.push({date:d.date,stage:d.stage,fapar,canopySource,temperatureC,radiationMj,temperatureFactor,waterFactor,nutrientFactor,incrementKgHa,biomassKgHa:biomass,uptakeKgHa:[...uptake],stockKgHa:[...stock]});
  }
  const dry=biomass*(calibration?.harvestIndex??p!.harvestIndex),yieldKgHa=dry/(1-p!.moisturePercent/100);
- out.scenarios.push({id,label,days,biomassKgHa:biomass,yieldDryKgHa:dry,yieldKgHa,productionKg:yieldKgHa*out.areaM2!/10000,balance:{suppliedKgHa:supplied,uptakeKgHa:uptake,remainingKgHa:stock,residualKgHa:supplied.map((n,k)=>n-uptake[k]-stock[k]) as Triple}});
+ out.scenarios.push({id,label,water:{irrigationNetMm:water.totals.netMm,etaMm:water.totals.actualEtMm,etmMm:water.totals.demandMm},days,biomassKgHa:biomass,yieldDryKgHa:dry,yieldKgHa,productionKg:yieldKgHa*out.areaM2!/10000,balance:{suppliedKgHa:supplied,uptakeKgHa:uptake,remainingKgHa:stock,residualKgHa:supplied.map((n,k)=>n-uptake[k]-stock[k]) as Triple}});
  }
  if(out.missing.length){out.scenarios=[];return out;}
  out.status='scenario';return out;

@@ -27,7 +27,7 @@ export function waterImpact(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan)
  const config=u?.conditions?validateConfig({...c,...u.conditions,inputs:undefined,yieldEstimation:undefined}):c;
  if(config.waterCondition!=='drained'){out.missing.push('Le sol de cette unité doit être drainé.');return out;}
  for(const [id,label] of [['rainfed','Sans irrigation ajoutée'],['recorded','Avec les arrosages réalisés'],['proposed','Avec le plan d’arrosage']] as const){
-  const ev=events.filter(e=>id!=='rainfed'||e.kind==='rain');
+  const ev=events.filter(e=>id!=='rainfed'||e.kind!=='irrigation');
   const water=planWater(config,ev,{irrigationMode:id,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
   const ready=water.complete&&water.status!=='blocked',eta=ready?water.totals.actualEtMm:null,etm=ready?water.totals.demandMm:null;
   const factor=ready?seasonalWaterFactor(eta!,etm!,ky!):null;

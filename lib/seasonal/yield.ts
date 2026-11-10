@@ -136,7 +136,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
     const uc=validateConfig({...c,...u.conditions,yieldEstimation:undefined,...(u.conditions?{inputs:undefined}:{})});
     if(uc.waterCondition!=='drained'){scenario.missing.push(`${u.id} : absence d’engorgement à confirmer ; pertes et mortalité non modélisées.`);continue;}
     if(events.some(e=>e.unitId===undefined&&y.units.length>1&&e.kind!=='rain')){scenario.missing.push('Observations d’irrigation/sol à affecter explicitement à chaque unité ; répartition automatique interdite.');continue;}
-    const ev=events.filter(e=>(!e.unitId||e.unitId===u.id)&&(id!=='rainfed'||e.kind==='rain'));
+    const ev=events.filter(e=>(!e.unitId||e.unitId===u.id)&&(id!=='rainfed'||e.kind!=='irrigation'));
     const water=planWater(uc,ev.map(({unitId,...event})=>event),{irrigationMode:id,unitAreaM2:u.sownAreaM2!,unitGeometry:shapes[i]});
     if(!water.complete||water.status==='blocked'){scenario.missing.push(...water.missing.map(m=>`${u.id} : ${m}`));continue;}
     const etm=water.totals.demandMm,eta=water.totals.actualEtMm,ky=SEASONAL_KY[c.cropProfile!.id];
