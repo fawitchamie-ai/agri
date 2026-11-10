@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+date: Tue, 10 Nov 2026 11:27:53 GMT
+
+HTTP/2 401
+date: Tue, 10 Nov 2026 11:27:54 GMT
+content-type: text/plain; charset=utf-8
+content-length: 36
+cache-control: no-store
+x-content-type-options: nosniff
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=FOzPCLCYUUeQ8rLNUst%2BWkObgNSlHOHCsznLrQ2CWB5vroqmFTrxQGI5lPQGM4VRZ6g6M%2Bl%2BOzPlxSgjHxbICsAEkTYr7YmsKr0v1wDcTvbZTtUCia6I4HkQZltPWIiGI5Tv%2BFIsEInvdhDLH22siN1iaulnfl4foDK%2F"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: envoy
+cf-ray: a584b5ea3dc78bfa-GRU
+alt-svc: h3=":443"; ma=86400
+x-envoy-upstream-service-time: 268

@@ -1,0 +1,658 @@
+{
+  "files": [
+    {
+      "id": 14274587,
+      "name": "Data_Sheet_1_Using the DSSAT Model to Support Decision Making Regarding Fertilizer Microdosing for Maize Production in the Sub-humid Region of Benin.docx",
+      "size": 597093,
+      "is_link_only": false,
+      "download_url": "https://ndownloader.figshare.com/files/14274587",
+      "supplied_md5": "afbad8b306b5d2e79f6c833278904159",
+      "computed_md5": "afbad8b306b5d2e79f6c833278904159",
+      "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    }
+  ],
+  "folder_structure": {},
+  "authors": [
+    {
+      "id": 6305417,
+      "full_name": "Pierre G. Tovihoudji",
+      "first_name": "Pierre G.",
+      "last_name": "Tovihoudji",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 6305420,
+      "full_name": "P. B. Ir\u00e9nikatch\u00e9 Akponikp\u00e8",
+      "first_name": "P. B. Ir\u00e9nikatch\u00e9",
+      "last_name": "Akponikp\u00e8",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 829407,
+      "full_name": "Euloge K. Agbossou",
+      "first_name": "Euloge",
+      "last_name": "K. Agbossou",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    },
+    {
+      "id": 6305423,
+      "full_name": "Charles L. Bielders",
+      "first_name": "Charles L.",
+      "last_name": "Bielders",
+      "is_active": false,
+      "url_name": "_",
+      "orcid_id": ""
+    }
+  ],
+  "custom_fields": [],
+  "figshare_url": "https://frontiersin.figshare.com/articles/dataset/Data_Sheet_1_Using_the_DSSAT_Model_to_Support_Decision_Making_Regarding_Fertilizer_Microdosing_for_Maize_Production_in_the_Sub-humid_Region_of_Benin_docx/7678853",
+  "download_disabled": false,
+  "description": "<p>Fertilizer microdosing is being widely promoted across sub-Saharan Africa, yet all recommendations regarding this technology are derived from short-term studies. Such studies are insufficient to properly assess the production risk caused by climatic variability. To address this issue while avoiding costly long-term experiments, a common and well accepted strategy is to combine results from short-term experiments with validated dynamic crop models. However, there have been few documented attempts so far to model fertilizer microdosing under sub-humid tropical conditions. The objective was therefore to evaluate the potential of the DSSAT model for simulating maize response to fertilizer microdosing, and to use the validated model to assess the effects of inter-annual rainfall variability on maize productivity and economic risk. The model was calibrated and validated against data from a 2-year on-station experiment (2014 and 2015) with 2 levels of hill-placed manure and five mineral fertilization options including broadcast and fertilizer microdosing. Model simulations were in good agreement with the observed grain and biomass yields for conventional broadcast fertilization, with relative RMSE and d-values of 12% and 0.96 for grain and 8% and 0.97 for biomass, respectively. For fertilizer microdosing, the N stress coefficient needed to be adjusted to avoid occurrence of large N stresses during simulation. After optimization, the model adequately reproduced grain yields for fertilizer microdosing, with relative RMSE of 10%. Considering the long-term scenario analysis, the use of the validated model showed that the application of 2 g of NPK<sub>15\u221215\u221215</sub> fertilizer + 1 g urea per hill (equivalent to 23.8 kg N ha<sup>\u22121</sup>, 4.1 kg P ha<sup>\u22121</sup> and 7.8 kg K ha<sup>\u22121</sup>) improved both the minimum guaranteed yield and the long-term average without increasing inter-annual variability and the economic risk compared to unfertilized plots. Even though combining microdosing with manure (1\u20133 t ha<sup>\u22121</sup>) was economically slightly riskier than microdosing alone, this risk remained low since a value-cost ratio of 2 could be achieved in almost 100% of the years. Furthermore, combined application consistently reduced the inter-annual yield variability. Considering this as well as the other benefits of manure for soil health, combining microdosing with small quantities of manure would be recommended to increase the sustainability of the system.</p>",
+  "funding": null,
+  "funding_list": [],
+  "version": 1,
+  "status": "public",
+  "size": 597093,
+  "created_date": "2019-02-06T04:04:19Z",
+  "modified_date": "2023-05-31T11:52:10Z",
+  "is_public": true,
+  "is_confidential": false,
+  "is_metadata_record": false,
+  "confidential_reason": "",
+  "metadata_reason": "",
+  "license": {
+    "value": 1,
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "tags": [
+    "CERES-Maize",
+    "model",
+    "decision support",
+    "fertilizer microdosing",
+    "manure",
+    "inter-annual yield variability",
+    "economic risk"
+  ],
+  "keywords": [
+    "CERES-Maize",
+    "model",
+    "decision support",
+    "fertilizer microdosing",
+    "manure",
+    "inter-annual yield variability",
+    "economic risk"
+  ],
+  "categories": [
+    {
+      "id": 34,
+      "title": "Environmental Science",
+      "parent_id": 33,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 259,
+      "title": "Environmental Impact Assessment",
+      "parent_id": 33,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 260,
+      "title": "Environmental Management",
+      "parent_id": 33,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 268,
+      "title": "Soil Biology",
+      "parent_id": 33,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 546,
+      "title": "Water Treatment Processes",
+      "parent_id": 5,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 144,
+      "title": "Climate Science",
+      "parent_id": 33,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 568,
+      "title": "Environmental Engineering Design",
+      "parent_id": 5,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 569,
+      "title": "Environmental Engineering Modelling",
+      "parent_id": 5,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    },
+    {
+      "id": 570,
+      "title": "Environmental Technologies",
+      "parent_id": 5,
+      "path": "",
+      "source_id": "",
+      "taxonomy_id": 10
+    }
+  ],
+  "references": [
+    "https://doi.org//10.3389/fpls.2017.01118",
+    "https://doi.org//10.1080/01904167.2016.1263330",
+    "https://doi.org//10.1016/j.eja.2009.09.005",
+    "https://doi.org//10.1016/j.agrformet.2010.10.007",
+    "https://doi.org//10.1016/j.fcr.2017.12.017",
+    "https://doi.org//10.1016/j.agsy.2008.05.002",
+    "https://doi.org//10.5367/000000007781891504",
+    "https://doi.org//10.1007/s11027-013-9486-7",
+    "https://doi.org//10.1016/j.agee.2008.01.007",
+    "https://doi.org//10.1016/j.eja.2016.02.001",
+    "https://doi.org//10.1016/j.agsy.2013.04.002",
+    "https://doi.org//10.1007/s10705-012-9539-4",
+    "https://doi.org//10.2134/agronj2002.4620",
+    "https://doi.org//10.4267/climatologie.259",
+    "https://doi.org//10.1016/j.agrformet.2016.07.021",
+    "https://doi.org//10.1007/BF00779182",
+    "https://doi.org//10.1111/j.1469-8137.2004.01015.x",
+    "https://doi.org//10.1016/j.envsoft.2014.07.009",
+    "https://doi.org//10.1016/j.fcr.2015.04.022",
+    "https://doi.org//10.1017/S0021859614001075",
+    "https://doi.org//10.1016/S1161-0301%2802%2900107-7",
+    "https://doi.org//10.1016/S1161-0301%2802%2900108-9",
+    "https://doi.org//10.1007/s10705-015-9717-2",
+    "https://doi.org//10.1016/S2095-3119%2812%2960196-8",
+    "https://doi.org//10.4141/cjss2013-096",
+    "https://doi.org//10.3389/fpls.2017.00031",
+    "https://doi.org//10.1016/j.fcr.2010.06.005",
+    "https://doi.org//10.1007/978-94-007-2960-5_5",
+    "https://doi.org//10.1016/j.agrformet.2011.05.018",
+    "https://doi.org//10.1596/978-0-8213-6880-0",
+    "https://doi.org//10.1017/S0014479703001261",
+    "https://doi.org//10.1016/j.still.2014.05.003",
+    "https://doi.org//10.1007/s10705-015-9729-y",
+    "https://doi.org//10.2136/sssaj2016.03.0065",
+    "https://doi.org//10.2134/agronj1994.00021962008600020023x",
+    "https://doi.org//10.1007/s10705-017-9902-6",
+    "https://doi.org//10.3390/agronomy4030436",
+    "https://doi.org//10.1017/S0021859611000050",
+    "https://doi.org//10.1016/j.fcr.2012.10.007",
+    "https://doi.org//10.1016/j.fcr.2017.08.003",
+    "https://doi.org//10.1016/j.agsy.2013.06.002",
+    "https://doi.org//10.1016/j.pce.2008.06.048",
+    "https://doi.org//10.1038/nplants.2015.101",
+    "https://doi.org//10.1029/JC090iC05p08995",
+    "https://doi.org//10.1016/j.fcr.2017.07.002",
+    "https://doi.org/10.3389/fenvs.2019.00013"
+  ],
+  "has_linked_file": false,
+  "citation": "Tovihoudji, Pierre G.; Akponikp\u00e8, P. B. Ir\u00e9nikatch\u00e9; K. Agbossou, Euloge; Bielders, Charles L. (2019). Data_Sheet_1_Using the DSSAT Model to Support Decision Making Regarding Fertilizer Microdosing for Maize Production in the Sub-humid Region of Benin.docx. Frontiers. Dataset. https://doi.org/10.3389/fenvs.2019.00013.s001",
+  "related_materials": [
+    {
+      "id": 10805570,
+      "identifier": "https://doi.org//10.3389/fpls.2017.01118",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.3389/fpls.2017.01118"
+    },
+    {
+      "id": 10805573,
+      "identifier": "https://doi.org//10.1080/01904167.2016.1263330",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1080/01904167.2016.1263330"
+    },
+    {
+      "id": 10805576,
+      "identifier": "https://doi.org//10.1016/j.eja.2009.09.005",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.eja.2009.09.005"
+    },
+    {
+      "id": 10805579,
+      "identifier": "https://doi.org//10.1016/j.agrformet.2010.10.007",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agrformet.2010.10.007"
+    },
+    {
+      "id": 10805582,
+      "identifier": "https://doi.org//10.1016/j.fcr.2017.12.017",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2017.12.017"
+    },
+    {
+      "id": 10805585,
+      "identifier": "https://doi.org//10.1016/j.agsy.2008.05.002",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agsy.2008.05.002"
+    },
+    {
+      "id": 10805588,
+      "identifier": "https://doi.org//10.5367/000000007781891504",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.5367/000000007781891504"
+    },
+    {
+      "id": 10805591,
+      "identifier": "https://doi.org//10.1007/s11027-013-9486-7",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/s11027-013-9486-7"
+    },
+    {
+      "id": 10805594,
+      "identifier": "https://doi.org//10.1016/j.agee.2008.01.007",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agee.2008.01.007"
+    },
+    {
+      "id": 10805597,
+      "identifier": "https://doi.org//10.1016/j.eja.2016.02.001",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.eja.2016.02.001"
+    },
+    {
+      "id": 10805600,
+      "identifier": "https://doi.org//10.1016/j.agsy.2013.04.002",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agsy.2013.04.002"
+    },
+    {
+      "id": 10805603,
+      "identifier": "https://doi.org//10.1007/s10705-012-9539-4",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/s10705-012-9539-4"
+    },
+    {
+      "id": 10805606,
+      "identifier": "https://doi.org//10.2134/agronj2002.4620",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.2134/agronj2002.4620"
+    },
+    {
+      "id": 10805609,
+      "identifier": "https://doi.org//10.4267/climatologie.259",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.4267/climatologie.259"
+    },
+    {
+      "id": 10805612,
+      "identifier": "https://doi.org//10.1016/j.agrformet.2016.07.021",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agrformet.2016.07.021"
+    },
+    {
+      "id": 10805615,
+      "identifier": "https://doi.org//10.1007/BF00779182",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/BF00779182"
+    },
+    {
+      "id": 10805618,
+      "identifier": "https://doi.org//10.1111/j.1469-8137.2004.01015.x",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1111/j.1469-8137.2004.01015.x"
+    },
+    {
+      "id": 10805621,
+      "identifier": "https://doi.org//10.1016/j.envsoft.2014.07.009",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.envsoft.2014.07.009"
+    },
+    {
+      "id": 10805624,
+      "identifier": "https://doi.org//10.1016/j.fcr.2015.04.022",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2015.04.022"
+    },
+    {
+      "id": 10805627,
+      "identifier": "https://doi.org//10.1017/S0021859614001075",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1017/S0021859614001075"
+    },
+    {
+      "id": 10805630,
+      "identifier": "https://doi.org//10.1016/S1161-0301(02)00107-7",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/S1161-0301(02)00107-7"
+    },
+    {
+      "id": 10805633,
+      "identifier": "https://doi.org//10.1016/S1161-0301(02)00108-9",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/S1161-0301(02)00108-9"
+    },
+    {
+      "id": 10805636,
+      "identifier": "https://doi.org//10.1007/s10705-015-9717-2",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/s10705-015-9717-2"
+    },
+    {
+      "id": 10805639,
+      "identifier": "https://doi.org//10.1016/S2095-3119(12)60196-8",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/S2095-3119(12)60196-8"
+    },
+    {
+      "id": 10805642,
+      "identifier": "https://doi.org//10.4141/cjss2013-096",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.4141/cjss2013-096"
+    },
+    {
+      "id": 10805645,
+      "identifier": "https://doi.org//10.3389/fpls.2017.00031",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.3389/fpls.2017.00031"
+    },
+    {
+      "id": 10805648,
+      "identifier": "https://doi.org//10.1016/j.fcr.2010.06.005",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2010.06.005"
+    },
+    {
+      "id": 10805651,
+      "identifier": "https://doi.org//10.1007/978-94-007-2960-5_5",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/978-94-007-2960-5_5"
+    },
+    {
+      "id": 10805654,
+      "identifier": "https://doi.org//10.1016/j.agrformet.2011.05.018",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agrformet.2011.05.018"
+    },
+    {
+      "id": 10805657,
+      "identifier": "https://doi.org//10.1596/978-0-8213-6880-0",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1596/978-0-8213-6880-0"
+    },
+    {
+      "id": 10805660,
+      "identifier": "https://doi.org//10.1017/S0014479703001261",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1017/S0014479703001261"
+    },
+    {
+      "id": 10805663,
+      "identifier": "https://doi.org//10.1016/j.still.2014.05.003",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.still.2014.05.003"
+    },
+    {
+      "id": 10805666,
+      "identifier": "https://doi.org//10.1007/s10705-015-9729-y",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/s10705-015-9729-y"
+    },
+    {
+      "id": 10805669,
+      "identifier": "https://doi.org//10.2136/sssaj2016.03.0065",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.2136/sssaj2016.03.0065"
+    },
+    {
+      "id": 10805672,
+      "identifier": "https://doi.org//10.2134/agronj1994.00021962008600020023x",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.2134/agronj1994.00021962008600020023x"
+    },
+    {
+      "id": 10805675,
+      "identifier": "https://doi.org//10.1007/s10705-017-9902-6",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1007/s10705-017-9902-6"
+    },
+    {
+      "id": 10805678,
+      "identifier": "https://doi.org//10.3390/agronomy4030436",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.3390/agronomy4030436"
+    },
+    {
+      "id": 10805681,
+      "identifier": "https://doi.org//10.1017/S0021859611000050",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1017/S0021859611000050"
+    },
+    {
+      "id": 10805684,
+      "identifier": "https://doi.org//10.1016/j.fcr.2012.10.007",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2012.10.007"
+    },
+    {
+      "id": 10805687,
+      "identifier": "https://doi.org//10.1016/j.fcr.2017.08.003",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2017.08.003"
+    },
+    {
+      "id": 10805690,
+      "identifier": "https://doi.org//10.1016/j.agsy.2013.06.002",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.agsy.2013.06.002"
+    },
+    {
+      "id": 10805693,
+      "identifier": "https://doi.org//10.1016/j.pce.2008.06.048",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.pce.2008.06.048"
+    },
+    {
+      "id": 10805696,
+      "identifier": "https://doi.org//10.1038/nplants.2015.101",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1038/nplants.2015.101"
+    },
+    {
+      "id": 10805699,
+      "identifier": "https://doi.org//10.1029/JC090iC05p08995",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1029/JC090iC05p08995"
+    },
+    {
+      "id": 10805702,
+      "identifier": "https://doi.org//10.1016/j.fcr.2017.07.002",
+      "title": "",
+      "relation": "References",
+      "identifier_type": "URL",
+      "is_linkout": false,
+      "link": "https://doi.org//10.1016/j.fcr.2017.07.002"
+    },
+    {
+      "id": 10805705,
+      "identifier": "10.3389/fenvs.2019.00013",
+      "title": "Using the DSSAT Model to Support Decision Making Regarding Fertilizer Microdosing for Maize Production in the Sub-humid Region of Benin",
+      "relation": "IsSupplementTo",
+      "identifier_type": "DOI",
+      "is_linkout": true,
+      "link": "https://doi.org/10.3389/fenvs.2019.00013"
+    }
+  ],
+  "is_embargoed": false,
+  "embargo_date": null,
+  "embargo_type": null,
+  "embargo_title": "",
+  "embargo_reason": "",
+  "embargo_options": [],
+  "id": 7678853,
+  "title": "Data_Sheet_1_Using the DSSAT Model to Support Decision Making Regarding Fertilizer Microdosing for Maize Production in the Sub-humid Region of Benin.docx",
+  "doi": "10.3389/fenvs.2019.00013.s001",
+  "handle": "",
+  "url": "https://api.figshare.com/v2/articles/7678853",
+  "published_date": "2019-02-06T04:04:19Z",
+  "thumb": "https://s3-eu-west-1.amazonaws.com/ppreviews-frontiersin-8483929402184328/14274587/thumb.png",
+  "defined_type": 3,
+  "defined_type_name": "dataset",
+  "group_id": 11800,
+  "url_private_api": "https://api.figshare.com/v2/account/articles/7678853",
+  "url_public_api": "https://api.figshare.com/v2/articles/7678853",
+  "url_private_html": "https://figshare.com/account/articles/7678853",
+  "url_public_html": "https://frontiersin.figshare.com/articles/dataset/Data_Sheet_1_Using_the_DSSAT_Model_to_Support_Decision_Making_Regarding_Fertilizer_Microdosing_for_Maize_Production_in_the_Sub-humid_Region_of_Benin_docx/7678853",
+  "timeline": {
+    "posted": "2019-02-06T04:04:19",
+    "firstOnline": "2019-02-06"
+  },
+  "resource_title": "Using the DSSAT Model to Support Decision Making Regarding Fertilizer Microdosing for Maize Production in the Sub-humid Region of Benin",
+  "resource_doi": "10.3389/fenvs.2019.00013"
+}

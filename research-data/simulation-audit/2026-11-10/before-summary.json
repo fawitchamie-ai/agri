@@ -1,0 +1,380 @@
+{
+  "engineSourceSha256": "4c3bec986c6d9ff61adc0317f2c8f2386db48e5be8753d98ba9e4919e32a4891",
+  "engineVersion": "daily-rue-npk-1",
+  "workingTreeDirty": false,
+  "protocol": "Exploratory replacement protocol frozen before numeric comparison; original named script/archive NOT located; do not claim identical reproduction.",
+  "commit": "40d1884869172917cfcf8617b25ac84668a774cc",
+  "date": "2026-11-10",
+  "sourceDoi": "10.17159/wsa/2020.v46.i1.7894",
+  "scope": "3 treatment means from ONE site-season; 3 plots per treatment; no independent validation or parameter fitting",
+  "observedMoisture": "12–14%; model set to midpoint 13% before comparison; 12 and 14% are sensitivity scenarios, not measured exact moistures",
+  "hypotheses": [
+    "Daily uniform stage irrigation; actual dates unknown",
+    "First two initial moisture horizons unavailable to this bucket model: explicit FC assumption, never silent clamp",
+    "Generic RUE/HI/fAPAR/NPK profiles are illustrative",
+    "0.5 m rooting limit; original AquaCrop 1 m profile cannot be recreated without deeper hydraulic data",
+    "100% application efficiency scenario; sensitivity not statistical uncertainty",
+    "NPK convention N-P2O5-K2O assumed; no conversion from total soil N or extractable P"
+  ],
+  "published": {
+    "sowing": "2017-12-16",
+    "harvest": "2018-04-05",
+    "stageDays": [
+      20,
+      30,
+      46,
+      15
+    ],
+    "irrigationMm": [
+      [
+        193.8,
+        280.2,
+        507,
+        57.5
+      ],
+      [
+        155.3,
+        224.3,
+        405.5,
+        46
+      ],
+      [
+        137.8,
+        157.3,
+        303.5,
+        34
+      ]
+    ],
+    "observedKgHa": [
+      2200.4,
+      1830.9,
+      1068.3
+    ],
+    "initialTheta": [
+      0.2872,
+      0.2819,
+      0.2179,
+      0.2337
+    ],
+    "thetaFC": [
+      0.2602,
+      0.2559,
+      0.2548,
+      0.251
+    ],
+    "thetaWP": [
+      0.041,
+      0.0718,
+      0.0794,
+      0.0991
+    ]
+  },
+  "rejectedPublishedInitial": "Humidité initiale doit être compris entre 0.041 et 0.2602.",
+  "cases": [
+    {
+      "label": "FI",
+      "nutrients": "illustrative",
+      "observedKgHa": 2200.4,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 2574.1896551724076,
+        "productionKg": 3125.596366150248,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 1038.4999999999984,
+          "etaMm": 756.0716779739552,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            101.29999999999971,
+            12.838399999999954,
+            74.65150000000031
+          ],
+          "uptakeKgHa": [
+            74.65150000000028,
+            12.441916666666677,
+            74.65150000000028
+          ],
+          "remainingKgHa": [
+            26.648499999999924,
+            0.39648333333329977,
+            0
+          ],
+          "residualKgHa": [
+            -4.938272013532696e-13,
+            -2.2426505097428162e-14,
+            2.842170943040401e-14
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": 62,
+        "maxWaterResidualMm": 2.842170943040401e-14,
+        "moisturePercent": 13
+      }
+    },
+    {
+      "label": "80% FI",
+      "nutrients": "illustrative",
+      "observedKgHa": 1830.9,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 2574.1896551724076,
+        "productionKg": 3125.596366150248,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 831.1000000000021,
+          "etaMm": 751.5232634714698,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            101.29999999999971,
+            12.838399999999954,
+            74.65150000000031
+          ],
+          "uptakeKgHa": [
+            74.65150000000028,
+            12.441916666666677,
+            74.65150000000028
+          ],
+          "remainingKgHa": [
+            26.648499999999924,
+            0.39648333333329977,
+            0
+          ],
+          "residualKgHa": [
+            -4.938272013532696e-13,
+            -2.2426505097428162e-14,
+            2.842170943040401e-14
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 5,
+        "nutrientLimitedDays": 62,
+        "maxWaterResidualMm": 2.842170943040401e-14,
+        "moisturePercent": 13
+      }
+    },
+    {
+      "label": "60% FI",
+      "nutrients": "illustrative",
+      "observedKgHa": 1068.3,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 2574.1896551724076,
+        "productionKg": 3125.596366150248,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 632.5999999999991,
+          "etaMm": 640.2443925948629,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            101.29999999999971,
+            12.838399999999954,
+            74.65150000000031
+          ],
+          "uptakeKgHa": [
+            74.65150000000028,
+            12.441916666666677,
+            74.65150000000028
+          ],
+          "remainingKgHa": [
+            26.648499999999924,
+            0.39648333333329977,
+            0
+          ],
+          "residualKgHa": [
+            -4.938272013532696e-13,
+            -2.2426505097428162e-14,
+            2.842170943040401e-14
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": 62,
+        "maxWaterResidualMm": 2.1316282072803006e-14,
+        "moisturePercent": 13
+      }
+    },
+    {
+      "label": "FI",
+      "nutrients": "nonlimiting",
+      "observedKgHa": 2200.4,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 10139.826636558526,
+        "productionKg": 12311.837717527522,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 1038.4999999999984,
+          "etaMm": 756.0716779739552,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            1038,
+            1002.6184,
+            1012.4515
+          ],
+          "uptakeKgHa": [
+            294.05497246019746,
+            49.009162076699525,
+            294.05497246019746
+          ],
+          "remainingKgHa": [
+            743.9450275398032,
+            953.6092379233002,
+            718.3965275398032
+          ],
+          "residualKgHa": [
+            -5.684341886080801e-13,
+            2.2737367544323206e-13,
+            -6.821210263296962e-13
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 2,
+        "nutrientLimitedDays": 0,
+        "maxWaterResidualMm": 2.842170943040401e-14,
+        "moisturePercent": 13
+      }
+    },
+    {
+      "label": "80% FI",
+      "nutrients": "nonlimiting",
+      "observedKgHa": 1830.9,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 10121.477464859794,
+        "productionKg": 12289.558044284262,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 831.1000000000021,
+          "etaMm": 751.5232634714698,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            1038,
+            1002.6184,
+            1012.4515
+          ],
+          "uptakeKgHa": [
+            293.5228464809342,
+            48.920474413489,
+            293.5228464809342
+          ],
+          "remainingKgHa": [
+            744.4771535190663,
+            953.6979255865109,
+            718.9286535190663
+          ],
+          "residualKgHa": [
+            -5.684341886080801e-13,
+            0,
+            -4.547473508864641e-13
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 5,
+        "nutrientLimitedDays": 0,
+        "maxWaterResidualMm": 2.842170943040401e-14,
+        "moisturePercent": 13
+      }
+    },
+    {
+      "label": "60% FI",
+      "nutrients": "nonlimiting",
+      "observedKgHa": 1068.3,
+      "result": {
+        "engineVersion": "daily-rue-npk-1",
+        "yieldKgHa": 8583.020534312729,
+        "productionKg": 10421.554503078783,
+        "areaM2": 12142.059385056884,
+        "water": {
+          "irrigationNetMm": 632.5999999999991,
+          "etaMm": 640.2443925948629,
+          "etmMm": 757.0914685244236
+        },
+        "balance": {
+          "suppliedKgHa": [
+            1038,
+            1002.6184,
+            1012.4515
+          ],
+          "uptakeKgHa": [
+            248.90759549506936,
+            41.4845992491782,
+            248.90759549506936
+          ],
+          "remainingKgHa": [
+            789.0924045049305,
+            961.1338007508217,
+            763.5439045049305
+          ],
+          "residualKgHa": [
+            1.1368683772161603e-13,
+            0,
+            1.1368683772161603e-13
+          ]
+        },
+        "diagnostics": null,
+        "waterLimitedDays": 54,
+        "nutrientLimitedDays": 0,
+        "maxWaterResidualMm": 2.1316282072803006e-14,
+        "moisturePercent": 13
+      }
+    }
+  ],
+  "metrics": {
+    "illustrative": {
+      "n": 3,
+      "maeKgHa": 874.3229885057408,
+      "rmseKgHa": 993.2944966718072,
+      "biasKgHa": 874.3229885057408,
+      "nrmsePercent": 58.43367107254337
+    },
+    "nonlimiting": {
+      "n": 3,
+      "maeKgHa": 7914.9082119103505,
+      "rmseKgHa": 7921.262414686132,
+      "biasKgHa": 7914.9082119103505,
+      "nrmsePercent": 465.99316111182037
+    }
+  },
+  "reference": {
+    "name": "Fixed 2000 kg/ha local cultivar description in source; not fitted on these means",
+    "n": 3,
+    "maeKgHa": 433.73333333333335,
+    "rmseKgHa": 558.8141790136204,
+    "biasKgHa": 300.13333333333327,
+    "nrmsePercent": 32.87400064791084
+  },
+  "moistureSensitivity": {
+    "12": {
+      "n": 3,
+      "maeKgHa": 845.0708333333274,
+      "rmseKgHa": 967.6455871028262,
+      "biasKgHa": 845.0708333333274,
+      "nrmsePercent": 56.92479334278136
+    },
+    "13": {
+      "n": 3,
+      "maeKgHa": 874.3229885057408,
+      "rmseKgHa": 993.2944966718072,
+      "biasKgHa": 874.3229885057408,
+      "nrmsePercent": 58.43367107254337
+    },
+    "14": {
+      "n": 3,
+      "maeKgHa": 904.2554263565831,
+      "rmseKgHa": 1019.7407243923403,
+      "biasKgHa": 904.2554263565831,
+      "nrmsePercent": 59.98945354884738
+    }
+  }
+}

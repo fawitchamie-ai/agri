@@ -1,0 +1,42 @@
+[
+  {
+    "file": "togo-water-sa-2020.pdf",
+    "bytes": 3384113,
+    "sha256": "e5c0364b12dfae56cdfd1c9ecf97baa0f5274962ed9d1cbe4385255a4de9cea2",
+    "md5": "43b9c6f6b36e272d79faa5a3054041d7",
+    "url": "https://www.scielo.org.za/pdf/wsa/v46n1/15.pdf",
+    "license": "PDF declares CC-BY-4.0; journal landing page displays inconsistent CC-BY-NC wording; raw PDF kept local, no commercial parameter licensing assumed",
+    "acquiredOn": "2026-11-10",
+    "status": "downloaded and read"
+  },
+  {
+    "file": "nasa-power-20171216-20180405.json",
+    "bytes": 17646,
+    "sha256": "dbae2329c29cacdcbfa46993d8973e9d61bd75d18ad59ab7624dcdaefa3539ad",
+    "md5": "6e78b488281e7f6c2b40637a908b8c3c",
+    "url": "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,T2M_MIN,T2M_MAX,T2MDEW,RH2M,WS2M,PRECTOTCORR,ALLSKY_SFC_SW_DWN,PS&community=AG&latitude=11&longitude=0&start=20171216&end=20180405&format=JSON&time-standard=UTC",
+    "license": "NASA POWER public data; source attribution; gridded estimate not field measurement",
+    "acquiredOn": "2026-11-10",
+    "status": "downloaded and read"
+  },
+  {
+    "file": "ina-supplement.docx",
+    "bytes": 597093,
+    "sha256": "7d2acbb1301e10cb16f1b2834e322d88ca5917eaf0bb9d2dce958933ca16dc3f",
+    "md5": "afbad8b306b5d2e79f6c833278904159",
+    "url": "https://ndownloader.figshare.com/files/14274587",
+    "license": "CC-BY-4.0, figshare article 7678853",
+    "acquiredOn": "2026-11-10",
+    "status": "downloaded and read"
+  },
+  {
+    "file": "sekou-maize-growth.xlsx",
+    "bytes": 321644,
+    "sha256": "6bcf0ab3d3a683d3755677f5166f94123acda3e227d939b160d2e3094ab9fa72",
+    "md5": "7a48e39dafbc08e680527d2a8f167d08",
+    "url": "https://zenodo.org/api/records/14357601/files/Maize_growth_data.xlsx/content",
+    "license": "CC-BY-4.0",
+    "acquiredOn": "2026-11-10",
+    "status": "downloaded and read"
+  }
+]

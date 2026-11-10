@@ -43,7 +43,9 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
    }
   }
  }
- const old=c.soil.layers,allowHydraulic=old.every((_,i)=>['automatic','default'].includes(values[`soil.layers.${i}.thetaFC`]?.origin??'legacy'));
+ // A manual initial state belongs to the original horizon boundaries. Never
+ // silently replace it with the provider's 60% reserve or remap it by index.
+ const old=c.soil.layers,allowHydraulic=old.every((_,i)=>['automatic','default'].includes(values[`soil.layers.${i}.thetaFC`]?.origin??'legacy')&&!['manual'].includes(values[`soil.layers.${i}.initialTheta`]?.origin??'')&&values[`soil.layers.${i}.initialTheta`]?.status!=='measured');
  let soil=c.soil;
  if(allowHydraulic&&s.hydraulicLayers){
   soil={...c.soil,source:'ISRIC SoilGrids : rétention estimée ; état initial et infiltration à vérifier',layers:s.hydraulicLayers.map((l,i)=>old.length===s.hydraulicLayers!.length&&values[`soil.layers.${i}.initialTheta`]?.origin==='manual'&&old[i].initialTheta!==null&&old[i].initialTheta!>=l.thetaWP&&old[i].initialTheta!<=l.thetaFC?{...l,initialTheta:old[i].initialTheta}:l)};
@@ -64,11 +66,20 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
  for(const w of c.weather){
   if(w.date<c.sowingDate||Date.parse(w.date)>end)continue;
   const evidence=values[`weather.${w.date}.rainMm`];
-  if(w.status==='observed'||evidence?.origin==='manual'){
+  const protectedWeather=['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'].some(k=>{const ev=values[`weather.${w.date}.${k}`];return ev?.status!=='missing'&&(ev?.origin==='manual'||ev?.status==='measured');});
+  if(w.status==='observed'||protectedWeather){
    const incoming=weather.get(w.date),selected={...(incoming??w),provenance:{...(incoming?.provenance??{})}};
    for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const){
     const ev=values[`weather.${w.date}.${k}`];
     if(w[k]!==null&&w[k]!==undefined&&ev?.status!=='missing'&&(ev?.origin==='manual'||ev?.status==='measured')){selected[k]=w[k];if(ev)selected.provenance[k]=ev;}
+   }
+   // A preserved manual field must not accidentally retain the other,
+   // unavailable automatic fields from the same day.
+   if(!incoming)for(const k of ['rainMm','et0Mm','temperatureMeanC','temperatureMinC','temperatureMaxC','humidityPercent','wind2mMs','radiationMj'] as const){
+    const path=`weather.${w.date}.${k}`,ev=values[path];
+    if(ev?.origin!=='automatic')continue;
+    if(c.inputPolicy?.allowStale){values[path]={...ev,retention:'stale_authorized',replacementReason:'Nouvelle acquisition indisponible ; conservation explicitement autorisée.'};}
+    else{selected[k]=null;values[path]=missingEvidence(ev,ev.unit,id,'Donnée automatique absente lors de cette actualisation.',false);}
    }
    if(w.status==='observed')selected.status='observed';
    weather.set(w.date,selected);

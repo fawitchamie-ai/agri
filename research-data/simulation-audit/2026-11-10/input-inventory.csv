@@ -1,0 +1,74 @@
+trial,input,value,unit,status,source,gap_or_limit
+Togo 2017-18,country,TGO,,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,latitude,10.880314,deg N,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,longitude,0.192194,deg E,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,variety,TZEE-W,,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,sowing,2017-12-16,date,published,10.17159/wsa/2020.v46.i1.7894 Results,
+Togo 2017-18,harvest,2018-04-05,date,published,10.17159/wsa/2020.v46.i1.7894 Results,
+Togo 2017-18,duration,111,days,published,10.17159/wsa/2020.v46.i1.7894 Table 4,
+Togo 2017-18,stageDays,20 / 30 / 46 / 15,days,published,10.17159/wsa/2020.v46.i1.7894 Table 4,
+Togo 2017-18,irrigationFI,193.8 / 280.2 / 507 / 57.5,mm by stage,published,10.17159/wsa/2020.v46.i1.7894 Table 4,
+Togo 2017-18,irrigation80,155.3 / 224.3 / 405.5 / 46,mm by stage,published,10.17159/wsa/2020.v46.i1.7894 Table 4,
+Togo 2017-18,irrigation60,137.8 / 157.3 / 303.5 / 34,mm by stage,published,10.17159/wsa/2020.v46.i1.7894 Table 4,
+Togo 2017-18,thetaFC,.2602 / .2559 / .2548 / .2510,m3/m3,published,10.17159/wsa/2020.v46.i1.7894 Table 2,
+Togo 2017-18,thetaWP,.041 / .0718 / .0794 / .0991,m3/m3,published,10.17159/wsa/2020.v46.i1.7894 Table 2,
+Togo 2017-18,initialTheta,.2872 / .2819 / .2179 / .2337,m3/m3,published,10.17159/wsa/2020.v46.i1.7894 Table 2,
+Togo 2017-18,grainMoisture,12–14,%,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,NPK,200 at DAP15,kg product/ha,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,urea,"100 at DAP35, 46% N",kg product/ha,published,10.17159/wsa/2020.v46.i1.7894 Methods,
+Togo 2017-18,observedFI,2200.4,kg grain/ha,published,10.17159/wsa/2020.v46.i1.7894 Results/Figure 7,
+Togo 2017-18,observed60,1068.3,kg grain/ha,published,10.17159/wsa/2020.v46.i1.7894 Results/Figure 7,
+Togo 2017-18,observed80,1830.9,kg grain/ha,reported by user; consistent with Figure 7 and DISI16.79% rounded,10.17159/wsa/2020.v46.i1.7894 Figure7/Table5,Exact raw replicate yields missing; 1830.9 not a printed numeric table cell
+Togo replay,weather,"NASA POWER cell query 11N,0E",daily,estimated,NASA archived response,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,irrigationDates,"uniform within each stage, preserving totals",daily mm,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,initialThetaTop2,FC .2602 / .2559,m3/m3,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,rootDepth,.1 to .5; capped at measured profile depth,m,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,rue,1.5,g dry biomass/MJ global solar,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,harvestIndex,0.45,dry fraction,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,moisture,13,% (midpoint of source range),explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,soilSupplyInitial,30 / 8 / 40,kg element N/P/K per ha,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,soilSupplyRelease,.3 / .02 / .2,kg element N/P/K per ha/day,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,nutrientDemand,15 / 2.5 / 15,kg element per t dry biomass,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,fertilizerRecovery,.5 / .2 / .5,fraction,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,applicationEfficiency,1,fraction,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo replay,NPKConvention,N-P2O5-K2O,mass %,explicit reconstruction/scenario,scripts/reproduce-simulation-audit.mjs,Not measured/calibrated; never selected by minimizing yield error
+Togo 2017-18,replicateYields,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,dailyStationWeather,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,exactIrrigationDates,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,soilSaturationTheta,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,drainageFunction,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,hydraulicProfileBelow0.5m,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,accessibleNPK,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Togo 2017-18,varietyRUE_fAPAR_NPK,unknown,,missing,No file acquired,"No inference from total N, extractable P or reported grain yield"
+Ina,location,"Ina, BEN",,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,years,2014 / 2015,years,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,variety,DMR-ESR-W,,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,DUL,.16 to .25,m3/m3,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,LL,.06 to .15,m3/m3,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,SAT,.31 to .38,m3/m3,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,NO3_N,.5 to 3.4,ug/g,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,NH4_N,.1 to 1.4,ug/g,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,BD,"1.6 to 1.7, printed g cm-1",unit typo unresolved,published,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Soil horizons copied exactly in ina-table-s1.csv; gaps 0–5/10–15 cm not silently filled
+Ina,initialMoisture,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Ina,dailyWeatherNumeric,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Ina,accessibleP,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Ina,accessibleK,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Ina,compatibleRUEProfile,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Ina,fullObservedYieldByPlot,unknown,,missing,10.3389/fenvs.2019.00013.s001 / figshare 7678853,Weather supplied as figures; DSSAT coefficients/outputs are not RUE inputs or measured yields
+Sekou,site,"Sékou greenhouse, BEN",,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,variety,TZEE W POP QPM,,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,phase1,2023-01-19 to 2023-04-17,date,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,phase2,2023-05-06 to 2023-08-02,date,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,yieldRows,912,source rows,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,product,Freshweight_cob / Freshweight_cob_Spath,g fresh cob,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,weatherTreatment,W1 / W2,scenario codes,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,fertilizer,Organic / Chemical / 3 mixtures,source labels,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,dailyMicroclimate,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,dailyIrrigation,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,dryGrainFraction,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,grainMoisture,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,harvestAreaDenominator,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,accessibleNPK,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,compatibleRUEProfile,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Parakou complete field experiment,experimentalFiles,not acquired,,missing,No response or additional file received,Five requests are not data; no author clarification presumed
+ITRA field sheets,experimentalFiles,not acquired,,missing,No response or additional file received,Five requests are not data; no author clarification presumed

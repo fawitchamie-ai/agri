@@ -71,6 +71,8 @@ function publicDemoRequest(request:Request):boolean {
 }
 export async function authorizeAccessRequest(request:Request,env:AccessEnvironment,keyResolver?:JWTVerifyGetKey):Promise<Response|{request:Request;identity:AccessIdentity|null}> {
   const url=new URL(request.url),clean=sanitizedRequest(request);
+  // Version metadata contains no identity, database state or user input.
+  if(request.method==='GET'&&url.pathname==='/api/version')return {request:clean,identity:null};
   if(env.AUTH_DEMO_ONLY==='true'&&(localHosts.has(url.hostname)||(import.meta.env?.DEV===true&&url.hostname==='terminal.local'))&&localPaths.has(url.pathname))
     return {request:clean,identity:null};
   const token=request.headers.get('cf-access-jwt-assertion');

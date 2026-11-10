@@ -38,7 +38,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [simulationError,setSimulationError]=useState('');
   const [simulationRetry,setSimulationRetry]=useState(0);
   const [landProgress,setLandProgress]=useState<import('../../lib/seasonal/request').LandProgress|null>(null);
-  const [plan,setPlan] = useState<WaterPlan|null>(null);
+  const [lastPlan,setPlan] = useState<WaterPlan|null>(null);
   const [draftId,setDraftId]=useState(newId);
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
   const [list,setList] = useState<{id:string;name:string;country:keyof typeof COUNTRIES;crop:string;revision:number}[]>([]);
@@ -47,7 +47,8 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
   const [libraryOpen,setLibraryOpen]=useState(false);
   const isMapping=tab==='carte';
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
-  const [planStale,setPlanStale]=useState(true);
+  const [planPending,setPlanStale]=useState(true);
+  const [resultInputKey,setResultInputKey]=useState('');
   const simulationSequence=useRef(0);
   const simulationDebounce=useRef(350);
   const [parcelDraft,setParcelDraft]=useState(false);
@@ -58,6 +59,10 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
 
   const scope = workspace ? `${workspace.session.coopId}:${workspace.session.userId}` : 'visitor';
   const [loadedScope,setLoadedScope]=useState(scope);
+  // Bind every visible result to the complete input snapshot, even before effects run.
+  const inputKey=JSON.stringify([scope,config,events]);
+  const planStale=planPending||resultInputKey!==inputKey||parcelDraft||!!simulationError;
+  const plan=planStale?null:lastPlan;
   const queueKey = `agri-water-queue:${scope}`;
   const draftKey = `agri-water-draft:${scope}`;
   const [keepDraft,setKeepDraft]=useState(false);
@@ -73,7 +78,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
     const geometry=config.parcelGeometry,controller=new AbortController();let alive=true;
     seasonalRequest<{assessment:NonNullable<SeasonalConfig['landAssessment']>}>({action:'land',geometry,refresh:simulationRetry>0},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}})
       .then(r=>{if(alive&&r.assessment){preparedTerrain.current=terrainKey;setConfig(old=>JSON.stringify(old.parcelGeometry)===JSON.stringify(geometry)?{...old,landAssessment:r.assessment}:old);}})
-      .catch(e=>{if(alive&&e.name!=='AbortError'){setSimulationError(e.message);setPlanStale(false);}});
+      .catch(e=>{if(alive&&e.name!=='AbortError'){setSimulationError(e.message);setPlanStale(true);}});
     return()=>{alive=false;preparedTerrain.current='';controller.abort();};
   },[terrainIdentity,parcelDraft,simulationRetry,scope,loadedScope]);
   useEffect(()=>{
@@ -93,7 +98,7 @@ export default function Seasonal({ workspace, science }: { workspace: Bootstrap 
       const checked=validateConfig(config);validateEvents(events,checked);
       const result=await seasonalRequest<{plan:WaterPlan;requestId:string}>({action:'simulate',config,events,requestId},controller.signal,90_000,fetch,{onLandProgress:p=>{if(alive)setLandProgress(p);}});
       if(result.requestId!==requestId||!result.plan)throw new Error('Réponse de calcul incomplète. Relancez le calcul ; vos saisies sont conservées.');
-      if(alive&&requestId===String(simulationSequence.current)){setPlan(result.plan);setPlanStale(false);setSimulationError('');}
+      if(alive&&requestId===String(simulationSequence.current)){setPlan(result.plan);setResultInputKey(inputKey);setPlanStale(false);setSimulationError('');}
     }catch(e){if(alive&&requestId===String(simulationSequence.current)){setPlanStale(true);setSimulationError((e as Error).message);}}},simulationDebounce.current);
     return()=>{alive=false;clearTimeout(timer);controller.abort();};
   },[config,events,parcelDraft,simulationRetry,scope,loadedScope,isMapping]);

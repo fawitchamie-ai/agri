@@ -1,0 +1,5 @@
+# Large replay JSON can be regenerated; exact snapshots are versioned as gzip.
+before.json
+after.json
+# Source PDF license statements differ; retain fingerprint and retrieval URL.
+togo-water-sa-2020.pdf
