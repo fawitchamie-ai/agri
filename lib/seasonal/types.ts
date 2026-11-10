@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.4.0';
+export const ENGINE_VERSION = 'water-balance-1.5.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -28,6 +28,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  waterModel?: import('./dual-kc.ts').DualKcInput;
   growth?: import('./growth.ts').GrowthInput;
   yieldScenario?: 'rainfed'|'recorded'|'proposed';
   fertilizerScenario?: import('./fertilizer-scenario.ts').FertilizerScenarioInput;
@@ -66,6 +67,7 @@ export type SeasonalConfig = {
 };
 export type Volumes = { netMm: number; fieldMm: number | null; netLitres: number | null; netM3: number | null; fieldLitres: number | null; fieldM3: number | null; sourceM3: number | null; durationHours: number | null };
 export type WaterDay = {
+  dualKc?: {kcb:number;ke:number;ks:number;cover:number;surfaceDepletionMm:number;transpirationDemandMm:number;transpirationMm:number;evaporationMm:number;canopySource:'profile'|'observed'};
   date: string; stage: string; stageIndex: number; rootM: number; kc: number;
   demandMm: number; actualEtMm: number; rainMm: number; rainRetainedMm: number;
   runoffMm: number; drainageMm: number; irrigationNetMm: number; requiredNetMm: number; unservedNetMm: number;

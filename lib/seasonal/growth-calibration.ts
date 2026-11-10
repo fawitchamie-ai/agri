@@ -1,11 +1,12 @@
 import {InputError,isoDate} from './validation.ts';
 export type GrowthHarvestSample={id:string;site:string;season:number;split:'training'|'validation';country:string;cropId:string;variety:string;profileId:string;availableOn:string;source:string;biomassDryKgHa:number;observedYieldKgHa:number;moisturePercent:number};
-export function growthProfileId(p:{rueGPerMj:number;temperatureC:unknown;stages:unknown;nutrientKgPerTonneBiomass:unknown;fertilizerRecovery:unknown;phResponse?:unknown}){
+export function growthProfileId(p:{rueGPerMj:number;temperatureC:unknown;stages:unknown;nutrientKgPerTonneBiomass:unknown;fertilizerRecovery:unknown;phResponse?:unknown;biomassModel?:unknown}){
  // pH response curves are diagnostic-only and are excluded from the active
  // profile identity so they cannot silently change calibration eligibility.
  // The trailing null preserves the identifier shape used by earlier profiles
  // that already had phResponse:null.
- return JSON.stringify([p.rueGPerMj,p.temperatureC,p.stages,p.nutrientKgPerTonneBiomass,p.fertilizerRecovery,null]);
+ const legacy=[p.rueGPerMj,p.temperatureC,p.stages,p.nutrientKgPerTonneBiomass,p.fertilizerRecovery,null];
+ return JSON.stringify(p.biomassModel?[...legacy,p.biomassModel]:legacy);
 }
 /** Fits HI only. Biomass must be from archived runs using the exact same profile.
  * Temporal and site holdouts are mandatory. No claim of complete model validation.

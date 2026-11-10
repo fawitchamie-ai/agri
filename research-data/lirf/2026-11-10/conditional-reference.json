@@ -1,0 +1,300 @@
+{
+  "status": "conditional-response-diagnostic-not-an-operational-yield-model",
+  "sourceDOI": "10.15482/USDA.ADC/1439968",
+  "grainBasis": "kg/ha at 15.5% grain moisture, no conversion applied",
+  "annualRows": 96,
+  "usableYieldAndEtRows": 94,
+  "missingYieldRows": [
+    {
+      "row": 53,
+      "year": 2013,
+      "plot": "D31",
+      "raw": "."
+    },
+    {
+      "row": 98,
+      "year": 2013,
+      "plot": "C46",
+      "raw": "."
+    }
+  ],
+  "missingEtRows": [],
+  "formula": "Yhat = Y_FI_2012 * (1 - k * (1 - ET_field / ET_FI_same_year))",
+  "responseCoefficientFittedOnlyOn2012": 0.849822553570427,
+  "yieldReference2012KgHa": 15733.992159616875,
+  "years": {
+    "2012": {
+      "role": "calibration",
+      "etReferenceMm": 770.7831007454885,
+      "rows": [
+        {
+          "treatment": "100/100",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 15733.992159616875,
+          "fieldBalanceEstimatedEtMm": 770.7831007454885,
+          "etRatioToSameYearFullIrrigation": 1.0,
+          "conditionalPredictionKgHa": 15733.992159616875,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "100/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12673.705877886356,
+          "fieldBalanceEstimatedEtMm": 653.1460949508372,
+          "etRatioToSameYearFullIrrigation": 0.847379884586371,
+          "conditionalPredictionKgHa": 13693.293121513387,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "40/40",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 10685.614734499954,
+          "fieldBalanceEstimatedEtMm": 476.6008678435148,
+          "etRatioToSameYearFullIrrigation": 0.618333312422852,
+          "conditionalPredictionKgHa": 10630.688180950916,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "50/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 11375.560651538502,
+          "fieldBalanceEstimatedEtMm": 530.9685017671595,
+          "etRatioToSameYearFullIrrigation": 0.688868893536477,
+          "conditionalPredictionKgHa": 11573.8265879724,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/40",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 11642.914890861395,
+          "fieldBalanceEstimatedEtMm": 544.7363166561272,
+          "etRatioToSameYearFullIrrigation": 0.706731006594809,
+          "conditionalPredictionKgHa": 11812.662712803287,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12038.913475990834,
+          "fieldBalanceEstimatedEtMm": 551.4353497659324,
+          "etRatioToSameYearFullIrrigation": 0.715422210518878,
+          "conditionalPredictionKgHa": 11928.873681716139,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/65",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12615.487312571784,
+          "fieldBalanceEstimatedEtMm": 565.4284570146739,
+          "etRatioToSameYearFullIrrigation": 0.7335766137942061,
+          "conditionalPredictionKgHa": 12171.61804867523,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/80",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 14711.6786094809,
+          "fieldBalanceEstimatedEtMm": 640.91866791242,
+          "etRatioToSameYearFullIrrigation": 0.8315162427569237,
+          "conditionalPredictionKgHa": 13481.178758118793,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/40",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12806.985954148307,
+          "fieldBalanceEstimatedEtMm": 600.5606915353773,
+          "etRatioToSameYearFullIrrigation": 0.7791565369745718,
+          "conditionalPredictionKgHa": 12781.071823093598,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 11274.593084905717,
+          "fieldBalanceEstimatedEtMm": 586.1831390298669,
+          "etRatioToSameYearFullIrrigation": 0.7605033614033836,
+          "conditionalPredictionKgHa": 12531.658321193572,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/65",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 13332.045075873235,
+          "fieldBalanceEstimatedEtMm": 610.7806182603341,
+          "etRatioToSameYearFullIrrigation": 0.7924156843469938,
+          "conditionalPredictionKgHa": 12958.36122702074,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/80",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 14946.326894705267,
+          "fieldBalanceEstimatedEtMm": 675.4905072903733,
+          "etRatioToSameYearFullIrrigation": 0.8763691194540335,
+          "conditionalPredictionKgHa": 14080.91112029071,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        }
+      ],
+      "conditionalMetrics": {
+        "nTreatmentMeans": 12,
+        "nFieldSeasons": 1,
+        "maeKgHa": 479.08462130790275,
+        "rmseKgHa": 664.7948288873636,
+        "biasKgHa": -38.306914926123376,
+        "observedMeanKgHa": 12819.818226839927,
+        "nrmsePercentOfObservedMean": 5.185680616715225
+      },
+      "constantBaselineMetrics": {
+        "nTreatmentMeans": 12,
+        "nFieldSeasons": 1,
+        "maeKgHa": 2914.173932776948,
+        "rmseKgHa": 3289.5222669000927,
+        "biasKgHa": 2914.173932776948,
+        "observedMeanKgHa": 12819.818226839927,
+        "nrmsePercentOfObservedMean": 25.659663878954678
+      }
+    },
+    "2013": {
+      "role": "retrospective temporal check, not blind",
+      "etReferenceMm": 659.5559266906993,
+      "rows": [
+        {
+          "treatment": "100/100",
+          "plotsWithYieldAndET": 3,
+          "observedGrainKgHa": 15699.400422165467,
+          "fieldBalanceEstimatedEtMm": 659.5559266906993,
+          "etRatioToSameYearFullIrrigation": 1.0,
+          "conditionalPredictionKgHa": 15733.992159616875,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "100/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 13076.020146452964,
+          "fieldBalanceEstimatedEtMm": 565.1947378959761,
+          "etRatioToSameYearFullIrrigation": 0.8569322403512051,
+          "conditionalPredictionKgHa": 13821.018639005548,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "40/40",
+          "plotsWithYieldAndET": 3,
+          "observedGrainKgHa": 8567.100621986638,
+          "fieldBalanceEstimatedEtMm": 421.5982443782682,
+          "etRatioToSameYearFullIrrigation": 0.639215307325982,
+          "conditionalPredictionKgHa": 10909.903452129343,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "50/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12064.092201081046,
+          "fieldBalanceEstimatedEtMm": 453.8636794814489,
+          "etRatioToSameYearFullIrrigation": 0.6881352454198925,
+          "conditionalPredictionKgHa": 11564.01690461734,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/40",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 10898.255987087277,
+          "fieldBalanceEstimatedEtMm": 450.3649906627693,
+          "etRatioToSameYearFullIrrigation": 0.6828306326083085,
+          "conditionalPredictionKgHa": 11493.088388852737,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 12119.800870830106,
+          "fieldBalanceEstimatedEtMm": 493.46594878743616,
+          "etRatioToSameYearFullIrrigation": 0.748179083559124,
+          "conditionalPredictionKgHa": 12366.869152518531,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/65",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 13902.860840737338,
+          "fieldBalanceEstimatedEtMm": 540.8968625907834,
+          "etRatioToSameYearFullIrrigation": 0.8200924905712182,
+          "conditionalPredictionKgHa": 13328.430609333027,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "65/80",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 15098.96896238575,
+          "fieldBalanceEstimatedEtMm": 558.5063642114653,
+          "etRatioToSameYearFullIrrigation": 0.8467915177621905,
+          "conditionalPredictionKgHa": 13685.426009049848,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/40",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 10600.22741421654,
+          "fieldBalanceEstimatedEtMm": 493.2172199621322,
+          "etRatioToSameYearFullIrrigation": 0.7478019679647696,
+          "conditionalPredictionKgHa": 12361.826701668806,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/50",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 13066.117023118875,
+          "fieldBalanceEstimatedEtMm": 505.1238542676305,
+          "etRatioToSameYearFullIrrigation": 0.7658544693883251,
+          "conditionalPredictionKgHa": 12603.208528635514,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/65",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 14848.343850663652,
+          "fieldBalanceEstimatedEtMm": 565.635924569571,
+          "etRatioToSameYearFullIrrigation": 0.8576011550796475,
+          "conditionalPredictionKgHa": 13829.962765664122,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        },
+        {
+          "treatment": "80/80",
+          "plotsWithYieldAndET": 4,
+          "observedGrainKgHa": 15300.709668643882,
+          "fieldBalanceEstimatedEtMm": 581.1055827894791,
+          "etRatioToSameYearFullIrrigation": 0.8810558123632635,
+          "conditionalPredictionKgHa": 14143.577366386982,
+          "constant2012ReferenceKgHa": 15733.992159616875
+        }
+      ],
+      "conditionalMetrics": {
+        "nTreatmentMeans": 12,
+        "nFieldSeasons": 1,
+        "maeKgHa": 904.3636161663799,
+        "rmseKgHa": 1107.9836551883768,
+        "biasKgHa": 49.951889009094884,
+        "observedMeanKgHa": 12936.824834114128,
+        "nrmsePercentOfObservedMean": 8.564571828062848
+      },
+      "constantBaselineMetrics": {
+        "nTreatmentMeans": 12,
+        "nFieldSeasons": 1,
+        "maeKgHa": 2797.167325502747,
+        "rmseKgHa": 3494.599834605903,
+        "biasKgHa": 2797.167325502747,
+        "observedMeanKgHa": 12936.824834114128,
+        "nrmsePercentOfObservedMean": 27.012809398104537
+      }
+    }
+  },
+  "limits": [
+    "ET is supplied by the field experiment, not predicted by AgriPrevision.",
+    "The full-irrigation ET reference is a proxy, not independently measured stress-free ETm.",
+    "The 2013 ET reference is used retrospectively; no 2013 yield enters fitting.",
+    "Treatments within one season share weather and location; plots are not independent climates.",
+    "No validation of the application's water balance, NPK response, or African transfer.",
+    "This coefficient and the US yield reference must not become defaults for Togo or other countries.",
+    "No claim of prospective forecasting or blind evaluation."
+  ]
+}

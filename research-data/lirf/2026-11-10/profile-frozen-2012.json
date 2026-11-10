@@ -1,0 +1,208 @@
+{
+  "frozenBeforeNew2011DataAcquisition": true,
+  "profile": {
+    "mode": "dual-wp",
+    "wpRatio": 0.5,
+    "trainingYears": [
+      2012
+    ],
+    "rueGPerGlobalMj": null,
+    "waterProductivityGm2": 24.678564759714902,
+    "harvestIndex": 0.5318307669734743,
+    "years": {
+      "2012": {
+        "grain": {
+          "n": 12,
+          "mae": 622.3407051411782,
+          "rmse": 672.88439287619,
+          "bias": -68.95525484727038,
+          "nrmsePercent": 5.248782634588535
+        },
+        "biomass": {
+          "n": 12,
+          "mae": 1017.3317377296249,
+          "rmse": 1230.5197384739076,
+          "bias": -95.50105797313215,
+          "nrmsePercent": 6.045376048172295
+        },
+        "etAnnual": {
+          "n": 12,
+          "mae": 42.37174269712526,
+          "rmse": 44.09816025619189,
+          "bias": -42.37174269712526,
+          "nrmsePercent": 7.342521860718011
+        },
+        "fieldDailyEtSum": {
+          "n": 12,
+          "mae": 50.23571663278333,
+          "rmse": 51.026111878408564,
+          "bias": -50.23571663278333,
+          "nrmsePercent": 8.386245686319098
+        },
+        "treatmentContrasts": [
+          {
+            "treatment": "100/100",
+            "predictedRatio": 1,
+            "observedRatio": 1
+          },
+          {
+            "treatment": "100/50",
+            "predictedRatio": 0.8212146390862107,
+            "observedRatio": 0.8054984233699378
+          },
+          {
+            "treatment": "80/80",
+            "predictedRatio": 0.9218186368724467,
+            "observedRatio": 0.9499386260701691
+          },
+          {
+            "treatment": "80/65",
+            "predictedRatio": 0.7784481012383686,
+            "observedRatio": 0.8473402643539815
+          },
+          {
+            "treatment": "80/50",
+            "predictedRatio": 0.7241798998513427,
+            "observedRatio": 0.7165754864072752
+          },
+          {
+            "treatment": "80/40",
+            "predictedRatio": 0.7328472706002487,
+            "observedRatio": 0.8139692599452879
+          },
+          {
+            "treatment": "65/80",
+            "predictedRatio": 0.8539258849685799,
+            "observedRatio": 0.9350251646394064
+          },
+          {
+            "treatment": "65/65",
+            "predictedRatio": 0.7252460898958791,
+            "observedRatio": 0.8017982457720364
+          },
+          {
+            "treatment": "65/50",
+            "predictedRatio": 0.6960678344778445,
+            "observedRatio": 0.7651531381139307
+          },
+          {
+            "treatment": "65/40",
+            "predictedRatio": 0.6659904109853322,
+            "observedRatio": 0.7399847904300025
+          },
+          {
+            "treatment": "50/50",
+            "predictedRatio": 0.6565164095855207,
+            "observedRatio": 0.7229926477741107
+          },
+          {
+            "treatment": "40/40",
+            "predictedRatio": 0.5786940960831588,
+            "observedRatio": 0.6791419892737603
+          }
+        ]
+      },
+      "2013": {
+        "grain": {
+          "n": 12,
+          "mae": 969.187623933342,
+          "rmse": 1149.2939862480014,
+          "bias": -289.94928974763724,
+          "nrmsePercent": 8.88389539925854
+        },
+        "biomass": {
+          "n": 0,
+          "status": "unavailable",
+          "mae": null,
+          "rmse": null,
+          "bias": null,
+          "nrmsePercent": null
+        },
+        "etAnnual": {
+          "n": 12,
+          "mae": 39.89728465368078,
+          "rmse": 48.80435606643766,
+          "bias": -39.89728465368078,
+          "nrmsePercent": 9.313024420793798
+        },
+        "fieldDailyEtSum": {
+          "n": 12,
+          "mae": 28.18233996304244,
+          "rmse": 34.97949320585333,
+          "bias": -28.18233996304244,
+          "nrmsePercent": 6.8275428146006405
+        },
+        "treatmentContrasts": [
+          {
+            "treatment": "100/100",
+            "predictedRatio": 1,
+            "observedRatio": 1
+          },
+          {
+            "treatment": "100/50",
+            "predictedRatio": 0.9668373722265585,
+            "observedRatio": 0.832899333403291
+          },
+          {
+            "treatment": "80/80",
+            "predictedRatio": 0.9654241353739698,
+            "observedRatio": 0.9746047146514789
+          },
+          {
+            "treatment": "80/65",
+            "predictedRatio": 0.9487537219244552,
+            "observedRatio": 0.9457905048207932
+          },
+          {
+            "treatment": "80/50",
+            "predictedRatio": 0.9000868642385117,
+            "observedRatio": 0.8322685371265042
+          },
+          {
+            "treatment": "80/40",
+            "predictedRatio": 0.8175235667106023,
+            "observedRatio": 0.6751995062977327
+          },
+          {
+            "treatment": "65/80",
+            "predictedRatio": 0.917796982834818,
+            "observedRatio": 0.961754497392653
+          },
+          {
+            "treatment": "65/65",
+            "predictedRatio": 0.9027255559869267,
+            "observedRatio": 0.8855663571143995
+          },
+          {
+            "treatment": "65/50",
+            "predictedRatio": 0.857907460699738,
+            "observedRatio": 0.7719913210009318
+          },
+          {
+            "treatment": "65/40",
+            "predictedRatio": 0.7850746640293705,
+            "observedRatio": 0.6941829429167491
+          },
+          {
+            "treatment": "50/50",
+            "predictedRatio": 0.8301652576728823,
+            "observedRatio": 0.7684428625725191
+          },
+          {
+            "treatment": "40/40",
+            "predictedRatio": 0.7231252528750041,
+            "observedRatio": 0.5456960388048342
+          }
+        ]
+      }
+    }
+  },
+  "scriptSha256": {
+    "scripts/lirf-replay.mjs": "a9edff4012294f3c12eda87e975f6cf5d4d23c64d3d6662db0ad2fe0e75d2917",
+    "lib/seasonal/growth.ts": "8503dffad7b983454412183c3b83a66b343364a4d0074d5ca68368404d91791b",
+    "lib/seasonal/engine.ts": "4fa2758db1946ba9b641f7047d01397bb121f25db3a5a2971fb274ca8b2ab6a6",
+    "lib/seasonal/dual-kc.ts": "d665b122b3d06bf59f522da40e4bfb17bcf4891a07e131de3fc721199e231ef9"
+  },
+  "policy": "No coefficients retuned from 2011 yields; explicit input mapping repairs must be reported separately.",
+  "auditCorrection": "All 48 annual 2013 biomass cells are missing: n=0, no biomass metric. Frozen WP/HI unchanged."
+}

@@ -1,0 +1,217 @@
+{
+  "sourceDoi": "10.15482/USDA.ADC/1439968",
+  "soilDoi": "10.15482/USDA.ADC/1254006",
+  "sourceSha256": {
+    "LIRF_2012_2013.xlsx": "90cdefe84e4c5092d8dd217f8cf4dc5fabac38731844290fdee9ade523a95e31",
+    "LIRF_soils_2008_2011.xlsx": "c6ff157bd85648b20c9dc853b48799db56dbca4b9c94bfb7c8b1a7123151ee18"
+  },
+  "grainMoisturePercent": 15.5,
+  "annualRows": 96,
+  "usableGrainRows": 94,
+  "negativeSolarHoursClippedToPhysicalZero": 67,
+  "rootUnitAudit": {
+    "header": "cm",
+    "numericallyConsistentUnit": "mm, inferred from exact SWD105=SWDRZ at root=1050",
+    "identityRows": 327,
+    "status": "inferred unit correction; no author confirmation"
+  },
+  "soilSamples2007": [
+    {
+      "siteId": 1,
+      "plotId": "A15",
+      "topCm": 33.02,
+      "bottomCm": 60.96,
+      "theta1500Measured": 0.18458357949999998
+    },
+    {
+      "siteId": 2,
+      "plotId": "B15",
+      "topCm": 0,
+      "bottomCm": 27.94,
+      "theta1500Measured": 0.168192558
+    },
+    {
+      "siteId": 3,
+      "plotId": "C13",
+      "topCm": 73.66,
+      "bottomCm": 91.44,
+      "theta1500Measured": 0.07427643249999999
+    },
+    {
+      "siteId": 4,
+      "plotId": "D14",
+      "topCm": 0,
+      "bottomCm": 38.1,
+      "theta1500Measured": 0.2015652685
+    },
+    {
+      "siteId": 4,
+      "plotId": "D14",
+      "topCm": 50.8,
+      "bottomCm": 60.96,
+      "theta1500Measured": 0.057294743499999995
+    },
+    {
+      "siteId": 5,
+      "plotId": "D22",
+      "topCm": 0,
+      "bottomCm": 25.4,
+      "theta1500Measured": 0.166568222
+    },
+    {
+      "siteId": 5,
+      "plotId": "D22",
+      "topCm": 35.56,
+      "bottomCm": 58.42,
+      "theta1500Measured": 0.167454223
+    },
+    {
+      "siteId": 5,
+      "plotId": "D22",
+      "topCm": 58.42,
+      "bottomCm": 91.44,
+      "theta1500Measured": 0.206881276
+    },
+    {
+      "siteId": 5,
+      "plotId": "D22",
+      "topCm": 154.94,
+      "bottomCm": 182.88,
+      "theta1500Measured": 0.0484347315
+    },
+    {
+      "siteId": 6,
+      "plotId": "C21",
+      "topCm": 60.96,
+      "bottomCm": 93.98,
+      "theta1500Measured": 0.074276432
+    },
+    {
+      "siteId": 6,
+      "plotId": "C21",
+      "topCm": 93.98,
+      "bottomCm": 121.92,
+      "theta1500Measured": 0.071323095
+    },
+    {
+      "siteId": 6,
+      "plotId": "C21",
+      "topCm": 121.92,
+      "bottomCm": 139.7,
+      "theta1500Measured": 0.071470762
+    },
+    {
+      "siteId": 8,
+      "plotId": "A22",
+      "topCm": 33.02,
+      "bottomCm": 63.5,
+      "theta1500Measured": 0.08727111600000001
+    },
+    {
+      "siteId": 9,
+      "plotId": "A35",
+      "topCm": 48.26,
+      "bottomCm": 76.2,
+      "theta1500Measured": 0.1021854695
+    },
+    {
+      "siteId": 9,
+      "plotId": "A35",
+      "topCm": 121.92,
+      "bottomCm": 152.4,
+      "theta1500Measured": 0.12256349650000001
+    },
+    {
+      "siteId": 10,
+      "plotId": "B34",
+      "topCm": 0,
+      "bottomCm": 27.94,
+      "theta1500Measured": 0.160218547
+    },
+    {
+      "siteId": 10,
+      "plotId": "B34",
+      "topCm": 121.92,
+      "bottomCm": 152.4,
+      "theta1500Measured": 0.1072061425
+    },
+    {
+      "siteId": 11,
+      "plotId": "C34",
+      "topCm": 30.48,
+      "bottomCm": 58.42,
+      "theta1500Measured": 0.1653868875
+    },
+    {
+      "siteId": 12,
+      "plotId": "D32",
+      "topCm": 66.04,
+      "bottomCm": 91.44,
+      "theta1500Measured": 0.196839929
+    },
+    {
+      "siteId": 12,
+      "plotId": "D32",
+      "topCm": 121.92,
+      "bottomCm": 152.4,
+      "theta1500Measured": 0.09303012399999999
+    },
+    {
+      "siteId": 13,
+      "plotId": "D44",
+      "topCm": 91.44,
+      "bottomCm": 121.92,
+      "theta1500Measured": 0.190490254
+    },
+    {
+      "siteId": 14,
+      "plotId": "C43",
+      "topCm": 43.18,
+      "bottomCm": 55.88,
+      "theta1500Measured": 0.14176018899999998
+    },
+    {
+      "siteId": 15,
+      "plotId": "B41",
+      "topCm": 55.88,
+      "bottomCm": 91.44,
+      "theta1500Measured": 0.1326048435
+    },
+    {
+      "siteId": 16,
+      "plotId": "A42",
+      "topCm": 35.56,
+      "bottomCm": 60.96,
+      "theta1500Measured": 0.0775251035
+    },
+    {
+      "siteId": 16,
+      "plotId": "A42",
+      "topCm": 60.96,
+      "bottomCm": 91.44,
+      "theta1500Measured": 0.052126403
+    },
+    {
+      "siteId": 16,
+      "plotId": "A42",
+      "topCm": 91.44,
+      "bottomCm": 121.92,
+      "theta1500Measured": 0.0429710575
+    },
+    {
+      "siteId": 16,
+      "plotId": "A42",
+      "topCm": 121.92,
+      "bottomCm": 142.24,
+      "theta1500Measured": 0.051978736
+    }
+  ],
+  "limits": [
+    "Treatment daily series are means, not independent plot-level forcing.",
+    "2013 R6 date disagrees between crop log and daily sheet; date is a replay input, not forecast.",
+    "No complete spatial mapping of old pressure plate horizons onto all 2012/13 plots; not silently transferred. WP scenarios remain visible.",
+    "Initial whole-profile theta is reconstructed using estimated initial root depletion, not observed at sowing.",
+    "Annual ET is planting to plot maturity; treatment maturity date uncertain, and annual ET differs from sum of truncated daily rows.",
+    "Canopy and estimated field ET/roots/stress are diagnostic observations; future values unavailable in a forecast."
+  ]
+}

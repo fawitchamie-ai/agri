@@ -5,6 +5,7 @@ import { addDays, validateConfig, validateEvents } from './validation.ts';
 import { cropById, depletionAtDemand } from './catalog.ts';
 import { referenceQuantities } from './nutrition.ts';
 import { chemistryGuidance } from './chemistry.ts';
+import {dualCoefficients,endSurfaceDepletion} from './dual-kc.ts';
 
 /** Aggregate application efficiency already includes expected application losses.
  * Only overflow above field capacity is charged as additional root-zone drainage.
@@ -66,6 +67,9 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   if (c.soil.infiltrationMmDay === null) assumptions.push('Infiltration inconnue : ruissellement supposé nul ; intensité et fractionnement à vérifier.');
 
   const theta = c.soil.layers.map(l => l.initialTheta ?? l.thetaWP);
+  let surfaceDepletionMm=c.waterModel?.initialDepletionMm??0;
+  const observedCoverMap=new Map(c.waterModel?.observedCover?.map(o=>[o.date,o.cover])??[]);
+  if(c.waterModel)assumptions.push('Double coefficient FAO56 : stress sur la transpiration et évaporation séparée. '+c.waterModel.source,...(c.waterModel.observedCover?.length?['Couvert observé assimilé rétrospectivement, pas une trajectoire de prévision.']:[]));
   let previousRoot = c.stages[0].rootStartM, usedSourceM3 = 0, sourceVolumeKnown = true, lastIrrigation = -10000;
   const rooted = (depth: number) => { let top = 0; return c.soil.layers.map(l => { const m = Math.max(0, Math.min(l.thicknessM, depth - top)); top += l.thicknessM; return m; }); };
   const capacity = (depth: number) => rooted(depth).reduce((s, m, i) => s + 1000 * m * (c.soil.layers[i].thetaFC - c.soil.layers[i].thetaWP), 0);
@@ -100,7 +104,9 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     const rainMm = rainObservation?.amount ?? weather?.rainMm ?? c.fallback?.rainMmDay;
     const et0 = weather?.et0Mm ?? c.fallback?.et0MmDay;
     if (rainMm === undefined || et0 === undefined) { missing.push(`Météo incomplète le ${date} : ${rainMm === undefined ? 'pluie' : 'ET0'} et scénario de repli manquants. Le bilan ne peut pas être prolongé.`); break; }
-    const demandMm = kc * et0, p = c.adjustDepletionToEtc ? depletionAtDemand(stage.depletionFraction,demandMm) : stage.depletionFraction, rawMm=p*tawMm;
+    const beforeIrrigationDual=c.waterModel?dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,Math.min(rainMm,c.soil.infiltrationMmDay??rainMm),0,observedCoverMap.get(date)):null;
+    let demandMm = beforeIrrigationDual?(beforeIrrigationDual.kcb+beforeIrrigationDual.ke)*et0:kc*et0;
+    const p = c.adjustDepletionToEtc ? depletionAtDemand(stage.depletionFraction,demandMm) : stage.depletionFraction, rawMm=p*tawMm;
     const rainInfiltrated = Math.min(rainMm, c.soil.infiltrationMmDay ?? rainMm);
     const runoffMm = rainMm - rainInfiltrated, rainDrain = addWater(rainInfiltrated), rainRetainedMm = rainInfiltrated - rainDrain;
     const storedAfterRain = activeWater.reduce((a,b)=>a+b,0);
@@ -153,9 +159,19 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     const irrigationDrain = addWater(net), drainageMm = rainDrain + irrigationDrain;
     const beforeEt = activeWater.reduce((a, b) => a + b, 0), depletionBeforeEt = tawMm - beforeEt;
     const ks = depletionBeforeEt <= rawMm ? 1 : Math.max(0, (tawMm - depletionBeforeEt) / Math.max(1e-9, tawMm - rawMm));
-    const actualEtMm = takeWater(demandMm * ks), end = activeWater.reduce((a, b) => a + b, 0);
+    let actualEtMm:number,dualKc:WaterDay['dualKc'];
+    if(c.waterModel){
+      const dc=dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,rainInfiltrated,net,observedCoverMap.get(date));
+      const transpirationDemandMm=dc.kcb*et0,evaporationDemandMm=dc.ke*et0;
+      demandMm=transpirationDemandMm+evaporationDemandMm;
+      const evaporationMm=takeWater(Math.min(evaporationDemandMm,dc.few*(c.waterModel.totalEvaporableMm-dc.startDepletionMm))),transpirationMm=takeWater(transpirationDemandMm*ks);
+      actualEtMm=evaporationMm+transpirationMm;
+      surfaceDepletionMm=endSurfaceDepletion(c.waterModel,dc.startDepletionMm,evaporationMm,dc.few);
+      dualKc={kcb:dc.kcb,ke:dc.ke,ks,cover:dc.cover,surfaceDepletionMm,transpirationDemandMm,transpirationMm,evaporationMm,canopySource:observedCoverMap.has(date)?'observed':'profile'};
+    }else actualEtMm=takeWater(demandMm * ks);
+    const end = activeWater.reduce((a, b) => a + b, 0);
     const balanceResidualMm = end - (start + rootGainMm + assimilationMm + rainMm - runoffMm + net - drainageMm - actualEtMm);
-    days.push({ date, stage: stage.name, stageIndex, rootM, kc, demandMm, actualEtMm, rainMm, rainRetainedMm, runoffMm, drainageMm, irrigationNetMm: net, requiredNetMm, unservedNetMm: Math.max(0,requiredNetMm-net), stockStartMm: start, rootGainMm, assimilationMm, stockEndMm: end, tawMm, rawMm, depletionMm: tawMm - end, unmetEtMm: Math.max(0, demandMm - actualEtMm), balanceResidualMm,
+    days.push({ ...(dualKc?{dualKc}:{}),date, stage: stage.name, stageIndex, rootM, kc, demandMm, actualEtMm, rainMm, rainRetainedMm, runoffMm, drainageMm, irrigationNetMm: net, requiredNetMm, unservedNetMm: Math.max(0,requiredNetMm-net), stockStartMm: start, rootGainMm, assimilationMm, stockEndMm: end, tawMm, rawMm, depletionMm: tawMm - end, unmetEtMm: Math.max(0, demandMm - actualEtMm), balanceResidualMm,
       weatherSource: `${rainObservation ? 'Pluie : ' + rainObservation.source + '. ' : ''}${weather?.source ?? ''}${weather?.rainMm === null || weather?.et0Mm === null || !weather ? ' ; scénario : ' + (c.fallback?.label ?? 'absent') : ''}`,
       weatherStatus: !weather || weather.rainMm === null || weather.et0Mm === null ? 'scenario' : weather.status, intervention });
   }

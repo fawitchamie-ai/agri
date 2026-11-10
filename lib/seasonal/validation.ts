@@ -142,6 +142,19 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.managementPlan=parseManagement(c.managementPlan,validated);
   validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
+  if(c.waterModel!==undefined){
+    const m=obj(c.waterModel);
+    if(m.version!=='fao56-dual-1')throw new InputError('Version du bilan à double coefficient inconnue.');
+    const availableOn=isoDate(m.availableOn);if(availableOn>asOfDate)throw new InputError('Profil hydrique indisponible à la date du calcul.');
+    const totalEvaporableMm=number(m.totalEvaporableMm,'TEW',.1,100),readilyEvaporableMm=number(m.readilyEvaporableMm,'REW',0,totalEvaporableMm);
+    if(readilyEvaporableMm>=totalEvaporableMm)throw new InputError('REW doit être inférieur à TEW.');
+    const kcMax=number(m.kcMax,'Kc maximal',.1,2);
+    const dualStages=array(m.stages,'Kcb par stade',16).map(v=>{const s=obj(v);return {kcbStart:number(s.kcbStart,'Kcb début',0,kcMax),kcbEnd:number(s.kcbEnd,'Kcb fin',0,kcMax),coverStart:number(s.coverStart,'Couvert début',0,1),coverEnd:number(s.coverEnd,'Couvert fin',0,1)};});
+    if(dualStages.length!==stages.length)throw new InputError('Un double coefficient par stade requis.');
+    const observedCover=m.observedCover===undefined?undefined:array(m.observedCover,'Couvert observé',366).map(v=>{const o=obj(v),date=isoDate(o.date),availableOn=isoDate(o.availableOn);if(date<sowingDate||date>end||date>asOfDate||availableOn<date||availableOn>asOfDate)throw new InputError('Couvert observé hors cycle ou indisponible.');return {date,availableOn,cover:number(o.cover,'Couvert observé',0,1),source:str(o.source,'Source du couvert',600)};});
+    if(observedCover&&new Set(observedCover.map(o=>o.date)).size!==observedCover.length)throw new InputError('Couvert observé dupliqué.');
+    validated.waterModel={version:'fao56-dual-1',source:str(m.source,'Source du double coefficient',1200),availableOn,totalEvaporableMm,readilyEvaporableMm,initialDepletionMm:number(m.initialDepletionMm,'Déficit évaporant initial',0,totalEvaporableMm),wettedFraction:number(m.wettedFraction,'Fraction mouillée',.001,1),kcMax,stages:dualStages,...(observedCover?{observedCover}:{})};
+  }
   validated.growth=parseGrowth(c.growth,validated);
   return migrateInputs(validated);
 }
