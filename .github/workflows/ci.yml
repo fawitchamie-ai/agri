@@ -49,6 +49,11 @@ jobs:
           .aquacrop-python/bin/python scripts/check-togo-benchmark.py
       - name: Rejouer la référence officielle et la fertilité togolaise
         run: |
+          if ! command -v gfortran >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends gfortran
+          fi
+          gfortran --version | head -1
           .aquacrop-python/bin/python -m pip install -r research-data/togo-fertility/2026-11-11/requirements-official.txt
           .aquacrop-python/bin/python scripts/acquire-official-aquacrop.py "$RUNNER_TEMP/aquacrop-official"
           .aquacrop-python/bin/python scripts/replay-aquacrop-official-reference.py "$RUNNER_TEMP/aquacrop-official"
