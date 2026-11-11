@@ -1,0 +1,26 @@
+{
+  "id": "togo-tzee-residual-2017-v1",
+  "status": "experimental-retrospective-candidate",
+  "forecastValidated": false,
+  "stageDays": [20, 30, 46, 15],
+  "publishedDemandMm": [82.4, 203.7, 385.8, 83.3],
+  "demandStatus": "Published station-derived crop ET demand, not measured actual ET",
+  "effectiveEfficiency": 0.79,
+  "capacityKgHa": 2200.4,
+  "fit": {
+    "training": ["FI", "80%"],
+    "internalEvaluation": ["60%"],
+    "parameters": ["common yield capacity", "common effective water efficiency"],
+    "efficiencyGrid": {"min": 0.6, "max": 1, "step": 0.01},
+    "boundsStatus": "Scenario bounds, not a measured equipment confidence interval",
+    "stop": "Exhaust 41 grid values; minimize squared error on 80%, capacity analytically fixed on FI",
+    "schedule": "daily reconstructed; other schedules evaluated with frozen parameters"
+  },
+  "identifiability": {
+    "efficiencyAcrossCalendarFits": [0.73, 0.81],
+    "capacityAcrossCalendarFitsKgHa": [2200.4, 2559.4731978040204],
+    "meaning": "Different calendars give similar training fits; efficiency is not uniquely identified as a field property."
+  },
+  "source": "https://doi.org/10.17159/wsa/2020.v46.i1.7894",
+  "limits": ["60% harvest was known before this audit, not a blind test", "No biomass or canopy prediction", "No fertilizer calibration", "No transfer to country defaults", "Daily meteorology retains NASA timing within each phase"]
+}

@@ -11,5 +11,12 @@ test('public replay executes the application model; changed irrigation recalcula
   const before=rowText(),slider=window.document.getElementById('dose-2');slider.value='.8';slider.dispatchEvent(new window.Event('input'));
   assert.notEqual(rowText(),before);assert.equal(window.document.getElementById('rmse').textContent,'—');assert.match(window.document.getElementById('comparison-status').textContent,/aucune récolte observée correspondante/);
   window.document.getElementById('reset').click();assert.equal(rowText(),before);assert.equal(window.document.getElementById('served-commit').textContent,'synthetic-build');
+  const model=window.document.getElementById('model');model.value='residual';model.dispatchEvent(new window.Event('input'));
+  assert.match(rowText(),/1,845/);assert.match(rowText(),/0,988/);assert.equal(window.document.getElementById('rmse').textContent,'0,080 t/ha');
+  assert.match(window.document.getElementById('metric-label').textContent,/une seule moyenne/);
+  const candidate=rowText();slider.value='.8';slider.dispatchEvent(new window.Event('input'));assert.notEqual(rowText(),candidate);assert.equal(window.document.getElementById('rmse').textContent,'—');
+  window.document.getElementById('reset').click();assert.equal(rowText(),candidate);
+  const cal=window.document.getElementById('calendar');cal.value='7,6';cal.dispatchEvent(new window.Event('input'));assert.match(rowText(),/1,021/);
+  model.value='baseline';model.dispatchEvent(new window.Event('input'));window.document.getElementById('reset').click();assert.equal(rowText(),before);
  }finally{await window.happyDOM.close();}
 });
