@@ -1,0 +1,304 @@
+{
+  "frozen": {
+    "growthRateDay": 0.14,
+    "senescenceFraction": 0.75,
+    "declineRateDay": 0.15,
+    "cover": {
+      "n": 202,
+      "mae": 0.12797468178319998,
+      "rmse": 0.16035837491552016,
+      "bias": -0.00561306527566896,
+      "nrmsePercent": 26.567476360065438
+    }
+  },
+  "candidates": [
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.2891929399766701,
+        "rmse": 0.3511883511024124,
+        "bias": -0.08323747215442612,
+        "nrmsePercent": 58.1833547562391
+      }
+    },
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.23790725325092787,
+        "rmse": 0.3196651340479488,
+        "bias": -0.13728278802573482,
+        "nrmsePercent": 52.96072560245227
+      }
+    },
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.23394902432258596,
+        "rmse": 0.31936392185923307,
+        "bias": -0.19086843240933807,
+        "nrmsePercent": 52.91082208037378
+      }
+    },
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.312610297851656,
+        "rmse": 0.3706991352337402,
+        "bias": -0.05982011427944014,
+        "nrmsePercent": 61.415816400032064
+      }
+    },
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.30145993910890745,
+        "rmse": 0.3616918280987057,
+        "bias": -0.07097047302218865,
+        "nrmsePercent": 59.92352502763604
+      }
+    },
+    {
+      "growthRateDay": 0.08,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.2885873496275239,
+        "rmse": 0.35258227481989735,
+        "bias": -0.08533172339466133,
+        "nrmsePercent": 58.41429395995406
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.25061807496735644,
+        "rmse": 0.2982793057937426,
+        "bias": 0.01903173003397381,
+        "nrmsePercent": 49.417614823964
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.19537195573849145,
+        "rmse": 0.2506033845025293,
+        "bias": -0.03895317375046112,
+        "nrmsePercent": 41.51887606138965
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.181609528905512,
+        "rmse": 0.24364875341327902,
+        "bias": -0.09617368991063675,
+        "nrmsePercent": 40.366663106163756
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.27052884108637504,
+        "rmse": 0.32067890263811866,
+        "bias": 0.038942496152992355,
+        "nrmsePercent": 53.12868236222927
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.2588000250329662,
+        "rmse": 0.3089602553519141,
+        "bias": 0.02721368009958342,
+        "nrmsePercent": 51.18718797559557
+      }
+    },
+    {
+      "growthRateDay": 0.1,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.2451617742675604,
+        "rmse": 0.2968852442663431,
+        "bias": 0.0120867684430886,
+        "nrmsePercent": 49.186652788503274
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.20902858168768182,
+        "rmse": 0.2602842573610539,
+        "bias": 0.0755121350851971,
+        "nrmsePercent": 43.12276086596656
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.1551608688021595,
+        "rmse": 0.2036518553064682,
+        "bias": 0.017784450218535773,
+        "nrmsePercent": 33.74015142263959
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.1419118663801097,
+        "rmse": 0.1945734397198949,
+        "bias": -0.0392188482737519,
+        "nrmsePercent": 32.236079112040294
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.227581648142483,
+        "rmse": 0.28412764610100366,
+        "bias": 0.09406520153999835,
+        "nrmsePercent": 47.07302955025689
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.21596875399371887,
+        "rmse": 0.2710758848739175,
+        "bias": 0.08245230739123414,
+        "nrmsePercent": 44.91067065855256
+      }
+    },
+    {
+      "growthRateDay": 0.12,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.20263845545823458,
+        "rmse": 0.2574729449022013,
+        "bias": 0.06763334796466082,
+        "nrmsePercent": 42.65699487569214
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.19148257740809346,
+        "rmse": 0.2316120239349689,
+        "bias": 0.10669207959836237,
+        "nrmsePercent": 38.37247024884666
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.14010761856183346,
+        "rmse": 0.16935193148032543,
+        "bias": 0.050106707566336284,
+        "nrmsePercent": 28.057489597941235
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.75,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.12797468178319998,
+        "rmse": 0.16035837491552016,
+        "bias": -0.00561306527566896,
+        "nrmsePercent": 26.567476360065438
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.05,
+      "cover": {
+        "n": 202,
+        "mae": 0.20916946213144558,
+        "rmse": 0.2568286848454437,
+        "bias": 0.12484390950715342,
+        "nrmsePercent": 42.550256678596675
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.1,
+      "cover": {
+        "n": 202,
+        "mae": 0.1977991066146649,
+        "rmse": 0.2430646671413131,
+        "bias": 0.11345736909667989,
+        "nrmsePercent": 40.26989423936233
+      }
+    },
+    {
+      "growthRateDay": 0.14,
+      "senescenceFraction": 0.85,
+      "declineRateDay": 0.15,
+      "cover": {
+        "n": 202,
+        "mae": 0.18503006645486114,
+        "rmse": 0.22863968219341607,
+        "bias": 0.09918263238077503,
+        "nrmsePercent": 37.88002562913571
+      }
+    }
+  ]
+}

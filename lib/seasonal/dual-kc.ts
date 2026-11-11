@@ -3,19 +3,24 @@
  * Surface depletion tracks a sub-store, never an additional water input.
  * Explicit profiles only; previous single-Kc campaigns remain readable.
  */
+import {adjustedGreenCover,type CanopyDynamics} from './canopy.ts';
 export type DualKcInput={
  version:'fao56-dual-1';source:string;availableOn:string;
  readilyEvaporableMm:number;totalEvaporableMm:number;initialDepletionMm:number;
  wettedFraction:number;kcMax:number;
  stages:{kcbStart:number;kcbEnd:number;coverStart:number;coverEnd:number}[];
+ /** Explicit alternative to a prescribed Kcb: the same cover drives Tr and Ke. */
+ transpiration?:{method:'canopy-cover';maxCoefficient:number;source:string;availableOn:string};
+ canopyDynamics?:CanopyDynamics;
  /** Hindcast/assimilation only; future observed cover is rejected. */
  observedCover?:{date:string;availableOn:string;cover:number;source:string}[];
 };
 const bound=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 export function dualCoefficients(p:DualKcInput,stageIndex:number,fraction:number,depletionMm:number,rainMm:number,irrigationNetMm:number,observedCover?:number){
  const stage=p.stages[stageIndex];
- const kcb=stage.kcbStart+(stage.kcbEnd-stage.kcbStart)*fraction;
  const cover=observedCover??(stage.coverStart+(stage.coverEnd-stage.coverStart)*fraction);
+ const kcb=p.transpiration?Math.min(p.kcMax,p.transpiration.maxCoefficient*adjustedGreenCover(cover)):
+  stage.kcbStart+(stage.kcbEnd-stage.kcbStart)*fraction;
  const fw=rainMm>0?1:p.wettedFraction;
  const few=Math.max(1e-9,Math.min(1-cover,fw));
  const startDepletionMm=bound(depletionMm-rainMm-irrigationNetMm/fw,0,p.totalEvaporableMm);

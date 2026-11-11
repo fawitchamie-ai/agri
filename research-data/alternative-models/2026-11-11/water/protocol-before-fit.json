@@ -1,0 +1,19 @@
+{
+  "version": "stage-water-2026-11-11.1",
+  "freeParameters": [
+    "Jensen log reference yield",
+    "one nonnegative vegetative exponent",
+    "one nonnegative reproductive exponent"
+  ],
+  "training": "2012 treatment means only",
+  "evaluation": "2013 and 2011; previously explored outcomes, not blind",
+  "model": "Y=Ym*(ETa_veg/ETm_veg)^lambdaV*(ETa_repro/ETm_repro)^lambdaR",
+  "inputET": "computed using production daily water balance; field balance ET excluded from predictor",
+  "alternatives": [
+    "constant 2012 training mean",
+    "FAO seasonal Ky=1.25 fitted reference on 2012 only",
+    "Jensen 2-stage fitted on 2012 only"
+  ],
+  "noTreatmentCoefficients": true,
+  "noUniversalTransfer": true
+}

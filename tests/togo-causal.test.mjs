@@ -1,7 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {gunzipSync} from 'node:zlib';
 import {planSeason} from '../lib/seasonal/yield.ts';
 const source=JSON.parse(gunzipSync(readFileSync('research-data/simulation-audit/2026-11-10/after.json.gz')));
-test('the actual Togo reconstruction reaches the documented K ceiling without a forced water penalty',()=>{
+test('the actual Togo reconstruction reaches the documented K ceiling without a forced water penalty',t=>{
+ // Reproduce the archived calculation at its clock; the synthetic land fixture
+ // must not become a different experiment after its 24-hour operational expiry.
+ t.mock.method(Date,'now',()=>Date.parse('2026-11-10T12:00:00Z'));
  for(const c of source.cases.slice(0,3)){
   const g=planSeason(c.config,c.reconstructionForcing).growth;assert.equal(g.status,'scenario');const s=g.scenarios.find(r=>r.id==='proposed');
   const ceiling=s.balance.suppliedKgHa[2]/c.config.growth.parameters.nutrientKgPerTonneBiomass[2]*1000*c.config.growth.parameters.harvestIndex/.87;

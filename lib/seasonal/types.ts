@@ -1,5 +1,5 @@
 /** Units are part of the public contract; null means unknown, never zero. */
-export const ENGINE_VERSION = 'water-balance-1.5.0';
+export const ENGINE_VERSION = 'water-balance-1.6.0';
 export const COUNTRIES = {
   TGO: { name: 'Togo', timezone: 'Africa/Lome' },
   BEN: { name: 'Bénin', timezone: 'Africa/Porto-Novo' },
@@ -28,6 +28,9 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  /** Explicit structural sensitivity experiment; not an accepted forecast profile. */
+  soilWaterModel?:{version:'profile-recharge-1';usage:'diagnostic';acceptedHypothesis:true;source:string;availableOn:string};
+  canopyNowcast?:import('./canopy-nowcast.ts').CanopyNowcastInput;
   waterModel?: import('./dual-kc.ts').DualKcInput;
   growth?: import('./growth.ts').GrowthInput;
   yieldScenario?: 'rainfed'|'recorded'|'proposed';
@@ -67,10 +70,12 @@ export type SeasonalConfig = {
 };
 export type Volumes = { netMm: number; fieldMm: number | null; netLitres: number | null; netM3: number | null; fieldLitres: number | null; fieldM3: number | null; sourceM3: number | null; durationHours: number | null };
 export type WaterDay = {
-  dualKc?: {kcb:number;ke:number;ks:number;cover:number;surfaceDepletionMm:number;transpirationDemandMm:number;transpirationMm:number;evaporationMm:number;canopySource:'profile'|'observed'};
+  dualKc?: {kcb:number;ke:number;ks:number;cover:number;surfaceDepletionMm:number;transpirationDemandMm:number;transpirationMm:number;evaporationMm:number;canopySource:'profile'|'observed'|'simulated'};
   date: string; stage: string; stageIndex: number; rootM: number; kc: number;
   demandMm: number; actualEtMm: number; rainMm: number; rainRetainedMm: number;
   runoffMm: number; drainageMm: number; irrigationNetMm: number; requiredNetMm: number; unservedNetMm: number;
+  /** drainageMm is flux below current roots; these fields track the whole soil profile. */
+  deepDrainageMm?:number;profileStockStartMm?:number;profileStockEndMm?:number;profileBalanceResidualMm?:number;
   stockStartMm: number; rootGainMm: number; stockEndMm: number; assimilationMm: number;
   tawMm: number; rawMm: number; depletionMm: number; unmetEtMm: number;
   balanceResidualMm: number; weatherSource: string; weatherStatus: WeatherDay['status'];
@@ -83,6 +88,8 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  soilWaterMethod?:'root-zone-bucket'|'layered-recharge-diagnostic';
+  canopyNowcast?:import('./canopy-nowcast.ts').CanopyNowcastResult;
   growth?: import('./growth.ts').GrowthResult;
   waterImpact?: import('./water-impact.ts').WaterImpact;
   response?: ReturnType<typeof import('./intervention-outcome.ts').interventionOutcome>;

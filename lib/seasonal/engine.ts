@@ -6,6 +6,7 @@ import { cropById, depletionAtDemand } from './catalog.ts';
 import { referenceQuantities } from './nutrition.ts';
 import { chemistryGuidance } from './chemistry.ts';
 import {dualCoefficients,endSurfaceDepletion} from './dual-kc.ts';
+import {advanceCanopy,type CanopyState} from './canopy.ts';
 
 /** Aggregate application efficiency already includes expected application losses.
  * Only overflow above field capacity is charged as additional root-zone drainage.
@@ -69,7 +70,9 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   const theta = c.soil.layers.map(l => l.initialTheta ?? l.thetaWP);
   let surfaceDepletionMm=c.waterModel?.initialDepletionMm??0;
   const observedCoverMap=new Map(c.waterModel?.observedCover?.map(o=>[o.date,o.cover])??[]);
+  let canopyState:CanopyState={cover:0,senescenceAge:0,coverAtSenescence:null},previousDepletionFraction=0;
   if(c.waterModel)assumptions.push('Double coefficient FAO56 : stress sur la transpiration et évaporation séparée. '+c.waterModel.source,...(c.waterModel.observedCover?.length?['Couvert observé assimilé rétrospectivement, pas une trajectoire de prévision.']:[]));
+  if(c.soilWaterModel)assumptions.push('Recharge sous les racines : sensibilité structurelle diagnostique. Les paramètres d’entrée et le transfert 2011 sont insuffisants pour en faire un profil de prévision ; aucune activation automatique. '+c.soilWaterModel.source);
   let previousRoot = c.stages[0].rootStartM, usedSourceM3 = 0, sourceVolumeKnown = true, lastIrrigation = -10000;
   const rooted = (depth: number) => { let top = 0; return c.soil.layers.map(l => { const m = Math.max(0, Math.min(l.thicknessM, depth - top)); top += l.thicknessM; return m; }); };
   const capacity = (depth: number) => rooted(depth).reduce((s, m, i) => s + 1000 * m * (c.soil.layers[i].thetaFC - c.soil.layers[i].thetaWP), 0);
@@ -77,7 +80,21 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
   // the remaining original water, not a freshly refilled extension of the bucket.
   let activeDepths = rooted(previousRoot);
   let activeWater = activeDepths.map((m, i) => 1000 * m * (theta[i] - c.soil.layers[i].thetaWP));
-  const addWater = (mm: number) => { let remainder = mm; for (let i = 0; i < activeWater.length; i++) { const room = Math.max(0, 1000 * activeDepths[i] * (c.soil.layers[i].thetaFC - c.soil.layers[i].thetaWP) - activeWater[i]); const take = Math.min(room, remainder); activeWater[i] += take; remainder -= take; } return Math.max(0, remainder); };
+  // Drainage below today's roots is NOT necessarily drainage out of the soil.
+  // Preserve recharge in the not-yet-rooted profile; expanding roots encounter
+  // that current water content, rather than the original, immutable theta.
+  const unrootedWater=c.soil.layers.map((l,i)=>1000*(l.thicknessM-activeDepths[i])*(theta[i]-l.thetaWP));
+  const addWater = (mm: number) => {
+    let remainder=mm,retainedInRoots=0;
+    for(let i=0;i<activeWater.length;i++){
+      const l=c.soil.layers[i],capacityPerM=1000*(l.thetaFC-l.thetaWP);
+      const rootedTake=Math.min(Math.max(0,activeDepths[i]*capacityPerM-activeWater[i]),remainder);
+      activeWater[i]+=rootedTake;retainedInRoots+=rootedTake;remainder-=rootedTake;
+      const unrootedTake=c.soilWaterModel?Math.min(Math.max(0,(l.thicknessM-activeDepths[i])*capacityPerM-unrootedWater[i]),remainder):0;
+      unrootedWater[i]+=unrootedTake;remainder-=unrootedTake;
+    }
+    return {belowRootsMm:Math.max(0,mm-retainedInRoots),deepDrainageMm:Math.max(0,remainder)};
+  };
   const takeWater = (mm: number) => { const total = activeWater.reduce((a, b) => a + b, 0), taken = Math.min(mm, total); if (total > 0) activeWater = activeWater.map(x => x * (1 - taken / total)); return taken; };
   const days: WaterDay[] = [], weatherMap = new Map(c.weather.map(w => [w.date, w]));
   const eventsByDate = new Map<string, WaterEvent[]>();
@@ -87,9 +104,13 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     while (day >= stageStart + c.stages[stageIndex].days) { stageStart += c.stages[stageIndex].days; stageIndex++; }
     const stage = c.stages[stageIndex], fraction = stage.days === 1 ? 1 : (day - stageStart) / (stage.days - 1);
     const date = addDays(c.sowingDate, day), rootM = stage.rootStartM + fraction * (stage.rootEndM - stage.rootStartM), kc = stage.kcStart + fraction * (stage.kcEnd - stage.kcStart);
-    const start = activeWater.reduce((a, b) => a + b, 0), newDepths = rooted(rootM);
+    const start = activeWater.reduce((a, b) => a + b, 0),profileStockStartMm=start+unrootedWater.reduce((a,b)=>a+b,0),newDepths = rooted(rootM);
     let rootGainMm = 0;
-    for (let i = 0; i < activeWater.length; i++) { const gain = 1000 * (newDepths[i] - activeDepths[i]) * (theta[i] - c.soil.layers[i].thetaWP); activeWater[i] += gain; rootGainMm += gain; }
+    for (let i = 0; i < activeWater.length; i++) {
+      const remainingDepth=c.soil.layers[i].thicknessM-activeDepths[i],newDepth=newDepths[i]-activeDepths[i];
+      const gain=remainingDepth>1e-12?unrootedWater[i]*Math.max(0,Math.min(1,newDepth/remainingDepth)):0;
+      unrootedWater[i]-=gain;activeWater[i]+=gain;rootGainMm+=gain;
+    }
     activeDepths = newDepths; 
     const tawMm = capacity(rootM);
     const todayEvents = eventsByDate.get(date) ?? [];
@@ -104,11 +125,17 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     const rainMm = rainObservation?.amount ?? weather?.rainMm ?? c.fallback?.rainMmDay;
     const et0 = weather?.et0Mm ?? c.fallback?.et0MmDay;
     if (rainMm === undefined || et0 === undefined) { missing.push(`Météo incomplète le ${date} : ${rainMm === undefined ? 'pluie' : 'ET0'} et scénario de repli manquants. Le bilan ne peut pas être prolongé.`); break; }
-    const beforeIrrigationDual=c.waterModel?dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,Math.min(rainMm,c.soil.infiltrationMmDay??rainMm),0,observedCoverMap.get(date)):null;
+    const dynamics=c.waterModel?.canopyDynamics;
+    if(dynamics){
+      const currentDepletion=tawMm>0?Math.max(0,Math.min(1,1-activeWater.reduce((a,b)=>a+b,0)/tawMm)):previousDepletionFraction;
+      canopyState=advanceCanopy(canopyState,day,currentDepletion,dynamics,observedCoverMap.get(date));
+    }
+    const coverOverride=dynamics?canopyState.cover:observedCoverMap.get(date);
+    const beforeIrrigationDual=c.waterModel?dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,Math.min(rainMm,c.soil.infiltrationMmDay??rainMm),0,coverOverride):null;
     let demandMm = beforeIrrigationDual?(beforeIrrigationDual.kcb+beforeIrrigationDual.ke)*et0:kc*et0;
     const p = c.adjustDepletionToEtc ? depletionAtDemand(stage.depletionFraction,demandMm) : stage.depletionFraction, rawMm=p*tawMm;
     const rainInfiltrated = Math.min(rainMm, c.soil.infiltrationMmDay ?? rainMm);
-    const runoffMm = rainMm - rainInfiltrated, rainDrain = addWater(rainInfiltrated), rainRetainedMm = rainInfiltrated - rainDrain;
+    const runoffMm = rainMm - rainInfiltrated,rainFlux=addWater(rainInfiltrated),rainDrain=rainFlux.belowRootsMm,rainRetainedMm=rainInfiltrated-rainDrain;
     const storedAfterRain = activeWater.reduce((a,b)=>a+b,0);
     const requiredNetMm = Math.max(0, tawMm - rawMm + demandMm - storedAfterRain);
     const actualIrrigations = todayEvents.filter(e => e.kind === 'irrigation');
@@ -156,22 +183,26 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
       if(planned)intervention.reasons.push('Date et dose prévues modifiées par l’utilisateur ; apport restant à réaliser.');
       if (net > 1e-9) lastIrrigation = day;
     }
-    const irrigationDrain = addWater(net), drainageMm = rainDrain + irrigationDrain;
+    const irrigationFlux=addWater(net),irrigationDrain=irrigationFlux.belowRootsMm,drainageMm=rainDrain+irrigationDrain;
+    const deepDrainageMm=rainFlux.deepDrainageMm+irrigationFlux.deepDrainageMm;
     const beforeEt = activeWater.reduce((a, b) => a + b, 0), depletionBeforeEt = tawMm - beforeEt;
     const ks = depletionBeforeEt <= rawMm ? 1 : Math.max(0, (tawMm - depletionBeforeEt) / Math.max(1e-9, tawMm - rawMm));
     let actualEtMm:number,dualKc:WaterDay['dualKc'];
     if(c.waterModel){
-      const dc=dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,rainInfiltrated,net,observedCoverMap.get(date));
+      const dc=dualCoefficients(c.waterModel,stageIndex,fraction,surfaceDepletionMm,rainInfiltrated,net,coverOverride);
       const transpirationDemandMm=dc.kcb*et0,evaporationDemandMm=dc.ke*et0;
       demandMm=transpirationDemandMm+evaporationDemandMm;
       const evaporationMm=takeWater(Math.min(evaporationDemandMm,dc.few*(c.waterModel.totalEvaporableMm-dc.startDepletionMm))),transpirationMm=takeWater(transpirationDemandMm*ks);
       actualEtMm=evaporationMm+transpirationMm;
       surfaceDepletionMm=endSurfaceDepletion(c.waterModel,dc.startDepletionMm,evaporationMm,dc.few);
-      dualKc={kcb:dc.kcb,ke:dc.ke,ks,cover:dc.cover,surfaceDepletionMm,transpirationDemandMm,transpirationMm,evaporationMm,canopySource:observedCoverMap.has(date)?'observed':'profile'};
+      dualKc={kcb:dc.kcb,ke:dc.ke,ks,cover:dc.cover,surfaceDepletionMm,transpirationDemandMm,transpirationMm,evaporationMm,canopySource:observedCoverMap.has(date)?'observed':dynamics?'simulated':'profile'};
     }else actualEtMm=takeWater(demandMm * ks);
     const end = activeWater.reduce((a, b) => a + b, 0);
+    previousDepletionFraction=tawMm>0?(tawMm-end)/tawMm:0;
     const balanceResidualMm = end - (start + rootGainMm + assimilationMm + rainMm - runoffMm + net - drainageMm - actualEtMm);
-    days.push({ ...(dualKc?{dualKc}:{}),date, stage: stage.name, stageIndex, rootM, kc, demandMm, actualEtMm, rainMm, rainRetainedMm, runoffMm, drainageMm, irrigationNetMm: net, requiredNetMm, unservedNetMm: Math.max(0,requiredNetMm-net), stockStartMm: start, rootGainMm, assimilationMm, stockEndMm: end, tawMm, rawMm, depletionMm: tawMm - end, unmetEtMm: Math.max(0, demandMm - actualEtMm), balanceResidualMm,
+    const profileStockEndMm=end+unrootedWater.reduce((a,b)=>a+b,0);
+    const profileBalanceResidualMm=profileStockEndMm-(profileStockStartMm+assimilationMm+rainMm-runoffMm+net-deepDrainageMm-actualEtMm);
+    days.push({ ...(dualKc?{dualKc}:{}),deepDrainageMm,profileStockStartMm,profileStockEndMm,profileBalanceResidualMm,date, stage: stage.name, stageIndex, rootM, kc, demandMm, actualEtMm, rainMm, rainRetainedMm, runoffMm, drainageMm, irrigationNetMm: net, requiredNetMm, unservedNetMm: Math.max(0,requiredNetMm-net), stockStartMm: start, rootGainMm, assimilationMm, stockEndMm: end, tawMm, rawMm, depletionMm: tawMm - end, unmetEtMm: Math.max(0, demandMm - actualEtMm), balanceResidualMm,
       weatherSource: `${rainObservation ? 'Pluie : ' + rainObservation.source + '. ' : ''}${weather?.source ?? ''}${weather?.rainMm === null || weather?.et0Mm === null || !weather ? ' ; scénario : ' + (c.fallback?.label ?? 'absent') : ''}`,
       weatherStatus: !weather || weather.rainMm === null || weather.et0Mm === null ? 'scenario' : weather.status, intervention });
   }
@@ -188,7 +219,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
     calculationArea,
     ...(c.nutritionReference?{nutrition:referenceQuantities(c.nutritionReference.id,c,c.nutritionReference.contextNote,c.nutritionReference.alreadyKgHa)}:{}),
     ...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{}),
-    engineVersion: ENGINE_VERSION, levelOfEvidence: 'simulation_non_validee', status: missing.length ? 'blocked' : 'conditional', complete, horizonEnd, assumptions, missing,
+    soilWaterMethod:c.soilWaterModel?'layered-recharge-diagnostic':'root-zone-bucket',engineVersion: ENGINE_VERSION, levelOfEvidence: 'simulation_non_validee', status: missing.length ? 'blocked' : 'conditional', complete, horizonEnd, assumptions, missing,
     days, weeks: periods(days, 7), decades: periods(days, 10), stages: c.stages.map((s, i) => { const rows = days.filter(d => d.stageIndex === i); return rows.length ? period(s.name, rows) : null; }).filter((x): x is WaterPeriod => x !== null),
     nextWindows: positive.slice(0, 8).map(d => ({ from: d.date, to: d.date, conditional: true, volume: d.intervention!, reasons: d.intervention!.reasons })),
     intervalDays: intervals.length ? { min: Math.min(...intervals), max: Math.max(...intervals) } : null,
@@ -200,7 +231,7 @@ export function planWater(input: unknown, inputEvents: unknown = [], options:{re
 export function upsertEvent(events: WaterEvent[], event: WaterEvent): WaterEvent[] { return [...events.filter(e => e.id !== event.id), event].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)); }
 
 export function waterPlanCsv(plan: WaterPlan): string {
-  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo','surface_calcul_m2','partie_du_contour','dose_demandee_m3_ha_champ','dose_retenue_m3_ha_champ','version_moteur','mode_calendrier'];
+  const headers = ['date','stade','besoin_mm','consommation_mm','pluie_mm','pluie_retenue_mm','stock_debut_mm','stock_fin_mm','croissance_racines_eau_mm','correction_etat_mm','ruissellement_mm','drainage_mm','irrigation_necessaire_nette_mm','besoin_non_couvert_mm','irrigation_nette_mm','irrigation_brute_mm','litres_bruts_champ','m3_bruts_champ','m3_source','duree_heures','deficit_et_mm','type_intervention','source_meteo','statut_meteo','surface_calcul_m2','partie_du_contour','dose_demandee_m3_ha_champ','dose_retenue_m3_ha_champ','version_moteur','mode_calendrier','methode_stockage','drainage_sortie_profil_mm','stock_profil_debut_mm','stock_profil_fin_mm','residu_bilan_profil_mm'];
   const quote = (v: unknown) => { const text=typeof v==='number'?String(v):String(v??'').replace(/^[\s]*[=+@-]/,"'$&");return `"${text.replaceAll('"','""')}"`; };
-  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus,plan.calculationArea?.areaM2,plan.calculationArea?.selection,d.intervention?.requestedFieldM3Ha,d.intervention?.fieldMm==null?null:d.intervention.fieldMm*10,plan.engineVersion,plan.management?.irrigationMode??'automatic'])].map(row => row.map(quote).join(';')).join('\r\n');
+  return '\ufeff' + [headers, ...plan.days.map(d => [d.date,d.stage,d.demandMm,d.actualEtMm,d.rainMm,d.rainRetainedMm,d.stockStartMm,d.stockEndMm,d.rootGainMm,d.assimilationMm,d.runoffMm,d.drainageMm,d.requiredNetMm,d.unservedNetMm,d.irrigationNetMm,d.intervention?.fieldMm,d.intervention?.fieldLitres,d.intervention?.fieldM3,d.intervention?.sourceM3,d.intervention?.durationHours,d.unmetEtMm,d.intervention?.type,d.weatherSource,d.weatherStatus,plan.calculationArea?.areaM2,plan.calculationArea?.selection,d.intervention?.requestedFieldM3Ha,d.intervention?.fieldMm==null?null:d.intervention.fieldMm*10,plan.engineVersion,plan.management?.irrigationMode??'automatic',plan.soilWaterMethod,d.deepDrainageMm,d.profileStockStartMm,d.profileStockEndMm,d.profileBalanceResidualMm])].map(row => row.map(quote).join(';')).join('\r\n');
 }

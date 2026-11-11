@@ -1,12 +1,19 @@
 import {InputError,isoDate} from './validation.ts';
+import type {DualKcInput} from './dual-kc.ts';
 export type GrowthHarvestSample={id:string;site:string;season:number;split:'training'|'validation';country:string;cropId:string;variety:string;profileId:string;availableOn:string;source:string;biomassDryKgHa:number;observedYieldKgHa:number;moisturePercent:number};
-export function growthProfileId(p:{rueGPerMj:number;temperatureC:unknown;stages:unknown;nutrientKgPerTonneBiomass:unknown;fertilizerRecovery:unknown;phResponse?:unknown;biomassModel?:unknown}){
+export function growthProfileId(p:{rueGPerMj:number;temperatureC:unknown;stages:unknown;nutrientKgPerTonneBiomass:unknown;fertilizerRecovery:unknown;phResponse?:unknown;biomassModel?:unknown},waterModel?:DualKcInput,soilWaterModel?:{version:string}){
  // pH response curves are diagnostic-only and are excluded from the active
  // profile identity so they cannot silently change calibration eligibility.
  // The trailing null preserves the identifier shape used by earlier profiles
  // that already had phResponse:null.
  const legacy=[p.rueGPerMj,p.temperatureC,p.stages,p.nutrientKgPerTonneBiomass,p.fertilizerRecovery,null];
- return JSON.stringify(p.biomassModel?[...legacy,p.biomassModel]:legacy);
+ const equation=p.biomassModel?[...legacy,p.biomassModel]:legacy;
+ if(!waterModel?.transpiration)return JSON.stringify(soilWaterModel?[...equation,{soilWaterModel:soilWaterModel.version}]:equation);
+ const d=waterModel.canopyDynamics;
+ // New canopy mechanisms alter archived biomass. An HI fitted with the previous
+ // prescribed-cover method must not silently carry over to a new equation.
+ return JSON.stringify([...equation,{soilWaterModel:soilWaterModel?.version??null,transpiration:[waterModel.transpiration.method,waterModel.transpiration.maxCoefficient],stages:waterModel.stages,
+  canopy:d?[d.initialCover,d.maxCover,d.emergenceDay,d.senescenceDay,d.growthRateDay,d.declineRateDay,d.expansionLower,d.expansionUpper,d.senescenceThreshold,d.stressDeclineRateDay]:null}]);
 }
 /** Fits HI only. Biomass must be from archived runs using the exact same profile.
  * Temporal and site holdouts are mandatory. No claim of complete model validation.

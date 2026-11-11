@@ -74,3 +74,7 @@ research-data/fertilizer/v1/test-predictions.json
 research-data/lirf/*/replay-daily.json.gz
 research-data/lirf/*/official-aquacrop-daily.json.gz
 research-data/lirf/*/togo-current-rue-daily.json.gz
+
+# Regenerable bulk daily outputs; keep compact metrics and source adapters.
+research-data/alternative-models/**/replay-daily.json.gz
+research-data/alternative-models/**/current-replay/

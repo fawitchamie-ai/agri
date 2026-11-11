@@ -1,0 +1,65 @@
+[
+  {
+    "name": "GROW-Africa-Database.zip",
+    "bytes": 64638070,
+    "md5": "e7c5b8d4783ab5bfee23ae143203b1af",
+    "sha256": "1b574f98ec11f1b7a1f80070385235a8e15e110593cd5cf9901bfd9dff723b41",
+    "url": "https://zenodo.org/api/records/16544448/files/GROW-Africa-Database.zip/content"
+  },
+  {
+    "name": "readme.txt",
+    "bytes": 9538,
+    "md5": "f2c56b9f9b4da3a0f1cc7b468d8bd4dd",
+    "sha256": "f62e9c78681d8791138bd07a70ac8ed7e2a6c5962ec468ebf90fde64d210e73f",
+    "url": "https://zenodo.org/api/records/16544448/files/readme.txt/content"
+  },
+  {
+    "name": "One_Acre_Fund_MEL_maize_survey_data_2016-2022.csv",
+    "bytes": 5637560,
+    "md5": "7856ff0693dce26817623bc73ac5fa7b",
+    "sha256": "f305a3d3e48015bd877dc9df5c53b1715c61f940d58383d57d4dfb68c59c6ff0",
+    "url": "https://zenodo.org/api/records/11122388/files/One_Acre_Fund_MEL_maize_survey_data_2016-2022.csv/content"
+  },
+  {
+    "name": "LIRF_Maize_2008_r1_0.xlsx",
+    "bytes": 994077,
+    "md5": "6526ec7bf96307df8d2f3f53df52f3c1",
+    "sha256": "c892a002d1ece2b96a3c5f6c577edd402f646c50483d9d131566a42fad238add",
+    "url": "https://ndownloader.figshare.com/files/44334614"
+  },
+  {
+    "name": "LIRF_Maize_2009_r1_0.xlsx",
+    "bytes": 989203,
+    "md5": "14d06a0b56df9c0fab019d72d6a9ef94",
+    "sha256": "d046d0795e5a977d9aedaa018a3d5c9ab456768f9427204379b8d63a44f94b46",
+    "url": "https://ndownloader.figshare.com/files/44334617"
+  },
+  {
+    "name": "LIRF_Maize_2010_r1_0.xlsx",
+    "bytes": 981346,
+    "md5": "34dec8da9d88e5a89c9c4552d3b43517",
+    "sha256": "6f795043f40fb0f9d47af8c1aab9ac67ec23d8607d0bd01893c6f0c3ef93ce1f",
+    "url": "https://ndownloader.figshare.com/files/44334623"
+  },
+  {
+    "name": "LIRF_Weather_2008.xlsx",
+    "bytes": 2154202,
+    "md5": "da3478fddaf7f6e86b280ae5ba9f5daf",
+    "sha256": "8b9a40b068c5ca60d7652c3f36caf794c481064df4b245844c0fdfdbbd91641b",
+    "url": "https://ndownloader.figshare.com/files/44334629"
+  },
+  {
+    "name": "LIRF_Weather_2009.xlsx",
+    "bytes": 2251966,
+    "md5": "74a4e7d3ea767dfcaa8b091129f168b7",
+    "sha256": "74a06347f992523a427cbac45b5413c26075c534c1af179c5a96332defa8f053",
+    "url": "https://ndownloader.figshare.com/files/44334641"
+  },
+  {
+    "name": "LIRF_Weather_2010.xlsx",
+    "bytes": 2207164,
+    "md5": "af5de618c40f4930439b623570544eaa",
+    "sha256": "8ca4e6738be8cd15e64438794aadf0199d45c6eca2cef031d5365cc35a24c06e",
+    "url": "https://ndownloader.figshare.com/files/44334647"
+  }
+]

@@ -1,0 +1,642 @@
+{
+  "engine": "water-balance-1.6.0",
+  "growth": "daily-rue-npk-1.4.0",
+  "rootMethod": "root-zone-bucket",
+  "unchangedFromArchive": true,
+  "fits": [
+    {
+      "mode": "single",
+      "wpRatio": 0.5,
+      "trainingYears": [
+        2012
+      ],
+      "rueGPerGlobalMj": 1.2646564245529788,
+      "waterProductivityGm2": null,
+      "harvestIndex": 0.5317966524945676,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 425.2309643444211,
+            "rmse": 530.131395652453,
+            "bias": -22.626141559285013,
+            "nrmsePercent": 4.1352489268728885
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 780.7001662022989,
+            "rmse": 1013.286938785631,
+            "bias": -20.586645766802274,
+            "nrmsePercent": 4.9781408604282795
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 45.77939587052458,
+            "rmse": 48.506201789920475,
+            "bias": -45.77939587052458,
+            "nrmsePercent": 8.076478586720215
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 53.64336980618264,
+            "rmse": 55.16967063246543,
+            "bias": -53.64336980618264,
+            "nrmsePercent": 9.067248029002451
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.8436699649806305,
+              "observedRatio": 0.8054984233699378
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.9447507739662435,
+              "observedRatio": 0.9499386260701691
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.8237975218760504,
+              "observedRatio": 0.8473402643539815
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.7759412768944512,
+              "observedRatio": 0.7165754864072752
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.7832167192252486,
+              "observedRatio": 0.8139692599452879
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.8760890299631358,
+              "observedRatio": 0.9350251646394064
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.7689917267183224,
+              "observedRatio": 0.8017982457720364
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.7415243202363667,
+              "observedRatio": 0.7651531381139307
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.715893388956817,
+              "observedRatio": 0.7399847904300025
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.6981953543624897,
+              "observedRatio": 0.7229926477741107
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.6233919328887606,
+              "observedRatio": 0.6791419892737603
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 1846.7331085487392,
+            "rmse": 2161.8281556830143,
+            "bias": -1733.3042808048194,
+            "nrmsePercent": 16.71065492038139
+          },
+          "biomass": {
+            "n": 0,
+            "status": "unavailable",
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 53.55778766870333,
+            "rmse": 63.579262143264245,
+            "bias": -53.55778766870333,
+            "nrmsePercent": 12.132425642297596
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 41.84284297806499,
+            "rmse": 49.88493108826444,
+            "bias": -41.84284297806499,
+            "nrmsePercent": 9.736890720633275
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.9665948840402271,
+              "observedRatio": 0.832899333403291
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.9857554633627209,
+              "observedRatio": 0.9746047146514789
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.9771254406449695,
+              "observedRatio": 0.9457905048207932
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.9355900094921712,
+              "observedRatio": 0.8322685371265042
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.8645148972217301,
+              "observedRatio": 0.6751995062977327
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.9451396818260963,
+              "observedRatio": 0.961754497392653
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.9367312183529474,
+              "observedRatio": 0.8855663571143995
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.8942432183045247,
+              "observedRatio": 0.7719913210009318
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.8289260637783056,
+              "observedRatio": 0.6941829429167491
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.8437114367419111,
+              "observedRatio": 0.7684428625725191
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.7486513110481126,
+              "observedRatio": 0.5456960388048342
+            }
+          ]
+        }
+      }
+    },
+    {
+      "mode": "dual",
+      "wpRatio": 0.5,
+      "trainingYears": [
+        2012
+      ],
+      "rueGPerGlobalMj": 1.3003972263244887,
+      "waterProductivityGm2": null,
+      "harvestIndex": 0.5318281812800536,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 592.8130408607591,
+            "rmse": 691.6068242732339,
+            "bias": -54.15901417112824,
+            "nrmsePercent": 5.394825511841242
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 1004.7000222662635,
+            "rmse": 1254.8267517630309,
+            "bias": -71.89341934421782,
+            "nrmsePercent": 6.164793097201441
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 42.37174269712527,
+            "rmse": 44.098160256191896,
+            "bias": -42.37174269712527,
+            "nrmsePercent": 7.342521860718013
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 50.23571663278333,
+            "rmse": 51.026111878408564,
+            "bias": -50.23571663278333,
+            "nrmsePercent": 8.386245686319098
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.8470707339798763,
+              "observedRatio": 0.8054984233699378
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.9193175096182065,
+              "observedRatio": 0.9499386260701691
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.8002955835008089,
+              "observedRatio": 0.8473402643539815
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.7514966645843651,
+              "observedRatio": 0.7165754864072752
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.7575754296634564,
+              "observedRatio": 0.8139692599452879
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.8464744100060089,
+              "observedRatio": 0.9350251646394064
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.7402718815544147,
+              "observedRatio": 0.8017982457720364
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.7130505607083415,
+              "observedRatio": 0.7651531381139307
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.6852005844131176,
+              "observedRatio": 0.7399847904300025
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.665770661827369,
+              "observedRatio": 0.7229926477741107
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.5872054816080279,
+              "observedRatio": 0.6791419892737603
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 1995.6230619656365,
+            "rmse": 2290.8851897166323,
+            "bias": -1916.3362081753278,
+            "nrmsePercent": 17.70824927362097
+          },
+          "biomass": {
+            "n": 0,
+            "status": "unavailable",
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 39.897284653680785,
+            "rmse": 48.80435606643766,
+            "bias": -39.897284653680785,
+            "nrmsePercent": 9.313024420793798
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 28.18233996304245,
+            "rmse": 34.97949320585334,
+            "bias": -28.18233996304245,
+            "nrmsePercent": 6.827542814600641
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.9673216751307632,
+              "observedRatio": 0.832899333403291
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.95861779425267,
+              "observedRatio": 0.9746047146514789
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.9414461764772973,
+              "observedRatio": 0.9457905048207932
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.8928316217031166,
+              "observedRatio": 0.8322685371265042
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.8224089012743385,
+              "observedRatio": 0.6751995062977327
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.9045446456697082,
+              "observedRatio": 0.961754497392653
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.891082016716607,
+              "observedRatio": 0.8855663571143995
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.846474438805176,
+              "observedRatio": 0.7719913210009318
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.7839218786541524,
+              "observedRatio": 0.6941829429167491
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.8133640430160032,
+              "observedRatio": 0.7684428625725191
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.7209133248123843,
+              "observedRatio": 0.5456960388048342
+            }
+          ]
+        }
+      }
+    },
+    {
+      "mode": "dual-wp",
+      "wpRatio": 0.5,
+      "trainingYears": [
+        2012
+      ],
+      "rueGPerGlobalMj": null,
+      "waterProductivityGm2": 24.67856475971491,
+      "harvestIndex": 0.5318307669734743,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 622.3407051411776,
+            "rmse": 672.8843928761898,
+            "bias": -68.95525484726795,
+            "nrmsePercent": 5.248782634588534
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 1017.3317377296247,
+            "rmse": 1230.519738473908,
+            "bias": -95.5010579731276,
+            "nrmsePercent": 6.0453760481722965
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 42.37174269712527,
+            "rmse": 44.098160256191896,
+            "bias": -42.37174269712527,
+            "nrmsePercent": 7.342521860718013
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 50.23571663278333,
+            "rmse": 51.026111878408564,
+            "bias": -50.23571663278333,
+            "nrmsePercent": 8.386245686319098
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.8212146390862107,
+              "observedRatio": 0.8054984233699378
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.9218186368724466,
+              "observedRatio": 0.9499386260701691
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.7784481012383685,
+              "observedRatio": 0.8473402643539815
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.7241798998513427,
+              "observedRatio": 0.7165754864072752
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.7328472706002488,
+              "observedRatio": 0.8139692599452879
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.8539258849685798,
+              "observedRatio": 0.9350251646394064
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.7252460898958792,
+              "observedRatio": 0.8017982457720364
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.6960678344778445,
+              "observedRatio": 0.7651531381139307
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.6659904109853321,
+              "observedRatio": 0.7399847904300025
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.6565164095855207,
+              "observedRatio": 0.7229926477741107
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.5786940960831587,
+              "observedRatio": 0.6791419892737603
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 969.1876239333413,
+            "rmse": 1149.2939862479998,
+            "bias": -289.94928974763405,
+            "nrmsePercent": 8.883895399258527
+          },
+          "biomass": {
+            "n": 0,
+            "status": "unavailable",
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "etAnnual": {
+            "n": 12,
+            "mae": 39.897284653680785,
+            "rmse": 48.80435606643766,
+            "bias": -39.897284653680785,
+            "nrmsePercent": 9.313024420793798
+          },
+          "fieldDailyEtSum": {
+            "n": 12,
+            "mae": 28.18233996304245,
+            "rmse": 34.97949320585334,
+            "bias": -28.18233996304245,
+            "nrmsePercent": 6.827542814600641
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "predictedRatio": 1,
+              "observedRatio": 1
+            },
+            {
+              "treatment": "100/50",
+              "predictedRatio": 0.9668373722265587,
+              "observedRatio": 0.832899333403291
+            },
+            {
+              "treatment": "80/80",
+              "predictedRatio": 0.9654241353739698,
+              "observedRatio": 0.9746047146514789
+            },
+            {
+              "treatment": "80/65",
+              "predictedRatio": 0.9487537219244555,
+              "observedRatio": 0.9457905048207932
+            },
+            {
+              "treatment": "80/50",
+              "predictedRatio": 0.9000868642385117,
+              "observedRatio": 0.8322685371265042
+            },
+            {
+              "treatment": "80/40",
+              "predictedRatio": 0.8175235667106023,
+              "observedRatio": 0.6751995062977327
+            },
+            {
+              "treatment": "65/80",
+              "predictedRatio": 0.9177969828348184,
+              "observedRatio": 0.961754497392653
+            },
+            {
+              "treatment": "65/65",
+              "predictedRatio": 0.9027255559869268,
+              "observedRatio": 0.8855663571143995
+            },
+            {
+              "treatment": "65/50",
+              "predictedRatio": 0.857907460699738,
+              "observedRatio": 0.7719913210009318
+            },
+            {
+              "treatment": "65/40",
+              "predictedRatio": 0.7850746640293707,
+              "observedRatio": 0.6941829429167491
+            },
+            {
+              "treatment": "50/50",
+              "predictedRatio": 0.8301652576728823,
+              "observedRatio": 0.7684428625725191
+            },
+            {
+              "treatment": "40/40",
+              "predictedRatio": 0.7231252528750041,
+              "observedRatio": 0.5456960388048342
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "holdout2011": [
+    {
+      "mode": "single",
+      "efficiency": 0.9,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1210.0287231931527,
+      "maeKgHa": 969.9078731871524,
+      "biasKgHa": 83.06134472666615,
+      "nrmsePercent": 12.517808296142444
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 0.9,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1093.2432047097482,
+      "maeKgHa": 861.8458999377764,
+      "biasKgHa": 86.77867697428898,
+      "nrmsePercent": 11.309656205105263
+    },
+    {
+      "mode": "single",
+      "efficiency": 1,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1263.881355210389,
+      "maeKgHa": 866.0101888523586,
+      "biasKgHa": 625.9724329124796,
+      "nrmsePercent": 13.07491649606644
+    },
+    {
+      "mode": "dual-wp",
+      "efficiency": 1,
+      "nTreatmentMeans": 6,
+      "nSeasons": 1,
+      "rmseKgHa": 1175.914928654244,
+      "maeKgHa": 761.2749214268973,
+      "biasKgHa": 679.7332716395385,
+      "nrmsePercent": 12.164899367530271
+    }
+  ],
+  "no2011Retuning": true
+}

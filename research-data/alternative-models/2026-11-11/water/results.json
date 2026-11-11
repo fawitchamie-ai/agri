@@ -1,0 +1,865 @@
+{
+  "training": [
+    2012
+  ],
+  "testUsedForParameterFitting": false,
+  "notBlind": true,
+  "models": [
+    {
+      "model": "constant",
+      "parameters": {},
+      "years": {
+        "2012": {
+          "n": 12,
+          "maeKgHa": 1240.7949720527608,
+          "rmseKgHa": 1525.9577431747116,
+          "biasKgHa": -7.579122514774402e-13,
+          "nrmsePercent": 11.903115287390925
+        },
+        "2013": {
+          "n": 12,
+          "maeKgHa": 1758.6089471072055,
+          "rmseKgHa": 2098.0403960155854,
+          "biasKgHa": -117.00660727420109,
+          "nrmsePercent": 16.21758370325227
+        },
+        "2011": {
+          "n": 6,
+          "maeKgHa": 3426.7538178932846,
+          "rmseKgHa": 4523.587714873723,
+          "biasKgHa": 3153.3598935065934,
+          "nrmsePercent": 46.79674353195946
+        }
+      },
+      "rows": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 15733.992159616875
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12673.705877886356
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 14946.326894705267
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 13332.045075873235
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 11274.593084905717
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12806.98595414831
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 14711.6786094809
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12615.487312571786
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12038.913475990834
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 11642.914890861397
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 11375.560651538502
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 10685.614734499954
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 15699.400422165467
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 13076.020146452964
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 15300.709668643882
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 14848.34385066365
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 13066.117023118875
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 10600.22741421654
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 15098.968962385752
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 13902.860840737338
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12119.800870830106
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 10898.255987087277
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12064.092201081046
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 8567.100621986638
+        },
+        {
+          "id": "LIRF-2011-1",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 13640
+        },
+        {
+          "id": "LIRF-2011-2",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 12498.25
+        },
+        {
+          "id": "LIRF-2011-3",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 10369
+        },
+        {
+          "id": "LIRF-2011-4",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 10293.5
+        },
+        {
+          "id": "LIRF-2011-5",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 7231.75
+        },
+        {
+          "id": "LIRF-2011-6",
+          "year": 2011,
+          "predictedKgHa": 12819.818226839927,
+          "observedKgHa": 3966.25
+        }
+      ]
+    },
+    {
+      "model": "FAO-seasonal",
+      "parameters": {
+        "Ym": 16523.65868616211
+      },
+      "years": {
+        "2012": {
+          "n": 12,
+          "maeKgHa": 646.5373450320279,
+          "rmseKgHa": 859.1709397972544,
+          "biasKgHa": -52.714464984420374,
+          "nrmsePercent": 6.701896427817286
+        },
+        "2013": {
+          "n": 12,
+          "maeKgHa": 1099.839285204181,
+          "rmseKgHa": 1472.3998100268368,
+          "biasKgHa": 880.7365019444875,
+          "nrmsePercent": 11.381462058171728
+        },
+        "2011": {
+          "n": 6,
+          "maeKgHa": 503.65385664139586,
+          "rmseKgHa": 758.959135157992,
+          "biasKgHa": 256.6422433007004,
+          "nrmsePercent": 7.851470610914807
+        }
+      },
+      "rows": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "predictedKgHa": 16070.142721731818,
+          "observedKgHa": 15733.992159616875
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "predictedKgHa": 14385.281377220259,
+          "observedKgHa": 12673.705877886356
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "predictedKgHa": 14622.437832489115,
+          "observedKgHa": 14946.326894705267
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "predictedKgHa": 13498.518457061644,
+          "observedKgHa": 13332.045075873235
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "predictedKgHa": 12623.330922554107,
+          "observedKgHa": 11274.593084905717
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "predictedKgHa": 12784.590922775793,
+          "observedKgHa": 12806.98595414831
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "predictedKgHa": 13317.630413453273,
+          "observedKgHa": 14711.6786094809
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "predictedKgHa": 12344.630237600231,
+          "observedKgHa": 12615.487312571786
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "predictedKgHa": 11839.861794376708,
+          "observedKgHa": 12038.913475990834
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "predictedKgHa": 11355.8856608341,
+          "observedKgHa": 11642.914890861397
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "predictedKgHa": 10902.368499458087,
+          "observedKgHa": 11375.560651538502
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "predictedKgHa": 9460.566302710953,
+          "observedKgHa": 10685.614734499954
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "predictedKgHa": 15758.507036831978,
+          "observedKgHa": 15699.400422165467
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "predictedKgHa": 15183.699537092665,
+          "observedKgHa": 13076.020146452964
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "predictedKgHa": 15030.502573122054,
+          "observedKgHa": 15300.709668643882
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "predictedKgHa": 14755.934476445149,
+          "observedKgHa": 14848.34385066365
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "predictedKgHa": 13932.998629528633,
+          "observedKgHa": 13066.117023118875
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "predictedKgHa": 13292.76073824408,
+          "observedKgHa": 10600.22741421654
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "predictedKgHa": 14146.96873256792,
+          "observedKgHa": 15098.968962385752
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "predictedKgHa": 13910.060802851627,
+          "observedKgHa": 13902.860840737338
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "predictedKgHa": 13153.030338167335,
+          "observedKgHa": 12119.800870830106
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "predictedKgHa": 12652.291770876578,
+          "observedKgHa": 10898.255987087277
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "predictedKgHa": 12566.032551393242,
+          "observedKgHa": 12064.092201081046
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "predictedKgHa": 11427.948845582125,
+          "observedKgHa": 8567.100621986638
+        },
+        {
+          "id": "LIRF-2011-1",
+          "year": 2011,
+          "predictedKgHa": 13697.014309916067,
+          "observedKgHa": 13640
+        },
+        {
+          "id": "LIRF-2011-2",
+          "year": 2011,
+          "predictedKgHa": 12021.481833129008,
+          "observedKgHa": 12498.25
+        },
+        {
+          "id": "LIRF-2011-3",
+          "year": 2011,
+          "predictedKgHa": 10451.856689148004,
+          "observedKgHa": 10369
+        },
+        {
+          "id": "LIRF-2011-4",
+          "year": 2011,
+          "predictedKgHa": 10029.233326848906,
+          "observedKgHa": 10293.5
+        },
+        {
+          "id": "LIRF-2011-5",
+          "year": 2011,
+          "predictedKgHa": 7647.707029038152,
+          "observedKgHa": 7231.75
+        },
+        {
+          "id": "LIRF-2011-6",
+          "year": 2011,
+          "predictedKgHa": 5691.310271724066,
+          "observedKgHa": 3966.25
+        }
+      ]
+    },
+    {
+      "model": "Jensen-et",
+      "parameters": {
+        "Ym": 15780.419821653677,
+        "lambdaV": 3.967804098708961e-09,
+        "lambdaR": 0.9270783564690233,
+        "boundActive": [
+          0,
+          0,
+          0
+        ]
+      },
+      "years": {
+        "2012": {
+          "n": 12,
+          "maeKgHa": 404.77080682327806,
+          "rmseKgHa": 544.7150891499431,
+          "biasKgHa": -11.92595575821239,
+          "nrmsePercent": 4.249007899421791
+        },
+        "2013": {
+          "n": 12,
+          "maeKgHa": 1685.7165331235199,
+          "rmseKgHa": 2086.3356386030564,
+          "biasKgHa": 1685.7165331235199,
+          "nrmsePercent": 16.12710742671134
+        },
+        "2011": {
+          "n": 6,
+          "maeKgHa": 2239.678700578815,
+          "rmseKgHa": 2313.2410502291436,
+          "biasKgHa": 2239.678700578815,
+          "nrmsePercent": 23.930595575550957
+        }
+      },
+      "rows": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "predictedKgHa": 15777.079268779898,
+          "observedKgHa": 15733.992159616875
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "predictedKgHa": 13771.850065342127,
+          "observedKgHa": 12673.705877886356
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "predictedKgHa": 14594.698797254394,
+          "observedKgHa": 14946.326894705267
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "predictedKgHa": 13210.599837656979,
+          "observedKgHa": 13332.045075873235
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "predictedKgHa": 12115.649332996813,
+          "observedKgHa": 11274.593084905717
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "predictedKgHa": 12157.222150035035,
+          "observedKgHa": 12806.98595414831
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "predictedKgHa": 13774.865364502159,
+          "observedKgHa": 14711.6786094809
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "predictedKgHa": 12568.165413584882,
+          "observedKgHa": 12615.487312571786
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "predictedKgHa": 12056.863747014668,
+          "observedKgHa": 12038.913475990834
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "predictedKgHa": 11443.014861121117,
+          "observedKgHa": 11642.914890861397
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "predictedKgHa": 11732.391942195172,
+          "observedKgHa": 11375.560651538502
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "predictedKgHa": 10492.30647249734,
+          "observedKgHa": 10685.614734499954
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "predictedKgHa": 15780.419816698242,
+          "observedKgHa": 15699.400422165467
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "predictedKgHa": 15062.646748552686,
+          "observedKgHa": 13076.020146452964
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "predictedKgHa": 15697.682334832369,
+          "observedKgHa": 15300.709668643882
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "predictedKgHa": 15249.936029171242,
+          "observedKgHa": 14848.34385066365
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "predictedKgHa": 14199.626496870605,
+          "observedKgHa": 13066.117023118875
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "predictedKgHa": 13076.248341368908,
+          "observedKgHa": 10600.22741421654
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "predictedKgHa": 15733.507302037222,
+          "observedKgHa": 15098.968962385752
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "predictedKgHa": 15343.145340481502,
+          "observedKgHa": 13902.860840737338
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "predictedKgHa": 14338.311734709545,
+          "observedKgHa": 12119.800870830106
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "predictedKgHa": 13364.700168352627,
+          "observedKgHa": 10898.255987087277
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "predictedKgHa": 14417.796351833696,
+          "observedKgHa": 12064.092201081046
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "predictedKgHa": 13206.475741943126,
+          "observedKgHa": 8567.100621986638
+        },
+        {
+          "id": "LIRF-2011-1",
+          "year": 2011,
+          "predictedKgHa": 15439.0076564439,
+          "observedKgHa": 13640
+        },
+        {
+          "id": "LIRF-2011-2",
+          "year": 2011,
+          "predictedKgHa": 14311.657985584961,
+          "observedKgHa": 12498.25
+        },
+        {
+          "id": "LIRF-2011-3",
+          "year": 2011,
+          "predictedKgHa": 12370.628680899335,
+          "observedKgHa": 10369
+        },
+        {
+          "id": "LIRF-2011-4",
+          "year": 2011,
+          "predictedKgHa": 12201.652876827455,
+          "observedKgHa": 10293.5
+        },
+        {
+          "id": "LIRF-2011-5",
+          "year": 2011,
+          "predictedKgHa": 9723.171392106024,
+          "observedKgHa": 7231.75
+        },
+        {
+          "id": "LIRF-2011-6",
+          "year": 2011,
+          "predictedKgHa": 7390.703611611213,
+          "observedKgHa": 3966.25
+        }
+      ]
+    },
+    {
+      "model": "Jensen-tr",
+      "parameters": {
+        "Ym": 15769.829157659276,
+        "lambdaV": 1.9288283658800125e-09,
+        "lambdaR": 0.8831884392764243,
+        "boundActive": [
+          0,
+          0,
+          0
+        ]
+      },
+      "years": {
+        "2012": {
+          "n": 12,
+          "maeKgHa": 409.03195300253947,
+          "rmseKgHa": 551.7272576090344,
+          "biasKgHa": -12.247645727467443,
+          "nrmsePercent": 4.30370577684107
+        },
+        "2013": {
+          "n": 12,
+          "maeKgHa": 1649.2168815397333,
+          "rmseKgHa": 2053.7285290988084,
+          "biasKgHa": 1649.2168815397333,
+          "nrmsePercent": 15.875058644089936
+        },
+        "2011": {
+          "n": 6,
+          "maeKgHa": 2149.6032862271168,
+          "rmseKgHa": 2217.7845269134614,
+          "biasKgHa": 2149.6032862271168,
+          "nrmsePercent": 22.94309301748877
+        }
+      },
+      "rows": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "predictedKgHa": 15769.829155991167,
+          "observedKgHa": 15733.992159616875
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "predictedKgHa": 13778.968881958293,
+          "observedKgHa": 12673.705877886356
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "predictedKgHa": 14579.725351759369,
+          "observedKgHa": 14946.326894705267
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "predictedKgHa": 13217.95307458297,
+          "observedKgHa": 13332.045075873235
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "predictedKgHa": 12130.728383215337,
+          "observedKgHa": 11274.593084905717
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "predictedKgHa": 12163.163440548253,
+          "observedKgHa": 12806.98595414831
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "predictedKgHa": 13751.450533597683,
+          "observedKgHa": 14711.6786094809
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "predictedKgHa": 12575.009154531932,
+          "observedKgHa": 12615.487312571786
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "predictedKgHa": 12062.040939663917,
+          "observedKgHa": 12038.913475990834
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "predictedKgHa": 11444.203155467978,
+          "observedKgHa": 11642.914890861397
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "predictedKgHa": 11735.903732760002,
+          "observedKgHa": 11375.560651538502
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "predictedKgHa": 10481.871169272621,
+          "observedKgHa": 10685.614734499954
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "predictedKgHa": 15769.829155006011,
+          "observedKgHa": 15699.400422165467
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "predictedKgHa": 15023.44808726855,
+          "observedKgHa": 13076.020146452964
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "predictedKgHa": 15683.6116466178,
+          "observedKgHa": 15300.709668643882
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "predictedKgHa": 15216.56018036855,
+          "observedKgHa": 14848.34385066365
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "predictedKgHa": 14123.21458669853,
+          "observedKgHa": 13066.117023118875
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "predictedKgHa": 13046.029231023604,
+          "observedKgHa": 10600.22741421654
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "predictedKgHa": 15720.946751425387,
+          "observedKgHa": 15098.968962385752
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "predictedKgHa": 15313.854874435163,
+          "observedKgHa": 13902.860840737338
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "predictedKgHa": 14268.096161556472,
+          "observedKgHa": 12119.800870830106
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "predictedKgHa": 13337.949553417642,
+          "observedKgHa": 10898.255987087277
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "predictedKgHa": 14351.09402555934,
+          "observedKgHa": 12064.092201081046
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "predictedKgHa": 13177.866334469289,
+          "observedKgHa": 8567.100621986638
+        },
+        {
+          "id": "LIRF-2011-1",
+          "year": 2011,
+          "predictedKgHa": 15422.053485549424,
+          "observedKgHa": 13640
+        },
+        {
+          "id": "LIRF-2011-2",
+          "year": 2011,
+          "predictedKgHa": 14264.488041286342,
+          "observedKgHa": 12498.25
+        },
+        {
+          "id": "LIRF-2011-3",
+          "year": 2011,
+          "predictedKgHa": 12258.689376290604,
+          "observedKgHa": 10369
+        },
+        {
+          "id": "LIRF-2011-4",
+          "year": 2011,
+          "predictedKgHa": 12127.821797735513,
+          "observedKgHa": 10293.5
+        },
+        {
+          "id": "LIRF-2011-5",
+          "year": 2011,
+          "predictedKgHa": 9565.691661630884,
+          "observedKgHa": 7231.75
+        },
+        {
+          "id": "LIRF-2011-6",
+          "year": 2011,
+          "predictedKgHa": 7257.625354869934,
+          "observedKgHa": 3966.25
+        }
+      ]
+    }
+  ]
+}

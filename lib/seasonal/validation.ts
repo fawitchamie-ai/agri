@@ -1,4 +1,5 @@
 import {parseGrowth} from './growth.ts';
+import {parseCanopyNowcast} from './canopy-nowcast.ts';
 import {LAND_VERSION} from './land.ts';
 import {parseManagement} from './management.ts';
 import {parseFertilizerScenario} from './fertilizer-scenario.ts';
@@ -142,6 +143,8 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.managementPlan=parseManagement(c.managementPlan,validated);
   validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
+  validated.canopyNowcast=parseCanopyNowcast(c.canopyNowcast,validated);
+  if(c.soilWaterModel!==undefined){const s=obj(c.soilWaterModel),availableOn=isoDate(s.availableOn);if(s.version!=='profile-recharge-1'||s.usage!=='diagnostic'||s.acceptedHypothesis!==true||availableOn>asOfDate)throw new InputError('Recharge du profil : hypothèse diagnostique et date valides requises.');validated.soilWaterModel={version:'profile-recharge-1',usage:'diagnostic',acceptedHypothesis:true,source:str(s.source,'Source du profil hydrique',1200),availableOn};}
   if(c.waterModel!==undefined){
     const m=obj(c.waterModel);
     if(m.version!=='fao56-dual-1')throw new InputError('Version du bilan à double coefficient inconnue.');
@@ -153,7 +156,18 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
     if(dualStages.length!==stages.length)throw new InputError('Un double coefficient par stade requis.');
     const observedCover=m.observedCover===undefined?undefined:array(m.observedCover,'Couvert observé',366).map(v=>{const o=obj(v),date=isoDate(o.date),availableOn=isoDate(o.availableOn);if(date<sowingDate||date>end||date>asOfDate||availableOn<date||availableOn>asOfDate)throw new InputError('Couvert observé hors cycle ou indisponible.');return {date,availableOn,cover:number(o.cover,'Couvert observé',0,1),source:str(o.source,'Source du couvert',600)};});
     if(observedCover&&new Set(observedCover.map(o=>o.date)).size!==observedCover.length)throw new InputError('Couvert observé dupliqué.');
-    validated.waterModel={version:'fao56-dual-1',source:str(m.source,'Source du double coefficient',1200),availableOn,totalEvaporableMm,readilyEvaporableMm,initialDepletionMm:number(m.initialDepletionMm,'Déficit évaporant initial',0,totalEvaporableMm),wettedFraction:number(m.wettedFraction,'Fraction mouillée',.001,1),kcMax,stages:dualStages,...(observedCover?{observedCover}:{})};
+    let transpiration:NonNullable<SeasonalConfig['waterModel']>['transpiration'];
+    if(m.transpiration!==undefined){const t=obj(m.transpiration),date=isoDate(t.availableOn);if(t.method!=='canopy-cover'||date>asOfDate)throw new InputError('Méthode ou disponibilité de transpiration invalide.');transpiration={method:'canopy-cover',maxCoefficient:number(t.maxCoefficient,'Coefficient de transpiration à couvert complet',.1,kcMax),source:str(t.source,'Source de la transpiration',1200),availableOn:date};}
+    let canopyDynamics:NonNullable<SeasonalConfig['waterModel']>['canopyDynamics'];
+    if(m.canopyDynamics!==undefined){
+      const d=obj(m.canopyDynamics),date=isoDate(d.availableOn);
+      if(d.version!=='canopy-state-1'||date>asOfDate||!transpiration)throw new InputError('Couvert dynamique : version, date ou transpiration liée manquante.');
+      const maxCover=number(d.maxCover,'Couvert maximal',.001,1),initialCover=number(d.initialCover,'Couvert initial',.00001,maxCover),emergenceDay=number(d.emergenceDay,'Jour de levée',0,cycleDays-1),senescenceDay=number(d.senescenceDay,'Jour de sénescence',1,cycleDays-1);
+      const expansionLower=number(d.expansionLower,'Début du stress d’expansion',0,.99),expansionUpper=number(d.expansionUpper,'Fin de l’expansion',.001,1);
+      if(!Number.isInteger(emergenceDay)||!Number.isInteger(senescenceDay)||senescenceDay<=emergenceDay||initialCover>=maxCover/2||expansionUpper<=expansionLower)throw new InputError('Chronologie et seuils du couvert dynamique incohérents.');
+      canopyDynamics={version:'canopy-state-1',availableOn:date,source:str(d.source,'Source du couvert dynamique',1200),initialCover,maxCover,emergenceDay,senescenceDay,expansionLower,expansionUpper,growthRateDay:number(d.growthRateDay,'Croissance du couvert par jour',.001,1),declineRateDay:number(d.declineRateDay,'Sénescence du couvert par jour',.001,1),senescenceThreshold:number(d.senescenceThreshold,'Début de sénescence hydrique',.01,.99),stressDeclineRateDay:number(d.stressDeclineRateDay,'Sénescence hydrique par jour',0,1)};
+    }
+    validated.waterModel={version:'fao56-dual-1',source:str(m.source,'Source du double coefficient',1200),availableOn,totalEvaporableMm,readilyEvaporableMm,initialDepletionMm:number(m.initialDepletionMm,'Déficit évaporant initial',0,totalEvaporableMm),wettedFraction:number(m.wettedFraction,'Fraction mouillée',.001,1),kcMax,stages:dualStages,...(observedCover?{observedCover}:{}),...(transpiration?{transpiration}:{}),...(canopyDynamics?{canopyDynamics}:{})};
   }
   validated.growth=parseGrowth(c.growth,validated);
   return migrateInputs(validated);
