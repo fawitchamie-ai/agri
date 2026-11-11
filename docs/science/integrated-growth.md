@@ -1,4 +1,4 @@
-# Croissance intégrée — modèle de scénario `daily-rue-npk-1`
+# Croissance intégrée — scénario `daily-growth-process-1.5.0`
 
 ## Ce qui est livré
 
@@ -6,7 +6,9 @@ Dans **Rendement → Croissance et production journalières**, un profil explici
 
 Ce moteur JavaScript fonctionne dans le Worker existant, sans nouveau service ni secret. Il est distinct de WOFOST/PCSE (dont le service externe reste disponible séparément), AquaCrop, APSIM et QUEFTS. **Aucun de ces noms ne constitue une validation du modèle livré.** Les anciens calculs sont conservés et les campagnes sans profil ne changent pas de méthode.
 
-Produit pris en charge : grain de maïs, sorgho, mil et riz pluvial, dans un système terrestre drainé, sur une unité homogène. Les six pays peuvent exécuter des scénarios explicites ; **aucun pays ni cultivar n'est déclaré calibré**. Rizière submergée, nappe proche, salinité renseignée, cultures associées et produits frais/tubercules sont refusés. Aucun rendement de remplacement n'est créé lorsque les entrées sont incomplètes.
+Produit pris en charge : grain de maïs, sorgho, mil et riz pluvial, dans un système terrestre drainé, sur une unité homogène. Les six pays peuvent exécuter le même moteur mécaniste avec leurs propres forçages météo, sols, calendrier et apports ; **aucun pays ni cultivar n'est déclaré calibré**. Rizière submergée, nappe proche, salinité renseignée, cultures associées et produits frais/tubercules sont refusés. Aucun rendement de remplacement n'est créé lorsque les entrées sont incomplètes.
+
+La preuve biologique disponible n'est pas uniforme : Togo dispose de moyennes publiées de biomasse, couvert et LAI par stade pour un essai et trois traitements, pas de trajectoires quotidiennes répliquées ; Ghana dispose de relevés de LAI et de quadrats dont la biomasse est renseignée seulement pour une partie des lignes, sans chronologie complète de conduite. Les autres pays n'ont pas de série expérimentale de biomasse/couvert acquise dans ce dépôt. Les séries nationales de rendement ne valident pas la biomasse aérienne. L'interface affiche cette disponibilité pour le pays de la campagne.
 
 ## Équations et conventions
 
@@ -20,6 +22,26 @@ Pour chaque jour `d` :
 6. Les produits organiques exigent un profil par produit : fraction accessible et demi-vie, avec source. La fraction libérée du jour d'âge `a` est `fraction × [2^(-a/H) − 2^(-(a+1)/H)]`. Cette cinétique est une hypothèse déclarée, pas SNOMIN. Une masse sans composition complète ou sans profil bloque le résultat.
 7. `fNPK = min(1, stock[k] / besoinPotentiel[k])`. `ΔB = ΔBpot × fNPK`. L'absorption est retirée des stocks avec les besoins déclarés en kg élément/t de biomasse. Les bilans fournis/absorbés/restants et leurs résidus sont exportés ; une masse de nutriments ne peut pas être consommée deux fois.
 8. `rendement sec = ΣΔB × indice de récolte`. Le rendement à l'humidité de référence vaut `rendement sec / (1 − humidité/100)`. `production = rendement × superficie/10000`. La surface prévue reste distincte du semis réalisé.
+
+### Variante mécaniste eau–couvert–biomasse
+
+Le profil complet de l'interface accepte un objet `growth` et, lorsqu'on veut séparer les flux d'eau, un objet `waterModel` dans le même JSON. Le double coefficient FAO56 calcule l'évaporation de la surface séparément de la transpiration. Si `waterModel.transpiration` est lié à un `canopyDynamics`, le couvert vert évolue comme un état quotidien sous expansion et sénescence ; ce même couvert détermine Kcb et Ke. La croissance par transpiration utilise ensuite `ΔB = WP* × (Tr/ETo) × 10 × fT × fNPK` en kg/ha/j. `fT` est la réponse thermique trapézoïdale explicite du profil, et non le coefficient AquaCrop Ksb exact. L'évaporation du sol ne produit pas de biomasse, et le déficit hydrique n'est pas appliqué une seconde fois après Tr réelle.
+
+Le résultat journalier expose maintenant séparément le couvert et son origine (`simulated`, `observed`, `profile` ou `not-modeled`), ainsi que la biomasse cumulée ; le CSV conserve ces champs. Un profil de couvert par stades reste une entrée paramétrée, pas une prédiction dynamique. Une assimilation satellite ne lit que les observations disponibles à leur date et ne constitue pas une prévision du couvert futur.
+
+Cette variante est un **scénario AquaCrop-inspiré**, pas une exécution de l'exécutable officiel AquaCrop 7.3 et pas son port complet. Les paramètres `WP*`, de couvert, de fertilité et d'indice de récolte restent dépendants du cultivar et du domaine. Le moteur peut donc fonctionner dans les six pays, mais cette portabilité logicielle n'établit ni calibration locale, ni précision par pays, ni validation avant campagne.
+
+## Rejeu versionné après la réponse thermique WP*
+
+La version 1.5.0 applique désormais `fT` aussi à `WP* × Tr/ET0`. Le contrôle LIRF est un rejeu rétrospectif déjà exploré : ajustement biomasse/HI sur les moyennes 2012, puis rendements 2013 réservés à l'évaluation. Sur 12 moyennes de traitements d'un seul site-saison, la RMSE du grain de la voie WP* évolue ainsi :
+
+| Rapport de demande en eau | Avant, 2013 (kg/ha) | Après, 2013 (kg/ha) | Écart |
+| --- | ---: | ---: | ---: |
+| 0,35 | 1 255,86 | 1 242,56 | −13,29 |
+| 0,50 | 1 149,29 | 1 139,33 | −9,96 |
+| 0,65 | 914,55 | 912,57 | −1,98 |
+
+Sur le contrôle 2011 à coefficients WP* gelés, avec efficacité d'application 0,9, la RMSE passe de 1 093,24 à 1 105,88 kg/ha ; à efficacité 1, elle passe de 1 175,91 à 1 087,80 kg/ha. L'effet dépend donc du cas et la petite amélioration 2013 ne démontre pas un gain agronomique général. Ces années ont déjà été examinées : elles ne sont pas un test aveugle, ne mesurent pas la précision du couvert ou de la biomasse 2013, et ne justifient aucun transfert de WP* aux pays africains. Les nombres de régression versionnés sont conservés dans `research-data/alternative-models/2026-11-11/growth-process-1.5.0-lirf-expected.json`.
 
 Le pH reste **diagnostique seulement**. Les plages EcoCrop sont des repères d'aptitude et ne donnent pas de courbe mesurée de perte de rendement ou de disponibilité N/P/K par variété. Aucune courbe pH n'est appliquée. Les profils historiques qui contiennent une courbe pH sont normalisés sans cette courbe lors du chargement ; elle ne modifie ni la fourniture du sol, ni la récupération des engrais, ni l'identifiant du profil.
 
@@ -49,7 +71,7 @@ MAE, RMSE et biais sont affichés en kg secs/ha, séparément pour chaque partit
 
 ## Limites qui restent à traiter
 
-- Pas de croissance de couvert ou de racines rétroagissant avec nutrition, de phénologie thermique, de fixation biologique, de chimie N/P/K, de volatilisation ou lessivage explicites.
+- Dans le profil historique RUE, pas de croissance de couvert rétroagissant avec l'eau. La variante mécaniste ajoute une dynamique de couvert optionnelle, mais pas de racines rétroagissant avec nutrition, de phénologie thermique complète, de fixation biologique, de chimie N/P/K, de volatilisation ou lessivage explicites.
 - Pas de stérilité florale calculée par Tmax, d'indice de récolte dynamique, de mortalité, ravageurs/maladies, verse ou pertes commercialisables.
 - Pas d'acquisition automatique d'observations satellites numériques de la parcelle ni de calibration locale automatique à partir des archives territoriales.
 - Pas d'incertitude prédictive mesurée, de doses optimales ou de prévision qualifiée dans les six pays.

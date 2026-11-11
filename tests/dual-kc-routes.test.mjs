@@ -11,5 +11,5 @@ test('authenticated simulation route executes dual-Kc and normalized-transpirati
  c.growth=growthTemplate(c);c.growth.parameters.biomassModel={kind:'transpiration-normalized',waterProductivityGm2:25,source:'Synthetic route WP',availableOn:c.asOfDate};c.growth.weatherScenario={temperatureMeanC:28,radiationMj:18,source:'Synthetic weather'};c.growth.scope=growthScope(c);
  setIdentity({userId:'dual-owner',email:'dual@example.test',displayName:'Dual probe'});
  const r=await localFetch('https://agri.test/api/seasonal',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://agri.test'},body:JSON.stringify({action:'simulate',config:c,events:[]})}),body=await r.json();assert.equal(r.status,200,JSON.stringify(body).slice(0,700));
- const p=body.plan??body;assert.equal(p.growth.engineVersion,'daily-rue-npk-1.4.0');assert.equal(p.engineVersion,'water-balance-1.6.0');assert.equal(p.growth.status,'scenario');assert.ok(p.days.some(d=>d.dualKc.transpirationMm>0));assert.equal(p.growth.validated,false);
+ const p=body.plan??body;assert.equal(p.growth.engineVersion,'daily-growth-process-1.5.0');assert.equal(p.engineVersion,'water-balance-1.6.0');assert.equal(p.growth.status,'scenario');assert.ok(p.days.some(d=>d.dualKc.transpirationMm>0));assert.equal(p.growth.validated,false);
 }finally{closeHarness();}});
