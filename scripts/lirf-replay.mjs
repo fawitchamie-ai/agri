@@ -30,6 +30,9 @@ export function config(row,dual,wpRatio=.5){
  c.growth.scope=growthScope(c);return c;
 }
 if(process.argv[1]?.endsWith('lirf-replay.mjs')){
+// Archived synthetic geometry is evaluated at its original replay clock.
+Date.now=()=>Date.parse('2026-11-10T12:00:00Z');
+const outputFolder=process.env.LIRF_REPLAY_OUTPUT??folder;
 const records=[];
 for(const wpRatio of [.35,.5,.65])for(const mode of ['single','dual','dual-wp'])for(const row of data.cases){
  const c=config(row,mode!=='single',wpRatio);if(mode==='dual-wp')c.growth.parameters.biomassModel={kind:'transpiration-normalized',waterProductivityGm2:25,source:'Effective WP diagnostic initialized at 25, fitted ONLY on 2012 biomass',availableOn:'2012-01-01'};
@@ -61,9 +64,9 @@ for(const fit of fits)for(const row of data.cases){
  if(Math.abs(rerun.yieldKgHa-r.fittedGrainKgHa)>1e-6||Math.abs(rerun.biomassKgHa-r.fittedBiomassKgHa)>1e-6)throw Error('Fitted profile does not reproduce '+row.id);
  r.fittedProfileActuallyExecuted=true;
 }
-await mkdir(folder,{recursive:true});
-await writeFile(folder+'/replay-daily.json.gz',gzipSync(JSON.stringify({fits,records,limits:data.limits})));
-await writeFile(folder+'/replay-summary.json',JSON.stringify({status:'experimental retrospective reconstruction; no accepted African profile',fitProtocol:{declaredFreeParameters:['one RUE scalar per model / WP scenario on 2012 biomass','one common HI on 2012 dry grain'],'waterParameters':'fixed transferred FAO56, not optimized on 2013','no2013YieldFitting':true},fits,records:records.map(({days,...r})=>r),limits:data.limits},null,2)+'\n');
+await mkdir(outputFolder,{recursive:true});
+await writeFile(outputFolder+'/replay-daily.json.gz',gzipSync(JSON.stringify({fits,records,limits:data.limits})));
+await writeFile(outputFolder+'/replay-summary.json',JSON.stringify({status:'experimental retrospective reconstruction; no accepted African profile',fitProtocol:{declaredFreeParameters:['one RUE scalar per model / WP scenario on 2012 biomass','one common HI on 2012 dry grain'],'waterParameters':'fixed transferred FAO56, not optimized on 2013','no2013YieldFitting':true},fits,records:records.map(({days,...r})=>r),limits:data.limits},null,2)+'\n');
 console.log(JSON.stringify(fits.filter(r=>r.wpRatio===.5),null,2));
 
 }

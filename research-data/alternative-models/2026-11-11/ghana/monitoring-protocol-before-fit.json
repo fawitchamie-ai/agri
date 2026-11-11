@@ -1,0 +1,21 @@
+{
+  "version": "ghana-monitoring-window-2026-11-11.1",
+  "sourceDoi": "10.5281/zenodo.6632083",
+  "hypothesis": "Intercept + slope * maximum field-mean LAI in the first 14 elapsed days of monitoring",
+  "freeParameters": [
+    "intercept",
+    "slope, nonnegative; ridge alpha=1 fixed before fit"
+  ],
+  "split": "Sort field IDs by SHA256(ghana-canopy-2026-11-11:ID); first 60% train, next 20% calibration, remaining 20% test",
+  "replications": "Quadrats remain together and are retained to describe within-field variability",
+  "ambiguity": "7069ZIN has six quadrats and duplicate IDs, excluded from fitting and all accuracy metrics pending resolution",
+  "issueDates": "Each field first observation date + 14 days, no later observation admitted",
+  "selection": "No test-selected dates or parameters; all issue dates reported separately",
+  "uncertainty": "Split conformal absolute residual interval, 90% nominal, calibration fields only; coverage evaluated on test fields",
+  "grain": "Reported yield_quadrant is kg/ha per article; reference moisture not stated: no conversion or claim of dry matter",
+  "validationScope": "Retrospective 2021 single Ghana area; field holdout, no independent later-season evidence",
+  "operationalScope": "A nowcast/assimilation from observed LAI, not preseason yield, fertilizer advice or irrigation causal effect",
+  "missing": "No known sowing dates, daily management, independent soil NPK or reference grain moisture",
+  "testStatus": "Development comparison after calendar-cutoff results; same held-out field labels, not blind",
+  "deployment": "Explicit hypothesis only, maize monoculture in the sampled northern Ghana envelope; real LAI observations required"
+}

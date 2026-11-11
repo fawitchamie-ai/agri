@@ -1,0 +1,24 @@
+{
+  "version": "ghana-canopy-2026-11-11.1",
+  "sourceDoi": "10.5281/zenodo.6632083",
+  "hypothesis": "Field mean grain yield = intercept + slope * max(field-mean LAI observed by issue date)",
+  "freeParameters": [
+    "intercept",
+    "slope, nonnegative; ridge alpha=1 fixed before fit"
+  ],
+  "split": "Sort field IDs by SHA256(ghana-canopy-2026-11-11:ID); first 60% train, next 20% calibration, remaining 20% test",
+  "replications": "Quadrats remain together and are retained to describe within-field variability",
+  "ambiguity": "7069ZIN has six quadrats and duplicate IDs, excluded from fitting and all accuracy metrics pending resolution",
+  "issueDates": [
+    "2021-09-20",
+    "2021-10-04",
+    "2021-10-18",
+    "2021-11-05"
+  ],
+  "selection": "No test-selected dates or parameters; all issue dates reported separately",
+  "uncertainty": "Split conformal absolute residual interval, 90% nominal, calibration fields only; coverage evaluated on test fields",
+  "grain": "Reported yield_quadrant is kg/ha per article; reference moisture not stated: no conversion or claim of dry matter",
+  "validationScope": "Retrospective 2021 single Ghana area; field holdout, no independent later-season evidence",
+  "operationalScope": "A nowcast/assimilation from observed LAI, not preseason yield, fertilizer advice or irrigation causal effect",
+  "missing": "No known sowing dates, daily management, independent soil NPK or reference grain moisture"
+}

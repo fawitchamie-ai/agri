@@ -1,0 +1,65 @@
+{
+  "id": "GHA-2021-LAI-monitoring-14d-1",
+  "version": "canopy-nowcast-1.0.0",
+  "availableOn": "2026-11-11",
+  "status": "experimental_local_hypothesis",
+  "crop": "maize",
+  "country": "GHA",
+  "bbox": [
+    -0.7089320664,
+    9.2180632403,
+    -0.2334742569,
+    9.8124993314
+  ],
+  "monitoringDays": 14,
+  "maxIssueDelayDays": 7,
+  "minVisits": 2,
+  "sourceDoi": "10.5281/zenodo.6632083",
+  "article": "10.5194/essd-14-5387-2022",
+  "sourceSha256": {
+    "Yield_Maize_Biomass_V2.csv": "7b3003a3c1ac401ce2a4fcbaf22f3449590f6f5badf110b9740636085dd73066",
+    "Ghana_ground_data_v5.csv": "fea71fdf8acd2c5ba3a3db7170249e1205b9eb8e44e45c8f8d64fbc88a91ebf4"
+  },
+  "grainMoisturePercent": null,
+  "grainBasis": "grain, moisture basis unspecified in supplied table",
+  "coefficients": {
+    "interceptKgHa": 80.93949739173468,
+    "slopeKgHaPerLai": 886.2078232152318
+  },
+  "laiRange": [
+    0.5487500000000001,
+    2.7249999999999996
+  ],
+  "trainFields": 27,
+  "calibrationFields": 9,
+  "test": {
+    "canopy": {
+      "nFields": 10,
+      "maeKgHa": 444.7450913187946,
+      "rmseKgHa": 573.2274395490597,
+      "biasKgHa": 156.01727421607714,
+      "nrmsePercent": 43.54552154501663
+    },
+    "constant": {
+      "nFields": 10,
+      "maeKgHa": 641.8254320987656,
+      "rmseKgHa": 749.9554154299803,
+      "biasKgHa": 118.50716049382712,
+      "nrmsePercent": 56.97075444626049
+    },
+    "coverage90": 0.7
+  },
+  "interval": {
+    "nominalCoverage": 0.9,
+    "halfWidthKgHa": 830.4155598752558,
+    "method": "split conformal absolute residuals, calibration fields only; small local sample, no later-season coverage established"
+  },
+  "validationScope": "2021 sampled maize fields near Tamale, field holdout after development; no later-season or cross-country validation",
+  "limits": [
+    "Requires field-measured green LAI; NDVI alone is not LAI.",
+    "Initial monitoring in vegetation/flowering; no sowing-date reconstruction from field polygons.",
+    "Cannot identify causal irrigation, fertilizer, heat or pest effects.",
+    "No reference-moisture conversion; output retains the native reported grain basis.",
+    "Not a preseason forecast; uncertainty is large and locally evaluated only."
+  ]
+}

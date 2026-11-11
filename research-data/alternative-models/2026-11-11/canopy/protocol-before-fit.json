@@ -1,0 +1,31 @@
+{
+  "version": "canopy-hypothesis-2026-11-11.1",
+  "sources": [
+    "FAO AquaCrop reference manual ch.3 canopy/transpiration",
+    "official v7.3_typofix global.f90 CalculateETpot"
+  ],
+  "structure": "Reduced exponential canopy expansion/senescence; soil-depletion stress memory; Kcb=KcTrX*clip(1.72CC-CC\u00b2+.30CC\u00b3)",
+  "freeCoverParameters": [
+    "CGC in [.08,.10,.12,.14]",
+    "senescence onset fraction of season [.75,.85]",
+    "CDC in [.05,.10,.15]"
+  ],
+  "coverFit": "2012 measured cover aggregated by treatment-date, 24 candidate profiles, no grain objective",
+  "fixedHypotheses": {
+    "maxCover": 0.96,
+    "initialCover": 0.0052,
+    "emergence2012": 14,
+    "emergence2013": 8,
+    "KcTrX": 1.1,
+    "expansionLower": 0.14,
+    "expansionUpper": 0.72,
+    "senescenceThreshold": 0.69,
+    "stressDeclineRateDay": 0.1
+  },
+  "biomassFit": "One common WP on 2012 biomass only",
+  "grainFit": "One common HI on 2012 dry grain only",
+  "evaluation": "2013 cover, estimated ET, reserve and grain, already explored year: not blind",
+  "fullCoverAssimilation": "Complete daily interpolated field cover receives future observations in retrospective mode; NOT an operational forecast",
+  "noUniversalProfile": true,
+  "soilWaterMethod": "layered-recharge-diagnostic"
+}

@@ -1,4 +1,5 @@
 import {integratedGrowth} from './growth.ts';
+import {canopyNowcast} from './canopy-nowcast.ts';
 import {waterImpact} from './water-impact.ts';
 import {SEASONAL_KY,KY_VERSION,seasonalWaterFactor} from './water-response.ts';
 export {SEASONAL_KY,KY_VERSION,FAO_SOURCE} from './water-response.ts';
@@ -181,6 +182,7 @@ export function planSeason(input:unknown,inputEvents:unknown=[],options:{require
  return attachSalinity(plan,c,events);
 }
 function attachSalinity(plan:WaterPlan,c:SeasonalConfig,events:WaterEvent[]):WaterPlan{
+ if(c.canopyNowcast)plan.canopyNowcast=canopyNowcast(c,plan);
  plan.waterImpact=waterImpact(c,events,plan);
  if(c.growth)plan.growth=integratedGrowth(c,events,plan);
  if(c.fertilizerScenario)plan.fertilizerScenario=fertilizerScenario(c,plan);

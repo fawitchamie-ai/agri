@@ -1,0 +1,65 @@
+{
+  "version": "oaf-hypothesis-2026-11-11.1",
+  "sourceDoi": "10.5281/zenodo.11122388",
+  "sha256": "f305a3d3e48015bd877dc9df5c53b1715c61f940d58383d57d4dfb68c59c6ff0",
+  "train": "2016-2018, excluding Nigeria",
+  "selection": "2019, remove 0.05-degree spatial cells seen in training",
+  "finalTemporal": "2020, remove spatial cells seen in 2016-2019",
+  "finalGeographic": "all Nigeria 2022 (115), no fitting or selection",
+  "group": "floor(lat/0.05), floor(lon/0.05); no farm identifier supplied",
+  "featuresBeforeSeason": [
+    "lat",
+    "lon",
+    "elev",
+    "soil_clay",
+    "soil_pH",
+    "soil_orgC",
+    "soil_ECEC",
+    "N_kg_ha",
+    "P_kg_ha",
+    "K_kg_ha",
+    "hybrid",
+    "plant_doy"
+  ],
+  "featuresConditionalWeather": [
+    "lat",
+    "lon",
+    "elev",
+    "soil_clay",
+    "soil_pH",
+    "soil_orgC",
+    "soil_ECEC",
+    "N_kg_ha",
+    "P_kg_ha",
+    "K_kg_ha",
+    "hybrid",
+    "plant_doy",
+    "season_prec_1",
+    "season_prec_2",
+    "season_prec_3"
+  ],
+  "excluded": [
+    "plant density measured at harvest",
+    "harvest date",
+    "season-ending adversities",
+    "weeding/pesticide totals not dated",
+    "plant_date_dev computed from full cluster season"
+  ],
+  "candidates": [
+    "constant training mean",
+    "ridge alpha=100, median missing + missing flags",
+    "histogram GBM 150 trees, 15 leaves, rate=.05, min_leaf=40, l2=10",
+    "same GBM monotone nondecreasing N/P/K (hypothesis, not optimal-dose model)"
+  ],
+  "criterion": "lowest selection RMSE; one frozen winner, no test tuning",
+  "metrics": [
+    "MAE kg/ha",
+    "RMSE kg/ha",
+    "bias kg/ha",
+    "nRMSE / mean observed",
+    "R2"
+  ],
+  "scope": "rainfed African maize; surveyed nutrient inputs are observational, not randomized",
+  "weatherAvailability": "Full-season rain is hindsight or an explicit future weather SCENARIO, never known before sowing.",
+  "timing": "Soil/time inputs are mapped covariates; source availability history not established."
+}

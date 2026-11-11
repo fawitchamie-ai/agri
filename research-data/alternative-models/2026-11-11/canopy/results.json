@@ -1,0 +1,2149 @@
+{
+  "frozenCover": {
+    "growthRateDay": 0.14,
+    "senescenceFraction": 0.75,
+    "declineRateDay": 0.15,
+    "cover": {
+      "n": 202,
+      "mae": 0.12797468178319998,
+      "rmse": 0.16035837491552016,
+      "bias": -0.00561306527566896,
+      "nrmsePercent": 26.567476360065438
+    }
+  },
+  "models": [
+    {
+      "mode": "legacy",
+      "wp": 24.66467478286223,
+      "hi": 0.5318374450671388,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 616.9965776112064,
+            "rmse": 666.3166628262319,
+            "bias": -67.35307862617022,
+            "nrmsePercent": 5.1975515645862504
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 1007.0959140448585,
+            "rmse": 1225.7706188265272,
+            "bias": -93.209858067046,
+            "nrmsePercent": 6.022044269519329
+          },
+          "et": {
+            "n": 12,
+            "mae": 41.972961944491864,
+            "rmse": 43.759621753115184,
+            "bias": -41.972961944491864,
+            "nrmsePercent": 7.286153832095175
+          },
+          "cover": {
+            "n": 202,
+            "mae": 0.19489251660030138,
+            "rmse": 0.2233691401936394,
+            "bias": 0.18225861223486484,
+            "nrmsePercent": 37.00682521127436
+          },
+          "dailyEt": {
+            "n": 1767,
+            "mae": 0.8449029649345224,
+            "rmse": 1.200826642773529,
+            "bias": -0.33845117745432673,
+            "nrmsePercent": 29.061011282505046
+          },
+          "reserve105": {
+            "n": 258,
+            "mae": 13.801081983017372,
+            "rmse": 16.918725495928733,
+            "bias": 10.184266574507303,
+            "nrmsePercent": 29.261536457332188
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.8054984233699378,
+              "predicted": 0.8216040669804466
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9499386260701691,
+              "predicted": 0.9218186368724463
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.8473402643539815,
+              "predicted": 0.7798962599136174
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.7165754864072752,
+              "predicted": 0.7243554059978011
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.8139692599452879,
+              "predicted": 0.7328472706002482
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.9350251646394064,
+              "predicted": 0.8539258849685788
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8017982457720364,
+              "predicted": 0.7252460898958787
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7651531381139307,
+              "predicted": 0.6962582588328342
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.7399847904300025,
+              "predicted": 0.665990410985332
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7229926477741107,
+              "predicted": 0.6578217309546958
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.6791419892737603,
+              "predicted": 0.5813768458536858
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 981.9243434584114,
+            "rmse": 1169.2303760563025,
+            "bias": -285.68932827090913,
+            "nrmsePercent": 9.038001140535405
+          },
+          "biomass": {
+            "n": 0,
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "et": {
+            "n": 12,
+            "mae": 39.429922322701636,
+            "rmse": 48.48881812761557,
+            "bias": -39.429922322701636,
+            "nrmsePercent": 9.252955515177792
+          },
+          "cover": {
+            "n": 213,
+            "mae": 0.0955221647679393,
+            "rmse": 0.11178071766598593,
+            "bias": 0.04685708712258006,
+            "nrmsePercent": 16.45387947228656
+          },
+          "dailyEt": {
+            "n": 1587,
+            "mae": 0.74600541187618,
+            "rmse": 1.0294504820463566,
+            "bias": -0.2096263683621716,
+            "nrmsePercent": 26.57370204714687
+          },
+          "reserve105": {
+            "n": 201,
+            "mae": 18.036301475738643,
+            "rmse": 21.15217342457953,
+            "bias": 15.916401761266744,
+            "nrmsePercent": 54.63430342641883
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.832899333403291,
+              "predicted": 0.9668373722265577
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9746047146514789,
+              "predicted": 0.9654241353739699
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.9457905048207932,
+              "predicted": 0.9487537219244553
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.8322685371265042,
+              "predicted": 0.9000868642385111
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.6751995062977327,
+              "predicted": 0.8175235667106014
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.961754497392653,
+              "predicted": 0.9177969828348176
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8855663571143995,
+              "predicted": 0.9027255559869259
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7719913210009318,
+              "predicted": 0.8579074606997374
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.6941829429167491,
+              "predicted": 0.7850746640293699
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7684428625725191,
+              "predicted": 0.8301652576728821
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.5456960388048342,
+              "predicted": 0.7325476430184019
+            }
+          ]
+        }
+      },
+      "records": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15733.992159616875,
+          "observedBiomassKgHa": 24176.8552651596,
+          "normTr": 1076.0395508462766,
+          "predictedEtMm": 694.2664820528091,
+          "fieldEtMm": 770.7831007454886,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 26540.16557512056,
+          "predictedGrainKgHa": 16704.205740983372
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "treatment": "100/50",
+          "observedGrainKgHa": 12673.705877886356,
+          "observedBiomassKgHa": 19918.440888073037,
+          "normTr": 884.0784712071139,
+          "predictedEtMm": 602.5642369872877,
+          "fieldEtMm": 653.1460949508372,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21805.507974853495,
+          "predictedGrainKgHa": 13724.243372470064
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "treatment": "80/80",
+          "observedGrainKgHa": 14946.326894705267,
+          "observedBiomassKgHa": 24143.802489066704,
+          "normTr": 991.9133119819539,
+          "predictedEtMm": 644.5120082676937,
+          "fieldEtMm": 675.4905072903733,
+          "maxBalanceResidualMm": 2.1316282072803006e-14,
+          "predictedBiomassKgHa": 24465.219252826657,
+          "predictedGrainKgHa": 15398.248166190184
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "treatment": "80/65",
+          "observedGrainKgHa": 13332.045075873235,
+          "observedBiomassKgHa": 21237.22606827274,
+          "normTr": 839.1992212241399,
+          "predictedEtMm": 574.3667128844885,
+          "fieldEtMm": 610.7806182603341,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20698.575869524666,
+          "predictedGrainKgHa": 13027.547582220508
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "treatment": "80/50",
+          "observedGrainKgHa": 11274.593084905717,
+          "observedBiomassKgHa": 18818.220693412386,
+          "normTr": 779.4350657229462,
+          "predictedEtMm": 544.1230627258409,
+          "fieldEtMm": 586.1831390298669,
+          "maxBalanceResidualMm": 7.105427357601002e-15,
+          "predictedBiomassKgHa": 19224.51241041532,
+          "predictedGrainKgHa": 12099.781731380812
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "treatment": "80/40",
+          "observedGrainKgHa": 12806.98595414831,
+          "observedBiomassKgHa": 21202.321307627855,
+          "normTr": 788.5726478956108,
+          "predictedEtMm": 550.3794144431816,
+          "fieldEtMm": 600.5606915353773,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19449.88790300577,
+          "predictedGrainKgHa": 12241.631584824661
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "treatment": "65/80",
+          "observedGrainKgHa": 14711.6786094809,
+          "observedBiomassKgHa": 24426.79818988341,
+          "normTr": 918.8580257175987,
+          "predictedEtMm": 599.6686102744723,
+          "fieldEtMm": 640.91866791242,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 22663.334375947434,
+          "predictedGrainKgHa": 14264.15367006644
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "treatment": "65/65",
+          "observedGrainKgHa": 12615.487312571786,
+          "observedBiomassKgHa": 18742.92085018282,
+          "normTr": 780.3934768245797,
+          "predictedEtMm": 535.7353900588798,
+          "fieldEtMm": 565.4284570146739,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 19248.15130854539,
+          "predictedGrainKgHa": 12114.65989846448
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12038.913475990834,
+          "observedBiomassKgHa": 18810.759125940836,
+          "normTr": 749.2014241074934,
+          "predictedEtMm": 519.469024182633,
+          "fieldEtMm": 551.4353497659324,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18478.809472468565,
+          "predictedGrainKgHa": 11630.441204402516
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "treatment": "65/40",
+          "observedGrainKgHa": 11642.914890861397,
+          "observedBiomassKgHa": 18464.081873173007,
+          "normTr": 716.6320227045838,
+          "predictedEtMm": 503.8936643664253,
+          "fieldEtMm": 544.7363166561273,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 17675.495778993303,
+          "predictedGrainKgHa": 11124.840846621059
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "treatment": "50/50",
+          "observedGrainKgHa": 11375.560651538502,
+          "observedBiomassKgHa": 18436.105610209026,
+          "normTr": 707.8421999134112,
+          "predictedEtMm": 489.84542030284837,
+          "fieldEtMm": 530.9685017671595,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17458.697658450037,
+          "predictedGrainKgHa": 10988.389534757049
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "treatment": "40/40",
+          "observedGrainKgHa": 10685.614734499954,
+          "observedBiomassKgHa": 15879.181266452488,
+          "normTr": 625.5844800848249,
+          "predictedEtMm": 444.5327428916427,
+          "fieldEtMm": 476.60086784351483,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 15429.837750498162,
+          "predictedGrainKgHa": 9711.438446183944
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15699.400422165467,
+          "observedBiomassKgHa": null,
+          "normTr": 920.4297068896269,
+          "predictedEtMm": 545.3368823928299,
+          "fieldEtMm": 658.9169450180244,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 22702.099380917858,
+          "predictedGrainKgHa": 14288.55210935814
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "treatment": "100/50",
+          "observedGrainKgHa": 13076.020146452964,
+          "observedBiomassKgHa": null,
+          "normTr": 889.9058391284278,
+          "predictedEtMm": 528.674514166727,
+          "fieldEtMm": 565.1947378959761,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21949.238109472786,
+          "predictedGrainKgHa": 13814.706174334062
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "treatment": "80/80",
+          "observedGrainKgHa": 15300.709668643882,
+          "observedBiomassKgHa": null,
+          "normTr": 888.6050539464345,
+          "predictedEtMm": 524.5017869538976,
+          "fieldEtMm": 581.1055827894791,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21917.154665996557,
+          "predictedGrainKgHa": 13794.513065922994
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "treatment": "80/65",
+          "observedGrainKgHa": 14848.34385066365,
+          "observedBiomassKgHa": null,
+          "normTr": 873.261110181369,
+          "predictedEtMm": 516.9860872794552,
+          "fieldEtMm": 565.635924569571,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21538.70128314469,
+          "predictedGrainKgHa": 13556.316994665061
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "treatment": "80/50",
+          "observedGrainKgHa": 13066.117023118875,
+          "observedBiomassKgHa": null,
+          "normTr": 828.4666886262562,
+          "predictedEtMm": 493.61638953903594,
+          "fieldEtMm": 505.1238542676305,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20433.861443401398,
+          "predictedGrainKgHa": 12860.938062620731
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "treatment": "80/40",
+          "observedGrainKgHa": 10600.22741421654,
+          "observedBiomassKgHa": null,
+          "normTr": 752.4729768828014,
+          "predictedEtMm": 454.22782565563773,
+          "fieldEtMm": 493.2172199621322,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18559.501257706506,
+          "predictedGrainKgHa": 11681.228083572754
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "treatment": "65/80",
+          "observedGrainKgHa": 15098.968962385752,
+          "observedBiomassKgHa": null,
+          "normTr": 844.7676078948354,
+          "predictedEtMm": 499.9514840854036,
+          "fieldEtMm": 558.5063642114653,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20835.918315822593,
+          "predictedGrainKgHa": 13113.99001504697
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "treatment": "65/65",
+          "observedGrainKgHa": 13902.860840737338,
+          "observedBiomassKgHa": null,
+          "normTr": 830.8954188988217,
+          "predictedEtMm": 493.4713863391493,
+          "fieldEtMm": 540.8968625907834,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20493.76528570952,
+          "predictedGrainKgHa": 12898.64114716849
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12119.800870830106,
+          "observedBiomassKgHa": null,
+          "normTr": 789.6435125902835,
+          "predictedEtMm": 471.9572688189463,
+          "fieldEtMm": 493.4659487874362,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 19476.30043243632,
+          "predictedGrainKgHa": 12258.255457215319
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "treatment": "65/40",
+          "observedGrainKgHa": 10898.255987087277,
+          "observedBiomassKgHa": null,
+          "normTr": 722.6060428990252,
+          "predictedEtMm": 437.1954592449484,
+          "fieldEtMm": 450.3649906627693,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17822.84304423545,
+          "predictedGrainKgHa": 11217.580246720485
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "treatment": "50/50",
+          "observedGrainKgHa": 12064.092201081046,
+          "observedBiomassKgHa": null,
+          "normTr": 764.1087647898025,
+          "predictedEtMm": 447.1503224109183,
+          "fieldEtMm": 453.8636794814489,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18846.49418227505,
+          "predictedGrainKgHa": 11861.859543637702
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "treatment": "40/40",
+          "observedGrainKgHa": 8567.100621986638,
+          "observedBiomassKgHa": null,
+          "normTr": 674.2586123461148,
+          "predictedEtMm": 402.20354652228224,
+          "fieldEtMm": 422.1399110449348,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 16630.369393060897,
+          "predictedGrainKgHa": 10467.045169855919
+        }
+      ]
+    },
+    {
+      "mode": "linked-profile",
+      "wp": 24.42036054182319,
+      "hi": 0.53182046487964,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 623.0951095666809,
+            "rmse": 669.0110789378946,
+            "bias": -72.04304855790572,
+            "nrmsePercent": 5.218569148954347
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 1011.0315967533452,
+            "rmse": 1218.5236128771053,
+            "bias": -100.01474897648434,
+            "nrmsePercent": 5.986440715331786
+          },
+          "et": {
+            "n": 12,
+            "mae": 40.29434422687827,
+            "rmse": 42.10997133705506,
+            "bias": -40.29434422687827,
+            "nrmsePercent": 7.011480372429399
+          },
+          "cover": {
+            "n": 202,
+            "mae": 0.19489251660030138,
+            "rmse": 0.2233691401936394,
+            "bias": 0.18225861223486484,
+            "nrmsePercent": 37.00682521127436
+          },
+          "dailyEt": {
+            "n": 1767,
+            "mae": 0.8983074551108783,
+            "rmse": 1.3035014103816673,
+            "bias": -0.32705139668955163,
+            "nrmsePercent": 31.545826720141388
+          },
+          "reserve105": {
+            "n": 258,
+            "mae": 11.910321834830597,
+            "rmse": 15.02822589618661,
+            "bias": 7.469054883852582,
+            "nrmsePercent": 25.991850275962445
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.8054984233699378,
+              "predicted": 0.812321361460785
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9499386260701691,
+              "predicted": 0.9227410328245815
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.8473402643539815,
+              "predicted": 0.7751858015876899
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.7165754864072752,
+              "predicted": 0.720318172717523
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.8139692599452879,
+              "predicted": 0.7276946534523522
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.9350251646394064,
+              "predicted": 0.8570609597144877
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8017982457720364,
+              "predicted": 0.7212642175010484
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7651531381139307,
+              "predicted": 0.6923048591831589
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.7399847904300025,
+              "predicted": 0.6621491316125359
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7229926477741107,
+              "predicted": 0.6543381842998627
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.6791419892737603,
+              "predicted": 0.5783225084603678
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 1064.6981878894399,
+            "rmse": 1298.6682137120015,
+            "bias": -474.63971966697335,
+            "nrmsePercent": 10.038539057029213
+          },
+          "biomass": {
+            "n": 0,
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "et": {
+            "n": 12,
+            "mae": 41.30146774576105,
+            "rmse": 51.21973795062562,
+            "bias": -41.30146774576105,
+            "nrmsePercent": 9.774087615599885
+          },
+          "cover": {
+            "n": 213,
+            "mae": 0.0955221647679393,
+            "rmse": 0.11178071766598593,
+            "bias": 0.04685708712258006,
+            "nrmsePercent": 16.45387947228656
+          },
+          "dailyEt": {
+            "n": 1587,
+            "mae": 0.7995306738334925,
+            "rmse": 1.0973795426688613,
+            "bias": -0.22377794055921965,
+            "nrmsePercent": 28.327187667685667
+          },
+          "reserve105": {
+            "n": 201,
+            "mae": 15.676497393240071,
+            "rmse": 19.13182964157535,
+            "bias": 12.819035048388157,
+            "nrmsePercent": 49.41592359136774
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.832899333403291,
+              "predicted": 0.9783882870073684
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9746047146514789,
+              "predicted": 0.9601482386967014
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.9457905048207932,
+              "predicted": 0.9540936700163376
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.8322685371265042,
+              "predicted": 0.9120736986993172
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.6751995062977327,
+              "predicted": 0.8244291085652284
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.961754497392653,
+              "predicted": 0.9100551133432732
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8855663571143995,
+              "predicted": 0.9062983276551374
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7719913210009318,
+              "predicted": 0.869338970085256
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.6941829429167491,
+              "predicted": 0.791014217608396
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7684428625725191,
+              "predicted": 0.8406762542324958
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.5456960388048342,
+              "predicted": 0.7379901748863271
+            }
+          ]
+        }
+      },
+      "records": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15733.992159616875,
+          "observedBiomassKgHa": 24176.8552651596,
+          "normTr": 1090.8981243343135,
+          "predictedEtMm": 697.5447446177407,
+          "fieldEtMm": 770.7831007454886,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 26640.125510642596,
+          "predictedGrainKgHa": 16766.58453671231
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "treatment": "100/50",
+          "observedGrainKgHa": 12673.705877886356,
+          "observedBiomassKgHa": 19918.440888073037,
+          "normTr": 886.1598495742662,
+          "predictedEtMm": 602.7421267279898,
+          "fieldEtMm": 653.1460949508372,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21640.343024291386,
+          "predictedGrainKgHa": 13619.85477790949
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "treatment": "80/80",
+          "observedGrainKgHa": 14946.326894705267,
+          "observedBiomassKgHa": 24143.802489066704,
+          "normTr": 1006.6164619546432,
+          "predictedEtMm": 648.5064218647607,
+          "fieldEtMm": 675.4905072903733,
+          "maxBalanceResidualMm": 2.1316282072803006e-14,
+          "predictedBiomassKgHa": 24581.936928266834,
+          "predictedGrainKgHa": 15471.215532346576
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "treatment": "80/65",
+          "observedGrainKgHa": 13332.045075873235,
+          "observedBiomassKgHa": 21237.22606827274,
+          "normTr": 845.6487369626022,
+          "predictedEtMm": 575.4592820938849,
+          "fieldEtMm": 610.7806182603341,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 20651.047048364147,
+          "predictedGrainKgHa": 12997.218273979099
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "treatment": "80/50",
+          "observedGrainKgHa": 11274.593084905717,
+          "observedBiomassKgHa": 18818.220693412386,
+          "normTr": 785.7937435414659,
+          "predictedEtMm": 545.1533368074967,
+          "fieldEtMm": 586.1831390298669,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 19189.366528791546,
+          "predictedGrainKgHa": 12077.27553619849
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "treatment": "80/40",
+          "observedGrainKgHa": 12806.98595414831,
+          "observedBiomassKgHa": 21202.321307627855,
+          "normTr": 793.8407325392792,
+          "predictedEtMm": 551.2785231832688,
+          "fieldEtMm": 600.5606915353773,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19385.87690139423,
+          "predictedGrainKgHa": 12200.953924022431
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "treatment": "65/80",
+          "observedGrainKgHa": 14711.6786094809,
+          "observedBiomassKgHa": 24426.79818988341,
+          "normTr": 934.9661933927013,
+          "predictedEtMm": 604.0163624664965,
+          "fieldEtMm": 640.91866791242,
+          "maxBalanceResidualMm": 2.1316282072803006e-14,
+          "predictedBiomassKgHa": 22832.211537065752,
+          "predictedGrainKgHa": 14369.985034168743
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "treatment": "65/65",
+          "observedGrainKgHa": 12615.487312571786,
+          "observedBiomassKgHa": 18742.92085018282,
+          "normTr": 786.82578202135,
+          "predictedEtMm": 536.9077740139795,
+          "fieldEtMm": 565.4284570146739,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19214.56928056335,
+          "predictedGrainKgHa": 12093.137476036984
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12038.913475990834,
+          "observedBiomassKgHa": 18810.759125940836,
+          "normTr": 755.2340723504391,
+          "predictedEtMm": 520.5384838176835,
+          "fieldEtMm": 551.4353497659324,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18443.088340267102,
+          "predictedGrainKgHa": 11607.587946671145
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "treatment": "65/40",
+          "observedGrainKgHa": 11642.914890861397,
+          "observedBiomassKgHa": 18464.081873173007,
+          "normTr": 722.3372457057098,
+          "predictedEtMm": 504.83818328844615,
+          "fieldEtMm": 544.7363166561273,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17639.73597292096,
+          "predictedGrainKgHa": 11101.979391092229
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "treatment": "50/50",
+          "observedGrainKgHa": 11375.560651538502,
+          "observedBiomassKgHa": 18436.105610209026,
+          "normTr": 713.8162979330405,
+          "predictedEtMm": 490.9350521897001,
+          "fieldEtMm": 530.9685017671595,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17431.65135615433,
+          "predictedGrainKgHa": 10971.016482662488
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "treatment": "40/40",
+          "observedGrainKgHa": 10685.614734499954,
+          "observedBiomassKgHa": 15879.181266452488,
+          "normTr": 630.8909397397305,
+          "predictedEtMm": 445.5798909781187,
+          "fieldEtMm": 476.60086784351483,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 15406.584211013866,
+          "predictedGrainKgHa": 9696.493227584278
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15699.400422165467,
+          "observedBiomassKgHa": null,
+          "normTr": 910.6690698677073,
+          "predictedEtMm": 541.0004752766448,
+          "fieldEtMm": 658.9169450180244,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 22238.867020456186,
+          "predictedGrainKgHa": 13996.549819189944
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "treatment": "100/50",
+          "observedGrainKgHa": 13076.020146452964,
+          "observedBiomassKgHa": null,
+          "normTr": 890.9879512984595,
+          "predictedEtMm": 529.6240252473297,
+          "fieldEtMm": 565.1947378959761,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21758.247009128783,
+          "predictedGrainKgHa": 13694.06040161054
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "treatment": "80/80",
+          "observedGrainKgHa": 15300.709668643882,
+          "observedBiomassKgHa": null,
+          "normTr": 874.3773034690425,
+          "predictedEtMm": 517.5978284461552,
+          "fieldEtMm": 581.1055827894791,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21352.609000301167,
+          "predictedGrainKgHa": 13438.76265672586
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "treatment": "80/65",
+          "observedGrainKgHa": 14848.34385066365,
+          "observedBiomassKgHa": null,
+          "normTr": 868.8635950404453,
+          "predictedEtMm": 514.9902456486574,
+          "fieldEtMm": 565.635924569571,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21217.962252552334,
+          "predictedGrainKgHa": 13354.01958455744
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "treatment": "80/50",
+          "observedGrainKgHa": 13066.117023118875,
+          "observedBiomassKgHa": null,
+          "normTr": 830.5973068453068,
+          "predictedEtMm": 494.7026421032824,
+          "fieldEtMm": 505.1238542676305,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20283.48569822974,
+          "predictedGrainKgHa": 12765.884962617833
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "treatment": "80/40",
+          "observedGrainKgHa": 10600.22741421654,
+          "observedBiomassKgHa": null,
+          "normTr": 750.7820894689597,
+          "predictedEtMm": 454.08687758840813,
+          "fieldEtMm": 493.2172199621322,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18334.369313175353,
+          "predictedGrainKgHa": 11539.163090423575
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "treatment": "65/80",
+          "observedGrainKgHa": 15098.968962385752,
+          "observedBiomassKgHa": null,
+          "normTr": 828.7590435966696,
+          "predictedEtMm": 491.77558531543553,
+          "fieldEtMm": 558.5063642114653,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20238.594646927235,
+          "predictedGrainKgHa": 12737.631732117674
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "treatment": "65/65",
+          "observedGrainKgHa": 13902.860840737338,
+          "observedBiomassKgHa": null,
+          "normTr": 825.3378550683626,
+          "predictedEtMm": 490.4733420670775,
+          "fieldEtMm": 540.8968625907834,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20155.04798958443,
+          "predictedGrainKgHa": 12685.049694073663
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12119.800870830106,
+          "observedBiomassKgHa": null,
+          "normTr": 791.6801112872906,
+          "predictedEtMm": 472.58759136983207,
+          "fieldEtMm": 493.4659487874362,
+          "maxBalanceResidualMm": 4.263256414560601e-14,
+          "predictedBiomassKgHa": 19333.113751426343,
+          "predictedGrainKgHa": 12167.746204561561
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "treatment": "65/40",
+          "observedGrainKgHa": 10898.255987087277,
+          "observedBiomassKgHa": null,
+          "normTr": 720.3521818015702,
+          "predictedEtMm": 436.6056592898603,
+          "fieldEtMm": 450.3649906627693,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17591.259996683308,
+          "predictedGrainKgHa": 11071.46990444347
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "treatment": "50/50",
+          "observedGrainKgHa": 12064.092201081046,
+          "observedBiomassKgHa": null,
+          "normTr": 765.5778625017753,
+          "predictedEtMm": 447.5662288415498,
+          "fieldEtMm": 453.8636794814489,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18695.68742513169,
+          "predictedGrainKgHa": 11766.567074175118
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "treatment": "40/40",
+          "observedGrainKgHa": 8567.100621986638,
+          "observedBiomassKgHa": null,
+          "normTr": 672.0648261352383,
+          "predictedEtMm": 401.80390713828587,
+          "fieldEtMm": 422.1399110449348,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 16412.065361700235,
+          "predictedGrainKgHa": 10329.316248869178
+        }
+      ]
+    },
+    {
+      "mode": "dynamic",
+      "wp": 28.98546140486241,
+      "hi": 0.531514901040103,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 394.2025304161287,
+            "rmse": 551.6065369978606,
+            "bias": -12.41207510352721,
+            "nrmsePercent": 4.302764105055733
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 701.8201904181215,
+            "rmse": 799.9704680979273,
+            "bias": 6.430582731529587,
+            "nrmsePercent": 3.930146064200607
+          },
+          "et": {
+            "n": 12,
+            "mae": 92.9453538652229,
+            "rmse": 103.14468682730693,
+            "bias": -92.9453538652229,
+            "nrmsePercent": 17.174007111556875
+          },
+          "cover": {
+            "n": 202,
+            "mae": 0.12797468178319998,
+            "rmse": 0.16035837491552016,
+            "bias": -0.00561306527566896,
+            "nrmsePercent": 26.567476360065438
+          },
+          "dailyEt": {
+            "n": 1767,
+            "mae": 1.1330631128434994,
+            "rmse": 1.559183192606121,
+            "bias": -0.6846134315849283,
+            "nrmsePercent": 37.73354016127061
+          },
+          "reserve105": {
+            "n": 258,
+            "mae": 11.338720038282915,
+            "rmse": 13.631270092085334,
+            "bias": -7.858609402296538,
+            "nrmsePercent": 23.575765612798676
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.8054984233699378,
+              "predicted": 0.8462441464356172
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9499386260701691,
+              "predicted": 1.0014001346937436
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.8473402643539815,
+              "predicted": 0.8623737882968244
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.7165754864072752,
+              "predicted": 0.8110169974834177
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.8139692599452879,
+              "predicted": 0.859731404674098
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.9350251646394064,
+              "predicted": 0.988503258635615
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8017982457720364,
+              "predicted": 0.854238512122937
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7651531381139307,
+              "predicted": 0.8359134339231498
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.7399847904300025,
+              "predicted": 0.8089360795217754
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7229926477741107,
+              "predicted": 0.7612731776041162
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.6791419892737603,
+              "predicted": 0.6279107782735964
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 1778.2130056113308,
+            "rmse": 2144.688509685269,
+            "bias": -1559.4364975169062,
+            "nrmsePercent": 16.578167650765213
+          },
+          "biomass": {
+            "n": 0,
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "et": {
+            "n": 12,
+            "mae": 84.96931029883397,
+            "rmse": 97.03310151557775,
+            "bias": -84.96931029883397,
+            "nrmsePercent": 18.516495276506404
+          },
+          "cover": {
+            "n": 213,
+            "mae": 0.18215319135814617,
+            "rmse": 0.22274284805068223,
+            "bias": -0.1179181712501061,
+            "nrmsePercent": 32.78726467020164
+          },
+          "dailyEt": {
+            "n": 1587,
+            "mae": 0.9908353543956094,
+            "rmse": 1.3585641567970568,
+            "bias": -0.5539695666694131,
+            "nrmsePercent": 35.069272144973965
+          },
+          "reserve105": {
+            "n": 201,
+            "mae": 8.756796259885952,
+            "rmse": 10.871388025761979,
+            "bias": -3.383014951080239,
+            "nrmsePercent": 28.079890427506882
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.832899333403291,
+              "predicted": 0.974061121483048
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9746047146514789,
+              "predicted": 0.9750416051501327
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.9457905048207932,
+              "predicted": 0.9795775348071427
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.8322685371265042,
+              "predicted": 0.9688171252118589
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.6751995062977327,
+              "predicted": 0.8846785383742785
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.961754497392653,
+              "predicted": 0.9391098379636669
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8855663571143995,
+              "predicted": 0.9640371834898643
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7719913210009318,
+              "predicted": 0.9285415524963757
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.6941829429167491,
+              "predicted": 0.8736795709280903
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7684428625725191,
+              "predicted": 0.8760398392780643
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.5456960388048342,
+              "predicted": 0.7881355889203323
+            }
+          ]
+        }
+      },
+      "records": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15733.992159616875,
+          "observedBiomassKgHa": 24176.8552651596,
+          "normTr": 821.7887335899359,
+          "predictedEtMm": 565.5090979797918,
+          "fieldEtMm": 770.7831007454886,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 23819.925620421844,
+          "predictedGrainKgHa": 14983.01231824986
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "treatment": "100/50",
+          "observedGrainKgHa": 12673.705877886356,
+          "observedBiomassKgHa": 19918.440888073037,
+          "normTr": 695.4339054072221,
+          "predictedEtMm": 501.46879318054863,
+          "fieldEtMm": 653.1460949508372,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20157.472624813774,
+          "predictedGrainKgHa": 12679.28647029169
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "treatment": "80/80",
+          "observedGrainKgHa": 14946.326894705267,
+          "observedBiomassKgHa": 24143.802489066704,
+          "normTr": 822.9393485067628,
+          "predictedEtMm": 566.0887044870842,
+          "fieldEtMm": 675.4905072903733,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 23853.27672468539,
+          "predictedGrainKgHa": 15003.990553613428
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "treatment": "80/65",
+          "observedGrainKgHa": 13332.045075873235,
+          "observedBiomassKgHa": 21237.22606827274,
+          "normTr": 708.6890633656028,
+          "predictedEtMm": 508.553761583823,
+          "fieldEtMm": 610.7806182603341,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20541.679494231772,
+          "predictedGrainKgHa": 12920.957092987117
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "treatment": "80/50",
+          "observedGrainKgHa": 11274.593084905717,
+          "observedBiomassKgHa": 18818.220693412386,
+          "normTr": 666.48463128181,
+          "predictedEtMm": 485.67716151444176,
+          "fieldEtMm": 586.1831390298669,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19318.36455695286,
+          "predictedGrainKgHa": 12151.477663604062
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "treatment": "80/40",
+          "observedGrainKgHa": 12806.98595414831,
+          "observedBiomassKgHa": 21202.321307627855,
+          "normTr": 706.5175822746237,
+          "predictedEtMm": 508.00912875679495,
+          "fieldEtMm": 600.5606915353773,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20478.738112877807,
+          "predictedGrainKgHa": 12881.366226618266
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "treatment": "65/80",
+          "observedGrainKgHa": 14711.6786094809,
+          "observedBiomassKgHa": 24426.79818988341,
+          "normTr": 812.3408410636869,
+          "predictedEtMm": 562.0173026803741,
+          "fieldEtMm": 640.91866791242,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 23546.074096244964,
+          "predictedGrainKgHa": 14810.756500767546
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "treatment": "65/65",
+          "observedGrainKgHa": 12615.487312571786,
+          "observedBiomassKgHa": 18742.92085018282,
+          "normTr": 702.0035850612595,
+          "predictedEtMm": 506.35207238875813,
+          "fieldEtMm": 565.4284570146739,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 20347.897820868184,
+          "predictedGrainKgHa": 12799.066149861397
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12038.913475990834,
+          "observedBiomassKgHa": 18810.759125940836,
+          "normTr": 686.9442422545198,
+          "predictedEtMm": 498.1087677441059,
+          "fieldEtMm": 551.4353497659324,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19911.395821160837,
+          "predictedGrainKgHa": 12524.501277461093
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "treatment": "65/40",
+          "observedGrainKgHa": 11642.914890861397,
+          "observedBiomassKgHa": 18464.081873173007,
+          "normTr": 664.7745563454075,
+          "predictedEtMm": 487.6217380526029,
+          "fieldEtMm": 544.7363166561273,
+          "maxBalanceResidualMm": 4.263256414560601e-14,
+          "predictedBiomassKgHa": 19268.79724588434,
+          "predictedGrainKgHa": 12120.299244151509
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "treatment": "50/50",
+          "observedGrainKgHa": 11375.560651538502,
+          "observedBiomassKgHa": 18436.105610209026,
+          "normTr": 625.605720539273,
+          "predictedEtMm": 472.3178748315688,
+          "fieldEtMm": 530.9685017671595,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18133.470467352236,
+          "predictedGrainKgHa": 11406.165397595685
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "treatment": "40/40",
+          "observedGrainKgHa": 10685.614734499954,
+          "observedBiomassKgHa": 15879.181266452488,
+          "normTr": 516.0100032849299,
+          "predictedEtMm": 429.96366318953636,
+          "fieldEtMm": 476.60086784351483,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 14956.78803473826,
+          "predictedGrainKgHa": 9407.994925635152
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15699.400422165467,
+          "observedBiomassKgHa": null,
+          "normTr": 671.4953927886903,
+          "predictedEtMm": 462.3336584772291,
+          "fieldEtMm": 658.9169450180244,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19463.603791219506,
+          "predictedGrainKgHa": 12242.834843755987
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "treatment": "100/50",
+          "observedGrainKgHa": 13076.020146452964,
+          "observedBiomassKgHa": null,
+          "normTr": 654.0775553704514,
+          "predictedEtMm": 453.14045021012174,
+          "fieldEtMm": 565.1947378959761,
+          "maxBalanceResidualMm": 4.263256414560601e-14,
+          "predictedBiomassKgHa": 18958.739736976975,
+          "predictedGrainKgHa": 11925.269438040694
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "treatment": "80/80",
+          "observedGrainKgHa": 15300.709668643882,
+          "observedBiomassKgHa": null,
+          "normTr": 654.7359456356035,
+          "predictedEtMm": 455.263500813656,
+          "fieldEtMm": 581.1055827894791,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18977.823482596876,
+          "predictedGrainKgHa": 11937.273337643812
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "treatment": "80/65",
+          "observedGrainKgHa": 14848.34385066365,
+          "observedBiomassKgHa": null,
+          "normTr": 657.7818015022992,
+          "predictedEtMm": 456.6178574542372,
+          "fieldEtMm": 565.635924569571,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19066.10902026576,
+          "predictedGrainKgHa": 11992.80597529748
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "treatment": "80/50",
+          "observedGrainKgHa": 13066.117023118875,
+          "observedBiomassKgHa": null,
+          "normTr": 650.5562360345469,
+          "predictedEtMm": 452.3530058411406,
+          "fieldEtMm": 505.1238542676305,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18856.67267127192,
+          "predictedGrainKgHa": 11861.068057771254
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "treatment": "80/40",
+          "observedGrainKgHa": 10600.22741421654,
+          "observedBiomassKgHa": null,
+          "normTr": 594.0575626173604,
+          "predictedEtMm": 412.75034442767776,
+          "fieldEtMm": 493.2172199621322,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17219.032553512134,
+          "predictedGrainKgHa": 10830.973235131734
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "treatment": "65/80",
+          "observedGrainKgHa": 15098.968962385752,
+          "observedBiomassKgHa": null,
+          "normTr": 630.6079295151357,
+          "predictedEtMm": 449.9922732636504,
+          "fieldEtMm": 558.5063642114653,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18278.46180256116,
+          "predictedGrainKgHa": 11497.36664633562
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "treatment": "65/65",
+          "observedGrainKgHa": 13902.860840737338,
+          "observedBiomassKgHa": null,
+          "normTr": 647.3465271904291,
+          "predictedEtMm": 455.7450973487914,
+          "fieldEtMm": 540.8968625907834,
+          "maxBalanceResidualMm": 4.263256414560601e-14,
+          "predictedBiomassKgHa": 18763.6377794499,
+          "predictedGrainKgHa": 11802.548020706095
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12119.800870830106,
+          "observedBiomassKgHa": null,
+          "normTr": 623.511374514174,
+          "predictedEtMm": 444.1334368717736,
+          "fieldEtMm": 493.4659487874362,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 18072.7648814733,
+          "predictedGrainKgHa": 11367.980872777907
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "treatment": "65/40",
+          "observedGrainKgHa": 10898.255987087277,
+          "observedBiomassKgHa": null,
+          "normTr": 586.6718066518124,
+          "predictedEtMm": 416.01355967547056,
+          "fieldEtMm": 450.3649906627693,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17004.95300902701,
+          "predictedGrainKgHa": 10696.314693236205
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "treatment": "50/50",
+          "observedGrainKgHa": 12064.092201081046,
+          "observedBiomassKgHa": null,
+          "normTr": 588.2567159745649,
+          "predictedEtMm": 423.8339374447648,
+          "fieldEtMm": 453.8636794814489,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17050.89233703186,
+          "predictedGrainKgHa": 10725.21106883188
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "treatment": "40/40",
+          "observedGrainKgHa": 8567.100621986638,
+          "observedBiomassKgHa": null,
+          "normTr": 529.2294168528043,
+          "predictedEtMm": 386.62317586713016,
+          "fieldEtMm": 422.1399110449348,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 15339.958836504798,
+          "predictedGrainKgHa": 9649.01384963799
+        }
+      ]
+    },
+    {
+      "mode": "assimilated",
+      "wp": 27.426375069615542,
+      "hi": 0.5315322740609477,
+      "years": {
+        "2012": {
+          "grain": {
+            "n": 12,
+            "mae": 564.7356705383909,
+            "rmse": 675.2108476149907,
+            "bias": -83.61420868274854,
+            "nrmsePercent": 5.266929964742797
+          },
+          "biomass": {
+            "n": 12,
+            "mae": 930.6092856510828,
+            "rmse": 1025.0254746236287,
+            "bias": -107.42804943046151,
+            "nrmsePercent": 5.035810689831952
+          },
+          "et": {
+            "n": 12,
+            "mae": 54.99831906144116,
+            "rmse": 60.2094784906854,
+            "bias": -54.99831906144116,
+            "nrmsePercent": 10.025121444339938
+          },
+          "cover": {
+            "n": 202,
+            "mae": 0.02361853320957096,
+            "rmse": 0.05721469551918102,
+            "bias": -0.004579136757425741,
+            "nrmsePercent": 9.479081285620255
+          },
+          "dailyEt": {
+            "n": 1767,
+            "mae": 0.8504542077464782,
+            "rmse": 1.1440482881933416,
+            "bias": -0.42690861118573276,
+            "nrmsePercent": 27.686927510308053
+          },
+          "reserve105": {
+            "n": 258,
+            "mae": 10.765728402832517,
+            "rmse": 13.676498031602282,
+            "bias": 4.656993068381928,
+            "nrmsePercent": 23.65398894004538
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.8054984233699378,
+              "predicted": 0.8102183246419282
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9499386260701691,
+              "predicted": 0.9878018007140034
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.8473402643539815,
+              "predicted": 0.8185440497592725
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.7165754864072752,
+              "predicted": 0.7459585054704659
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.8139692599452879,
+              "predicted": 0.7699969812362362
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.9350251646394064,
+              "predicted": 0.9088702585898238
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8017982457720364,
+              "predicted": 0.7505256586858922
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7651531381139307,
+              "predicted": 0.7096087231944154
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.7399847904300025,
+              "predicted": 0.6853944741137094
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7229926477741107,
+              "predicted": 0.6619009327266179
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.6791419892737603,
+              "predicted": 0.573535694042716
+            }
+          ]
+        },
+        "2013": {
+          "grain": {
+            "n": 12,
+            "mae": 962.7100075364724,
+            "rmse": 1140.1377052752248,
+            "bias": 400.95253327065194,
+            "nrmsePercent": 8.813118519381248
+          },
+          "biomass": {
+            "n": 0,
+            "mae": null,
+            "rmse": null,
+            "bias": null,
+            "nrmsePercent": null
+          },
+          "et": {
+            "n": 12,
+            "mae": 35.804263542033326,
+            "rmse": 45.926545430779406,
+            "bias": -35.804263542033326,
+            "nrmsePercent": 8.76400576970901
+          },
+          "cover": {
+            "n": 213,
+            "mae": 0.019733881064162746,
+            "rmse": 0.04376987085816007,
+            "bias": 0.015571752738654143,
+            "nrmsePercent": 6.442830164766964
+          },
+          "dailyEt": {
+            "n": 1587,
+            "mae": 0.8219405907631305,
+            "rmse": 1.1166130404927814,
+            "bias": -0.18221117909435935,
+            "nrmsePercent": 28.823671228003516
+          },
+          "reserve105": {
+            "n": 201,
+            "mae": 17.00696719107707,
+            "rmse": 20.452319316336286,
+            "bias": 14.567850705499257,
+            "nrmsePercent": 52.8266385148048
+          },
+          "treatmentContrasts": [
+            {
+              "treatment": "100/100",
+              "observed": 1,
+              "predicted": 1
+            },
+            {
+              "treatment": "100/50",
+              "observed": 0.832899333403291,
+              "predicted": 0.9748892951609769
+            },
+            {
+              "treatment": "80/80",
+              "observed": 0.9746047146514789,
+              "predicted": 0.9650620089523868
+            },
+            {
+              "treatment": "80/65",
+              "observed": 0.9457905048207932,
+              "predicted": 0.9339991630400313
+            },
+            {
+              "treatment": "80/50",
+              "observed": 0.8322685371265042,
+              "predicted": 0.8934792489983445
+            },
+            {
+              "treatment": "80/40",
+              "observed": 0.6751995062977327,
+              "predicted": 0.8181985133693445
+            },
+            {
+              "treatment": "65/80",
+              "observed": 0.961754497392653,
+              "predicted": 0.898315215476664
+            },
+            {
+              "treatment": "65/65",
+              "observed": 0.8855663571143995,
+              "predicted": 0.890037247289417
+            },
+            {
+              "treatment": "65/50",
+              "observed": 0.7719913210009318,
+              "predicted": 0.8440304551943648
+            },
+            {
+              "treatment": "65/40",
+              "observed": 0.6941829429167491,
+              "predicted": 0.7692774154149025
+            },
+            {
+              "treatment": "50/50",
+              "observed": 0.7684428625725191,
+              "predicted": 0.8119822477500476
+            },
+            {
+              "treatment": "40/40",
+              "observed": 0.5456960388048342,
+              "predicted": 0.6965167429579778
+            }
+          ]
+        }
+      },
+      "records": [
+        {
+          "id": "LIRF-2012-1",
+          "year": 2012,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15733.992159616875,
+          "observedBiomassKgHa": 24176.8552651596,
+          "normTr": 940.2003973999999,
+          "predictedEtMm": 648.2786000978581,
+          "fieldEtMm": 770.7831007454886,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 25786.288739693984,
+          "predictedGrainKgHa": 16220.407921185508
+        },
+        {
+          "id": "LIRF-2012-2",
+          "year": 2012,
+          "treatment": "100/50",
+          "observedGrainKgHa": 12673.705877886356,
+          "observedBiomassKgHa": 19918.440888073037,
+          "normTr": 761.7675908091032,
+          "predictedEtMm": 564.2347644956734,
+          "fieldEtMm": 653.1460949508372,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20892.523661407882,
+          "predictedGrainKgHa": 13142.071730911584
+        },
+        {
+          "id": "LIRF-2012-3",
+          "year": 2012,
+          "treatment": "80/80",
+          "observedGrainKgHa": 14946.326894705267,
+          "observedBiomassKgHa": 24143.802489066704,
+          "normTr": 928.7316455837415,
+          "predictedEtMm": 635.9186474097972,
+          "fieldEtMm": 675.4905072903733,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 25471.742450800946,
+          "predictedGrainKgHa": 16022.548152862728
+        },
+        {
+          "id": "LIRF-2012-4",
+          "year": 2012,
+          "treatment": "80/65",
+          "observedGrainKgHa": 13332.045075873235,
+          "observedBiomassKgHa": 21237.22606827274,
+          "normTr": 769.5954408730735,
+          "predictedEtMm": 567.781979864531,
+          "fieldEtMm": 610.7806182603341,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21107.213213251045,
+          "predictedGrainKgHa": 13277.118388554569
+        },
+        {
+          "id": "LIRF-2012-5",
+          "year": 2012,
+          "treatment": "80/50",
+          "observedGrainKgHa": 11274.593084905717,
+          "observedBiomassKgHa": 18818.220693412386,
+          "normTr": 701.3504832872422,
+          "predictedEtMm": 533.6926179801284,
+          "fieldEtMm": 586.1831390298669,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19235.501409892033,
+          "predictedGrainKgHa": 12099.751251008849
+        },
+        {
+          "id": "LIRF-2012-6",
+          "year": 2012,
+          "treatment": "80/40",
+          "observedGrainKgHa": 12806.98595414831,
+          "observedBiomassKgHa": 21202.321307627855,
+          "normTr": 723.9514677551097,
+          "predictedEtMm": 542.1090390422644,
+          "fieldEtMm": 600.5606915353773,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19855.364486850318,
+          "predictedGrainKgHa": 12489.665133733173
+        },
+        {
+          "id": "LIRF-2012-7",
+          "year": 2012,
+          "treatment": "65/80",
+          "observedGrainKgHa": 14711.6786094809,
+          "observedBiomassKgHa": 24426.79818988341,
+          "normTr": 854.5201783111931,
+          "predictedEtMm": 595.120513913284,
+          "fieldEtMm": 640.91866791242,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 23436.390914917534,
+          "predictedGrainKgHa": 14742.2463417603
+        },
+        {
+          "id": "LIRF-2012-8",
+          "year": 2012,
+          "treatment": "65/65",
+          "observedGrainKgHa": 12615.487312571786,
+          "observedBiomassKgHa": 18742.92085018282,
+          "normTr": 705.6445225553725,
+          "predictedEtMm": 529.5917134742242,
+          "fieldEtMm": 565.4284570146739,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19353.27134142343,
+          "predictedGrainKgHa": 12173.832339201615
+        },
+        {
+          "id": "LIRF-2012-9",
+          "year": 2012,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12038.913475990834,
+          "observedBiomassKgHa": 18810.759125940836,
+          "normTr": 667.174403545896,
+          "predictedEtMm": 510.8487909890952,
+          "fieldEtMm": 551.4353497659324,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18298.17542849678,
+          "predictedGrainKgHa": 11510.142954645029
+        },
+        {
+          "id": "LIRF-2012-10",
+          "year": 2012,
+          "treatment": "65/40",
+          "observedGrainKgHa": 11642.914890861397,
+          "observedBiomassKgHa": 18464.081873173007,
+          "normTr": 644.4081569374736,
+          "predictedEtMm": 496.6805737856683,
+          "fieldEtMm": 544.7363166561273,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17673.779810086824,
+          "predictedGrainKgHa": 11117.377957050787
+        },
+        {
+          "id": "LIRF-2012-11",
+          "year": 2012,
+          "treatment": "50/50",
+          "observedGrainKgHa": 11375.560651538502,
+          "observedBiomassKgHa": 18436.105610209026,
+          "normTr": 622.319519988997,
+          "predictedEtMm": 482.6131801069912,
+          "fieldEtMm": 530.9685017671595,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 17067.968568361335,
+          "predictedGrainKgHa": 10736.303132238909
+        },
+        {
+          "id": "LIRF-2012-12",
+          "year": 2012,
+          "treatment": "40/40",
+          "observedGrainKgHa": 10685.614734499954,
+          "observedBiomassKgHa": 15879.181266452488,
+          "normTr": 539.2384874620464,
+          "predictedEtMm": 440.1820628752959,
+          "fieldEtMm": 476.60086784351483,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 14789.357009106261,
+          "predictedGrainKgHa": 9302.982914733098
+        },
+        {
+          "id": "LIRF-2013-1",
+          "year": 2013,
+          "treatment": "100/100",
+          "observedGrainKgHa": 15699.400422165467,
+          "observedBiomassKgHa": null,
+          "normTr": 883.9105896406977,
+          "predictedEtMm": 549.5027408934752,
+          "fieldEtMm": 658.9169450180244,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 24242.463359490805,
+          "predictedGrainKgHa": 15249.291926993314
+        },
+        {
+          "id": "LIRF-2013-2",
+          "year": 2013,
+          "treatment": "100/50",
+          "observedGrainKgHa": 13076.020146452964,
+          "observedBiomassKgHa": null,
+          "normTr": 861.7149717201432,
+          "predictedEtMm": 535.2998864300376,
+          "fieldEtMm": 565.1947378959761,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 23633.7180174998,
+          "predictedGrainKgHa": 14866.371458410487
+        },
+        {
+          "id": "LIRF-2013-3",
+          "year": 2013,
+          "treatment": "80/80",
+          "observedGrainKgHa": 15300.709668643882,
+          "observedBiomassKgHa": null,
+          "normTr": 853.0285293729405,
+          "predictedEtMm": 526.1251596286033,
+          "fieldEtMm": 581.1055827894791,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 23395.480391664823,
+          "predictedGrainKgHa": 14716.512302165582
+        },
+        {
+          "id": "LIRF-2013-4",
+          "year": 2013,
+          "treatment": "80/65",
+          "observedGrainKgHa": 14848.34385066365,
+          "observedBiomassKgHa": null,
+          "normTr": 825.5717509266321,
+          "predictedEtMm": 521.1984633092421,
+          "fieldEtMm": 565.635924569571,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 22642.440487793036,
+          "predictedGrainKgHa": 14242.82589676486
+        },
+        {
+          "id": "LIRF-2013-5",
+          "year": 2013,
+          "treatment": "80/50",
+          "observedGrainKgHa": 13066.117023118875,
+          "observedBiomassKgHa": null,
+          "normTr": 789.7557698138544,
+          "predictedEtMm": 500.0407355809441,
+          "fieldEtMm": 505.1238542676305,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21660.137956307728,
+          "predictedGrainKgHa": 13624.925898686504
+        },
+        {
+          "id": "LIRF-2013-6",
+          "year": 2013,
+          "treatment": "80/40",
+          "observedGrainKgHa": 10600.22741421654,
+          "observedBiomassKgHa": null,
+          "normTr": 723.2143303954394,
+          "predictedEtMm": 456.82003234889044,
+          "fieldEtMm": 493.2172199621322,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 19835.147481146178,
+          "predictedGrainKgHa": 12476.947984601074
+        },
+        {
+          "id": "LIRF-2013-7",
+          "year": 2013,
+          "treatment": "65/80",
+          "observedGrainKgHa": 15098.968962385752,
+          "observedBiomassKgHa": null,
+          "normTr": 794.0303317951884,
+          "predictedEtMm": 500.32636669298506,
+          "fieldEtMm": 558.5063642114653,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21777.373696466115,
+          "predictedGrainKgHa": 13698.670963263552
+        },
+        {
+          "id": "LIRF-2013-8",
+          "year": 2013,
+          "treatment": "65/65",
+          "observedGrainKgHa": 13902.860840737338,
+          "observedBiomassKgHa": null,
+          "normTr": 786.713348053772,
+          "predictedEtMm": 496.29240848908466,
+          "fieldEtMm": 540.8968625907834,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 21576.695355995747,
+          "predictedGrainKgHa": 13572.437809813859
+        },
+        {
+          "id": "LIRF-2013-9",
+          "year": 2013,
+          "treatment": "65/50",
+          "observedGrainKgHa": 12119.800870830106,
+          "observedBiomassKgHa": null,
+          "normTr": 746.0474573255574,
+          "predictedEtMm": 477.42629531173753,
+          "fieldEtMm": 493.4659487874362,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 20461.377384343734,
+          "predictedGrainKgHa": 12870.86680653192
+        },
+        {
+          "id": "LIRF-2013-10",
+          "year": 2013,
+          "treatment": "65/40",
+          "observedGrainKgHa": 10898.255987087277,
+          "observedBiomassKgHa": null,
+          "normTr": 679.9724538566584,
+          "predictedEtMm": 438.43065506543724,
+          "fieldEtMm": 450.3649906627693,
+          "maxBalanceResidualMm": 1.4210854715202004e-14,
+          "predictedBiomassKgHa": 18649.17955647956,
+          "predictedGrainKgHa": 11730.935880504754
+        },
+        {
+          "id": "LIRF-2013-11",
+          "year": 2013,
+          "treatment": "50/50",
+          "observedGrainKgHa": 12064.092201081046,
+          "observedBiomassKgHa": null,
+          "normTr": 717.7197073865237,
+          "predictedEtMm": 453.1502711981977,
+          "fieldEtMm": 453.8636794814489,
+          "maxBalanceResidualMm": 2.842170943040401e-14,
+          "predictedBiomassKgHa": 19684.449889637515,
+          "predictedGrainKgHa": 12382.154335476685
+        },
+        {
+          "id": "LIRF-2013-12",
+          "year": 2013,
+          "treatment": "40/40",
+          "observedGrainKgHa": 8567.100621986638,
+          "observedBiomassKgHa": null,
+          "normTr": 615.6585249626044,
+          "predictedEtMm": 404.1678438286163,
+          "fieldEtMm": 422.1399110449348,
+          "maxBalanceResidualMm": 2.1316282072803006e-14,
+          "predictedBiomassKgHa": 16885.28162043065,
+          "predictedGrainKgHa": 10621.387145404768
+        }
+      ]
+    }
+  ],
+  "soilWaterMethod": "layered-recharge-diagnostic"
+}

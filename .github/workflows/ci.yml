@@ -69,10 +69,14 @@ jobs:
       - name: Tester les calculs, les imports et la référence scientifique
         run: pnpm test
       - name: Rejouer le banc LIRF et le contrôle 2011 sans réajustement
+        env:
+          LIRF_REPLAY_OUTPUT: research-data/alternative-models/2026-11-11/current-replay
         run: |
+          node scripts/check-lirf.mjs
           node --experimental-transform-types scripts/lirf-replay.mjs
           node --experimental-transform-types scripts/lirf-holdout-replay.mjs
-          node scripts/check-lirf.mjs
+          node --experimental-transform-types scripts/audit-calculation-chain.mjs
+          node scripts/check-alternative-benchmarks.mjs
       - name: Installer le lecteur PDF des tests dans un environnement isolé
         run: |
           python3 -m venv .ci-python
@@ -134,7 +138,7 @@ jobs:
         run: node scripts/deploy-cloudflare.mjs
       - name: Contrôler la santé avec une identité Access de service
         env:
-          EXPECTED_GROWTH_ENGINE: daily-rue-npk-1.3.0
+          EXPECTED_GROWTH_ENGINE: daily-rue-npk-1.4.0
           APP_URL: ${{ vars.APP_URL }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}

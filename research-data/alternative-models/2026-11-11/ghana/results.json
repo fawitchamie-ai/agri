@@ -1,0 +1,2597 @@
+{
+  "protocol": {
+    "version": "ghana-canopy-2026-11-11.1",
+    "sourceDoi": "10.5281/zenodo.6632083",
+    "hypothesis": "Field mean grain yield = intercept + slope * max(field-mean LAI observed by issue date)",
+    "freeParameters": [
+      "intercept",
+      "slope, nonnegative; ridge alpha=1 fixed before fit"
+    ],
+    "split": "Sort field IDs by SHA256(ghana-canopy-2026-11-11:ID); first 60% train, next 20% calibration, remaining 20% test",
+    "replications": "Quadrats remain together and are retained to describe within-field variability",
+    "ambiguity": "7069ZIN has six quadrats and duplicate IDs, excluded from fitting and all accuracy metrics pending resolution",
+    "issueDates": [
+      "2021-09-20",
+      "2021-10-04",
+      "2021-10-18",
+      "2021-11-05"
+    ],
+    "selection": "No test-selected dates or parameters; all issue dates reported separately",
+    "uncertainty": "Split conformal absolute residual interval, 90% nominal, calibration fields only; coverage evaluated on test fields",
+    "grain": "Reported yield_quadrant is kg/ha per article; reference moisture not stated: no conversion or claim of dry matter",
+    "validationScope": "Retrospective 2021 single Ghana area; field holdout, no independent later-season evidence",
+    "operationalScope": "A nowcast/assimilation from observed LAI, not preseason yield, fertilizer advice or irrigation causal effect",
+    "missing": "No known sowing dates, daily management, independent soil NPK or reference grain moisture"
+  },
+  "audit": {
+    "biophysicalRows": 500,
+    "yieldQuadratRows": 144,
+    "yieldFieldIds": 47,
+    "unambiguousFields": 46,
+    "excludedFields": [
+      "7069ZIN"
+    ],
+    "unmatchedYieldFields": [],
+    "grainMeanKgHa": 1379.4166666666667,
+    "partition": {
+      "train": [
+        "1061ZIN",
+        "2053KPA",
+        "3075TAM",
+        "5011LAB",
+        "5012LAB",
+        "5014LAB",
+        "5033TUG",
+        "5034TUG",
+        "5037TUG",
+        "5057PAG",
+        "7010SAM",
+        "7014SAM",
+        "7015ALH",
+        "7015SAM",
+        "7016ALH",
+        "7016SAM",
+        "7018ALH",
+        "7021YAM",
+        "7033FUU",
+        "7035FUU",
+        "7036SAN",
+        "7058CHE",
+        "7061CHE",
+        "7062CHE",
+        "7070ZIN",
+        "7071ZIN",
+        "7072ZIN"
+      ],
+      "calibration": [
+        "1055ZIN",
+        "1056ZIN",
+        "2050KPA",
+        "5002LAB",
+        "5016ZOR",
+        "7019ZOR",
+        "7022FUU",
+        "7059CHE",
+        "7074ZIN"
+      ],
+      "test": [
+        "1029ZIN",
+        "1067ZIN",
+        "2002ALH",
+        "3074TAM",
+        "4020FUU",
+        "5017ZOR",
+        "5036TUG",
+        "7017SAM",
+        "7020YAM",
+        "7036FUU"
+      ]
+    },
+    "sourceSha256": {
+      "Yield_Maize_Biomass_V2.csv": "7b3003a3c1ac401ce2a4fcbaf22f3449590f6f5badf110b9740636085dd73066",
+      "Ghana_ground_data_v5.csv": "fea71fdf8acd2c5ba3a3db7170249e1205b9eb8e44e45c8f8d64fbc88a91ebf4"
+    }
+  },
+  "results": [
+    {
+      "issueDate": "2021-09-20",
+      "coefficients": {
+        "interceptKgHa": 144.17852150677732,
+        "slopeKgHaPerLai": 877.3516277937637
+      },
+      "trainLaiRange": [
+        0.514,
+        2.7249999999999996
+      ],
+      "conformal90HalfWidthKgHa": 923.0662593304603,
+      "calibrationN": 9,
+      "test": {
+        "canopy": {
+          "nFields": 10,
+          "maeKgHa": 446.7324778324102,
+          "rmseKgHa": 533.6022522179701,
+          "biasKgHa": 122.01710858008104,
+          "nrmsePercent": 40.53537351370697
+        },
+        "constant": {
+          "nFields": 10,
+          "maeKgHa": 641.8254320987656,
+          "rmseKgHa": 749.9554154299803,
+          "biasKgHa": 118.50716049382712,
+          "nrmsePercent": 56.97075444626049
+        },
+        "coverage90": 0.9
+      },
+      "leaveDistrictOut": [
+        {
+          "heldOutDistrict": "Gushegu",
+          "canopy": {
+            "nFields": 10,
+            "maeKgHa": 821.5094286913834,
+            "rmseKgHa": 1129.8096148094317,
+            "biasKgHa": -139.11631190222533,
+            "nrmsePercent": 74.2740372753773
+          },
+          "constant": {
+            "nFields": 10,
+            "maeKgHa": 853.2344444444446,
+            "rmseKgHa": 1212.4303004378246,
+            "biasKgHa": -175.62555555555565,
+            "nrmsePercent": 79.70554697722697
+          }
+        },
+        {
+          "heldOutDistrict": "Mion",
+          "canopy": {
+            "nFields": 11,
+            "maeKgHa": 455.73665353260276,
+            "rmseKgHa": 683.9289221647275,
+            "biasKgHa": 141.03138709373886,
+            "nrmsePercent": 57.6633208435172
+          },
+          "constant": {
+            "nFields": 11,
+            "maeKgHa": 743.7270129870129,
+            "rmseKgHa": 900.1393819284066,
+            "biasKgHa": 259.72632034632005,
+            "nrmsePercent": 75.89242727115055
+          }
+        },
+        {
+          "heldOutDistrict": "Nanton",
+          "canopy": {
+            "nFields": 8,
+            "maeKgHa": 282.60832815664793,
+            "rmseKgHa": 386.6388378102248,
+            "biasKgHa": 72.56314100043835,
+            "nrmsePercent": 27.916749472598386
+          },
+          "constant": {
+            "nFields": 8,
+            "maeKgHa": 396.4594298245615,
+            "rmseKgHa": 533.585428438363,
+            "biasKgHa": -1.549780701754372,
+            "nrmsePercent": 38.526835049236034
+          }
+        },
+        {
+          "heldOutDistrict": "Salaga N",
+          "canopy": {
+            "nFields": 5,
+            "maeKgHa": 238.05756879992077,
+            "rmseKgHa": 290.2154254294078,
+            "biasKgHa": 190.38458898088874,
+            "nrmsePercent": 31.186956918301508
+          },
+          "constant": {
+            "nFields": 5,
+            "maeKgHa": 511.54975609756093,
+            "rmseKgHa": 679.4146698628359,
+            "biasKgHa": 508.38292682926806,
+            "nrmsePercent": 73.01085394521286
+          }
+        },
+        {
+          "heldOutDistrict": "Tamale",
+          "canopy": {
+            "nFields": 12,
+            "maeKgHa": 562.8679358887888,
+            "rmseKgHa": 658.423744192823,
+            "biasKgHa": -142.72248761537108,
+            "nrmsePercent": 40.190675671773114
+          },
+          "constant": {
+            "nFields": 12,
+            "maeKgHa": 626.1179738562091,
+            "rmseKgHa": 823.4288343101246,
+            "biasKgHa": -344.40392156862725,
+            "nrmsePercent": 50.26270925134287
+          }
+        }
+      ],
+      "rows": [
+        {
+          "field": "3075TAM",
+          "split": "train",
+          "peakLai": 1.89,
+          "grainKgHa": 1989.5666666666668,
+          "predictedKgHa": 1802.3730980369905,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 228.67191199037404,
+          "district": "Nanton"
+        },
+        {
+          "field": "1061ZIN",
+          "split": "train",
+          "peakLai": 1.16,
+          "grainKgHa": 1806.8666666666668,
+          "predictedKgHa": 1161.906409747543,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 666.8409505521789,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7035FUU",
+          "split": "train",
+          "peakLai": 1.5625,
+          "grainKgHa": 1350.1333333333334,
+          "predictedKgHa": 1515.040439934533,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 360.24081297561673,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7021YAM",
+          "split": "train",
+          "peakLai": 1.79,
+          "grainKgHa": 4580.900000000001,
+          "predictedKgHa": 1714.6379352576143,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 507.86997351684465,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5033TUG",
+          "split": "train",
+          "peakLai": 1.33025,
+          "grainKgHa": 1144.2666666666667,
+          "predictedKgHa": 1311.2755243794313,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 594.5881627928135,
+          "district": "Tamale"
+        },
+        {
+          "field": "7062CHE",
+          "split": "train",
+          "peakLai": 0.966,
+          "grainKgHa": 672.3000000000001,
+          "predictedKgHa": 991.700193955553,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 320.44793648890925,
+          "district": "Mion"
+        },
+        {
+          "field": "5012LAB",
+          "split": "train",
+          "peakLai": 2.0275,
+          "grainKgHa": 927.0,
+          "predictedKgHa": 1923.008946858633,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 439.7129631930357,
+          "district": "Tamale"
+        },
+        {
+          "field": "7016ALH",
+          "split": "train",
+          "peakLai": 0.64575,
+          "grainKgHa": 684.6999999999999,
+          "predictedKgHa": 710.7283351546002,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 207.21853198978127,
+          "district": "Mion"
+        },
+        {
+          "field": "7016SAM",
+          "split": "train",
+          "peakLai": 0.879,
+          "grainKgHa": 971.1999999999999,
+          "predictedKgHa": 915.3706023374956,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 468.2857247450536,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7015ALH",
+          "split": "train",
+          "peakLai": 0.514,
+          "grainKgHa": 550.9666666666667,
+          "predictedKgHa": 595.1372581927719,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 303.5399534383132,
+          "district": "Mion"
+        },
+        {
+          "field": "7071ZIN",
+          "split": "train",
+          "peakLai": 1.14725,
+          "grainKgHa": 1372.9333333333334,
+          "predictedKgHa": 1150.7201764931729,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 148.01771290400794,
+          "district": "Nanton"
+        },
+        {
+          "field": "7061CHE",
+          "split": "train",
+          "peakLai": 2.1745,
+          "grainKgHa": 1818.1000000000001,
+          "predictedKgHa": 2051.979636144317,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 720.2138640709438,
+          "district": "Mion"
+        },
+        {
+          "field": "7058CHE",
+          "split": "train",
+          "peakLai": 1.4635,
+          "grainKgHa": 222.46666666666667,
+          "predictedKgHa": 1428.1826287829504,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 204.9534174717107,
+          "district": "Mion"
+        },
+        {
+          "field": "7036SAN",
+          "split": "train",
+          "peakLai": 1.8325000000000002,
+          "grainKgHa": 3446.1,
+          "predictedKgHa": 1751.9253794388494,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 455.69069553810294,
+          "district": "Mion"
+        },
+        {
+          "field": "7010SAM",
+          "split": "train",
+          "peakLai": 1.6375,
+          "grainKgHa": 865.0333333333334,
+          "predictedKgHa": 1580.8418120190652,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 509.21981828414084,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5011LAB",
+          "split": "train",
+          "peakLai": 1.8725,
+          "grainKgHa": 1454.4666666666665,
+          "predictedKgHa": 1787.0194445506,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 65.88363479145129,
+          "district": "Tamale"
+        },
+        {
+          "field": "7033FUU",
+          "split": "train",
+          "peakLai": 0.57825,
+          "grainKgHa": 190.73333333333332,
+          "predictedKgHa": 651.5071002785212,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 126.78968149393441,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5014LAB",
+          "split": "train",
+          "peakLai": 0.8025,
+          "grainKgHa": 872.4,
+          "predictedKgHa": 848.2532028112727,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 250.85719044906807,
+          "district": "Tamale"
+        },
+        {
+          "field": "7018ALH",
+          "split": "train",
+          "peakLai": 0.85545,
+          "grainKgHa": 638.5666666666667,
+          "predictedKgHa": 894.7089715029525,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 399.3198509131914,
+          "district": "Mion"
+        },
+        {
+          "field": "2053KPA",
+          "split": "train",
+          "peakLai": 1.32125,
+          "grainKgHa": 993.2666666666668,
+          "predictedKgHa": 1303.3793597292877,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 21.903500481277796,
+          "district": "Mion"
+        },
+        {
+          "field": "7014SAM",
+          "split": "train",
+          "peakLai": 1.5299999999999998,
+          "grainKgHa": 1183.3333333333333,
+          "predictedKgHa": 1486.5265120312356,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 311.0280105285267,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7072ZIN",
+          "split": "train",
+          "peakLai": 1.7625,
+          "grainKgHa": 1275.7666666666667,
+          "predictedKgHa": 1690.5107654932858,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 393.81743655319946,
+          "district": "Nanton"
+        },
+        {
+          "field": "7070ZIN",
+          "split": "train",
+          "peakLai": 0.8333333333333334,
+          "grainKgHa": 1210.5666666666666,
+          "predictedKgHa": 875.3048780015804,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 304.49961138453585,
+          "district": "Nanton"
+        },
+        {
+          "field": "7015SAM",
+          "split": "train",
+          "peakLai": 1.9175,
+          "grainKgHa": 638.1999999999999,
+          "predictedKgHa": 1826.500267801319,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 378.47209936797196,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5057PAG",
+          "split": "train",
+          "peakLai": 2.26,
+          "grainKgHa": 3245.6666666666665,
+          "predictedKgHa": 2126.993200320683,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.6224738845609,
+          "district": "Tamale"
+        },
+        {
+          "field": "5034TUG",
+          "split": "train",
+          "peakLai": 2.7249999999999996,
+          "grainKgHa": 1945.5333333333335,
+          "predictedKgHa": 2534.9617072447827,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 884.6441111166307,
+          "district": "Tamale"
+        },
+        {
+          "field": "5037TUG",
+          "split": "train",
+          "peakLai": 2.2425,
+          "grainKgHa": 2691.1,
+          "predictedKgHa": 2111.6395468342926,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 301.2387093319847,
+          "district": "Tamale"
+        },
+        {
+          "field": "7022FUU",
+          "split": "calibration",
+          "peakLai": 1.369,
+          "grainKgHa": 1446.8666666666668,
+          "predictedKgHa": 1345.2728999564397,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 538.9400832498295,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7019ZOR",
+          "split": "calibration",
+          "peakLai": 1.4725000000000001,
+          "grainKgHa": 1768.2666666666667,
+          "predictedKgHa": 1436.0787934330945,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 558.2706989743714,
+          "district": "Tamale"
+        },
+        {
+          "field": "1055ZIN",
+          "split": "calibration",
+          "peakLai": 1.5875,
+          "grainKgHa": 1444.3333333333333,
+          "predictedKgHa": 1536.974230629377,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 299.5444763859506,
+          "district": "Nanton"
+        },
+        {
+          "field": "7074ZIN",
+          "split": "calibration",
+          "peakLai": 1.05175,
+          "grainKgHa": 1038.3666666666666,
+          "predictedKgHa": 1066.9330960388684,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 555.0009579571312,
+          "district": "Nanton"
+        },
+        {
+          "field": "2050KPA",
+          "split": "calibration",
+          "peakLai": 2.2575000000000003,
+          "grainKgHa": 1463.9666666666665,
+          "predictedKgHa": 2124.7998212511993,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 316.75633116535073,
+          "district": "Mion"
+        },
+        {
+          "field": "5016ZOR",
+          "split": "calibration",
+          "peakLai": 1.23275,
+          "grainKgHa": 2148.7999999999997,
+          "predictedKgHa": 1225.7337406695394,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 920.4291770690453,
+          "district": "Tamale"
+        },
+        {
+          "field": "1056ZIN",
+          "split": "calibration",
+          "peakLai": 1.64975,
+          "grainKgHa": 1052.4,
+          "predictedKgHa": 1591.589369459539,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 418.35904436261444,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7059CHE",
+          "split": "calibration",
+          "peakLai": 0.809,
+          "grainKgHa": 839.3333333333334,
+          "predictedKgHa": 853.9559883919321,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 624.0300099621278,
+          "district": "Mion"
+        },
+        {
+          "field": "5002LAB",
+          "split": "calibration",
+          "peakLai": 1.4407500000000002,
+          "grainKgHa": 541.4333333333333,
+          "predictedKgHa": 1408.2228792506426,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 196.36171554896669,
+          "district": "Tamale"
+        },
+        {
+          "field": "1067ZIN",
+          "split": "test",
+          "peakLai": 1.3025,
+          "grainKgHa": 683.0333333333333,
+          "predictedKgHa": 1286.9290167081544,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 57.30988861735236,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7020YAM",
+          "split": "test",
+          "peakLai": 1.945,
+          "grainKgHa": 2793.066666666667,
+          "predictedKgHa": 1850.6274375656476,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 355.73237599821215,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7017SAM",
+          "split": "test",
+          "peakLai": 1.18925,
+          "grainKgHa": 637.3333333333334,
+          "predictedKgHa": 1187.5689448605108,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 63.49175799529677,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5036TUG",
+          "split": "test",
+          "peakLai": 1.03425,
+          "grainKgHa": 1382.3999999999999,
+          "predictedKgHa": 1051.5794425524773,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 688.8771370861425,
+          "district": "Tamale"
+        },
+        {
+          "field": "3074TAM",
+          "split": "test",
+          "peakLai": 1.38875,
+          "grainKgHa": 439.8333333333333,
+          "predictedKgHa": 1362.6005946053665,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 451.4661929018975,
+          "district": "Nanton"
+        },
+        {
+          "field": "4020FUU",
+          "split": "test",
+          "peakLai": 0.77225,
+          "grainKgHa": 775.1666666666666,
+          "predictedKgHa": 821.7133160705113,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.79608452219108,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5017ZOR",
+          "split": "test",
+          "peakLai": 1.189,
+          "grainKgHa": 1537.6666666666667,
+          "predictedKgHa": 1187.3496069535624,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 268.77695833782576,
+          "district": "Tamale"
+        },
+        {
+          "field": "7036FUU",
+          "split": "test",
+          "peakLai": 1.283,
+          "grainKgHa": 889.9333333333334,
+          "predictedKgHa": 1269.820659966176,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 363.1721676193446,
+          "district": "Salaga N"
+        },
+        {
+          "field": "1029ZIN",
+          "split": "test",
+          "peakLai": 2.6125,
+          "grainKgHa": 2308.4,
+          "predictedKgHa": 2436.2596491179847,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 427.82949874920973,
+          "district": "Nanton"
+        },
+        {
+          "field": "2002ALH",
+          "split": "test",
+          "peakLai": 2.035,
+          "grainKgHa": 1717.0333333333335,
+          "predictedKgHa": 1929.5890840670866,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 276.6946752890871,
+          "district": "Mion"
+        }
+      ]
+    },
+    {
+      "issueDate": "2021-10-04",
+      "coefficients": {
+        "interceptKgHa": -131.39637874946948,
+        "slopeKgHaPerLai": 971.7549384806114
+      },
+      "trainLaiRange": [
+        0.8005,
+        2.8525
+      ],
+      "conformal90HalfWidthKgHa": 742.6933149706211,
+      "calibrationN": 9,
+      "test": {
+        "canopy": {
+          "nFields": 10,
+          "maeKgHa": 458.96236459512585,
+          "rmseKgHa": 568.9620698090259,
+          "biasKgHa": 125.52059181525628,
+          "nrmsePercent": 43.22150050712247
+        },
+        "constant": {
+          "nFields": 10,
+          "maeKgHa": 641.8254320987656,
+          "rmseKgHa": 749.9554154299803,
+          "biasKgHa": 118.50716049382712,
+          "nrmsePercent": 56.97075444626049
+        },
+        "coverage90": 0.7
+      },
+      "leaveDistrictOut": [
+        {
+          "heldOutDistrict": "Gushegu",
+          "canopy": {
+            "nFields": 10,
+            "maeKgHa": 792.3752088572771,
+            "rmseKgHa": 1072.5775858727288,
+            "biasKgHa": -162.49466319380335,
+            "nrmsePercent": 70.51158580136753
+          },
+          "constant": {
+            "nFields": 10,
+            "maeKgHa": 853.2344444444446,
+            "rmseKgHa": 1212.4303004378246,
+            "biasKgHa": -175.62555555555565,
+            "nrmsePercent": 79.70554697722697
+          }
+        },
+        {
+          "heldOutDistrict": "Mion",
+          "canopy": {
+            "nFields": 11,
+            "maeKgHa": 445.35856532943404,
+            "rmseKgHa": 707.7957861529313,
+            "biasKgHa": 78.96539951624248,
+            "nrmsePercent": 59.675580584375055
+          },
+          "constant": {
+            "nFields": 11,
+            "maeKgHa": 743.7270129870129,
+            "rmseKgHa": 900.1393819284066,
+            "biasKgHa": 259.72632034632005,
+            "nrmsePercent": 75.89242727115055
+          }
+        },
+        {
+          "heldOutDistrict": "Nanton",
+          "canopy": {
+            "nFields": 8,
+            "maeKgHa": 282.1278241399275,
+            "rmseKgHa": 344.49289787512674,
+            "biasKgHa": 83.7589808449384,
+            "nrmsePercent": 24.873657234066425
+          },
+          "constant": {
+            "nFields": 8,
+            "maeKgHa": 396.4594298245615,
+            "rmseKgHa": 533.585428438363,
+            "biasKgHa": -1.549780701754372,
+            "nrmsePercent": 38.526835049236034
+          }
+        },
+        {
+          "heldOutDistrict": "Salaga N",
+          "canopy": {
+            "nFields": 5,
+            "maeKgHa": 316.0143053037264,
+            "rmseKgHa": 332.33009867287933,
+            "biasKgHa": 129.06141016765045,
+            "nrmsePercent": 35.71265881071167
+          },
+          "constant": {
+            "nFields": 5,
+            "maeKgHa": 511.54975609756093,
+            "rmseKgHa": 679.4146698628359,
+            "biasKgHa": 508.38292682926806,
+            "nrmsePercent": 73.01085394521286
+          }
+        },
+        {
+          "heldOutDistrict": "Tamale",
+          "canopy": {
+            "nFields": 12,
+            "maeKgHa": 455.46014073636894,
+            "rmseKgHa": 533.844307109662,
+            "biasKgHa": -79.21757984750549,
+            "nrmsePercent": 32.58625405827328
+          },
+          "constant": {
+            "nFields": 12,
+            "maeKgHa": 626.1179738562091,
+            "rmseKgHa": 823.4288343101246,
+            "biasKgHa": -344.40392156862725,
+            "nrmsePercent": 50.26270925134287
+          }
+        }
+      ],
+      "rows": [
+        {
+          "field": "3075TAM",
+          "split": "train",
+          "peakLai": 1.89,
+          "grainKgHa": 1989.5666666666668,
+          "predictedKgHa": 1705.220454978886,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 228.67191199037404,
+          "district": "Nanton"
+        },
+        {
+          "field": "1061ZIN",
+          "split": "train",
+          "peakLai": 1.20875,
+          "grainKgHa": 1806.8666666666668,
+          "predictedKgHa": 1043.2124031389694,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 666.8409505521789,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7035FUU",
+          "split": "train",
+          "peakLai": 1.8224999999999998,
+          "grainKgHa": 1350.1333333333334,
+          "predictedKgHa": 1639.6269966314446,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 360.24081297561673,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7021YAM",
+          "split": "train",
+          "peakLai": 2.2325,
+          "grainKgHa": 4580.900000000001,
+          "predictedKgHa": 2038.0465214084952,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 507.86997351684465,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5033TUG",
+          "split": "train",
+          "peakLai": 1.5833333333333333,
+          "grainKgHa": 1144.2666666666667,
+          "predictedKgHa": 1407.215607178165,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 594.5881627928135,
+          "district": "Tamale"
+        },
+        {
+          "field": "7062CHE",
+          "split": "train",
+          "peakLai": 0.966,
+          "grainKgHa": 672.3000000000001,
+          "predictedKgHa": 807.3188918228011,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 320.44793648890925,
+          "district": "Mion"
+        },
+        {
+          "field": "5012LAB",
+          "split": "train",
+          "peakLai": 2.0275,
+          "grainKgHa": 927.0,
+          "predictedKgHa": 1838.83675901997,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 439.7129631930357,
+          "district": "Tamale"
+        },
+        {
+          "field": "7016ALH",
+          "split": "train",
+          "peakLai": 0.8005,
+          "grainKgHa": 684.6999999999999,
+          "predictedKgHa": 646.49344950426,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 207.21853198978127,
+          "district": "Mion"
+        },
+        {
+          "field": "7016SAM",
+          "split": "train",
+          "peakLai": 1.06725,
+          "grainKgHa": 971.1999999999999,
+          "predictedKgHa": 905.7090793439631,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 468.2857247450536,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7015ALH",
+          "split": "train",
+          "peakLai": 0.921,
+          "grainKgHa": 550.9666666666667,
+          "predictedKgHa": 763.5899195911736,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 303.5399534383132,
+          "district": "Mion"
+        },
+        {
+          "field": "7071ZIN",
+          "split": "train",
+          "peakLai": 1.245,
+          "grainKgHa": 1372.9333333333334,
+          "predictedKgHa": 1078.438519658892,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 148.01771290400794,
+          "district": "Nanton"
+        },
+        {
+          "field": "7061CHE",
+          "split": "train",
+          "peakLai": 2.8525,
+          "grainKgHa": 1818.1000000000001,
+          "predictedKgHa": 2640.5345832664743,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 720.2138640709438,
+          "district": "Mion"
+        },
+        {
+          "field": "7058CHE",
+          "split": "train",
+          "peakLai": 1.4635,
+          "grainKgHa": 222.46666666666667,
+          "predictedKgHa": 1290.7669737169053,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 204.9534174717107,
+          "district": "Mion"
+        },
+        {
+          "field": "7036SAN",
+          "split": "train",
+          "peakLai": 1.8325000000000002,
+          "grainKgHa": 3446.1,
+          "predictedKgHa": 1649.3445460162511,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 455.69069553810294,
+          "district": "Mion"
+        },
+        {
+          "field": "7010SAM",
+          "split": "train",
+          "peakLai": 1.6375,
+          "grainKgHa": 865.0333333333334,
+          "predictedKgHa": 1459.8523330125315,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 509.21981828414084,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5011LAB",
+          "split": "train",
+          "peakLai": 1.8725,
+          "grainKgHa": 1454.4666666666665,
+          "predictedKgHa": 1688.2147435554755,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 65.88363479145129,
+          "district": "Tamale"
+        },
+        {
+          "field": "7033FUU",
+          "split": "train",
+          "peakLai": 0.8075000000000001,
+          "grainKgHa": 190.73333333333332,
+          "predictedKgHa": 653.2957340736243,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 126.78968149393441,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5014LAB",
+          "split": "train",
+          "peakLai": 0.8726666666666668,
+          "grainKgHa": 872.4,
+          "predictedKgHa": 716.6217642312776,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 250.85719044906807,
+          "district": "Tamale"
+        },
+        {
+          "field": "7018ALH",
+          "split": "train",
+          "peakLai": 0.85545,
+          "grainKgHa": 638.5666666666667,
+          "predictedKgHa": 699.8913833737696,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 399.3198509131914,
+          "district": "Mion"
+        },
+        {
+          "field": "2053KPA",
+          "split": "train",
+          "peakLai": 1.32125,
+          "grainKgHa": 993.2666666666668,
+          "predictedKgHa": 1152.5348337180383,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 21.903500481277796,
+          "district": "Mion"
+        },
+        {
+          "field": "7014SAM",
+          "split": "train",
+          "peakLai": 1.5299999999999998,
+          "grainKgHa": 1183.3333333333333,
+          "predictedKgHa": 1355.3886771258658,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 311.0280105285267,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7072ZIN",
+          "split": "train",
+          "peakLai": 1.7625,
+          "grainKgHa": 1275.7666666666667,
+          "predictedKgHa": 1581.321700322608,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 393.81743655319946,
+          "district": "Nanton"
+        },
+        {
+          "field": "7070ZIN",
+          "split": "train",
+          "peakLai": 1.2885,
+          "grainKgHa": 1210.5666666666666,
+          "predictedKgHa": 1120.7098594827983,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 304.49961138453585,
+          "district": "Nanton"
+        },
+        {
+          "field": "7015SAM",
+          "split": "train",
+          "peakLai": 1.9175,
+          "grainKgHa": 638.1999999999999,
+          "predictedKgHa": 1731.9437157871027,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 378.47209936797196,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5057PAG",
+          "split": "train",
+          "peakLai": 2.5833333333333335,
+          "grainKgHa": 3245.6666666666665,
+          "predictedKgHa": 2378.9705456587767,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.6224738845609,
+          "district": "Tamale"
+        },
+        {
+          "field": "5034TUG",
+          "split": "train",
+          "peakLai": 2.7249999999999996,
+          "grainKgHa": 1945.5333333333335,
+          "predictedKgHa": 2516.6358286101963,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 884.6441111166307,
+          "district": "Tamale"
+        },
+        {
+          "field": "5037TUG",
+          "split": "train",
+          "peakLai": 2.4325,
+          "grainKgHa": 2691.1,
+          "predictedKgHa": 2232.3975091046177,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 301.2387093319847,
+          "district": "Tamale"
+        },
+        {
+          "field": "7022FUU",
+          "split": "calibration",
+          "peakLai": 1.369,
+          "grainKgHa": 1446.8666666666668,
+          "predictedKgHa": 1198.9361320304874,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 538.9400832498295,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7019ZOR",
+          "split": "calibration",
+          "peakLai": 1.8825,
+          "grainKgHa": 1768.2666666666667,
+          "predictedKgHa": 1697.9322929402815,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 558.2706989743714,
+          "district": "Tamale"
+        },
+        {
+          "field": "1055ZIN",
+          "split": "calibration",
+          "peakLai": 1.9599999999999997,
+          "grainKgHa": 1444.3333333333333,
+          "predictedKgHa": 1773.2433006725284,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 299.5444763859506,
+          "district": "Nanton"
+        },
+        {
+          "field": "7074ZIN",
+          "split": "calibration",
+          "peakLai": 1.38075,
+          "grainKgHa": 1038.3666666666666,
+          "predictedKgHa": 1210.3542525576347,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 555.0009579571312,
+          "district": "Nanton"
+        },
+        {
+          "field": "2050KPA",
+          "split": "calibration",
+          "peakLai": 2.2575000000000003,
+          "grainKgHa": 1463.9666666666665,
+          "predictedKgHa": 2062.340394870511,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 316.75633116535073,
+          "district": "Mion"
+        },
+        {
+          "field": "5016ZOR",
+          "split": "calibration",
+          "peakLai": 1.7425,
+          "grainKgHa": 2148.7999999999997,
+          "predictedKgHa": 1561.8866015529957,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 920.4291770690453,
+          "district": "Tamale"
+        },
+        {
+          "field": "1056ZIN",
+          "split": "calibration",
+          "peakLai": 1.64975,
+          "grainKgHa": 1052.4,
+          "predictedKgHa": 1471.7563310089192,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 418.35904436261444,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7059CHE",
+          "split": "calibration",
+          "peakLai": 1.01775,
+          "grainKgHa": 839.3333333333334,
+          "predictedKgHa": 857.6072098891727,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 624.0300099621278,
+          "district": "Mion"
+        },
+        {
+          "field": "5002LAB",
+          "split": "calibration",
+          "peakLai": 1.4566666666666668,
+          "grainKgHa": 541.4333333333333,
+          "predictedKgHa": 1284.1266483039544,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 196.36171554896669,
+          "district": "Tamale"
+        },
+        {
+          "field": "1067ZIN",
+          "split": "test",
+          "peakLai": 1.3579999999999999,
+          "grainKgHa": 683.0333333333333,
+          "predictedKgHa": 1188.2468277072007,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 57.30988861735236,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7020YAM",
+          "split": "test",
+          "peakLai": 1.945,
+          "grainKgHa": 2793.066666666667,
+          "predictedKgHa": 1758.6669765953197,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 355.73237599821215,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7017SAM",
+          "split": "test",
+          "peakLai": 1.7525,
+          "grainKgHa": 637.3333333333334,
+          "predictedKgHa": 1571.604150937802,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 63.49175799529677,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5036TUG",
+          "split": "test",
+          "peakLai": 1.46,
+          "grainKgHa": 1382.3999999999999,
+          "predictedKgHa": 1287.365831432223,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 688.8771370861425,
+          "district": "Tamale"
+        },
+        {
+          "field": "3074TAM",
+          "split": "test",
+          "peakLai": 1.38875,
+          "grainKgHa": 439.8333333333333,
+          "predictedKgHa": 1218.1282920654794,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 451.4661929018975,
+          "district": "Nanton"
+        },
+        {
+          "field": "4020FUU",
+          "split": "test",
+          "peakLai": 0.77375,
+          "grainKgHa": 775.1666666666666,
+          "predictedKgHa": 620.4990048999036,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.79608452219108,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5017ZOR",
+          "split": "test",
+          "peakLai": 1.3233333333333333,
+          "grainKgHa": 1537.6666666666667,
+          "predictedKgHa": 1154.5593231732062,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 268.77695833782576,
+          "district": "Tamale"
+        },
+        {
+          "field": "7036FUU",
+          "split": "test",
+          "peakLai": 1.5415,
+          "grainKgHa": 889.9333333333334,
+          "predictedKgHa": 1366.563858918393,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 363.1721676193446,
+          "district": "Salaga N"
+        },
+        {
+          "field": "1029ZIN",
+          "split": "test",
+          "peakLai": 2.6125,
+          "grainKgHa": 2308.4,
+          "predictedKgHa": 2407.3133980311277,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 427.82949874920973,
+          "district": "Nanton"
+        },
+        {
+          "field": "2002ALH",
+          "split": "test",
+          "peakLai": 2.035,
+          "grainKgHa": 1717.0333333333335,
+          "predictedKgHa": 1846.1249210585747,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 276.6946752890871,
+          "district": "Mion"
+        }
+      ]
+    },
+    {
+      "issueDate": "2021-10-18",
+      "coefficients": {
+        "interceptKgHa": -181.14583324218484,
+        "slopeKgHaPerLai": 989.2961330503
+      },
+      "trainLaiRange": [
+        0.8005,
+        2.8525
+      ],
+      "conformal90HalfWidthKgHa": 791.7265385824085,
+      "calibrationN": 9,
+      "test": {
+        "canopy": {
+          "nFields": 10,
+          "maeKgHa": 451.22487416884525,
+          "rmseKgHa": 561.803541274281,
+          "biasKgHa": 130.25535741211206,
+          "nrmsePercent": 42.67769915179032
+        },
+        "constant": {
+          "nFields": 10,
+          "maeKgHa": 641.8254320987656,
+          "rmseKgHa": 749.9554154299803,
+          "biasKgHa": 118.50716049382712,
+          "nrmsePercent": 56.97075444626049
+        },
+        "coverage90": 0.8
+      },
+      "leaveDistrictOut": [
+        {
+          "heldOutDistrict": "Gushegu",
+          "canopy": {
+            "nFields": 10,
+            "maeKgHa": 785.0955999108712,
+            "rmseKgHa": 1079.25735958401,
+            "biasKgHa": -198.55977474661344,
+            "nrmsePercent": 70.95071621335865
+          },
+          "constant": {
+            "nFields": 10,
+            "maeKgHa": 853.2344444444446,
+            "rmseKgHa": 1212.4303004378246,
+            "biasKgHa": -175.62555555555565,
+            "nrmsePercent": 79.70554697722697
+          }
+        },
+        {
+          "heldOutDistrict": "Mion",
+          "canopy": {
+            "nFields": 11,
+            "maeKgHa": 459.2565919809865,
+            "rmseKgHa": 713.9029967715444,
+            "biasKgHa": 81.06933514783152,
+            "nrmsePercent": 60.1904908827221
+          },
+          "constant": {
+            "nFields": 11,
+            "maeKgHa": 743.7270129870129,
+            "rmseKgHa": 900.1393819284066,
+            "biasKgHa": 259.72632034632005,
+            "nrmsePercent": 75.89242727115055
+          }
+        },
+        {
+          "heldOutDistrict": "Nanton",
+          "canopy": {
+            "nFields": 8,
+            "maeKgHa": 352.7531741260787,
+            "rmseKgHa": 423.5227153362691,
+            "biasKgHa": 151.98957057371916,
+            "nrmsePercent": 30.579901406077923
+          },
+          "constant": {
+            "nFields": 8,
+            "maeKgHa": 396.4594298245615,
+            "rmseKgHa": 533.585428438363,
+            "biasKgHa": -1.549780701754372,
+            "nrmsePercent": 38.526835049236034
+          }
+        },
+        {
+          "heldOutDistrict": "Salaga N",
+          "canopy": {
+            "nFields": 5,
+            "maeKgHa": 334.45181580246333,
+            "rmseKgHa": 363.2956343635221,
+            "biasKgHa": 139.0400629450082,
+            "nrmsePercent": 39.04025873448315
+          },
+          "constant": {
+            "nFields": 5,
+            "maeKgHa": 511.54975609756093,
+            "rmseKgHa": 679.4146698628359,
+            "biasKgHa": 508.38292682926806,
+            "nrmsePercent": 73.01085394521286
+          }
+        },
+        {
+          "heldOutDistrict": "Tamale",
+          "canopy": {
+            "nFields": 12,
+            "maeKgHa": 442.08125087612854,
+            "rmseKgHa": 537.8099126416602,
+            "biasKgHa": -100.25593989245924,
+            "nrmsePercent": 32.82831757312133
+          },
+          "constant": {
+            "nFields": 12,
+            "maeKgHa": 626.1179738562091,
+            "rmseKgHa": 823.4288343101246,
+            "biasKgHa": -344.40392156862725,
+            "nrmsePercent": 50.26270925134287
+          }
+        }
+      ],
+      "rows": [
+        {
+          "field": "3075TAM",
+          "split": "train",
+          "peakLai": 1.89,
+          "grainKgHa": 1989.5666666666668,
+          "predictedKgHa": 1688.623858222882,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 228.67191199037404,
+          "district": "Nanton"
+        },
+        {
+          "field": "1061ZIN",
+          "split": "train",
+          "peakLai": 1.20875,
+          "grainKgHa": 1806.8666666666668,
+          "predictedKgHa": 1014.6658675823653,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 666.8409505521789,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7035FUU",
+          "split": "train",
+          "peakLai": 1.8224999999999998,
+          "grainKgHa": 1350.1333333333334,
+          "predictedKgHa": 1621.8463692419866,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 360.24081297561673,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7021YAM",
+          "split": "train",
+          "peakLai": 2.2325,
+          "grainKgHa": 4580.900000000001,
+          "predictedKgHa": 2027.45778379261,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 507.86997351684465,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5033TUG",
+          "split": "train",
+          "peakLai": 1.5833333333333333,
+          "grainKgHa": 1144.2666666666667,
+          "predictedKgHa": 1385.2397107541235,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 594.5881627928135,
+          "district": "Tamale"
+        },
+        {
+          "field": "7062CHE",
+          "split": "train",
+          "peakLai": 0.966,
+          "grainKgHa": 672.3000000000001,
+          "predictedKgHa": 774.5142312844049,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 320.44793648890925,
+          "district": "Mion"
+        },
+        {
+          "field": "5012LAB",
+          "split": "train",
+          "peakLai": 2.0275,
+          "grainKgHa": 927.0,
+          "predictedKgHa": 1824.6520765172984,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 439.7129631930357,
+          "district": "Tamale"
+        },
+        {
+          "field": "7016ALH",
+          "split": "train",
+          "peakLai": 0.8005,
+          "grainKgHa": 684.6999999999999,
+          "predictedKgHa": 610.7857212645803,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 207.21853198978127,
+          "district": "Mion"
+        },
+        {
+          "field": "7016SAM",
+          "split": "train",
+          "peakLai": 1.06725,
+          "grainKgHa": 971.1999999999999,
+          "predictedKgHa": 874.6804647557478,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 468.2857247450536,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7015ALH",
+          "split": "train",
+          "peakLai": 1.213,
+          "grainKgHa": 550.9666666666667,
+          "predictedKgHa": 1018.8703761478291,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 303.5399534383132,
+          "district": "Mion"
+        },
+        {
+          "field": "7071ZIN",
+          "split": "train",
+          "peakLai": 1.305,
+          "grainKgHa": 1372.9333333333334,
+          "predictedKgHa": 1109.8856203884566,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 148.01771290400794,
+          "district": "Nanton"
+        },
+        {
+          "field": "7061CHE",
+          "split": "train",
+          "peakLai": 2.8525,
+          "grainKgHa": 1818.1000000000001,
+          "predictedKgHa": 2640.821386283796,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 720.2138640709438,
+          "district": "Mion"
+        },
+        {
+          "field": "7058CHE",
+          "split": "train",
+          "peakLai": 1.4635,
+          "grainKgHa": 222.46666666666667,
+          "predictedKgHa": 1266.6890574769293,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 204.9534174717107,
+          "district": "Mion"
+        },
+        {
+          "field": "7036SAN",
+          "split": "train",
+          "peakLai": 1.8325000000000002,
+          "grainKgHa": 3446.1,
+          "predictedKgHa": 1631.7393305724902,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 455.69069553810294,
+          "district": "Mion"
+        },
+        {
+          "field": "7010SAM",
+          "split": "train",
+          "peakLai": 1.6375,
+          "grainKgHa": 865.0333333333334,
+          "predictedKgHa": 1438.8265846276813,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 509.21981828414084,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5011LAB",
+          "split": "train",
+          "peakLai": 1.8725,
+          "grainKgHa": 1454.4666666666665,
+          "predictedKgHa": 1671.311175894502,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 65.88363479145129,
+          "district": "Tamale"
+        },
+        {
+          "field": "7033FUU",
+          "split": "train",
+          "peakLai": 0.97225,
+          "grainKgHa": 190.73333333333332,
+          "predictedKgHa": 780.6973321159693,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 126.78968149393441,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5014LAB",
+          "split": "train",
+          "peakLai": 0.8835,
+          "grainKgHa": 872.4,
+          "predictedKgHa": 692.8973003077551,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 250.85719044906807,
+          "district": "Tamale"
+        },
+        {
+          "field": "7018ALH",
+          "split": "train",
+          "peakLai": 0.914,
+          "grainKgHa": 638.5666666666667,
+          "predictedKgHa": 723.0708323657894,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 399.3198509131914,
+          "district": "Mion"
+        },
+        {
+          "field": "2053KPA",
+          "split": "train",
+          "peakLai": 1.32125,
+          "grainKgHa": 993.2666666666668,
+          "predictedKgHa": 1125.961682550524,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 21.903500481277796,
+          "district": "Mion"
+        },
+        {
+          "field": "7014SAM",
+          "split": "train",
+          "peakLai": 1.5299999999999998,
+          "grainKgHa": 1183.3333333333333,
+          "predictedKgHa": 1332.4772503247739,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 311.0280105285267,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7072ZIN",
+          "split": "train",
+          "peakLai": 1.7625,
+          "grainKgHa": 1275.7666666666667,
+          "predictedKgHa": 1562.4886012589689,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 393.81743655319946,
+          "district": "Nanton"
+        },
+        {
+          "field": "7070ZIN",
+          "split": "train",
+          "peakLai": 1.2885,
+          "grainKgHa": 1210.5666666666666,
+          "predictedKgHa": 1093.5622341931266,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 304.49961138453585,
+          "district": "Nanton"
+        },
+        {
+          "field": "7015SAM",
+          "split": "train",
+          "peakLai": 1.9175,
+          "grainKgHa": 638.1999999999999,
+          "predictedKgHa": 1715.8295018817655,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 378.47209936797196,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5057PAG",
+          "split": "train",
+          "peakLai": 2.5833333333333335,
+          "grainKgHa": 3245.6666666666665,
+          "predictedKgHa": 2374.5358438044236,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.6224738845609,
+          "district": "Tamale"
+        },
+        {
+          "field": "5034TUG",
+          "split": "train",
+          "peakLai": 2.7249999999999996,
+          "grainKgHa": 1945.5333333333335,
+          "predictedKgHa": 2514.686129319882,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 884.6441111166307,
+          "district": "Tamale"
+        },
+        {
+          "field": "5037TUG",
+          "split": "train",
+          "peakLai": 2.4325,
+          "grainKgHa": 2691.1,
+          "predictedKgHa": 2225.31701040267,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 301.2387093319847,
+          "district": "Tamale"
+        },
+        {
+          "field": "7022FUU",
+          "split": "calibration",
+          "peakLai": 1.369,
+          "grainKgHa": 1446.8666666666668,
+          "predictedKgHa": 1173.200572903676,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 538.9400832498295,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7019ZOR",
+          "split": "calibration",
+          "peakLai": 1.8825,
+          "grainKgHa": 1768.2666666666667,
+          "predictedKgHa": 1681.204137225005,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 558.2706989743714,
+          "district": "Tamale"
+        },
+        {
+          "field": "1055ZIN",
+          "split": "calibration",
+          "peakLai": 1.9599999999999997,
+          "grainKgHa": 1444.3333333333333,
+          "predictedKgHa": 1757.874587536403,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 299.5444763859506,
+          "district": "Nanton"
+        },
+        {
+          "field": "7074ZIN",
+          "split": "calibration",
+          "peakLai": 2.033,
+          "grainKgHa": 1038.3666666666666,
+          "predictedKgHa": 1830.093205249075,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 555.0009579571312,
+          "district": "Nanton"
+        },
+        {
+          "field": "2050KPA",
+          "split": "calibration",
+          "peakLai": 2.2675,
+          "grainKgHa": 1463.9666666666665,
+          "predictedKgHa": 2062.0831484493706,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 316.75633116535073,
+          "district": "Mion"
+        },
+        {
+          "field": "5016ZOR",
+          "split": "calibration",
+          "peakLai": 1.7425,
+          "grainKgHa": 2148.7999999999997,
+          "predictedKgHa": 1542.7026785979629,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 920.4291770690453,
+          "district": "Tamale"
+        },
+        {
+          "field": "1056ZIN",
+          "split": "calibration",
+          "peakLai": 1.64975,
+          "grainKgHa": 1052.4,
+          "predictedKgHa": 1450.9454622575477,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 418.35904436261444,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7059CHE",
+          "split": "calibration",
+          "peakLai": 1.01775,
+          "grainKgHa": 839.3333333333334,
+          "predictedKgHa": 825.7103061697579,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 624.0300099621278,
+          "district": "Mion"
+        },
+        {
+          "field": "5002LAB",
+          "split": "calibration",
+          "peakLai": 1.4566666666666668,
+          "grainKgHa": 541.4333333333333,
+          "predictedKgHa": 1259.928867234419,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 196.36171554896669,
+          "district": "Tamale"
+        },
+        {
+          "field": "1067ZIN",
+          "split": "test",
+          "peakLai": 1.3579999999999999,
+          "grainKgHa": 683.0333333333333,
+          "predictedKgHa": 1162.3183154401224,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 57.30988861735236,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7020YAM",
+          "split": "test",
+          "peakLai": 1.945,
+          "grainKgHa": 2793.066666666667,
+          "predictedKgHa": 1743.0351455406487,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 355.73237599821215,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7017SAM",
+          "split": "test",
+          "peakLai": 1.7525,
+          "grainKgHa": 637.3333333333334,
+          "predictedKgHa": 1552.595639928466,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 63.49175799529677,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5036TUG",
+          "split": "test",
+          "peakLai": 1.6775,
+          "grainKgHa": 1382.3999999999999,
+          "predictedKgHa": 1478.3984299496933,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 688.8771370861425,
+          "district": "Tamale"
+        },
+        {
+          "field": "3074TAM",
+          "split": "test",
+          "peakLai": 1.38875,
+          "grainKgHa": 439.8333333333333,
+          "predictedKgHa": 1192.7391715314193,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 451.4661929018975,
+          "district": "Nanton"
+        },
+        {
+          "field": "4020FUU",
+          "split": "test",
+          "peakLai": 0.80575,
+          "grainKgHa": 775.1666666666666,
+          "predictedKgHa": 615.9795259630944,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.79608452219108,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5017ZOR",
+          "split": "test",
+          "peakLai": 1.3375000000000001,
+          "grainKgHa": 1537.6666666666667,
+          "predictedKgHa": 1142.0377447125916,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 268.77695833782576,
+          "district": "Tamale"
+        },
+        {
+          "field": "7036FUU",
+          "split": "test",
+          "peakLai": 1.5415,
+          "grainKgHa": 889.9333333333334,
+          "predictedKgHa": 1343.8541558548527,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 363.1721676193446,
+          "district": "Salaga N"
+        },
+        {
+          "field": "1029ZIN",
+          "split": "test",
+          "peakLai": 2.6125,
+          "grainKgHa": 2308.4,
+          "predictedKgHa": 2403.3903143517236,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 427.82949874920973,
+          "district": "Nanton"
+        },
+        {
+          "field": "2002ALH",
+          "split": "test",
+          "peakLai": 2.035,
+          "grainKgHa": 1717.0333333333335,
+          "predictedKgHa": 1832.0717975151758,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 276.6946752890871,
+          "district": "Mion"
+        }
+      ]
+    },
+    {
+      "issueDate": "2021-11-05",
+      "coefficients": {
+        "interceptKgHa": -246.45874897317776,
+        "slopeKgHaPerLai": 981.7285634402592
+      },
+      "trainLaiRange": [
+        0.8005,
+        2.8525
+      ],
+      "conformal90HalfWidthKgHa": 711.0287538342027,
+      "calibrationN": 9,
+      "test": {
+        "canopy": {
+          "nFields": 10,
+          "maeKgHa": 414.3197007399117,
+          "rmseKgHa": 547.5832735945573,
+          "biasKgHa": 57.00671403658329,
+          "nrmsePercent": 41.59744909762258
+        },
+        "constant": {
+          "nFields": 10,
+          "maeKgHa": 641.8254320987656,
+          "rmseKgHa": 749.9554154299803,
+          "biasKgHa": 118.50716049382712,
+          "nrmsePercent": 56.97075444626049
+        },
+        "coverage90": 0.8
+      },
+      "leaveDistrictOut": [
+        {
+          "heldOutDistrict": "Gushegu",
+          "canopy": {
+            "nFields": 10,
+            "maeKgHa": 739.284561129178,
+            "rmseKgHa": 1067.6586970352807,
+            "biasKgHa": -199.28383670831803,
+            "nrmsePercent": 70.18821651146494
+          },
+          "constant": {
+            "nFields": 10,
+            "maeKgHa": 853.2344444444446,
+            "rmseKgHa": 1212.4303004378246,
+            "biasKgHa": -175.62555555555565,
+            "nrmsePercent": 79.70554697722697
+          }
+        },
+        {
+          "heldOutDistrict": "Mion",
+          "canopy": {
+            "nFields": 11,
+            "maeKgHa": 484.67796203932306,
+            "rmseKgHa": 723.864650601521,
+            "biasKgHa": 76.98200741911046,
+            "nrmsePercent": 61.03037646485521
+          },
+          "constant": {
+            "nFields": 11,
+            "maeKgHa": 743.7270129870129,
+            "rmseKgHa": 900.1393819284066,
+            "biasKgHa": 259.72632034632005,
+            "nrmsePercent": 75.89242727115055
+          }
+        },
+        {
+          "heldOutDistrict": "Nanton",
+          "canopy": {
+            "nFields": 8,
+            "maeKgHa": 306.41560453888303,
+            "rmseKgHa": 389.42773437037954,
+            "biasKgHa": 136.52454811332368,
+            "nrmsePercent": 28.118118085787334
+          },
+          "constant": {
+            "nFields": 8,
+            "maeKgHa": 396.4594298245615,
+            "rmseKgHa": 533.585428438363,
+            "biasKgHa": -1.549780701754372,
+            "nrmsePercent": 38.526835049236034
+          }
+        },
+        {
+          "heldOutDistrict": "Salaga N",
+          "canopy": {
+            "nFields": 5,
+            "maeKgHa": 504.919408176764,
+            "rmseKgHa": 677.0579351284016,
+            "biasKgHa": 274.7335907072044,
+            "nrmsePercent": 72.75759592310078
+          },
+          "constant": {
+            "nFields": 5,
+            "maeKgHa": 511.54975609756093,
+            "rmseKgHa": 679.4146698628359,
+            "biasKgHa": 508.38292682926806,
+            "nrmsePercent": 73.01085394521286
+          }
+        },
+        {
+          "heldOutDistrict": "Tamale",
+          "canopy": {
+            "nFields": 12,
+            "maeKgHa": 451.4761172055417,
+            "rmseKgHa": 552.617871014033,
+            "biasKgHa": -159.96566206384333,
+            "nrmsePercent": 33.732206379614404
+          },
+          "constant": {
+            "nFields": 12,
+            "maeKgHa": 626.1179738562091,
+            "rmseKgHa": 823.4288343101246,
+            "biasKgHa": -344.40392156862725,
+            "nrmsePercent": 50.26270925134287
+          }
+        }
+      ],
+      "rows": [
+        {
+          "field": "3075TAM",
+          "split": "train",
+          "peakLai": 1.89,
+          "grainKgHa": 1989.5666666666668,
+          "predictedKgHa": 1609.008235928912,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 228.67191199037404,
+          "district": "Nanton"
+        },
+        {
+          "field": "1061ZIN",
+          "split": "train",
+          "peakLai": 1.6672500000000001,
+          "grainKgHa": 1806.8666666666668,
+          "predictedKgHa": 1390.3281984225946,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 666.8409505521789,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7035FUU",
+          "split": "train",
+          "peakLai": 1.8224999999999998,
+          "grainKgHa": 1350.1333333333334,
+          "predictedKgHa": 1542.7415578966945,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 360.24081297561673,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7021YAM",
+          "split": "train",
+          "peakLai": 2.2325,
+          "grainKgHa": 4580.900000000001,
+          "predictedKgHa": 1945.250268907201,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 507.86997351684465,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5033TUG",
+          "split": "train",
+          "peakLai": 1.5833333333333333,
+          "grainKgHa": 1144.2666666666667,
+          "predictedKgHa": 1307.9448098072326,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 594.5881627928135,
+          "district": "Tamale"
+        },
+        {
+          "field": "7062CHE",
+          "split": "train",
+          "peakLai": 0.9702500000000001,
+          "grainKgHa": 672.3000000000001,
+          "predictedKgHa": 706.0633897047338,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 320.44793648890925,
+          "district": "Mion"
+        },
+        {
+          "field": "5012LAB",
+          "split": "train",
+          "peakLai": 2.0275,
+          "grainKgHa": 927.0,
+          "predictedKgHa": 1743.9959134019477,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 439.7129631930357,
+          "district": "Tamale"
+        },
+        {
+          "field": "7016ALH",
+          "split": "train",
+          "peakLai": 0.8005,
+          "grainKgHa": 684.6999999999999,
+          "predictedKgHa": 539.4149660607497,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 207.21853198978127,
+          "district": "Mion"
+        },
+        {
+          "field": "7016SAM",
+          "split": "train",
+          "peakLai": 1.06725,
+          "grainKgHa": 971.1999999999999,
+          "predictedKgHa": 801.2910603584389,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 468.2857247450536,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7015ALH",
+          "split": "train",
+          "peakLai": 1.213,
+          "grainKgHa": 550.9666666666667,
+          "predictedKgHa": 944.3779984798568,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 303.5399534383132,
+          "district": "Mion"
+        },
+        {
+          "field": "7071ZIN",
+          "split": "train",
+          "peakLai": 1.5924999999999998,
+          "grainKgHa": 1372.9333333333334,
+          "predictedKgHa": 1316.943988305435,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 148.01771290400794,
+          "district": "Nanton"
+        },
+        {
+          "field": "7061CHE",
+          "split": "train",
+          "peakLai": 2.8525,
+          "grainKgHa": 1818.1000000000001,
+          "predictedKgHa": 2553.9219782401615,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 720.2138640709438,
+          "district": "Mion"
+        },
+        {
+          "field": "7058CHE",
+          "split": "train",
+          "peakLai": 1.4635,
+          "grainKgHa": 222.46666666666667,
+          "predictedKgHa": 1190.3010036216417,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 204.9534174717107,
+          "district": "Mion"
+        },
+        {
+          "field": "7036SAN",
+          "split": "train",
+          "peakLai": 1.8325000000000002,
+          "grainKgHa": 3446.1,
+          "predictedKgHa": 1552.5588435310974,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 455.69069553810294,
+          "district": "Mion"
+        },
+        {
+          "field": "7010SAM",
+          "split": "train",
+          "peakLai": 1.6375,
+          "grainKgHa": 865.0333333333334,
+          "predictedKgHa": 1361.1217736602466,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 509.21981828414084,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5011LAB",
+          "split": "train",
+          "peakLai": 1.8725,
+          "grainKgHa": 1454.4666666666665,
+          "predictedKgHa": 1591.8279860687078,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 65.88363479145129,
+          "district": "Tamale"
+        },
+        {
+          "field": "7033FUU",
+          "split": "train",
+          "peakLai": 1.8695000000000002,
+          "grainKgHa": 190.73333333333332,
+          "predictedKgHa": 1588.882800378387,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 126.78968149393441,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5014LAB",
+          "split": "train",
+          "peakLai": 0.8835,
+          "grainKgHa": 872.4,
+          "predictedKgHa": 620.8984368262912,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 250.85719044906807,
+          "district": "Tamale"
+        },
+        {
+          "field": "7018ALH",
+          "split": "train",
+          "peakLai": 1.4027500000000002,
+          "grainKgHa": 638.5666666666667,
+          "predictedKgHa": 1130.660993392646,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 399.3198509131914,
+          "district": "Mion"
+        },
+        {
+          "field": "2053KPA",
+          "split": "train",
+          "peakLai": 1.32125,
+          "grainKgHa": 993.2666666666668,
+          "predictedKgHa": 1050.6501154722648,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 21.903500481277796,
+          "district": "Mion"
+        },
+        {
+          "field": "7014SAM",
+          "split": "train",
+          "peakLai": 1.5299999999999998,
+          "grainKgHa": 1183.3333333333333,
+          "predictedKgHa": 1255.5859530904186,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 311.0280105285267,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7072ZIN",
+          "split": "train",
+          "peakLai": 1.7625,
+          "grainKgHa": 1275.7666666666667,
+          "predictedKgHa": 1483.837844090279,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 393.81743655319946,
+          "district": "Nanton"
+        },
+        {
+          "field": "7070ZIN",
+          "split": "train",
+          "peakLai": 1.2885,
+          "grainKgHa": 1210.5666666666666,
+          "predictedKgHa": 1018.4985050195962,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 304.49961138453585,
+          "district": "Nanton"
+        },
+        {
+          "field": "7015SAM",
+          "split": "train",
+          "peakLai": 1.9175,
+          "grainKgHa": 638.1999999999999,
+          "predictedKgHa": 1636.0057714235193,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 378.47209936797196,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5057PAG",
+          "split": "train",
+          "peakLai": 2.5833333333333335,
+          "grainKgHa": 3245.6666666666665,
+          "predictedKgHa": 2289.6733732474922,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.6224738845609,
+          "district": "Tamale"
+        },
+        {
+          "field": "5034TUG",
+          "split": "train",
+          "peakLai": 2.7249999999999996,
+          "grainKgHa": 1945.5333333333335,
+          "predictedKgHa": 2428.7515864015286,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 884.6441111166307,
+          "district": "Tamale"
+        },
+        {
+          "field": "5037TUG",
+          "split": "train",
+          "peakLai": 2.4325,
+          "grainKgHa": 2691.1,
+          "predictedKgHa": 2141.595981595253,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 301.2387093319847,
+          "district": "Tamale"
+        },
+        {
+          "field": "7022FUU",
+          "split": "calibration",
+          "peakLai": 1.369,
+          "grainKgHa": 1446.8666666666668,
+          "predictedKgHa": 1097.5276543765372,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 538.9400832498295,
+          "district": "Salaga N"
+        },
+        {
+          "field": "7019ZOR",
+          "split": "calibration",
+          "peakLai": 1.8825,
+          "grainKgHa": 1768.2666666666667,
+          "predictedKgHa": 1601.6452717031102,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 558.2706989743714,
+          "district": "Tamale"
+        },
+        {
+          "field": "1055ZIN",
+          "split": "calibration",
+          "peakLai": 1.9599999999999997,
+          "grainKgHa": 1444.3333333333333,
+          "predictedKgHa": 1677.72923536973,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 299.5444763859506,
+          "district": "Nanton"
+        },
+        {
+          "field": "7074ZIN",
+          "split": "calibration",
+          "peakLai": 2.033,
+          "grainKgHa": 1038.3666666666666,
+          "predictedKgHa": 1749.3954205008692,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 555.0009579571312,
+          "district": "Nanton"
+        },
+        {
+          "field": "2050KPA",
+          "split": "calibration",
+          "peakLai": 2.2675,
+          "grainKgHa": 1463.9666666666665,
+          "predictedKgHa": 1979.6107686276102,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 316.75633116535073,
+          "district": "Mion"
+        },
+        {
+          "field": "5016ZOR",
+          "split": "calibration",
+          "peakLai": 1.7425,
+          "grainKgHa": 2148.7999999999997,
+          "predictedKgHa": 1464.2032728214738,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 920.4291770690453,
+          "district": "Tamale"
+        },
+        {
+          "field": "1056ZIN",
+          "split": "calibration",
+          "peakLai": 1.64975,
+          "grainKgHa": 1052.4,
+          "predictedKgHa": 1373.14794856239,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 418.35904436261444,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7059CHE",
+          "split": "calibration",
+          "peakLai": 1.01775,
+          "grainKgHa": 839.3333333333334,
+          "predictedKgHa": 752.695496468146,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 624.0300099621278,
+          "district": "Mion"
+        },
+        {
+          "field": "5002LAB",
+          "split": "calibration",
+          "peakLai": 1.4566666666666668,
+          "grainKgHa": 541.4333333333333,
+          "predictedKgHa": 1183.5925251048,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 196.36171554896669,
+          "district": "Tamale"
+        },
+        {
+          "field": "1067ZIN",
+          "split": "test",
+          "peakLai": 1.3579999999999999,
+          "grainKgHa": 683.0333333333333,
+          "predictedKgHa": 1086.7286401786941,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 57.30988861735236,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7020YAM",
+          "split": "test",
+          "peakLai": 1.945,
+          "grainKgHa": 2793.066666666667,
+          "predictedKgHa": 1663.0033069181266,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 355.73237599821215,
+          "district": "Gushegu"
+        },
+        {
+          "field": "7017SAM",
+          "split": "test",
+          "peakLai": 1.7525,
+          "grainKgHa": 637.3333333333334,
+          "predictedKgHa": 1474.0205584558764,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 63.49175799529677,
+          "district": "Gushegu"
+        },
+        {
+          "field": "5036TUG",
+          "split": "test",
+          "peakLai": 1.6775,
+          "grainKgHa": 1382.3999999999999,
+          "predictedKgHa": 1400.390916197857,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 688.8771370861425,
+          "district": "Tamale"
+        },
+        {
+          "field": "3074TAM",
+          "split": "test",
+          "peakLai": 1.38875,
+          "grainKgHa": 439.8333333333333,
+          "predictedKgHa": 1116.9167935044823,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 451.4661929018975,
+          "district": "Nanton"
+        },
+        {
+          "field": "4020FUU",
+          "split": "test",
+          "peakLai": 0.85175,
+          "grainKgHa": 775.1666666666666,
+          "predictedKgHa": 589.728554937063,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 175.79608452219108,
+          "district": "Salaga N"
+        },
+        {
+          "field": "5017ZOR",
+          "split": "test",
+          "peakLai": 1.3375000000000001,
+          "grainKgHa": 1537.6666666666667,
+          "predictedKgHa": 1066.6032046281691,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 268.77695833782576,
+          "district": "Tamale"
+        },
+        {
+          "field": "7036FUU",
+          "split": "test",
+          "peakLai": 1.5415,
+          "grainKgHa": 889.9333333333334,
+          "predictedKgHa": 1266.875831569982,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 363.1721676193446,
+          "district": "Salaga N"
+        },
+        {
+          "field": "1029ZIN",
+          "split": "test",
+          "peakLai": 2.6125,
+          "grainKgHa": 2308.4,
+          "predictedKgHa": 2318.3071230144997,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 427.82949874920973,
+          "district": "Nanton"
+        },
+        {
+          "field": "2002ALH",
+          "split": "test",
+          "peakLai": 2.035,
+          "grainKgHa": 1717.0333333333335,
+          "predictedKgHa": 1751.35887762775,
+          "constantKgHa": 1434.8938271604939,
+          "quadrats": 3,
+          "withinFieldSdKgHa": 276.6946752890871,
+          "district": "Mion"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "protocol": {
+    "version": "oaf-hypothesis-2026-11-11.1",
+    "sourceDoi": "10.5281/zenodo.11122388",
+    "sha256": "f305a3d3e48015bd877dc9df5c53b1715c61f940d58383d57d4dfb68c59c6ff0",
+    "train": "2016-2018, excluding Nigeria",
+    "selection": "2019, remove 0.05-degree spatial cells seen in training",
+    "finalTemporal": "2020, remove spatial cells seen in 2016-2019",
+    "finalGeographic": "all Nigeria 2022 (115), no fitting or selection",
+    "group": "floor(lat/0.05), floor(lon/0.05); no farm identifier supplied",
+    "featuresBeforeSeason": [
+      "lat",
+      "lon",
+      "elev",
+      "soil_clay",
+      "soil_pH",
+      "soil_orgC",
+      "soil_ECEC",
+      "N_kg_ha",
+      "P_kg_ha",
+      "K_kg_ha",
+      "hybrid",
+      "plant_doy"
+    ],
+    "featuresConditionalWeather": [
+      "lat",
+      "lon",
+      "elev",
+      "soil_clay",
+      "soil_pH",
+      "soil_orgC",
+      "soil_ECEC",
+      "N_kg_ha",
+      "P_kg_ha",
+      "K_kg_ha",
+      "hybrid",
+      "plant_doy",
+      "season_prec_1",
+      "season_prec_2",
+      "season_prec_3"
+    ],
+    "excluded": [
+      "plant density measured at harvest",
+      "harvest date",
+      "season-ending adversities",
+      "weeding/pesticide totals not dated",
+      "plant_date_dev computed from full cluster season"
+    ],
+    "candidates": [
+      "constant training mean",
+      "ridge alpha=100, median missing + missing flags",
+      "histogram GBM 150 trees, 15 leaves, rate=.05, min_leaf=40, l2=10",
+      "same GBM monotone nondecreasing N/P/K (hypothesis, not optimal-dose model)"
+    ],
+    "criterion": "lowest selection RMSE; one frozen winner, no test tuning",
+    "metrics": [
+      "MAE kg/ha",
+      "RMSE kg/ha",
+      "bias kg/ha",
+      "nRMSE / mean observed",
+      "R2"
+    ],
+    "scope": "rainfed African maize; surveyed nutrient inputs are observational, not randomized",
+    "weatherAvailability": "Full-season rain is hindsight or an explicit future weather SCENARIO, never known before sowing.",
+    "timing": "Soil/time inputs are mapped covariates; source availability history not established."
+  },
+  "sklearn": "1.8.0",
+  "sampleCounts": {
+    "train": 6718,
+    "selection": 2085,
+    "temporal_2020_spatial_new": 876,
+    "temporal_2020_all": 3607,
+    "geographic_nigeria_2022": 115
+  },
+  "countryCounts": {
+    "KEN": 7258,
+    "TZA": 3710,
+    "RWA": 2080,
+    "ZMB": 861,
+    "BDI": 640,
+    "NGA": 115,
+    "UGA": 109
+  },
+  "winnerBySelectionOnly": {
+    "scope": "preseason_covariates",
+    "model": "gbm"
+  },
+  "results": [
+    {
+      "scope": "preseason_covariates",
+      "model": "constant",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1630.1890469969867,
+          "rmseKgHa": 2059.8596887994277,
+          "biasKgHa": -711.6017329280256,
+          "nrmsePercent": 58.11598013855101,
+          "r2": -0.13551649630492868
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1387.3697054996064,
+          "rmseKgHa": 1706.5457754445379,
+          "biasKgHa": 41.500755011317395,
+          "nrmsePercent": 61.13819974747852,
+          "r2": -0.000591742859594957
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1320.088809138133,
+          "rmseKgHa": 1695.260781993658,
+          "biasKgHa": -241.46063408335252,
+          "nrmsePercent": 55.143818026309745,
+          "r2": -0.02070717290448454
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1216.2731964650673,
+          "rmseKgHa": 1351.0394673994288,
+          "biasKgHa": 1072.8748709895406,
+          "nrmsePercent": 76.76718089706601,
+          "r2": -1.7071788624324054
+        }
+      }
+    },
+    {
+      "scope": "preseason_covariates",
+      "model": "ridge",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1542.7800273495764,
+          "rmseKgHa": 1950.8000263616477,
+          "biasKgHa": -611.4349729932354,
+          "nrmsePercent": 55.03901853256647,
+          "r2": -0.018459295238494544
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1377.736790746538,
+          "rmseKgHa": 1674.259283976726,
+          "biasKgHa": 463.42120213674247,
+          "nrmsePercent": 59.98151353788056,
+          "r2": 0.03691091204156349
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1273.9463630432729,
+          "rmseKgHa": 1607.083324409107,
+          "biasKgHa": 107.79949677660453,
+          "nrmsePercent": 52.27556216460876,
+          "r2": 0.08271366071467012
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 2390.5980271444314,
+          "rmseKgHa": 2508.8779249454874,
+          "biasKgHa": 2390.5980271444314,
+          "nrmsePercent": 142.55652048690644,
+          "r2": -8.335550633052419
+        }
+      }
+    },
+    {
+      "scope": "preseason_covariates",
+      "model": "gbm",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1355.9128445520917,
+          "rmseKgHa": 1717.4895255685383,
+          "biasKgHa": -247.92980526830408,
+          "nrmsePercent": 48.45649812890222,
+          "r2": 0.21058319949835813
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1320.5199201365328,
+          "rmseKgHa": 1615.938294472098,
+          "biasKgHa": 368.63926671577684,
+          "nrmsePercent": 57.892123169857335,
+          "r2": 0.10283860716645976
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1242.4948674463294,
+          "rmseKgHa": 1579.3383167406537,
+          "biasKgHa": 61.451522042205674,
+          "nrmsePercent": 51.373066412770214,
+          "r2": 0.11411269047958761
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1247.7896643865374,
+          "rmseKgHa": 1380.3532285766983,
+          "biasKgHa": 1142.4797653062828,
+          "nrmsePercent": 78.43281307241647,
+          "r2": -1.8259296687730093
+        }
+      }
+    },
+    {
+      "scope": "preseason_covariates",
+      "model": "gbm_monotone_npk",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1383.76970556112,
+          "rmseKgHa": 1756.3517313306045,
+          "biasKgHa": -348.65860806914355,
+          "nrmsePercent": 49.55293940132931,
+          "r2": 0.17445422901350693
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1299.9848215422815,
+          "rmseKgHa": 1595.6018000927693,
+          "biasKgHa": 317.3092980337343,
+          "nrmsePercent": 57.16355399027995,
+          "r2": 0.12527796736337737
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1237.9229985923637,
+          "rmseKgHa": 1578.4250774275622,
+          "biasKgHa": 38.277334233948984,
+          "nrmsePercent": 51.34336036221416,
+          "r2": 0.11513690828375489
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1032.581530925517,
+          "rmseKgHa": 1165.188852912277,
+          "biasKgHa": 876.16817707638,
+          "nrmsePercent": 66.20699513903736,
+          "r2": -1.0136014747127842
+        }
+      }
+    },
+    {
+      "scope": "conditional_full_weather",
+      "model": "constant",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1630.1890469969867,
+          "rmseKgHa": 2059.8596887994277,
+          "biasKgHa": -711.6017329280256,
+          "nrmsePercent": 58.11598013855101,
+          "r2": -0.13551649630492868
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1387.3697054996064,
+          "rmseKgHa": 1706.5457754445379,
+          "biasKgHa": 41.500755011317395,
+          "nrmsePercent": 61.13819974747852,
+          "r2": -0.000591742859594957
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1320.088809138133,
+          "rmseKgHa": 1695.260781993658,
+          "biasKgHa": -241.46063408335252,
+          "nrmsePercent": 55.143818026309745,
+          "r2": -0.02070717290448454
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1216.2731964650673,
+          "rmseKgHa": 1351.0394673994288,
+          "biasKgHa": 1072.8748709895406,
+          "nrmsePercent": 76.76718089706601,
+          "r2": -1.7071788624324054
+        }
+      }
+    },
+    {
+      "scope": "conditional_full_weather",
+      "model": "ridge",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1549.2529887285873,
+          "rmseKgHa": 1944.1099516527577,
+          "biasKgHa": -512.4801281161325,
+          "nrmsePercent": 54.8502676914187,
+          "r2": -0.011485863361418547
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1382.8397735748717,
+          "rmseKgHa": 1684.7797212385553,
+          "biasKgHa": 511.71128562565406,
+          "nrmsePercent": 60.358415584107235,
+          "r2": 0.024769481260177084
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1277.570261163984,
+          "rmseKgHa": 1606.9973231981235,
+          "biasKgHa": 168.3965760011504,
+          "nrmsePercent": 52.27276469817828,
+          "r2": 0.08281183312926232
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 2329.749512843193,
+          "rmseKgHa": 2445.8239938444885,
+          "biasKgHa": 2329.749512843193,
+          "nrmsePercent": 138.9737439271522,
+          "r2": -7.872199128025189
+        }
+      }
+    },
+    {
+      "scope": "conditional_full_weather",
+      "model": "gbm",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1471.2231260489461,
+          "rmseKgHa": 1862.9155987881315,
+          "biasKgHa": -490.82513278030075,
+          "nrmsePercent": 52.55948573956966,
+          "r2": 0.07123780539762492
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1335.0089811663868,
+          "rmseKgHa": 1645.5079649962274,
+          "biasKgHa": 356.88909368017306,
+          "nrmsePercent": 58.95147736297908,
+          "r2": 0.06970431152945544
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1258.7262888484856,
+          "rmseKgHa": 1601.519275094883,
+          "biasKgHa": 65.13422603119955,
+          "nrmsePercent": 52.094573536704466,
+          "r2": 0.08905432906349164
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1716.4876996482335,
+          "rmseKgHa": 1859.9803971046504,
+          "biasKgHa": 1686.9268382944936,
+          "nrmsePercent": 105.68562581252519,
+          "r2": -4.130947989594669
+        }
+      }
+    },
+    {
+      "scope": "conditional_full_weather",
+      "model": "gbm_monotone_npk",
+      "metrics": {
+        "selection": {
+          "n": 2085,
+          "maeKgHa": 1496.3358151358123,
+          "rmseKgHa": 1893.1241570174418,
+          "biasKgHa": -562.8397327629809,
+          "nrmsePercent": 53.41177678619531,
+          "r2": 0.04087245135134898
+        },
+        "temporal_2020_spatial_new": {
+          "n": 876,
+          "maeKgHa": 1338.4065673985056,
+          "rmseKgHa": 1650.2366700469884,
+          "biasKgHa": 377.7666377706611,
+          "nrmsePercent": 59.12088653916423,
+          "r2": 0.06434983757446566
+        },
+        "temporal_2020_all": {
+          "n": 3607,
+          "maeKgHa": 1261.8753352013164,
+          "rmseKgHa": 1604.5958440957024,
+          "biasKgHa": 65.63655559567817,
+          "nrmsePercent": 52.19464885427717,
+          "r2": 0.08555105665779583
+        },
+        "geographic_nigeria_2022": {
+          "n": 115,
+          "maeKgHa": 1978.216038985879,
+          "rmseKgHa": 2102.9094124973803,
+          "biasKgHa": 1963.7218743710303,
+          "nrmsePercent": 119.48905355819767,
+          "r2": -5.5587640572135895
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Exact farm IDs unavailable: spatial separation is a proxy, not proof of unique farmer identity.",
+    "Missingness at deployment must follow the measured training support.",
+    "No target-country local validation; Nigeria is a geographic transfer check, not Togo.",
+    "No randomized irrigation effect identified by this rainfed observational dataset."
+  ]
+}
