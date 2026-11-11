@@ -52,12 +52,14 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
    <div className="water-impact-method-content">
     <ul>
      <li><strong>Le score isole l’effet de l’eau.</strong> Il ne calcule pas un rendement en t/ha.</li>
-     <li><strong>Le modèle suit FAO56 sur la saison.</strong> Il n’est pas calibré localement.</li>
+     <li><strong>{impact?.method==='stage-product'?'Réponse calculée séparément par stade.':'Le modèle suit FAO56 sur la saison.'}</strong> {impact?.method==='stage-product'?'Produit des réponses linéaires avec les Ky maïs de FAO33, hypothèse expérimentale.':'Il n’est pas calibré localement.'}</li>
      <li><strong>Les hypothèses restent les mêmes</strong> pour le sol, la météo et les apports déjà réalisés. Les arrosages prévus sont des hypothèses.</li>
-     <li><strong>Domaine limité :</strong> une culture seule, sol drainé, cycle complet et ETa/ETm ≥ 0,5. Les interactions avec la nutrition, le pH, les ravageurs et la salinité ne sont pas calculées.</li>
+     <li><strong>Domaine limité :</strong> une culture seule, sol drainé, cycle complet{impact?.method==='stage-product'?' et calendrier des phases documenté':' et ETa/ETm ≥ 0,5'}. Les interactions avec la nutrition, le pH, les ravageurs et la salinité ne sont pas calculées.</li>
      <li><strong>Incertitude :</strong> aucun intervalle prédictif à 95 % n’est disponible.</li>
     </ul>
-    {impact&&<p className="water-impact-source">Source : <a href={impact.source} target="_blank" rel="noreferrer">FAO56, équation 90</a> · {impact.version} · surface {impact.areaBasis==='planned'?'prévue':'semée'} : {impact.areaM2===null?'non renseignée':`${fmt(impact.areaM2/10000,2)} ha`}.</p>}
+    {impact?.method==='stage-product'&&impact.scenarios.filter(s=>s.stageResponse).map(s=><details key={s.id}><summary>Déficit et réponse par phase · {s.label}</summary><div className="table-wrap"><table className="data-table"><thead><tr><th>Phase</th><th>Dates</th><th>Ky</th><th>ETa / ETm</th><th>Facteur du grain</th></tr></thead><tbody>{s.stageResponse!.phases.map(p=><tr key={p.name}><td>{p.name}</td><td>{p.from} → {p.to}</td><td>{fmt(p.ky,2)}</td><td>{waterCoverage(p.etaMm,p.etmMm)}</td><td>{p.factor===null?'Hors domaine':fmt(p.factor,3)}</td></tr>)}</tbody></table></div>{s.stageResponse!.warnings.map(w=><p key={w}>{w}</p>)}</details>)}
+    {impact&&<p className="water-impact-source">Source : <a href={impact.source} target="_blank" rel="noreferrer">{impact.method==='stage-product'?'FAO33, sensibilités par stade':'FAO56, équation90'}</a> · {impact.version} · surface {impact.areaBasis==='planned'?'prévue':'semée'} : {impact.areaM2===null?'non renseignée':`${fmt(impact.areaM2/10000,2)} ha`}.</p>}
+    <p><a href="/scientific/togo-stage-replay.html" target="_blank" rel="noreferrer">Ouvrir le rejeu interactif de l’essai togolais →</a></p>
    </div>
   </details>
  </section>;

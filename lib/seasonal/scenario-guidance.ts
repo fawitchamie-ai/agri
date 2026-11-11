@@ -8,13 +8,13 @@ export type YieldMode='rainfed'|'recorded'|'proposed';
 /** Rank only comparable, complete responses from the SAME water model.
  * Never mix QUEFTS ranges, national harvested-area statistics and water outputs. */
 export function scenarioComparison(c:SeasonalConfig,p:WaterPlan|null,stale=false){
- const estimate=!stale&&p?.yieldEstimation?.method==='fao-seasonal'?p.yieldEstimation:null;
+ const estimate=!stale&&p?.yieldEstimation&&['fao-seasonal','fao-stages'].includes(p.yieldEstimation.method??'')?p.yieldEstimation:null;
  const labels:Record<YieldMode,string>={rainfed:'Sans irrigation ajoutée',recorded:'Avec mes apports réalisés',proposed:'Avec le plan d’arrosage'};
  const rows=(['rainfed','recorded','proposed'] as const).map(id=>{
   const s=estimate?.scenarios.find(s=>s.id===id);
   return {id,label:labels[id],kgHa:s?.status==='conditional'?s.totals?.yieldKgHaSown??null:null,productionKg:s?.status==='conditional'?s.totals?.productionKg??null:null,missing:s?.missing??[]};
  });
- const comparable=estimate?.method==='fao-seasonal'&&estimate.coverage.complete&&rows.every(r=>r.kgHa!==null&&Number.isFinite(r.kgHa));
+ const comparable=!!estimate&&estimate.coverage.complete&&rows.every(r=>r.kgHa!==null&&Number.isFinite(r.kgHa));
  const best=comparable?rows.reduce((a,b)=>b.kgHa!>a.kgHa!+1e-6?b:a):null;
  const baseline=rows.find(r=>r.id==='recorded')!;
  return {rows,comparable,best,gainKgHa:best&&baseline.kgHa!==null?best.kgHa!-baseline.kgHa:null};
@@ -39,7 +39,7 @@ export function prepareYieldHypothesis(c:SeasonalConfig,v:{kgHa:number;source:st
  const supportsWater=SEASONAL_KY[cropId]!==undefined;
  if(!supportsWater)throw new Error('Réponse hydrique non paramétrée pour cette culture. Aucun calcul simple de remplacement.');
  return declareScenario({...c,landSelection:'potentialLand',waterCondition:'drained',yieldScenario:'proposed',yieldEstimation:{
-  version:'yield-input-1',method:'fao-seasonal',areaBasis:old?.areaBasis??(u?.sownAreaM2!=null?'sown':'planned'),scopeGeometryId:geometryIdentity(c.parcelGeometry),
+  version:'yield-input-1',method:old?.method==='fao-stages'?'fao-stages':'fao-seasonal',...(old?.responseCalendar?{responseCalendar:old.responseCalendar}:{}),areaBasis:old?.areaBasis??(u?.sownAreaM2!=null?'sown':'planned'),scopeGeometryId:geometryIdentity(c.parcelGeometry),
   homogeneityAssumption:old?.homogeneityAssumption??'Une unité supposée homogène pour la simulation ; surface semée hypothétique, non déclarée comme observation.',
   units:[{...u,id:u?.id??'champ',sownAreaM2:v.areaM2,harvestedAreaM2:u?.harvestedAreaM2??null,areaSource:u?.areaSource??'Hypothèse utilisateur : surface terrestre prévue supposée semée pour ce scénario, semis réalisé non attesté.',
    reference:reference&&reference.kgHa===v.kgHa&&reference.source===v.source.trim()?reference:{kind:'scenario',kgHa:v.kgHa,denominator:'sown',source:v.source.trim(),context:'Hypothèse indépendante du bilan hydrique : rendement sans déficit d’eau, autres facteurs supposés non limitants ; aucune validation locale.',cropId,availableOn:c.asOfDate,independentYm:supportsWater}}]

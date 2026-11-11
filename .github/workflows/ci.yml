@@ -47,6 +47,12 @@ jobs:
         run: |
           .aquacrop-python/bin/python scripts/togo-aquacrop-benchmark.py
           .aquacrop-python/bin/python scripts/check-togo-benchmark.py
+      - name: Rejouer la référence officielle et la fertilité togolaise
+        run: |
+          .aquacrop-python/bin/python -m pip install -r research-data/togo-fertility/2026-11-11/requirements-official.txt
+          .aquacrop-python/bin/python scripts/acquire-official-aquacrop.py "$RUNNER_TEMP/aquacrop-official"
+          .aquacrop-python/bin/python scripts/replay-aquacrop-official-reference.py "$RUNNER_TEMP/aquacrop-official"
+          .aquacrop-python/bin/python scripts/togo-official-fertility.py "$RUNNER_TEMP/aquacrop-official/official_replay"
   checks:
     name: TypeScript, tests et compilation
     runs-on: ubuntu-latest
@@ -77,6 +83,7 @@ jobs:
           node --experimental-transform-types scripts/lirf-holdout-replay.mjs
           node --experimental-transform-types scripts/audit-calculation-chain.mjs
           node scripts/check-alternative-benchmarks.mjs
+          node --experimental-transform-types scripts/togo-stage-benchmark.mjs
       - name: Installer le lecteur PDF des tests dans un environnement isolé
         run: |
           python3 -m venv .ci-python

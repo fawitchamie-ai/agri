@@ -24,9 +24,10 @@ export function fieldBrief(c:SeasonalConfig,p:WaterPlan|null,events:WaterEvent[]
  const covered=realWeather.filter(x=>x.day!.rainMm!==null).length;
  const rain=covered===7?realWeather.reduce((n,x)=>n+x.day!.rainMm!,0):null;
  const mode=c.yieldScenario??(c.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded');
- const estimate=current?.yieldEstimation?.method==='fao-seasonal'?current.yieldEstimation:undefined;
+ const estimate=current?.yieldEstimation&&['fao-seasonal','fao-stages'].includes(current.yieldEstimation.method??'')?current.yieldEstimation:undefined;
  const result=estimate?.scenarios.find(s=>s.id===mode)?.totals??null;
- const growth=current?.growth?.status==='scenario'?current.growth.scenarios.find(s=>s.id===mode):undefined;
+ const selectedWaterModel=!!c.yieldEstimation?.responseCalendar&&['fao-stages','fao-seasonal'].includes(c.yieldEstimation.method);
+ const growth=!selectedWaterModel&&current?.growth?.status==='scenario'?current.growth.scenarios.find(s=>s.id===mode):undefined;
  const actions:FieldAction[]=[];
  if(flooded)actions.push({id:'flood',level:'urgent',title:'Vérifier l’eau stagnante',reason:'Arrosage suspendu. Relevez la durée et l’étendue de l’engorgement ; faites vérifier le drainage et l’état des plantes.',source:'État du champ déclaré par vous ; mortalité et perte de rendement non calculées.',target:'soil'});
  const land=(!stale&&!loading?p?.land:undefined)??c.landAssessment;

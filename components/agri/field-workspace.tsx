@@ -11,11 +11,12 @@ const date=(d:string)=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:
 type Props={config:SeasonalConfig;plan:WaterPlan|null;events:WaterEvent[];stale:boolean;loading:boolean;failed?:boolean;onAction:(target:FieldAction['target'])=>void};
 export function FieldOverview({config:c,plan,events,stale,loading,failed=false,onAction}:Props){
  const b=fieldBrief(c,failed?null:plan,events,stale&&!failed,loading&&!failed);
- const integrated=!!c.growth,growth=b.growth;
+ const stageGrain=!!c.yieldEstimation?.responseCalendar&&['fao-stages','fao-seasonal'].includes(c.yieldEstimation.method);
+ const integrated=!!c.growth&&!stageGrain,growth=b.growth;
  const sown=integrated?plan?.growth?.areaM2:b.estimate?.surface.simulationM2??b.estimate?.surface.sownM2;
  const water=!failed&&!stale&&!loading?plan?.waterImpact?.scenarios.find(s=>s.id===b.mode):undefined;
  const relative=!integrated&&!b.result&&water?.relativeYieldPercent!=null;
- const fertilizer=!integrated&&!failed&&!stale&&!loading&&c.fertilizerScenario?.scope===fertilizerScope(c)&&plan?.fertilizerScenario?.status==='exploratory_transfer'?plan.fertilizerScenario.results:null;
+ const fertilizer=!stageGrain&&!integrated&&!failed&&!stale&&!loading&&c.fertilizerScenario?.scope===fertilizerScope(c)&&plan?.fertilizerScenario?.status==='exploratory_transfer'?plan.fertilizerScenario.results:null;
  const capability=seasonalCapabilities(c.country,c.cropProfile?.id);
  const resultMeaning=integrated
   ?'Ce rendement vient d’un scénario de croissance intégré. Les paramètres et les interactions ne sont pas validés localement pour cette culture et cette zone.'

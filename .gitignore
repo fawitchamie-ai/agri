@@ -78,3 +78,6 @@ research-data/lirf/*/togo-current-rue-daily.json.gz
 # Regenerable bulk daily outputs; keep compact metrics and source adapters.
 research-data/alternative-models/**/replay-daily.json.gz
 research-data/alternative-models/**/current-replay/
+/public/scientific/togo-stage-replay.js
+/research-data/togo-fertility/**/official-daily.json.gz
+/research-data/togo-fertility/**/inputs/*/daily-output.txt
