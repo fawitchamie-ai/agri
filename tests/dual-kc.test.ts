@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {exampleCampaign} from '../lib/seasonal/example.ts';
 import {applyCropProfile} from '../lib/seasonal/catalog.ts';
-import {growthTemplate,growthScope} from '../lib/seasonal/growth.ts';
+import {growthTemplate,growthScope,growthCsv} from '../lib/seasonal/growth.ts';
 import {planSeason} from '../lib/seasonal/yield.ts';
 import {planWater} from '../lib/seasonal/engine.ts';
 import {validateConfig} from '../lib/seasonal/validation.ts';
@@ -40,6 +40,22 @@ test('normalized transpiration growth ignores an unused RUE; it is not multiplie
  assert.ok(Math.abs(s.biomassKgHa-expected)<1e-7);
  const change=structuredClone(c);change.growth!.parameters.rueGPerMj=8;
  assert.equal(planSeason(change).growth!.scenarios.find(s=>s.id==='proposed')!.yieldKgHa,s.yieldKgHa);
+});
+test('water-driven biomass applies the declared temperature response and exports daily canopy state',()=>{
+ const warm=fixture(),warmPlan=planSeason(warm),warmScenario=warmPlan.growth!.scenarios.find(s=>s.id==='proposed')!;
+ const cold=structuredClone(warm);cold.growth!.weatherScenario!.temperatureMeanC=6;
+ const coldScenario=planSeason(cold).growth!.scenarios.find(s=>s.id==='proposed')!;
+ assert.ok(coldScenario.biomassKgHa<warmScenario.biomassKgHa);
+ const dynamic=structuredClone(warm),cycle=dynamic.stages.reduce((n,s)=>n+s.days,0);
+ dynamic.waterModel!.transpiration={method:'canopy-cover',maxCoefficient:1.1,source:'FAO56/AquaCrop-inspired process hypothesis; not locally calibrated',availableOn:dynamic.asOfDate};
+ dynamic.waterModel!.canopyDynamics={version:'canopy-state-1',source:'Synthetic process-mechanism test only',availableOn:dynamic.asOfDate,initialCover:.0052,maxCover:.8,emergenceDay:1,senescenceDay:cycle-2,growthRateDay:.12,declineRateDay:.12,expansionLower:.14,expansionUpper:.72,senescenceThreshold:.69,stressDeclineRateDay:.1};
+ dynamic.growth!.scope=growthScope(dynamic);
+ const result=planSeason(dynamic).growth!,scenario=result.scenarios.find(s=>s.id==='proposed')!;
+ assert.ok(scenario.days.some(d=>d.canopyCoverSource==='simulated'&&d.canopyCoverFraction!==null));
+ assert.ok(scenario.days.every(d=>d.canopyCoverFraction!==null));
+ const lines=growthCsv(result).trim().split('\n');
+ assert.match(lines[0],/canopy_cover_fraction/);assert.match(lines[0],/biomass_cumulative_kg_ha/);
+ assert.equal(lines[0].split(',').length,lines[1].split(',').length);
 });
 test('future canopy, invalid surface storage and unpartitioned WP inputs fail explicitly',()=>{
  const c=fixture();
