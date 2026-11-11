@@ -1,0 +1,35 @@
+{
+  "id": "togo-tzee-stage-replay-2017-v1",
+  "status": "experimental-retrospective",
+  "forecastValidated": false,
+  "availableOn": "2020-03-12",
+  "country": "TGO",
+  "crop": "maize",
+  "variety": "TZEE-W",
+  "sowingDate": "2017-12-16",
+  "cycleDays": 111,
+  "site": {"longitude": 0.192194, "latitude": 10.880314, "radiusKm": 5},
+  "calendar": {"establishmentEndDay": 20, "floweringStartDay": 66, "floweringDays": 18, "grainEndDay": 104},
+  "reference": {
+    "capacityKgHa": 2210.392511602775,
+    "observedFIgrainKgHa": 2200.4,
+    "calibrationFIfactor": 0.9954793044446532,
+    "moisturePercent": 13,
+    "moistureStatus": "central hypothesis in published12–14% range",
+    "freeParameters": ["one common effective yield capacity, FI only"],
+    "controlsUsedToFitCapacity": []
+  },
+  "sources": {
+    "trial": "https://doi.org/10.17159/wsa/2020.v46.i1.7894",
+    "calendar": "https://nbn-resolving.org/urn:nbn:de:bsz:14-qucosa2-387041",
+    "ky": "https://www.fao.org/4/X5647E/x5647e0e.htm",
+    "combination": "https://doi.org/10.18174/416321"
+  },
+  "limits": [
+    "Fit within one trial; not an independent field or season validation.",
+    "Calendar documented in an author recalibration which explored all treatments; not a blind test.",
+    "Actual irrigation dates unavailable; daily and pulse schedules remain scenarios.",
+    "No national default; restricted to this retrospective Togo trial.",
+    "This grain response does not model canopy, biomass, NPK or pests."
+  ]
+}

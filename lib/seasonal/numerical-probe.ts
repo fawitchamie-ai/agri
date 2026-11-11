@@ -3,6 +3,9 @@ import {exampleCampaign} from './example.ts';
 import {biomassFromTranspiration,GROWTH_ENGINE_VERSION} from './growth.ts';
 import {ENGINE_VERSION} from './types.ts';
 import {canopyNowcast,canopyNowcastScope,CANOPY_NOWCAST_VERSION} from './canopy-nowcast.ts';
+import {stageWaterFactor,waterStageScope,WATER_STAGES_VERSION} from './water-stages.ts';
+import {addDays} from './validation.ts';
+import type {WaterPlan} from './types.ts';
 /** Read-only, deterministic software probes, no field data or persistence.
  * Public checks establish which equations actually execute, NOT crop accuracy. */
 export function numericalProbe(){
@@ -23,8 +26,14 @@ export function numericalProbe(){
  const nc=exampleCampaign('2026-09-01');nc.country='GHA';nc.latitude=9.5;nc.longitude=-.5;nc.waterCondition='drained';nc.cropProfile={id:'maize',version:'probe',mode:'reference'};nc.asOfDate='2026-11-11';
  nc.canopyNowcast={version:'canopy-nowcast-1',acceptedHypothesis:true,scope:canopyNowcastScope(nc),monitoringStart:'2026-10-28',initialStage:'vegetative',observations:[{date:'2026-10-28',availableOn:'2026-10-28',laiSamples:[1,1,1],source:'Synthetic LAI fixture',method:'field-green-lai'},{date:'2026-11-04',availableOn:'2026-11-04',laiSamples:[1.5,1.5,1.5],source:'Synthetic LAI fixture',method:'field-green-lai'}]};
  const nr=canopyNowcast(nc,p);if(nr.status!=='experimental_nowcast'||!Number.isFinite(nr.yieldKgHa))throw new Error('Échec de la sonde du suivi LAI.');
+ const grain=exampleCampaign('2026-01-01');grain.cropProfile={id:'maize',version:'probe',mode:'reference'};grain.stages=[{...grain.stages[0],days:111}];
+ const calendar={version:'maize-water-stages-1' as const,acceptedHypothesis:true as const,scope:waterStageScope(grain),source:'Synthetic timing probe, not field data',availableOn:'2026-01-01',establishmentEndDay:20,floweringStartDay:66,floweringDays:18,grainEndDay:104};
+ const timing=(start:number)=>stageWaterFactor(grain,Array.from({length:111},(_,i)=>({date:addDays(grain.sowingDate,i),demandMm:5,actualEtMm:i+1>=start&&i+1<start+18?4:5})) as WaterPlan['days'],calendar).factor;
+ const vegetation=timing(21),flowering=timing(66);
+ if(vegetation===null||flowering===null||flowering>=vegetation||Math.abs(flowering-.7)>1e-10)throw new Error('Échec de la sonde de formation du grain par stade.');
  return {engine:GROWTH_ENGINE_VERSION,waterEngine:ENGINE_VERSION,transpirationMm:tr,evaporationMm:evap,biomassKgHa,status:'pass',
   profileRecharge:{initialPulseMm:60,waterEncounteredByNewRootsMm:gain,stockAfterRootExpansionMm:rp.days[1].stockEndMm,deepDrainageMm:rp.days[0].deepDrainageMm},
   canopyNowcast:{version:CANOPY_NOWCAST_VERSION,peakLai:1.5,yieldKgHa:nr.yieldKgHa,scope:'synthetic field-state check; no observed farm prediction'},
+  grainStages:{version:WATER_STAGES_VERSION,etLossMm:18,vegetativeGrainFactor:vegetation,floweringGrainFactor:flowering,scope:'same synthetic ET loss, different timing; no field-accuracy claim'},
   scope:'Deterministic numerical checks only; no authenticated user journey or field-accuracy claim'};
 }

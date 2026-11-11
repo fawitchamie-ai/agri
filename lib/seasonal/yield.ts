@@ -2,6 +2,7 @@ import {integratedGrowth} from './growth.ts';
 import {canopyNowcast} from './canopy-nowcast.ts';
 import {waterImpact} from './water-impact.ts';
 import {SEASONAL_KY,KY_VERSION,seasonalWaterFactor} from './water-response.ts';
+import {parseWaterStageCalendar,stageWaterFactor,WATER_STAGES_VERSION,type WaterStageCalendar,type WaterStageResult} from './water-stages.ts';
 export {SEASONAL_KY,KY_VERSION,FAO_SOURCE} from './water-response.ts';
 import {interventionOutcome} from './intervention-outcome.ts';
 import {fertilizerScenario} from './fertilizer-scenario.ts';
@@ -17,22 +18,22 @@ import {validateConfig,validateEvents,InputError} from './validation.ts';
 import {planWater} from './engine.ts';
 import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
 
-export const YIELD_VERSION='conditional-yield-2.0.0';
+export const YIELD_VERSION='conditional-yield-2.1.0';
 export type YieldReference={
   kind:'scenario'|'attainable';kgHa:number;denominator:'sown'|'harvested';source:string;
   availableOn:string;context:string;cropId:string;
   // Required only for FAO: independent Ym under non-water-limiting conditions.
-  independentYm:boolean;
+  independentYm:boolean;moisturePercent?:number;
 };
 export type YieldUnit={id:string;geometry?:MultiShape;sownAreaM2:number|null;harvestedAreaM2:number|null;areaSource:string;
  reference:YieldReference|null;conditions?:Pick<SeasonalConfig,'soil'|'weather'|'waterCondition'>};
 // sownAreaM2 is the legacy wire field for the calculation area. areaBasis keeps
 // a planned scenario distinct from an actual sowing declaration; old inputs are sown.
-export type YieldInput={version:'yield-input-1';method:'automatic'|'declared-scenario'|'fao-seasonal';areaBasis?:'planned'|'sown';scopeGeometryId:string;
- homogeneityAssumption:string;units:YieldUnit[]};
+export type YieldInput={version:'yield-input-1';method:'automatic'|'declared-scenario'|'fao-seasonal'|'fao-stages';areaBasis?:'planned'|'sown';scopeGeometryId:string;
+ responseCalendar?:WaterStageCalendar;homogeneityAssumption:string;units:YieldUnit[]};
 export type YieldNumbers={productionKg:number;yieldKgHaSown:number|null;productionKgHaContour:number|null};
 export type YieldScenario={id:'rainfed'|'recorded'|'proposed';label:string;status:'conditional'|'unavailable';missing:string[];
- totals:YieldNumbers|null;units:{id:string;reference:YieldReference|null;sownAreaM2:number;harvestedAreaM2:number|null;productionKg:number|null;yieldKgHaSown:number|null;sourceDenominator:'sown'|'harvested'|null;sourceKgHa:number|null;etaMm:number|null;etmMm:number|null;ky:number|null}[]};
+ totals:YieldNumbers|null;units:{id:string;reference:YieldReference|null;sownAreaM2:number;harvestedAreaM2:number|null;productionKg:number|null;yieldKgHaSown:number|null;sourceDenominator:'sown'|'harvested'|null;sourceKgHa:number|null;etaMm:number|null;etmMm:number|null;ky:number|null;stageResponse?:WaterStageResult}[]};
 export type YieldEstimate={cropId:string|null;version:string;method:YieldInput['method']|null;status:'conditional'|'unavailable';
  surface:{drawnM2:number|null;potentialLandM2:number|null;areaBasis?:'planned'|'sown';simulationM2?:number|null;plannedM2?:number|null;sownM2:number|null;harvestedM2:number|null;notPlantedPotentialM2:number|null;fractions:Record<string,number>|null};
  coverage:{processedM2:number;requestedM2:number|null;complete:boolean};
@@ -47,7 +48,9 @@ const area=(v:unknown):number|null=>{if(v==null)return null;if(typeof v!=='numbe
 export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undefined{
  if(value===undefined)return undefined;
  const v=value as YieldInput;
- if(!v||v.version!=='yield-input-1'||!['automatic','declared-scenario','fao-seasonal'].includes(v.method)||(v.areaBasis!==undefined&&!['planned','sown'].includes(v.areaBasis))||!text(v.scopeGeometryId)||!text(v.homogeneityAssumption)||!Array.isArray(v.units)||!v.units.length||v.units.length>32)throw new InputError('Paramètres du rendement invalides ; 1 à 32 unités et hypothèse spatiale requises.');
+ if(!v||v.version!=='yield-input-1'||!['automatic','declared-scenario','fao-seasonal','fao-stages'].includes(v.method)||(v.areaBasis!==undefined&&!['planned','sown'].includes(v.areaBasis))||!text(v.scopeGeometryId)||!text(v.homogeneityAssumption)||!Array.isArray(v.units)||!v.units.length||v.units.length>32)throw new InputError('Paramètres du rendement invalides ; 1 à 32 unités et hypothèse spatiale requises.');
+ const responseCalendar=v.responseCalendar===undefined?undefined:parseWaterStageCalendar(v.responseCalendar,c);
+ if(v.method==='fao-stages'&&!responseCalendar)throw new InputError('Calendrier des phases sensibles requis pour la réponse du grain par stade.');
  const units=v.units.map(u=>{
   if(!u||!text(u.id,100)||!text(u.areaSource))throw new InputError('Identifiant et provenance de surface requis.');
   const sownAreaM2=area(u.sownAreaM2),harvestedAreaM2=area(u.harvestedAreaM2);
@@ -64,7 +67,8 @@ export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undef
   if(u.reference){
    const r=u.reference;
    if(!['scenario','attainable'].includes(r.kind)||!['sown','harvested'].includes(r.denominator)||typeof r.kgHa!=='number'||!Number.isFinite(r.kgHa)||r.kgHa<0||r.kgHa>1e6||!text(r.source)||!text(r.context)||!text(r.cropId)||typeof r.independentYm!=='boolean'||!/^\d{4}-\d{2}-\d{2}$/.test(r.availableOn)||!Number.isFinite(Date.parse(r.availableOn))||new Date(r.availableOn).toISOString().slice(0,10)!==r.availableOn||r.availableOn>c.asOfDate)throw new InputError('Référence de rendement, unités, contexte ou date de disponibilité invalides.');
-   reference={kind:r.kind,kgHa:r.kgHa,denominator:r.denominator,source:r.source.trim(),context:r.context.trim(),cropId:r.cropId,availableOn:r.availableOn,independentYm:r.independentYm};
+   if(r.moisturePercent!==undefined&&(typeof r.moisturePercent!=='number'||!Number.isFinite(r.moisturePercent)||r.moisturePercent<0||r.moisturePercent>=100))throw new InputError('Humidité du grain de référence invalide.');
+   reference={kind:r.kind,kgHa:r.kgHa,denominator:r.denominator,source:r.source.trim(),context:r.context.trim(),cropId:r.cropId,availableOn:r.availableOn,independentYm:r.independentYm,...(r.moisturePercent!==undefined?{moisturePercent:r.moisturePercent}:{})};
   }
   let conditions:YieldUnit['conditions'];
   if(u.conditions){
@@ -75,7 +79,7 @@ export function parseYieldInput(value:unknown,c:SeasonalConfig):YieldInput|undef
   return {id:u.id,geometry,sownAreaM2,harvestedAreaM2,areaSource:u.areaSource,reference,...(conditions?{conditions}:{})};
  });
  if(new Set(units.map(u=>u.id)).size!==units.length)throw new InputError('Unités spatiales dupliquées.');
- return {version:v.version,method:v.method,...(v.areaBasis?{areaBasis:v.areaBasis}:{}),scopeGeometryId:v.scopeGeometryId,homogeneityAssumption:v.homogeneityAssumption,units};
+ return {version:v.version,method:v.method,...(v.areaBasis?{areaBasis:v.areaBasis}:{}),...(responseCalendar?{responseCalendar}:{}),scopeGeometryId:v.scopeGeometryId,homogeneityAssumption:v.homogeneityAssumption,units};
 }
 export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):YieldEstimate{
  const y=c.yieldEstimation,a=c.landAssessment,domain=plan.calculationArea?.geometry;
@@ -83,7 +87,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  surface:{drawnM2:c.areaM2,potentialLandM2:a?.candidateAreaM2??null,sownM2:null,harvestedM2:null,notPlantedPotentialM2:null,fractions:a?Object.fromEntries(Object.entries(a.fractions).map(([k,v])=>[k,v.areaM2])):null},
  coverage:{processedM2:0,requestedM2:plan.calculationArea?.areaM2??null,complete:false},
  dataSources:a?.sources.map(({provider,product,version,acquiredAt})=>({provider,product,version,acquiredAt}))??[],
- versions:{water:plan.engineVersion,land:a?.version??null,ky:KY_VERSION,crop:c.cropProfile?.version??null},missing:[],
+ versions:{water:plan.engineVersion,land:a?.version??null,ky:y?.method==='fao-stages'?WATER_STAGES_VERSION:KY_VERSION,crop:c.cropProfile?.version??null},missing:[],
  limits:['Simulation conditionnelle non validée au champ ; aucune prévision saisonnière évaluée de rendement parcellaire.',
  'Une terre cartographiée ne prouve ni aptitude agronomique ni droit de cultiver. Les sols récupérés au point ne prouvent pas l’homogénéité du champ.',
  'Ni pH, nutrition, température, ravageurs, mortalité ni pertes par inondation ne sont quantifiés. Aucun score de ces facteurs ne multiplie le rendement.',
@@ -96,8 +100,9 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  if(!domain||!a)out.missing.push('Analyse spatiale complète requise.');
  if(c.systemDomain!=='upland'||c.cropProfile?.id==='rice-flooded')out.missing.push('Système submergé ou nappe proche non pris en charge.');
  if(y.method==='fao-seasonal'&&SEASONAL_KY[c.cropProfile?.id??'']===undefined)out.missing.push('Culture sans modèle de rendement hydrique paramétré : Ky saisonnier et paramètres culturaux compatibles requis.');
+ if(y.method==='fao-stages'&&c.cropProfile?.id!=='maize')out.missing.push('Réponse par stade limitée au maïs grain ; aucune transposition automatique aux autres cultures.');
  if(out.missing.length)return out;
- if(y.method==='fao-seasonal'&&(c.soilAnalyses??[]).some(a=>a.measurements.some(m=>m.parameter==='EC'&&m.method==='saturated_paste'&&m.value>(cropById(c.cropProfile?.id??'')?.eceThresholdDsM?.[0]??Infinity)))){out.missing.push('Salinité de pâte saturée renseignée : réponse eau–salinité à qualifier avant cette approximation.');return out;}
+ if((y.method==='fao-seasonal'||y.method==='fao-stages')&&(c.soilAnalyses??[]).some(a=>a.measurements.some(m=>m.parameter==='EC'&&m.method==='saturated_paste'&&m.value>(cropById(c.cropProfile?.id??'')?.eceThresholdDsM?.[0]??Infinity)))){out.missing.push('Salinité de pâte saturée renseignée : réponse eau–salinité à qualifier avant cette approximation.');return out;}
  const tolerance=Math.max(.001,c.areaM2!*1e-7),shapes=y.units.map(u=>u.geometry??domain!);
  let joined:MultiShape['coordinates']=[];
  for(let i=0;i<shapes.length;i++){
@@ -131,7 +136,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
    if(!r){scenario.missing.push(`${u.id} : référence de rendement absente.`);continue;}
    if(r.cropId!==c.cropProfile?.id){scenario.missing.push(`${u.id} : référence liée à une autre culture ; réappliquez une référence adaptée.`);continue;}
    let kgHa=r.kgHa;
-   if(y.method==='fao-seasonal'){
+   if(y.method==='fao-seasonal'||y.method==='fao-stages'){
     if(!r.independentYm||r.denominator!=='sown'){scenario.missing.push(`${u.id} : Ym indépendant sans stress hydrique, par hectare semé, requis ; aucune moyenne historique pénalisée à nouveau.`);continue;}
     if(id==='proposed'&&y.units.filter(u=>(u.sownAreaM2??0)>0).length>1){scenario.missing.push('Plan proposé multi-unités suspendu : allocation partagée des quotas, débits et tours d’eau requise. Les scénarios pluvial et réalisé restent indépendants.');continue;}
     const uc=validateConfig({...c,...u.conditions,yieldEstimation:undefined,...(u.conditions?{inputs:undefined}:{})});
@@ -144,8 +149,10 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
     row.etaMm=eta;row.etmMm=etm;row.ky=ky;
     if(!Number.isFinite(etm)||!Number.isFinite(eta)||etm<=0||eta<0||eta>etm+1e-7){scenario.missing.push(`${u.id} : ETa/ETm incompatible.`);continue;}
     // Conservative declared operating range, not a claim that clipping validates extreme stress.
-    const factor=seasonalWaterFactor(eta,etm,ky);
-    if(factor===null){scenario.missing.push(`${u.id} : déficit trop sévère pour cette approximation (ETa/ETm < 0,5 ou réponse non physique) ; modèle spécialisé requis.`);continue;}
+    const staged=y.method==='fao-stages'?stageWaterFactor(c,water.days,y.responseCalendar!):undefined;
+    if(staged){row.stageResponse=staged;row.ky=null;out.limits.push(...staged.warnings);}
+    const factor=staged?staged.factor:seasonalWaterFactor(eta,etm,ky);
+    if(factor===null){scenario.missing.push(...(staged?.missing??[`${u.id} : déficit trop sévère pour cette approximation (ETa/ETm < 0,5 ou réponse non physique) ; modèle spécialisé requis.`]));continue;}
     kgHa*=factor;
    }
    if(r.denominator==='harvested'&&u.harvestedAreaM2===null){scenario.missing.push(`${u.id} : surface récoltée documentée requise pour la référence par hectare récolté.`);continue;}
@@ -155,7 +162,8 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
   if(!scenario.missing.length){scenario.totals=aggregateProduction(scenario.units.map((r,i)=>({sownAreaM2:y.units[i].sownAreaM2!,productionKg:r.productionKg!})),c.areaM2!);scenario.status='conditional';}
   out.scenarios.push(scenario);
  }
- out.limits.unshift('FAO56 équation 90, Ky saisonnier ; ETm = somme(Kc × ET0), ETa = somme ET réelle du bilan simple. Évaporation et transpiration non séparées ; précision limitée. Domaine conservateur ETa/ETm ≥ 0,5.');
+ out.limits.unshift(y.method==='fao-stages'?'Hypothèse de réponse du grain par phases : produit des réponses linéaires, Ky maïs transférés de FAO33. ET calculée par le bilan d’eau ; aucune multiplication par RUE ou QUEFTS. Cette méthode ne prédit ni couvert ni biomasse et ne mesure pas un effet nutritif.':'FAO56 équation 90, Ky saisonnier ; ETm = somme(Kc × ET0), ETa = somme ET réelle du bilan simple. Évaporation et transpiration non séparées ; précision limitée. Domaine conservateur ETa/ETm ≥ 0,5.');
+ out.limits=[...new Set(out.limits)];
  out.limits.push(`Hypothèse spatiale : ${y.homogeneityAssumption}`);
  out.status=out.scenarios.some(s=>s.status==='conditional')?'conditional':'unavailable';return out;
 }
@@ -198,13 +206,13 @@ function attachSalinity(plan:WaterPlan,c:SeasonalConfig,events:WaterEvent[]):Wat
 }
 export function yieldCsv(e:YieldEstimate):string{
  const q=(v:unknown)=>'"'+String(v??'').replace(/^[\s]*[=+@-]/,"'$&").replaceAll('"','""')+'"';
- const header=['type_ligne','unite_id','mode','statut','surface_contour_m2','surface_semee_m2','surface_recoltee_m2','production_kg','production_t','rendement_kg_ha_seme','rendement_t_ha_seme','production_kg_ha_contour','reference_kg_ha','denominateur_reference','source_reference','disponible_depuis','methode','version_modele','version_ky','versions_donnees','couverture_complete','limites','validation_locale','effet_nutrition'];
+ const header=['type_ligne','unite_id','mode','statut','surface_contour_m2','surface_semee_m2','surface_recoltee_m2','production_kg','production_t','rendement_kg_ha_seme','rendement_t_ha_seme','production_kg_ha_contour','reference_kg_ha','denominateur_reference','source_reference','disponible_depuis','humidite_reference_pct','diagnostic_phases_json','methode','version_modele','version_ky','versions_donnees','couverture_complete','limites','validation_locale','effet_nutrition'];
  const rows:unknown[][]=[];
  for(const s of e.scenarios){
   const tail=[e.method,e.version,e.versions.ky,JSON.stringify(e.dataSources),e.coverage.complete,[...e.missing,...s.missing,...e.limits].join(' | '),'non_validee','non_modelise'];
-  rows.push(['total','',s.id,s.status,e.surface.drawnM2,e.surface.sownM2,e.surface.harvestedM2,s.totals?.productionKg,s.totals?s.totals.productionKg/1000:null,s.totals?.yieldKgHaSown,s.totals?.yieldKgHaSown==null?null:s.totals.yieldKgHaSown/1000,s.totals?.productionKgHaContour,'','','','',...tail]);
-  for(const u of s.units)rows.push(['unite',u.id,s.id,u.productionKg===null?'unavailable':'conditional',e.surface.drawnM2,u.sownAreaM2,u.harvestedAreaM2,u.productionKg,u.productionKg===null?null:u.productionKg/1000,u.yieldKgHaSown,u.yieldKgHaSown===null?null:u.yieldKgHaSown/1000,'',u.sourceKgHa,u.sourceDenominator,u.reference?.source,u.reference?.availableOn,...tail]);
+  rows.push(['total','',s.id,s.status,e.surface.drawnM2,e.surface.sownM2,e.surface.harvestedM2,s.totals?.productionKg,s.totals?s.totals.productionKg/1000:null,s.totals?.yieldKgHaSown,s.totals?.yieldKgHaSown==null?null:s.totals.yieldKgHaSown/1000,s.totals?.productionKgHaContour,'','','','','','',...tail]);
+  for(const u of s.units)rows.push(['unite',u.id,s.id,u.productionKg===null?'unavailable':'conditional',e.surface.drawnM2,u.sownAreaM2,u.harvestedAreaM2,u.productionKg,u.productionKg===null?null:u.productionKg/1000,u.yieldKgHaSown,u.yieldKgHaSown===null?null:u.yieldKgHaSown/1000,'',u.sourceKgHa,u.sourceDenominator,u.reference?.source,u.reference?.availableOn,u.reference?.moisturePercent,u.stageResponse?JSON.stringify(u.stageResponse):null,...tail]);
  }
- if(!rows.length)rows.push(['total','','','unavailable',e.surface.drawnM2,e.surface.sownM2,e.surface.harvestedM2,'','','','','','','','','',e.method,e.version,e.versions.ky,JSON.stringify(e.dataSources),false,e.missing.join(' | ')]);
+ if(!rows.length)rows.push(['total','','','unavailable',e.surface.drawnM2,e.surface.sownM2,e.surface.harvestedM2,'','','','','','','','','','','',e.method,e.version,e.versions.ky,JSON.stringify(e.dataSources),false,e.missing.join(' | '),'non_validee','non_modelise']);
  return '\ufeff'+[header,...rows].map(r=>r.map(q).join(';')).join('\r\n');
 }

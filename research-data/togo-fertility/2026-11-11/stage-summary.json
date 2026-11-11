@@ -1,0 +1,2867 @@
+{
+  "protocolSha256": "8a539daf2df29bc453663dec4d2029080e355ed4f953d021321b521126f51401",
+  "profileId": "togo-tzee-stage-replay-2017-v1",
+  "calibration": {
+    "fittedOn": "FI grain only, daily reconstructed water",
+    "capacityKgHa": 2210.392511602775,
+    "seasonalCapacityKgHa": 2204.1111296912086,
+    "freeParameters": [
+      "one common effective yield capacity"
+    ],
+    "coefficientsFittedOnDeficits": [],
+    "ky": [
+      0,
+      0.4,
+      1.5,
+      0.5,
+      0.2
+    ],
+    "humidityPercent": 13
+  },
+  "primarySelection": "thesis66-18-39, daily hypothesis; not selected by lowest RMSE",
+  "summaries": [
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "daily",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 220.7033989416459,
+        "rmseKgHa": 270.3515874225188,
+        "biasKgHa": 220.7033989416459,
+        "nrmsePercent": 15.904281948928471
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 331.05509841246885,
+        "rmseKgHa": 331.1117201683047,
+        "biasKgHa": 331.05509841246885,
+        "nrmsePercent": 22.841592174965836
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 531.7698110433842,
+        "rmseKgHa": 561.0315821693449,
+        "biasKgHa": 531.7698110433842,
+        "nrmsePercent": 38.70250980748792
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.979745474330315,
+        0.6387376182096494
+      ]
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-start",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 192.6082332139114,
+        "rmseKgHa": 234.4887599504952,
+        "biasKgHa": 187.92412136793078,
+        "nrmsePercent": 13.794538392255971
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 285.39926593638165,
+        "rmseKgHa": 287.14592857625996,
+        "biasKgHa": 285.39926593638165,
+        "nrmsePercent": 19.808631938207782
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 509.4220620066893,
+        "rmseKgHa": 536.6271970872112,
+        "biasKgHa": 509.4220620066893,
+        "nrmsePercent": 37.01898434652396
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.979277994300294,
+        0.6027589940516609
+      ]
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-end",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 225.96143597590398,
+        "rmseKgHa": 271.5435341423616,
+        "biasKgHa": 216.14001282477957,
+        "nrmsePercent": 15.974401961469226
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 331.57608660051267,
+        "rmseKgHa": 332.40836106359177,
+        "biasKgHa": 331.57608660051267,
+        "nrmsePercent": 22.93104036034712
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 524.3059103438973,
+        "rmseKgHa": 554.1048846587981,
+        "biasKgHa": 524.3059103438973,
+        "nrmsePercent": 38.22467471432106
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.9786337196961861,
+        0.6512352232484274
+      ]
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-start",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 168.97774710534054,
+        "rmseKgHa": 204.76989268419388,
+        "biasKgHa": -26.51039608983918,
+        "nrmsePercent": 12.046232607510031
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 106.85051326162602,
+        "rmseKgHa": 141.07975591383743,
+        "biasKgHa": 106.85051326162602,
+        "nrmsePercent": 9.732323117676424
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724081,
+        "rmseKgHa": 1187.4727712755334,
+        "biasKgHa": 1124.5896551724081,
+        "nrmsePercent": 81.91727174914
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 371.70082821146093,
+        "rmseKgHa": 438.7961269790579,
+        "biasKgHa": 371.70082821146093,
+        "nrmsePercent": 30.270152247451566
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057414,
+        "rmseKgHa": 993.2944966718076,
+        "biasKgHa": 874.3229885057414,
+        "nrmsePercent": 58.43367107254338
+      },
+      "ratios": [
+        1,
+        0.9677326317185369,
+        0.6644787818068904
+      ]
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-end",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 273.3811920482499,
+        "rmseKgHa": 308.7295043049181,
+        "biasKgHa": -39.894308178984524,
+        "nrmsePercent": 18.16198354605762
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 211.29832806938487,
+        "rmseKgHa": 252.88156010160205,
+        "biasKgHa": 138.93199773451317,
+        "nrmsePercent": 17.444919984933918
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724081,
+        "rmseKgHa": 1187.4727712755337,
+        "biasKgHa": 1124.5896551724081,
+        "nrmsePercent": 81.91727174914001
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 323.78501511382126,
+        "rmseKgHa": 428.0698700904762,
+        "biasKgHa": 323.78501511382126,
+        "nrmsePercent": 29.53020627003837
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057417,
+        "rmseKgHa": 993.2944966718078,
+        "biasKgHa": 874.3229885057417,
+        "nrmsePercent": 58.4336710725434
+      },
+      "ratios": [
+        1,
+        0.975417070408733,
+        0.7868252502353675
+      ]
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "daily",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 121.57328480384793,
+        "rmseKgHa": 206.69641105990442,
+        "biasKgHa": 121.0968740601304,
+        "nrmsePercent": 12.159566106747848
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 179.3357464817617,
+        "rmseKgHa": 253.11423938503444,
+        "biasKgHa": 178.6211303661854,
+        "nrmsePercent": 17.460971260005138
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 531.7698110433842,
+        "rmseKgHa": 561.0315821693449,
+        "biasKgHa": 531.7698110433842,
+        "nrmsePercent": 38.70250980748792
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.9920272393827841,
+        0.4838478899110977
+      ]
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-start",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 125.10473122186295,
+        "rmseKgHa": 168.35272427746168,
+        "biasKgHa": 60.36625317708225,
+        "nrmsePercent": 9.903878202846988
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 186.01956752311048,
+        "rmseKgHa": 206.1761301726861,
+        "biasKgHa": 88.91185045593943,
+        "nrmsePercent": 14.222967037298988
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 509.4220620066893,
+        "rmseKgHa": 536.6271970872112,
+        "biasKgHa": 509.4220620066893,
+        "nrmsePercent": 37.01898434652396
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.955599787610421,
+        0.44071483185969074
+      ]
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-end",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 128.8559460862475,
+        "rmseKgHa": 202.8835709290978,
+        "biasKgHa": 104.27638043184395,
+        "nrmsePercent": 11.935263800833269
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 193.16720320360014,
+        "rmseKgHa": 248.48055816139566,
+        "biasKgHa": 156.29785472199478,
+        "nrmsePercent": 17.141318857712175
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724077,
+        "rmseKgHa": 1187.4727712755332,
+        "biasKgHa": 1124.5896551724077,
+        "nrmsePercent": 81.91727174913999
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 524.3059103438973,
+        "rmseKgHa": 554.1048846587981,
+        "biasKgHa": 524.3059103438973,
+        "nrmsePercent": 38.22467471432106
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057408,
+        "rmseKgHa": 993.2944966718072,
+        "biasKgHa": 874.3229885057408,
+        "nrmsePercent": 58.43367107254337
+      },
+      "ratios": [
+        1,
+        0.9907897546076567,
+        0.46869716536596556
+      ]
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-start",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 326.3225200858956,
+        "rmseKgHa": 406.0593865979137,
+        "biasKgHa": -304.38671485887625,
+        "nrmsePercent": 23.887719817117834
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 177.0965313510775,
+        "rmseKgHa": 228.37414864324586,
+        "biasKgHa": -144.19282351054846,
+        "nrmsePercent": 15.754287296029656
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724081,
+        "rmseKgHa": 1187.4727712755334,
+        "biasKgHa": 1124.5896551724081,
+        "nrmsePercent": 81.91727174914
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 371.70082821146093,
+        "rmseKgHa": 438.7961269790579,
+        "biasKgHa": 371.70082821146093,
+        "nrmsePercent": 30.270152247451566
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057414,
+        "rmseKgHa": 993.2944966718076,
+        "biasKgHa": 874.3229885057414,
+        "nrmsePercent": 58.43367107254338
+      },
+      "ratios": [
+        1,
+        0.9581024442650382,
+        0.6988993933724045
+      ]
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-end",
+      "allThreeIncludingFICalibration": {
+        "n": 3,
+        "maeKgHa": 617.4072636980371,
+        "rmseKgHa": 660.7143613258239,
+        "biasKgHa": -617.4072636980371,
+        "nrmsePercent": 38.86859918380797
+      },
+      "deficitsOnly": {
+        "n": 2,
+        "maeKgHa": 462.92905849858215,
+        "rmseKgHa": 475.1214292684449,
+        "biasKgHa": -462.92905849858215,
+        "nrmsePercent": 32.77603678728235
+      },
+      "constantFIDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 750.8000000000001,
+        "rmseKgHa": 842.0750144731763,
+        "biasKgHa": 750.8000000000001,
+        "nrmsePercent": 58.09016380195753
+      },
+      "originalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 1124.5896551724081,
+        "rmseKgHa": 1187.4727712755337,
+        "biasKgHa": 1124.5896551724081,
+        "nrmsePercent": 81.91727174914001
+      },
+      "seasonalDeficitsOnly": {
+        "n": 2,
+        "maeKgHa": 323.78501511382126,
+        "rmseKgHa": 428.0698700904762,
+        "biasKgHa": 323.78501511382126,
+        "nrmsePercent": 29.53020627003837
+      },
+      "originalAll": {
+        "n": 3,
+        "maeKgHa": 874.3229885057417,
+        "rmseKgHa": 993.2944966718078,
+        "biasKgHa": 874.3229885057417,
+        "nrmsePercent": 58.4336710725434
+      },
+      "ratios": [
+        1,
+        0.9897886958632736,
+        0.5591011143264837
+      ]
+    }
+  ],
+  "records": [
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2200.4,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2200.4,
+      "prior2000SameMoistureKgHa": 1990.9586088893063,
+      "prior2000StrictDryTo13KgHa": 2288.458171137134,
+      "etaMm": 756.0716779739552,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 327.31655510837265,
+          "etmMm": 327.31655510837265,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.19808172159262,
+          "etmMm": 179.19808172159262,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 44.09674242473738,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.9773965222232657,
+          "factor": 0.9954793044446532
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2671.738747087917,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2155.8319417164253,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2183.847820633027,
+      "prior2000SameMoistureKgHa": 1950.6326866382772,
+      "prior2000StrictDryTo13KgHa": 2242.106536365836,
+      "etaMm": 751.5232634714698,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 327.31655510837265,
+          "etmMm": 327.31655510837265,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.19808172159262,
+          "etmMm": 179.19808172159262,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 39.54832792225204,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.8765817165956931,
+          "factor": 0.9753163433191386
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2617.623946052333,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1405.4782551085125,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1778.8918014537414,
+      "prior2000SameMoistureKgHa": 1271.7001597959522,
+      "prior2000StrictDryTo13KgHa": 1461.7243216045429,
+      "etaMm": 640.2443925948629,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 289.1736535603102,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8834678510671922,
+          "factor": 0.9533871404268769
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 126.2799308008691,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.891111322123775,
+          "factor": 0.8366669831856625
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 138.9181853501416,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.7752213863872102,
+          "factor": 0.8876106931936051
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 22.122936144740763,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.4903509796929354,
+          "factor": 0.8980701959385871
+        }
+      ],
+      "warnings": [
+        "Maturation : ETa/ETm inférieur à 0,5 ; forte extrapolation, résultat exploratoire."
+      ],
+      "productionKg": 1706.5400437933688,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.1316282072803006e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-start",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2193.373832231029,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2197.7905439533747,
+      "prior2000SameMoistureKgHa": 1984.601215139473,
+      "prior2000StrictDryTo13KgHa": 2281.1508219993943,
+      "etaMm": 755.3546190620784,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 327.31655510837265,
+          "etmMm": 327.31655510837265,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.19808172159262,
+          "etmMm": 179.19808172159262,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 43.37968351286059,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.9615030378486826,
+          "factor": 0.9923006075697365
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2663.2075324578955,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2147.922727177952,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2171.6273335931155,
+      "prior2000SameMoistureKgHa": 1943.4762974477092,
+      "prior2000StrictDryTo13KgHa": 2233.8808016640337,
+      "etaMm": 748.1651654683345,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 323.8267751034156,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.9893382111277519,
+          "factor": 0.9957352844511007
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.19808172159262,
+          "etmMm": 179.19808172159262,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 39.6800099240737,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.8795004249524284,
+          "factor": 0.9759000849904856
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2608.0205307908027,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1322.0758046948115,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1746.4167904202632,
+      "prior2000SameMoistureKgHa": 1196.2362320311724,
+      "prior2000StrictDryTo13KgHa": 1374.984174748474,
+      "etaMm": 631.3205036085113,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 282.0930103160804,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8618354492417317,
+          "factor": 0.9447341796966927
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 121.36778306089484,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.8564480906880666,
+          "factor": 0.7846721360320998
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 140.59621792179834,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.7845855076743106,
+          "factor": 0.8922927538371552
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 23.51380557093658,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.5211793553343036,
+          "factor": 0.9042358710668608
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1605.2722932151269,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.1316282072803006e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-end",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2185.6678652733135,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2194.9286165508274,
+      "prior2000SameMoistureKgHa": 1977.6287277488707,
+      "prior2000StrictDryTo13KgHa": 2273.136468676863,
+      "etaMm": 754.5681829188852,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 327.31655510837265,
+          "etmMm": 327.31655510837265,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.19808172159262,
+          "etmMm": 179.19808172159262,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 42.59324736966728,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.9440718193721765,
+          "factor": 0.9888143638744353
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2653.8509016159082,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2138.968273012845,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2175.9420389665415,
+      "prior2000SameMoistureKgHa": 1935.3741580149135,
+      "prior2000StrictDryTo13KgHa": 2224.5679977182913,
+      "etaMm": 749.3508140804805,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 326.80594611011827,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.9984400147493752,
+          "factor": 0.9993760058997501
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 141.71061198045115,
+          "etmMm": 141.71061198045115,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 179.00046608652366,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.9988972223744227,
+          "factor": 0.9994486111872114
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 38.08410316458615,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.8441274329637799,
+          "factor": 0.968825486592756
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2597.1479793674534,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1423.3839001881802,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1771.869781721253,
+      "prior2000SameMoistureKgHa": 1287.9014860180396,
+      "prior2000StrictDryTo13KgHa": 1480.346535652919,
+      "etaMm": 638.3147943419756,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 284.7210638934821,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8698645377078852,
+          "factor": 0.9479458150831541
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 127.38611396742165,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.898917252470792,
+          "factor": 0.848375878706188
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 140.3119543290197,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.7829991983229623,
+          "factor": 0.8914995991614811
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 22.14597541325093,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.49086164101797186,
+          "factor": 0.8981723282035944
+        }
+      ],
+      "warnings": [
+        "Maturation : ETa/ETm inférieur à 0,5 ; forte extrapolation, résultat exploratoire."
+      ],
+      "productionKg": 1728.2811843818765,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-start",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 1907.1677852072305,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2001.724608047275,
+      "prior2000SameMoistureKgHa": 1725.6372116681905,
+      "prior2000StrictDryTo13KgHa": 1983.4910478944716,
+      "etaMm": 701.4771732860806,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 300.9019711078997,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.9192995783799349,
+          "factor": 0.9677198313519739
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 137.7769766820966,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.9722417732632671,
+          "factor": 0.9583626598949007
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 170.75342282583054,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.9528752829570913,
+          "factor": 0.9764376414785456
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 34.46592065613507,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.7639310554974641,
+          "factor": 0.9527862110994928
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2315.6944505253605,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 1845.6284999074064,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1969.4044831313215,
+      "prior2000SameMoistureKgHa": 1669.9554402390959,
+      "prior2000StrictDryTo13KgHa": 1919.489011769076,
+      "etaMm": 692.595845840875,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 298.2004632533331,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.9110460763422145,
+          "factor": 0.9644184305368858
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 137.41528125193534,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.9696894207957528,
+          "factor": 0.9545341311936293
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 169.6717991820775,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.9468393721183053,
+          "factor": 0.9734196860591526
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 29.729420139410184,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.6589473565211292,
+          "factor": 0.9317894713042258
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2240.9730848629183,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1267.2725266158457,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1673.1971732916004,
+      "prior2000SameMoistureKgHa": 1146.6493122499182,
+      "prior2000StrictDryTo13KgHa": 1317.987715229791,
+      "etaMm": 611.2003030578244,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 278.1521756110278,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8497956222193931,
+          "factor": 0.9399182488877572
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 121.65575705029978,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.8584802178899776,
+          "factor": 0.7877203268349664
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 135.07378652449833,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.7537680382893435,
+          "factor": 0.8768840191446717
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 18.73970185788002,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.4153621881401795,
+          "factor": 0.8830724376280359
+        }
+      ],
+      "warnings": [
+        "Maturation : ETa/ETm inférieur à 0,5 ; forte extrapolation, résultat exploratoire."
+      ],
+      "productionKg": 1538.729827522068,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-end",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 1802.8530799940202,
+      "originalGrainKgHa": 2574.1896551724085,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1895.1302932328827,
+      "prior2000SameMoistureKgHa": 1631.251527075393,
+      "prior2000StrictDryTo13KgHa": 1875.0017552590723,
+      "etaMm": 672.1858566180362,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 282.3559937766797,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8626389022186588,
+          "factor": 0.9450555608874636
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 137.38405132195732,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.9694690425930087,
+          "factor": 0.954203563889513
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 162.96423203009195,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.9094083511634793,
+          "factor": 0.9547041755817396
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 33.2461394869818,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.7368948209130466,
+          "factor": 0.9473789641826094
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2189.0349159820103,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 1758.5336696651284,
+      "originalGrainKgHa": 2574.1896551724085,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1874.6723767079457,
+      "prior2000SameMoistureKgHa": 1591.1505856396523,
+      "prior2000StrictDryTo13KgHa": 1828.908719126037,
+      "etaMm": 666.5641748956687,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 282.3559937766797,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.8626389022186588,
+          "factor": 0.9450555608874636
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 137.38405132195732,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.9694690425930087,
+          "factor": 0.954203563889513
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 162.01837173007314,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.904130056379675,
+          "factor": 0.9520650281898375
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 28.570318064632907,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.6332560633667046,
+          "factor": 0.9266512126733409
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2135.2220247695996,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "thesis66-18-39",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1418.530325803898,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1672.097653519697,
+      "prior2000SameMoistureKgHa": 1283.5098909879216,
+      "prior2000StrictDryTo13KgHa": 1475.298725273473,
+      "etaMm": 610.898163287259,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-18",
+          "ky": 0.4,
+          "etaMm": 256.549780760032,
+          "etmMm": 327.31655510837265,
+          "ratio": 0.7837971430289855,
+          "factor": 0.9135188572115942
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-19",
+          "to": "2018-03-08",
+          "ky": 1.5,
+          "etaMm": 128.26156414978453,
+          "etmMm": 141.71061198045115,
+          "ratio": 0.9050949844707332,
+          "factor": 0.8576424767060998
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-03-09",
+          "to": "2018-03-29",
+          "ky": 0.5,
+          "etaMm": 147.79177330131532,
+          "etmMm": 179.19808172159262,
+          "ratio": 0.8247397063710143,
+          "factor": 0.9123698531855071
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-30",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 22.05960507380142,
+          "etmMm": 45.11653297520574,
+          "ratio": 0.48894725766992125,
+          "factor": 0.8977894515339843
+        }
+      ],
+      "warnings": [
+        "Maturation : ETa/ETm inférieur à 0,5 ; forte extrapolation, résultat exploratoire."
+      ],
+      "productionKg": 1722.387945541502,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "daily",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2206.4483614480205,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2200.4,
+      "prior2000SameMoistureKgHa": 1996.4312671762586,
+      "prior2000StrictDryTo13KgHa": 2294.748582961217,
+      "etaMm": 756.0716779739552,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 106.98622128057883,
+          "etmMm": 106.98622128057883,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.8918561875558,
+          "etmMm": 269.8918561875558,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 113.28302793839318,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.9910781679406466,
+          "factor": 0.9982156335881294
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2679.0827034763324,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "daily",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2188.856876847947,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2183.847820633027,
+      "prior2000SameMoistureKgHa": 1980.5141985943374,
+      "prior2000StrictDryTo13KgHa": 2276.4531018325715,
+      "etaMm": 751.5232634714698,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 106.98622128057883,
+          "etmMm": 106.98622128057883,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.8918561875558,
+          "etmMm": 269.8918561875558,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 108.73461343590786,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.951285496485843,
+          "factor": 0.9902570992971687
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2657.723018407792,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "daily",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1067.5853838844237,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1778.8918014537414,
+      "prior2000SameMoistureKgHa": 965.9690559757715,
+      "prior2000StrictDryTo13KgHa": 1110.3092597422662,
+      "etaMm": 640.2443925948629,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 200.1458588450978,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9900325576074273,
+          "factor": 0.9960130230429709
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 76.16307202476055,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.7118960844968772,
+          "factor": 0.5678441267453158
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 224.0508817804919,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.8301505830720299,
+          "factor": 0.915075291536015
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 76.13489320571132,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.666080628739093,
+          "factor": 0.9332161257478186
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1296.2685129743425,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.1316282072803006e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-start",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2203.675058619368,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2197.7905439533747,
+      "prior2000SameMoistureKgHa": 1993.921936535574,
+      "prior2000StrictDryTo13KgHa": 2291.864294868476,
+      "etaMm": 755.3546190620784,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 106.98622128057883,
+          "etmMm": 106.98622128057883,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.8918561875558,
+          "etmMm": 269.8918561875558,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 112.5659690265164,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.9848048413389352,
+          "factor": 0.996960968267787
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2675.7153427125077,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-start",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2105.83141797905,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2171.6273335931155,
+      "prior2000SameMoistureKgHa": 1905.3913790651538,
+      "prior2000StrictDryTo13KgHa": 2190.105033408223,
+      "etaMm": 748.1651654683345,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 104.37695525077797,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.9756111955486503,
+          "factor": 0.9634167933229754
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.01134221239965,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9967375304034952,
+          "factor": 0.9983687652017477
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 108.8662954377295,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.9524375415846652,
+          "factor": 0.990487508316933
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2556.9130132020173,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-start",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 971.1922829328289,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1746.4167904202632,
+      "prior2000SameMoistureKgHa": 878.7509710016245,
+      "prior2000StrictDryTo13KgHa": 1010.058587358189,
+      "etaMm": 631.3205036085113,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 197.97316170992946,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9792851910915813,
+          "factor": 0.9917140764366326
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 72.98232707603626,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.6821656677137424,
+          "factor": 0.5232485015706136
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 213.84425178825353,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.7923331026322146,
+          "factor": 0.8961665513161072
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 82.77107629549093,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.724138541724207,
+          "factor": 0.9448277083448414
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1179.2274373679377,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.1316282072803006e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-end",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 2200.6334318515424,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2194.9286165508274,
+      "prior2000SameMoistureKgHa": 1991.1698219207628,
+      "prior2000StrictDryTo13KgHa": 2288.700944736509,
+      "etaMm": 754.5681829188852,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 106.98622128057883,
+          "etmMm": 106.98622128057883,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.8918561875558,
+          "etmMm": 269.8918561875558,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 111.77953288332307,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.9779245548019067,
+          "factor": 0.9955849109603814
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2672.022181428296,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-end",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 2180.365057925595,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2175.9420389665415,
+      "prior2000SameMoistureKgHa": 1972.830659243044,
+      "prior2000StrictDryTo13KgHa": 2267.621447405798,
+      "etaMm": 749.3508140804805,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 202.1608858286261,
+          "etmMm": 202.1608858286261,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 106.98622128057883,
+          "etmMm": 106.98622128057883,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 269.38124718930135,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9981080977934377,
+          "factor": 0.9990540488967188
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 107.07277304317299,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.9367465689711483,
+          "factor": 0.9873493137942296
+        }
+      ],
+      "warnings": [],
+      "productionKg": 2647.412201443557,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse3-end",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1031.4306515183946,
+      "originalGrainKgHa": 2574.1896551724076,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1771.869781721253,
+      "prior2000SameMoistureKgHa": 933.2556512965158,
+      "prior2000StrictDryTo13KgHa": 1072.707645168409,
+      "etaMm": 638.3147943419756,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 63.74968673880136,
+          "etmMm": 63.74968673880136,
+          "ratio": 1,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 196.92324433323213,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9740917167337999,
+          "factor": 0.98963668669352
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 74.82747078986536,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.6994122223797875,
+          "factor": 0.5491183335696812
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 228.14382274119603,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.8453156977906446,
+          "factor": 0.9226578488953223
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 74.67056973888089,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.6532697157083427,
+          "factor": 0.9306539431416685
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1252.369222230426,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-start",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 1575.6255024444683,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 2001.724608047275,
+      "prior2000SameMoistureKgHa": 1425.6522261758555,
+      "prior2000StrictDryTo13KgHa": 1638.6807197423627,
+      "etaMm": 701.4771732860806,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 197.53665418546026,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9771259824856235,
+          "factor": 0.9908503929942494
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 89.62239815622847,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.8377003793898606,
+          "factor": 0.7565505690847909
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 253.86893757161283,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9406320781876124,
+          "factor": 0.9703160390938061
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 102.8703013586605,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.8999804442152481,
+          "factor": 0.9799960888430497
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1913.1338419290826,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-start",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 1509.6106451383741,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1969.4044831313215,
+      "prior2000SameMoistureKgHa": 1365.9208825709802,
+      "prior2000StrictDryTo13KgHa": 1570.0240029551499,
+      "etaMm": 692.595845840875,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 196.73220842113784,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9731467470315192,
+          "factor": 0.9892586988126076
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 88.05778076083895,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.8230759036708221,
+          "factor": 0.7346138555062331
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 253.1747974465968,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9380601586980016,
+          "factor": 0.9690300793490008
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 97.05217719818259,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.8490794757404868,
+          "factor": 0.9698158951480974
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1832.9782101584174,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-start",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 1101.203707840529,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1673.1971732916004,
+      "prior2000SameMoistureKgHa": 996.3874760343235,
+      "prior2000StrictDryTo13KgHa": 1145.2729609589926,
+      "etaMm": 611.2003030578244,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 57.57888201411864,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.9032025874893147,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 186.31016432663796,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9215935296433903,
+          "factor": 0.9686374118573561
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 79.70377414863815,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.7449910202885793,
+          "factor": 0.6174865304328689
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 216.13530342618762,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.8008218791010457,
+          "factor": 0.9004109395505229
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 71.47217914224223,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.6252879857831937,
+          "factor": 0.9250575971566387
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1337.0880815644534,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-end",
+      "treatment": "FI",
+      "observedGrainKgHa": 2200.4,
+      "predictedGrainKgHa": 1274.0363259030532,
+      "originalGrainKgHa": 2574.1896551724085,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1895.1302932328827,
+      "prior2000SameMoistureKgHa": 1152.7693106227891,
+      "prior2000StrictDryTo13KgHa": 1325.0221961181485,
+      "etaMm": 672.1858566180362,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 183.22556494147082,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9063353882253615,
+          "factor": 0.9625341552901446
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 80.96098083604114,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.7567421287243646,
+          "factor": 0.635113193086547
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 258.44000774405123,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9575687514055765,
+          "factor": 0.9787843757027883
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 93.3238630941477,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.8164616089781007,
+          "factor": 0.9632923217956202
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1546.942472783456,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 1.4210854715202004e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-end",
+      "treatment": "80",
+      "observedGrainKgHa": 1830.9,
+      "predictedGrainKgHa": 1261.0267534980196,
+      "originalGrainKgHa": 2574.1896551724085,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1874.6723767079457,
+      "prior2000SameMoistureKgHa": 1140.9980325925355,
+      "prior2000StrictDryTo13KgHa": 1311.491991485673,
+      "etaMm": 666.5641748956687,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 183.22556494147082,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.9063353882253615,
+          "factor": 0.9625341552901446
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 80.96098083604114,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.7567421287243646,
+          "factor": 0.635113193086547
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 258.44000774405123,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9575687514055765,
+          "factor": 0.9787843757027883
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 87.70218137178,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.7672792546259593,
+          "factor": 0.9534558509251918
+        }
+      ],
+      "warnings": [],
+      "productionKg": 1531.1461727118444,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    },
+    {
+      "phenology": "article54-10-42",
+      "calendar": "pulse7-end",
+      "treatment": "60",
+      "observedGrainKgHa": 1068.3,
+      "predictedGrainKgHa": 712.3151295048161,
+      "originalGrainKgHa": 2574.189655172408,
+      "constantFIgrainKgHa": 2200.4,
+      "seasonalGrainKgHa": 1672.097653519697,
+      "prior2000SameMoistureKgHa": 644.5146061305737,
+      "prior2000StrictDryTo13KgHa": 740.8213863569814,
+      "etaMm": 610.898163287259,
+      "etmMm": 757.0914685244236,
+      "stages": [
+        {
+          "name": "Installation",
+          "from": "2017-12-16",
+          "to": "2018-01-04",
+          "ky": 0,
+          "etaMm": 56.23544000232559,
+          "etmMm": 63.74968673880136,
+          "ratio": 0.8821288837502286,
+          "factor": 1
+        },
+        {
+          "name": "Végétation",
+          "from": "2018-01-05",
+          "to": "2018-02-06",
+          "ky": 0.4,
+          "etaMm": 175.18926748590937,
+          "etmMm": 202.1608858286261,
+          "ratio": 0.8665833985037993,
+          "factor": 0.9466333594015197
+        },
+        {
+          "name": "Floraison",
+          "from": "2018-02-07",
+          "to": "2018-02-16",
+          "ky": 1.5,
+          "etaMm": 63.19106527495485,
+          "etmMm": 106.98622128057883,
+          "ratio": 0.5906467629063361,
+          "factor": 0.38597014435950416
+        },
+        {
+          "name": "Formation du grain",
+          "from": "2018-02-17",
+          "to": "2018-03-20",
+          "ky": 0.5,
+          "etaMm": 243.28824210204536,
+          "etmMm": 269.8918561875558,
+          "ratio": 0.9014286149226274,
+          "factor": 0.9507143074613137
+        },
+        {
+          "name": "Maturation",
+          "from": "2018-03-21",
+          "to": "2018-04-05",
+          "ky": 0.2,
+          "etaMm": 72.9941484220237,
+          "etmMm": 114.30281848886155,
+          "ratio": 0.6386032241990319,
+          "factor": 0.9277206448398064
+        }
+      ],
+      "warnings": [],
+      "productionKg": 864.8972603321963,
+      "areaM2": 12142.059385056884,
+      "maxWaterBalanceResidualMm": 2.842170943040401e-14,
+      "predictedCover": null,
+      "predictedBiomass": null,
+      "observedStageEt": null
+    }
+  ],
+  "timing": {
+    "vegetation": {
+      "etLossMm": 18,
+      "grainFactor": 0.968
+    },
+    "flowering": {
+      "etLossMm": 18,
+      "grainFactor": 0.7000000000000001
+    },
+    "maturation": {
+      "etLossMm": 18,
+      "grainFactor": 0.9097142857142857
+    }
+  },
+  "waterSweep": [
+    {
+      "scaleFIirrigation": 0,
+      "status": "unavailable",
+      "yieldKgHa": null,
+      "missing": [
+        "Floraison : réponse non physique ou ET incompatible ; aucune valeur négative de grain n’est masquée."
+      ],
+      "phaseFactors": [
+        1,
+        0.671912713174325,
+        null,
+        0.5497964044994041,
+        0.8133834261317442
+      ]
+    },
+    {
+      "scaleFIirrigation": 0.1,
+      "status": "unavailable",
+      "yieldKgHa": null,
+      "missing": [
+        "Floraison : réponse non physique ou ET incompatible ; aucune valeur négative de grain n’est masquée."
+      ],
+      "phaseFactors": [
+        1,
+        0.7215998807435176,
+        null,
+        0.605967751139692,
+        0.8273914800953907
+      ]
+    },
+    {
+      "scaleFIirrigation": 0.2,
+      "status": "conditional",
+      "yieldKgHa": 25.086340395979033,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        0.7713732002141994,
+        0.026408994376023953,
+        0.6621390980667748,
+        0.8413995340667543
+      ]
+    },
+    {
+      "scaleFIirrigation": 0.4,
+      "status": "conditional",
+      "yieldKgHa": 572.9828343820294,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        0.8828382153967534,
+        0.43604543920962935,
+        0.7745178027312917,
+        0.8694166110160356
+      ]
+    },
+    {
+      "scaleFIirrigation": 0.6,
+      "status": "conditional",
+      "yieldKgHa": 1432.6619481514315,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        0.9611715570976077,
+        0.843884678205,
+        0.8888450250107649,
+        0.8990094709855745
+      ]
+    },
+    {
+      "scaleFIirrigation": 0.8,
+      "status": "conditional",
+      "yieldKgHa": 2155.8319417164253,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        1,
+        1,
+        1,
+        0.9753163433191386
+      ]
+    },
+    {
+      "scaleFIirrigation": 1,
+      "status": "conditional",
+      "yieldKgHa": 2200.4,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        1,
+        1,
+        1,
+        0.9954793044446532
+      ]
+    },
+    {
+      "scaleFIirrigation": 1.2,
+      "status": "conditional",
+      "yieldKgHa": 2210.392511602775,
+      "missing": [],
+      "phaseFactors": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "limits": [
+    "Development on an already explored single-site season, not independent or blind validation.",
+    "FI enters the one-parameter capacity fit; report deficit-only error separately.",
+    "Phenology is documented in a published recalibration that explored all treatments; no independent test claim.",
+    "Schedules remain hypothetical; pulse dispersion is scenario sensitivity, not biological variability.",
+    "No canopy/biomass mechanism is claimed by this grain-response equation. No NPK/pest effect.",
+    "Prior2000 humidity is ambiguous; neither interpretation is an operational coefficient.",
+    "No American grain-moisture conversion or parameter transfer."
+  ]
+}
