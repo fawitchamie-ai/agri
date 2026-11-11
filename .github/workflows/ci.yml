@@ -150,7 +150,7 @@ jobs:
         run: node scripts/deploy-cloudflare.mjs
       - name: Contrôler la santé avec une identité Access de service
         env:
-          EXPECTED_GROWTH_ENGINE: daily-rue-npk-1.4.0
+          EXPECTED_GROWTH_ENGINE: daily-growth-process-1.5.0
           APP_URL: ${{ vars.APP_URL }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
