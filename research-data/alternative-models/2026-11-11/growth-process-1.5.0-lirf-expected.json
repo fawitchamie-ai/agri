@@ -1,0 +1,16 @@
+{
+  "engine": "daily-growth-process-1.5.0",
+  "source": "USDA LIRF Colorado 2012 fit and already-explored 2013 retrospective grain holdout; this is a regression fixture, not a new or blind validation",
+  "fitYear": 2012,
+  "evaluatedYear": 2013,
+  "metric": "grain RMSE kg/ha, 12 treatment means from one site-season",
+  "lirf2013": [
+    { "wpRatio": 0.35, "grainRmseKgHa": 1242.5635449504014 },
+    { "wpRatio": 0.5, "grainRmseKgHa": 1139.3344677734801 },
+    { "wpRatio": 0.65, "grainRmseKgHa": 912.5690246251347 }
+  ],
+  "lirf2011Frozen": [
+    { "efficiency": 0.9, "grainRmseKgHa": 1105.8811827702066 },
+    { "efficiency": 1, "grainRmseKgHa": 1087.798804924221 }
+  ]
+}

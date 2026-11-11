@@ -31,6 +31,18 @@ Le résultat journalier expose maintenant séparément le couvert et son origine
 
 Cette variante est un **scénario AquaCrop-inspiré**, pas une exécution de l'exécutable officiel AquaCrop 7.3 et pas son port complet. Les paramètres `WP*`, de couvert, de fertilité et d'indice de récolte restent dépendants du cultivar et du domaine. Le moteur peut donc fonctionner dans les six pays, mais cette portabilité logicielle n'établit ni calibration locale, ni précision par pays, ni validation avant campagne.
 
+## Rejeu versionné après la réponse thermique WP*
+
+La version 1.5.0 applique désormais `fT` aussi à `WP* × Tr/ET0`. Le contrôle LIRF est un rejeu rétrospectif déjà exploré : ajustement biomasse/HI sur les moyennes 2012, puis rendements 2013 réservés à l'évaluation. Sur 12 moyennes de traitements d'un seul site-saison, la RMSE du grain de la voie WP* évolue ainsi :
+
+| Rapport de demande en eau | Avant, 2013 (kg/ha) | Après, 2013 (kg/ha) | Écart |
+| --- | ---: | ---: | ---: |
+| 0,35 | 1 255,86 | 1 242,56 | −13,29 |
+| 0,50 | 1 149,29 | 1 139,33 | −9,96 |
+| 0,65 | 914,55 | 912,57 | −1,98 |
+
+Sur le contrôle 2011 à coefficients WP* gelés, avec efficacité d'application 0,9, la RMSE passe de 1 093,24 à 1 105,88 kg/ha ; à efficacité 1, elle passe de 1 175,91 à 1 087,80 kg/ha. L'effet dépend donc du cas et la petite amélioration 2013 ne démontre pas un gain agronomique général. Ces années ont déjà été examinées : elles ne sont pas un test aveugle, ne mesurent pas la précision du couvert ou de la biomasse 2013, et ne justifient aucun transfert de WP* aux pays africains. Les nombres de régression versionnés sont conservés dans `research-data/alternative-models/2026-11-11/growth-process-1.5.0-lirf-expected.json`.
+
 Le pH reste **diagnostique seulement**. Les plages EcoCrop sont des repères d'aptitude et ne donnent pas de courbe mesurée de perte de rendement ou de disponibilité N/P/K par variété. Aucune courbe pH n'est appliquée. Les profils historiques qui contiennent une courbe pH sont normalisés sans cette courbe lors du chargement ; elle ne modifie ni la fourniture du sol, ni la récupération des engrais, ni l'identifiant du profil.
 
 Les contraintes d'eau, température et nutriments s'appliquent à la croissance quotidienne. Il n'y a pas de seconde multiplication du rendement final par un facteur Ky ou QUEFTS.
