@@ -62,3 +62,32 @@
 
 /* Composition grows vertically; advanced analyses never share a narrow flex row. */
 .mp-npk>details{grid-column:1/-1;min-width:0}.mp-npk>details[open]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.mp-npk>details>summary,.mp-npk>details>p{grid-column:1/-1}.mp-npk .field{min-width:0}.mp-npk .field>span{white-space:normal;line-height:1.5}.quick-sim .fertilizer-simulator{display:block}.mp-presets{display:grid;gap:12px;padding:16px;background:#f4f8fc;border-radius:8px;margin:16px 0}.mp-presets p{margin:0}.mp-presets select{max-width:100%}@media(max-width:760px){.mp-npk{grid-template-columns:1fr}.mp-npk>details[open]{grid-template-columns:1fr}}
+
+/* Campaign orientation: an explicit route from a field to interpretable results. */
+.agri-shell .simulation-workbench .simulation-start{grid-template-columns:minmax(0,1fr) minmax(350px,.9fr);border-radius:22px!important;overflow:hidden;background:#fff;box-shadow:0 18px 48px #1a3b5e12!important}
+.agri-shell .simulation-start-copy{padding:clamp(28px,4vw,60px);display:flex;align-items:flex-start;flex-direction:column;justify-content:center}
+.agri-shell .simulation-start-copy .start-step-label{color:#2167aa;font-size:12px;font-weight:800;letter-spacing:.11em}
+.agri-shell .simulation-start-copy h2{color:#102b49;font-size:clamp(32px,3.4vw,48px);font-weight:700;line-height:1.1;letter-spacing:-.035em;max-width:460px;margin:18px 0}
+.agri-shell .simulation-start-copy>p{font-size:16px!important;color:#425a73;line-height:1.7;max-width:490px;margin:0 0 22px}
+.agri-shell .simulation-start-copy .start-country{width:100%;max-width:390px;margin:0 0 18px}
+.agri-shell .simulation-start-copy .start-country>span{font-size:14px;color:#263e58}
+.agri-shell .simulation-start-copy .start-country select{min-height:52px;font-size:16px;border-radius:9px}
+.agri-shell .simulation-start-copy .start-map-button{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:52px;padding:12px 22px;font-size:15px}
+.agri-shell .simulation-start-copy .start-action-help{color:#52677e;font-size:13px;line-height:1.5;margin:9px 0 0}
+.agri-shell .simulation-start-copy .start-import{font-size:14px;font-weight:700;color:#1d5e9b;min-height:44px;margin-top:14px}
+.agri-shell .simulation-start-visual{margin:18px 18px 18px 0;padding:24px;background:#e6f0fa!important;border-radius:14px;overflow:hidden;min-height:360px}
+.agri-shell .simulation-start-visual .parcel-footprint{width:100%;max-width:460px;max-height:280px;min-height:185px}
+.agri-shell .start-visual-head{align-self:stretch;display:flex;justify-content:space-between;gap:12px;color:#4e6985;font-size:11px;letter-spacing:.09em;font-weight:700}
+.agri-shell .start-visual-caption{position:static;align-self:stretch;padding:15px 18px;border:1px solid #d1dfed;background:#ffffffd9;border-radius:10px;color:#15395e}
+.agri-shell .start-visual-caption strong,.agri-shell .start-visual-caption span{display:block}.agri-shell .start-visual-caption strong{font-size:16px}.agri-shell .start-visual-caption span{font-size:13px;margin-top:4px;color:#526b84}
+.agri-shell .simulation-steps{padding:24px clamp(24px,3vw,42px);gap:18px;background:#f8fbff}
+.agri-shell .simulation-steps li{align-items:flex-start;gap:12px;font-size:14px;font-weight:700;color:#425c76}
+.agri-shell .simulation-steps b{width:36px;height:36px;background:#fff;color:#4b6581;border-color:#c6d7e8;font-size:11px;font-weight:700}
+.agri-shell .simulation-steps .current b{background:#165eaa;color:white;border-color:#165eaa}.agri-shell .simulation-steps .current>span{color:#153f6c}
+.agri-shell .simulation-steps small{font-size:12px;line-height:1.5;color:#526b84;margin-top:3px}
+.agri-shell .campaign-orientation{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#e8f2fc;border:1px solid #cbdff2;border-radius:14px;padding:20px 24px;margin:0 0 18px;color:#173d63}
+.agri-shell .campaign-orientation>div{max-width:690px}.agri-shell .campaign-orientation span{display:block;color:#2c6da8;font-size:11px;letter-spacing:.09em;font-weight:800}.agri-shell .campaign-orientation strong{display:block;margin:5px 0;font-size:18px}.agri-shell .campaign-orientation p{margin:0;color:#435f7a;font-size:14px;line-height:1.5}
+.agri-shell .campaign-orientation-action{display:inline-flex;align-items:center;justify-content:center;gap:12px;flex-shrink:0;min-height:48px;padding:10px 16px;background:#fff;border:1px solid #a8c6e2;color:#194e80;border-radius:9px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}.agri-shell .campaign-orientation-action:hover{background:#f5faff}
+.agri-shell .simulation-modules>button{font-size:14px;font-weight:700;min-height:54px}.agri-shell .simulation-context .qs-editable-label,.agri-shell .simulation-parcel small{font-size:12px;color:#52677e}.agri-shell .simulation-context .qs-editable-value,.agri-shell .simulation-parcel strong{font-size:16px;color:#183b60}.agri-shell .simulation-context .qs-editable>small,.agri-shell .simulation-parcel em{font-size:12px;color:#52677e}
+.agri-shell .overview-heading h2{font-size:clamp(25px,2.4vw,33px);line-height:1.2}.agri-shell .overview-heading p{font-size:14px;line-height:1.5;color:#516980;margin:7px 0 0}.agri-shell .result-metrics>button>span{font-size:12px;letter-spacing:.04em}.agri-shell .result-metrics em{font-size:13px;line-height:1.45;color:#4b647d}.agri-shell .yield-reference-prompt p{font-size:14px;line-height:1.6;color:#425b74;margin:5px 0 0}
+@media(max-width:800px){.agri-shell .simulation-workbench .simulation-start{grid-template-columns:1fr}.agri-shell .simulation-start-copy{padding:30px 24px}.agri-shell .simulation-start-visual{margin:0 18px 18px;min-height:250px;padding:18px}.agri-shell .simulation-start-visual .parcel-footprint{min-height:130px;max-height:190px}.agri-shell .simulation-steps{grid-template-columns:1fr;gap:15px;padding:20px 24px}.agri-shell .simulation-steps small{display:block;margin-left:0;font-size:12px}.agri-shell .campaign-orientation{align-items:stretch;flex-direction:column;gap:14px;padding:18px}.agri-shell .campaign-orientation-action{width:100%}.agri-shell .simulation-modules>button{font-size:13px;min-width:max-content;padding:12px 16px}.agri-shell .result-metrics>button>span{font-size:11px}.agri-shell .result-metrics em{font-size:12px}}

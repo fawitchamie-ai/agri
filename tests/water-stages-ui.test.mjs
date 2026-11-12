@@ -13,11 +13,12 @@ test('actual product selects the stage model, displays its computed grain in the
  function render(){const plan=planSeason(config,events);root.render(React.createElement(YieldSummary,{config,plan,stale,onChange:next=>{config=next;render();}}));top.render(React.createElement(FieldOverview,{config,plan,events,stale,loading:false,onAction:()=>{}}));}
  try{
   await act(async()=>render());assert.match(overview.textContent,/RENDEMENT INTÉGRÉ SIMULÉ/);
+  const growthPreview=host.querySelector('[aria-label="Autre simulation de rendement exploratoire"]');assert.ok(growthPreview);assert.match(growthPreview.textContent,/non validé localement/);assert.match(growthPreview.textContent,/t\/ha/);assert.match(growthPreview.textContent,/tonnes/);
   const button=[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Tester la réponse par stades'));assert.ok(button);
   await act(async()=>button.click());assert.equal(config.yieldEstimation.method,'fao-stages');
   assert.match(host.textContent,/Modèle du grain : réponse aux déficits d’eau/);
   assert.match(host.textContent,/Déficit et réponse par phase/);
   assert.ok(!overview.textContent.includes('RENDEMENT INTÉGRÉ SIMULÉ'));assert.match(overview.textContent,/1,41/);assert.ok(!overview.textContent.includes('2,57'));
-  stale=true;await act(async()=>render());assert.ok(!overview.textContent.includes('1,41'));assert.match(overview.textContent,/Recalcul/);
+  stale=true;await act(async()=>render());assert.ok(!overview.textContent.includes('1,41'));assert.match(overview.textContent,/Recalcul/);assert.equal(host.querySelector('[aria-label="Autre simulation de rendement exploratoire"]'),null);
  }finally{await act(async()=>{root.unmount();top.unmount();});await window.happyDOM.close();}
 });

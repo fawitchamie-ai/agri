@@ -30,7 +30,7 @@ const render=(config,stale=false,initialSection)=>renderToStaticMarkup(React.cre
 test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',()=>{
  const c=declareScenario(fixture()),plan=planSeason(c);
  const html=render(c)+render(c,false,'yield')+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
- assert.match(render(c),/Les résultats de votre scénario/);
+ assert.match(render(c),/Rendement et production/);
  assert.match(render(c),/id="field-tab-overview"[^>]*role="tab"[^>]*aria-selected="true"/);
  assert.match(render(c),/id="field-tab-water"[^>]*role="tab"/);
  assert.match(render(c),/id="field-tab-fertilizer"[^>]*role="tab"/);
@@ -51,7 +51,7 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/La pluie face aux besoins/);
  assert.doesNotMatch(html,/Aucune dose de semis référencée/);
  assert.match(render(c),/EAU À PRÉVOIR SUR LE CYCLE/);
- assert.match(html,/Quel effet ont mes interventions/);
+ assert.match(html,/Comment obtenir un rendement et une production/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
  assert.match(html,/<title>[^<]+ : besoin [0-9]/);
  assert.doesNotMatch(html,/<title><\/title>/);
@@ -59,6 +59,11 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/Surface prévue \(m²\)<\/span><input[^>]*value=""/);
  assert.match(html,/Référence indépendante sans déficit d’eau \(t\/ha\)<\/span><input[^>]*value=""/);
  assert.doesNotMatch(html,/<details open=""/,'expert panels start collapsed');
+});
+test('the first campaign guides the user from country to parcel and results',()=>{
+ const config=fixture();config.parcelGeometry=null;config.areaM2=null;
+ const empty=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:false,events:[]}));assert.match(empty,/ÉTAPE 1 SUR 3/);assert.match(empty,/Pays de la parcelle/);assert.match(empty,/Dessiner ma parcelle/);assert.match(empty,/Préparer ma campagne/);assert.match(empty,/Comprendre mes résultats/);
+ const started=render(declareScenario(fixture()));assert.match(started,/Voir le rendement et la production/);assert.match(started,/Rendement &amp; production/);
 });
 test('blocked and stale simulations display the action needed without showing a new water percentage',()=>{
  const c=fixture();c.inputPolicy={allowAssumptions:false,allowStale:false};

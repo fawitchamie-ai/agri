@@ -177,3 +177,43 @@
   html:focus-within { scroll-behavior:auto; }
   *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; scroll-behavior:auto!important; }
 }
+
+/* Navigation and shared reading sizes for the field workspace. */
+.agri-shell .product-sidebar{
+  background:#102b4d!important;
+  padding:24px 14px 0!important;
+  box-shadow:3px 0 20px #102b4d10;
+}
+.product-sidebar-brand{padding:0 8px 27px!important}
+.product-sidebar nav{padding:0 0 24px!important;scrollbar-width:thin;scrollbar-color:#6484a7 transparent}
+.product-sidebar .sidebar-section-label{
+  display:block;font-size:11px!important;letter-spacing:.11em;font-weight:700;
+  color:#b5c9df!important;padding:12px 12px 10px!important;
+}
+.agri-shell .product-nav-item,.agri-shell .product-nav-group summary{
+  min-height:48px;font-size:14px!important;line-height:1.35;padding:12px 13px;
+}
+.agri-shell .product-nav-item{margin:3px 0!important;gap:12px;border-radius:10px!important}
+.agri-shell .product-nav-item.active{background:#2169be!important;color:#fff!important;box-shadow:none!important}
+.agri-shell .product-nav-item:hover{transform:none!important;background:#ffffff19!important}
+.agri-shell .product-nav-item.active:hover{background:#2169be!important}
+.product-sidebar .sidebar-separator{margin:18px 12px!important}
+.agri-shell .product-nav-group>div{margin-left:19px;padding-left:10px}
+.agri-shell .product-nav-group .product-nav-item{font-size:13px!important;min-height:42px;padding:9px 10px}
+.product-sidebar-bottom{padding-top:12px!important}
+.product-sidebar-bottom>button{font-size:13px!important;line-height:1.35!important}
+.product-sidebar-bottom small,.product-profile small{font-size:12px!important;line-height:1.4}
+.product-profile strong{font-size:13px!important;color:#f1f6fc!important;font-weight:700!important}
+.product-profile{padding:14px 10px 20px!important}
+.product-breadcrumb{font-size:14px!important;line-height:1.4}
+.product-topbar-right,.product-topbar-right>button{font-size:13px!important}
+.agri-shell .field>span,.agri-shell .field>label{font-size:14px;line-height:1.45}
+.agri-shell input,.agri-shell select,.agri-shell textarea{font-size:15px;line-height:1.5}
+.agri-shell .data-table{font-size:14px;line-height:1.5}
+.agri-shell .notice{font-size:14px;line-height:1.55}
+@media(max-width:760px){
+  .product-sidebar{width:min(300px,calc(100vw - 36px))!important;max-width:none!important}
+  .product-nav-close,.product-menu-toggle{min-width:44px;min-height:44px;align-items:center;justify-content:center}
+  .product-breadcrumb{font-size:13px!important}
+  .agri-shell .product-nav-group .product-nav-item{min-height:44px}
+}
