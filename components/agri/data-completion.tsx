@@ -73,6 +73,18 @@ export default function DataCompletion({config,events,onChange}:{config:Seasonal
     <button className="btn secondary" onClick={download}>Exporter la référence et ses sources</button>
    </>:<HelpParagraph>Audit en cours…</HelpParagraph>}
   </details>
+  <details><summary>Repère statistique régional · GROW-Africa</summary>
+   {audit?.historicalRegional? <>
+    <HelpParagraph>Cette série administrative historique ne prédit pas votre récolte. La recherche porte sur le nom « {audit.historicalRegional.requestedTerritory||'non renseigné'} » ; un rapprochement exact et non ambigu est nécessaire. Le contour GPS ne sert pas à attribuer une région.</HelpParagraph>
+    {audit.historicalRegional.missing&&<HelpParagraph className="notice warning">{audit.historicalRegional.missing}</HelpParagraph>}
+    {audit.historicalRegional.status==='context_only'&&<>
+     <HelpParagraph><strong>{audit.historicalRegional.matchedTerritory}</strong> · {audit.historicalRegional.scopeNote} · {audit.historicalRegional.rows.length} année(s) disponible(s). Il s’agit de statistiques rapportées, pas du rendement prédit de votre champ.</HelpParagraph>
+     <table><thead><tr><th>Année de récolte</th><th>Source</th><th>Rendement rapporté (t/ha)</th><th>Contrôle source</th></tr></thead><tbody>{audit.historicalRegional.rows.map(r=><tr key={r.year}><td>{r.year}</td><td>{r.source||'Non précisée'}</td><td>{r.yieldTHa.toLocaleString('fr-FR',{maximumFractionDigits:3})}</td><td>{r.qualityFlag}</td></tr>)}</tbody></table>
+    </>}
+    {audit.historicalRegional.limits.map((l:string)=><HelpParagraph key={l}>{l}</HelpParagraph>)}
+    <HelpParagraph>GROW-Africa v2.0 · acquise le {audit.historicalRegional.acquiredOn} · CC BY 4.0 · DOI <a href="https://doi.org/10.5281/zenodo.16544448" target="_blank" rel="noreferrer">10.5281/zenodo.16544448</a>. Aucune de ces lignes n’est injectée dans le rendement simulé.</HelpParagraph>
+   </>:<HelpParagraph>Audit régional en cours de chargement…</HelpParagraph>}
+  </details>
   <details><summary>Essais disponibles sur le sol et les engrais</summary>{audit?.experimentalEvidence?<>
    <HelpParagraph><strong>Aucun modèle sol–engrais n’est encore calibré pour votre parcelle.</strong> Voici les données réellement acquises pour préparer ce travail. Elles ne modifient pas votre rendement simulé.</HelpParagraph>
    <div className="table-wrap"><table className="data-table"><thead><tr><th>Pays</th><th>Parcelles × campagnes acquises</th><th>Sites d’essai</th><th>Fonctions externes OFRA</th></tr></thead><tbody>{audit.experimentalEvidence.coverage.map((r:any)=><tr key={r.country+r.crop}><td>{r.countryName} · {r.cropName}</td><td>{r.experimentalPlotSeasons.toLocaleString('fr-FR')}{r.experimentalPlotSeasons?' · recherche NC-SA':''}</td><td>{r.experimentalSites}</td><td>{r.externalFittedFunctions} · contexte</td></tr>)}</tbody></table></div>

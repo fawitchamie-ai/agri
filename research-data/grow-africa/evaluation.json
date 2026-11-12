@@ -1,0 +1,1132 @@
+Warning: truncated output (original token count: 32507)
+Total output lines: 3711
+
+{
+  "protocol": {
+    "version": "grow-africa-regional-baselines-1.0",
+    "label": "GROW-Africa Regional yieldTonHa, QC_flag_Y=A; statistics aggregated by administrative unit/crop/harvest year",
+    "temporal": "For each held-out harvest year >= 2011, fit only on earlier years. Same-unit test requires >=3 earlier unit-years.",
+    "spatial": "Hold out the entire administrative unit; use only other units and years earlier than the held-out year, requiring >=3 other units and >=10 observations. Test years start at 2011.",
+    "deduplication": "The selected GROW regional subset has one record per country, GADM ID, crop, harvest year and level. Duplicate keys are rejected.",
+    "baselines": [
+      "historical mean within the same administrative unit",
+      "most recent earlier observation within the same administrative unit",
+      "historical mean from other administrative units in the same country/crop/level"
+    ],
+    "metrics": [
+      "MAE",
+      "RMSE",
+      "prediction-minus-observation bias",
+      "nRMSE",
+      "R2 when defined"
+    ],
+    "uncertainty": "Cluster bootstrap CI for MAE only when >=3 independent administrative units; not a prediction interval.",
+    "target_scope": "Administrative statistics only. No plot-level/field labels, common grain moisture, matched weather, soil or satellite covariates, or intervention effects are inferred.",
+    "model_status": "research benchmark; no model is approved for production prediction"
+  },
+  "groups": [
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Cassava",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 840,
+        "independent_regions": 77,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 2.8138407114802915,
+        "rmse_t_ha": 3.9705899923976933,
+        "bias_t_ha_prediction_minus_observed": -1.459707972233087,
+        "nrmse_percent_of_test_mean": 30.784450224954362,
+        "r2": -0.03417471078853329,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          2.4323720835538634,
+          3.2338803520228647
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Cassava",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 840,
+        "independent_regions": 77,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 2.069095435961583,
+        "rmse_t_ha": 3.5098521434557917,
+        "bias_t_ha_prediction_minus_observed": 0.01367715173452032,
+        "nrmse_percent_of_test_mean": 27.21229560696028,
+        "r2": 0.19190676761831216,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.8076738357741429,
+          2.331425732785179
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Cowpea",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 831,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.14507632154625572,
+        "rmse_t_ha": 0.24494547699021543,
+        "bias_t_ha_prediction_minus_observed": -0.10329773563173696,
+        "nrmse_percent_of_test_mean": 28.86765393737558,
+        "r2": 0.04550547901225732,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.12360692807458083,
+          0.16896058324408456
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Cowpea",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 831,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.10655502048375191,
+        "rmse_t_ha": 0.20923493850780614,
+        "bias_t_ha_prediction_minus_observed": -0.014015500077597555,
+        "nrmse_percent_of_test_mean": 24.659046048409724,
+        "r2": 0.3035290569425324,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.09140431963998871,
+          0.12309378960599779
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Groundnut",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 816,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.1677419612294864,
+        "rmse_t_ha": 0.24591097925378416,
+        "bias_t_ha_prediction_minus_observed": -0.09274972616988765,
+        "nrmse_percent_of_test_mean": 26.129916881241005,
+        "r2": 0.11238369846272755,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.14696660068608042,
+          0.19097978414872288
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Groundnut",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 816,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.15502118687325186,
+        "rmse_t_ha": 0.2593628413601962,
+        "bias_t_ha_prediction_minus_observed": -0.0027927550886081877,
+        "nrmse_percent_of_test_mean": 27.559279814954156,
+        "r2": 0.012618600117131673,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.1305979516439612,
+          0.18160634708380163
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Maize",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 836,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.24671580509273777,
+        "rmse_t_ha": 0.34875133231184935,
+        "bias_t_ha_prediction_minus_observed": -0.13208320468267543,
+        "nrmse_percent_of_test_mean": 27.142511986240297,
+        "r2": 0.2683658475397638,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.21426663544688523,
+          0.27996964696016025
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Maize",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 836,
+        "independent_regions": 76,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.20666758043476816,
+        "rmse_t_ha": 0.3378789267200028,
+        "bias_t_ha_prediction_minus_observed": -0.01594892768391839,
+        "nrmse_percent_of_test_mean": 26.29633773038948,
+        "r2": 0.3132725124932886,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.18448827205060112,
+          0.23278083918917894
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Millet",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 298,
+        "independent_regions": 28,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.15903852307473185,
+        "rmse_t_ha": 0.24074260246823076,
+        "bias_t_ha_prediction_minus_observed": -0.12215016204440379,
+        "nrmse_percent_of_test_mean": 26.127447141785023,
+        "r2": -0.006452296653984169,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.1343293719439646,
+          0.18631705194461412
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Millet",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 298,
+        "independent_regions": 28,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.13276627298940485,
+        "rmse_t_ha": 0.24019056396546415,
+        "bias_t_ha_prediction_minus_observed": -0.02391659978961932,
+        "nrmse_percent_of_test_mean": 26.067535199929328,
+        "r2": -0.0018418670977160545,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.10483667001353164,
+          0.16366378069885523
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Okra",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 742,
+        "independent_regions": 73,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.8221242231342664,
+        "rmse_t_ha": 1.2867704367173214,
+        "bias_t_ha_prediction_minus_observed": -0.15762842070769167,
+        "nrmse_percent_of_test_mean": 36.520288122143796,
+        "r2": 0.4251816025499121,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.7167338753975481,
+          0.9404161028054904
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Okra",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 742,
+        "independent_regions": 73,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.6639442710736075,
+        "rmse_t_ha": 1.3007430847890091,
+        "bias_t_ha_prediction_minus_observed": -0.009588812521612687,
+        "nrmse_percent_of_test_mean": 36.916850802515235,
+        "r2": 0.4126302693444023,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.5474510518668733,
+          0.7818161103406763
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Rice",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 698,
+        "independent_regions": 72,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.7890580708646056,
+        "rmse_t_ha": 1.0429836816417897,
+        "bias_t_ha_prediction_minus_observed": -0.4558115999824284,
+        "nrmse_percent_of_test_mean": 33.438277393393705,
+        "r2": -0.1999751591375174,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.6834516343262026,
+          0.9075543371509454
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Rice",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 698,
+        "independent_regions": 72,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.5528567767037355,
+        "rmse_t_ha": 0.8673934045816104,
+        "bias_t_ha_prediction_minus_observed": -0.059985983964570805,
+        "nrmse_percent_of_test_mean": 27.808815978735005,
+        "r2": 0.17005471934345673,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.5020909805538198,
+          0.5986324400957586
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Sorghum",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 432,
+        "independent_regions": 43,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.19247284211550394,
+        "rmse_t_ha": 0.3042560387513621,
+        "bias_t_ha_prediction_minus_observed": -0.010389147746272441,
+        "nrmse_percent_of_test_mean": 33.12365893395637,
+        "r2": 0.10015586733993997,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.15374012922744582,
+          0.23410943345636934
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Sorghum",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 432,
+        "independent_regions": 43,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.21848727499533113,
+        "rmse_t_ha": 0.5713908207720989,
+        "bias_t_ha_prediction_minus_observed": 0.0648097137164924,
+        "nrmse_percent_of_test_mean": 62.206011564868795,
+        "r2": -2.1736234349000227,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.16840721106169493,
+          0.27233905311246337
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Soybean",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 566,
+        "independent_regions": 58,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.24671814280071236,
+        "rmse_t_ha": 0.37079616261319337,
+        "bias_t_ha_prediction_minus_observed": -0.1663724300380104,
+        "nrmse_percent_of_test_mean": 36.5750439531639,
+        "r2": -0.0072757280713708905,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.2080927363431791,
+          0.28923131929575335
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Soybean",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 566,
+        "independent_regions": 58,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 0.15939735672487962,
+        "rmse_t_ha": 0.30064001916397726,
+        "bias_t_ha_prediction_minus_observed": -0.031128299751858372,
+        "nrmse_percent_of_test_mean": 29.654896743020547,
+        "r2": 0.3378269702351888,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.1355972808221067,
+          0.18431928142789417
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Sweet potato",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 780,
+        "independent_regions": 75,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 1.6378867777348367,
+        "rmse_t_ha": 2.3898729945274337,
+        "bias_t_ha_prediction_minus_observed": -0.6944292165845959,
+        "nrmse_percent_of_test_mean": 39.782210875052186,
+        "r2": 0.32975214487520355,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.4153518302461785,
+          1.8990548350653846
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Sweet potato",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 780,
+        "independent_regions": 75,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 1.2929896602838415,
+        "rmse_t_ha": 2.184473316198737,
+        "bias_t_ha_prediction_minus_observed": -0.0413759680354661,
+        "nrmse_percent_of_test_mean": 36.363094739738116,
+        "r2": 0.440011281935356,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.105729076614396,
+          1.4853992045724265
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Yam",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_historical_mean",
+      "metrics": {
+        "n_test_region_years": 516,
+        "independent_regions": 52,
+        "test_years": [
+          2011,
+          2021
+        ],
+        "mae_t_ha": 2.1170202262600473,
+        "rmse_t_ha": 2.965213440029455,
+        "bias_t_ha_prediction_minus_observed": -0.9067506679499768,
+        "nrmse_percent_of_test_mean": 23.916419365543625,
+        "r2": 0.3046733459297428,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.8559331049562995,
+          2.3924984046504205
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Benin",
+      "admin_level": 2,
+      "crop": "Yam",
+      "validation": "rolling_temporal_same_administrative_unit",
+      "model": "same_region_previous_observation",
+      "metrics": {
+        "n_test_region_years": 516,
+        "i…22507 tokens truncated…535370637,
+        "nrmse_percent_of_test_mean": 138.4615278760024,
+        "r2": -0.03192786377609935,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          4.097227717122797,
+          7.641234142580077
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Burkina Faso",
+      "admin_level": 2,
+      "crop": "Yam",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 114,
+        "independent_regions": 12,
+        "test_years": [
+          2011,
+          2022
+        ],
+        "mae_t_ha": 4.235150651243593,
+        "rmse_t_ha": 7.875360761788401,
+        "bias_t_ha_prediction_minus_observed": -1.2460399074275326,
+        "nrmse_percent_of_test_mean": 101.70106562847126,
+        "r2": -0.03590662789735122,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          3.0727939782520513,
+          5.783799182516136
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Cassava",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 49,
+        "independent_regions": 7,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 2.9072373505256364,
+        "rmse_t_ha": 3.821499140760774,
+        "bias_t_ha_prediction_minus_observed": -1.164525817375635,
+        "nrmse_percent_of_test_mean": 37.62254617160479,
+        "r2": -0.2354491935772356,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.9209017829782462,
+          4.404025020120019
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Cowpea",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 54,
+        "independent_regions": 7,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 0.1295773723625523,
+        "rmse_t_ha": 0.16152441461212247,
+        "bias_t_ha_prediction_minus_observed": -0.058099612640479026,
+        "nrmse_percent_of_test_mean": 30.41186089941118,
+        "r2": -0.29934327227199486,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.08753888638247032,
+          0.16832005936485753
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Maize",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 54,
+        "independent_regions": 7,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 0.5193753032685708,
+        "rmse_t_ha": 0.613036904246268,
+        "bias_t_ha_prediction_minus_observed": -0.18158030889925034,
+        "nrmse_percent_of_test_mean": 46.527857763995215,
+        "r2": -0.2970452963775976,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.3716789620901434,
+          0.6625564000150578
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Millet",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 54,
+        "independent_regions": 7,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 0.22163990951363843,
+        "rmse_t_ha": 0.28753986465076903,
+        "bias_t_ha_prediction_minus_observed": -0.05300781145519326,
+        "nrmse_percent_of_test_mean": 35.07622105278184,
+        "r2": -0.2248641093632504,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.14545413317141023,
+          0.3051433056199913
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Rice",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 38,
+        "independent_regions": 5,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 0.9698575705946274,
+        "rmse_t_ha": 1.390112529535243,
+        "bias_t_ha_prediction_minus_observed": -0.10226763987736125,
+        "nrmse_percent_of_test_mean": 64.04446262228964,
+        "r2": -0.30415608118293536,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.5562645892341909,
+          1.5251501611173948
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 1,
+      "crop": "Sorghum",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 54,
+        "independent_regions": 7,
+        "test_years": [
+          2012,
+          2019
+        ],
+        "mae_t_ha": 0.26225863952345035,
+        "rmse_t_ha": 0.3338496357005484,
+        "bias_t_ha_prediction_minus_observed": -0.09573926815940978,
+        "nrmse_percent_of_test_mean": 37.48813881205262,
+        "r2": -0.24219215103045433,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.16241368220462887,
+          0.3685241708411946
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Cassava",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 123,
+        "independent_regions": 31,
+        "test_years": [
+          2011,
+          2015
+        ],
+        "mae_t_ha": 2.547898935627577,
+        "rmse_t_ha": 3.418025223960273,
+        "bias_t_ha_prediction_minus_observed": -0.3094267712691405,
+        "nrmse_percent_of_test_mean": 47.82742992281267,
+        "r2": -0.03082254382495675,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.9514673717576703,
+          3.1595085391275815
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Cowpea",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 187,
+        "independent_regions": 38,
+        "test_years": [
+          2011,
+          2015
+        ],
+        "mae_t_ha": 0.16110686165372476,
+        "rmse_t_ha": 0.20448162692629138,
+        "bias_t_ha_prediction_minus_observed": -0.0971279986035929,
+        "nrmse_percent_of_test_mean": 43.158864165977484,
+        "r2": -0.2879437694572322,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.13362409427661556,
+          0.18961161678773802
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Groundnut",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 241,
+        "independent_regions": 41,
+        "test_years": [
+          2011,
+          2016
+        ],
+        "mae_t_ha": 0.2641745882717286,
+        "rmse_t_ha": 0.3397185866871095,
+        "bias_t_ha_prediction_minus_observed": 0.000966989578286011,
+        "nrmse_percent_of_test_mean": 40.97101617809716,
+        "r2": -0.01779612512068307,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.23243074360341448,
+          0.29904944936732974
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Maize",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 232,
+        "independent_regions": 39,
+        "test_years": [
+          2011,
+          2016
+        ],
+        "mae_t_ha": 0.5483033391327043,
+        "rmse_t_ha": 0.7051043131178291,
+        "bias_t_ha_prediction_minus_observed": -0.19710717235075867,
+        "nrmse_percent_of_test_mean": 56.17322275041799,
+        "r2": -0.09535863870352568,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.45330900427263776,
+          0.6489617412811567
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Millet",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 223,
+        "independent_regions": 39,
+        "test_years": [
+          2011,
+          2016
+        ],
+        "mae_t_ha": 0.2334740850845275,
+        "rmse_t_ha": 0.2808606546137548,
+        "bias_t_ha_prediction_minus_observed": -0.06536782274681222,
+        "nrmse_percent_of_test_mean": 41.247784809519736,
+        "r2": -0.07951824700001464,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.20338239482663023,
+          0.26452066034495114
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Rice",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 159,
+        "independent_regions": 30,
+        "test_years": [
+          2011,
+          2016
+        ],
+        "mae_t_ha": 1.3127344652774233,
+        "rmse_t_ha": 2.0449525270752864,
+        "bias_t_ha_prediction_minus_observed": -0.8038769136577846,
+        "nrmse_percent_of_test_mean": 82.04780654376619,
+        "r2": -0.21281666258586474,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.8113505689986431,
+          1.9203814543590492
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Senegal",
+      "admin_level": 2,
+      "crop": "Sorghum",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 232,
+        "independent_regions": 41,
+        "test_years": [
+          2011,
+          2016
+        ],
+        "mae_t_ha": 0.28157622348080874,
+        "rmse_t_ha": 0.39325633568845697,
+        "bias_t_ha_prediction_minus_observed": -0.04728818263160924,
+        "nrmse_percent_of_test_mean": 48.014725722677156,
+        "r2": -0.027246092475436967,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.22687970375058403,
+          0.34520040725170115
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Cassava",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 90,
+        "independent_regions": 22,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 1.3647002296960544,
+        "rmse_t_ha": 1.6497430638960036,
+        "bias_t_ha_prediction_minus_observed": 1.02903245294437,
+        "nrmse_percent_of_test_mean": 37.75633589504494,
+        "r2": -0.6092826342604949,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.0419078586327335,
+          1.6517831633517328
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Cowpea",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 32,
+        "independent_regions": 12,
+        "test_years": [
+          2013,
+          2015
+        ],
+        "mae_t_ha": 0.11502079996255363,
+        "rmse_t_ha": 0.13141386856358725,
+        "bias_t_ha_prediction_minus_observed": 0.0339255244404566,
+        "nrmse_percent_of_test_mean": 30.526985409184856,
+        "r2": -0.5504703210448081,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.09652778714660284,
+          0.13201175622647743
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Groundnut",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 86,
+        "independent_regions": 21,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 0.19825146517348344,
+        "rmse_t_ha": 0.27041443277817523,
+        "bias_t_ha_prediction_minus_observed": -0.13554021100797595,
+        "nrmse_percent_of_test_mean": 40.80217728640481,
+        "r2": -0.2479590271914598,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.15756998523715457,
+          0.24388102393987143
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Maize",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 191,
+        "independent_regions": 34,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 0.3023828977022806,
+        "rmse_t_ha": 0.38236238179901105,
+        "bias_t_ha_prediction_minus_observed": -0.0371222256061948,
+        "nrmse_percent_of_test_mean": 31.914327584383653,
+        "r2": -0.03796475703516711,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.2610894306648469,
+          0.34920584012731065
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Millet",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 65,
+        "independent_regions": 16,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 0.17730807014293662,
+        "rmse_t_ha": 0.20138249732910926,
+        "bias_t_ha_prediction_minus_observed": 0.027922891905198647,
+        "nrmse_percent_of_test_mean": 33.891587216262515,
+        "r2": -0.06934205569743446,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.15714028615315423,
+          0.2011933683188743
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Rice",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 63,
+        "independent_regions": 20,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 0.45224201607696635,
+        "rmse_t_ha": 0.5145076673797305,
+        "bias_t_ha_prediction_minus_observed": 0.21462443004770917,
+        "nrmse_percent_of_test_mean": 36.96916271779863,
+        "r2": -0.324989776664826,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.3720700419666781,
+          0.5493194578829523
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Sorghum",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 140,
+        "independent_regions": 28,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 0.22884852824026472,
+        "rmse_t_ha": 0.2845830078421386,
+        "bias_t_ha_prediction_minus_observed": -0.035805415844649933,
+        "nrmse_percent_of_test_mean": 31.199990073533563,
+        "r2": -0.03571582947700058,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          0.19688367989242328,
+          0.2647240804905104
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    },
+    {
+      "country": "Togo",
+      "admin_level": 2,
+      "crop": "Yam",
+      "validation": "held_out_administrative_units_and_future_years",
+      "model": "other_regions_historical_mean",
+      "metrics": {
+        "n_test_region_years": 69,
+        "independent_regions": 19,
+        "test_years": [
+          2011,
+          2017
+        ],
+        "mae_t_ha": 2.0551202474841643,
+        "rmse_t_ha": 2.822287209659918,
+        "bias_t_ha_prediction_minus_observed": -0.3964033835509337,
+        "nrmse_percent_of_test_mean": 33.06182229028183,
+        "r2": -0.15798823098341108,
+        "mae_95pct_cluster_bootstrap_ci_t_ha": [
+          1.7890155456912742,
+          2.3008771274466224
+        ],
+        "interval_method": "percentile bootstrap (1000 resamples of whole administrative units); CI for MAE only, not a predictive interval"
+      }
+    }
+  ],
+  "not_evaluable": [
+    {
+      "country": "Cote dIvoire",
+      "reason": "No qualifying administrative regional records in GROW-Africa Regional v2.0."
+    },
+    {
+      "country": "Ghana",
+      "reason": "Administrative labels are sparse across 2012–2016; no region/crop group meets the minimum three earlier observations for a leakage-safe temporal test. Ghana field datasets are kept separate."
+    }
+  ]
+}

@@ -96,6 +96,11 @@ jobs:
           echo "$GITHUB_WORKSPACE/.ci-python/bin" >> "$GITHUB_PATH"
       - name: Tester les routes et la persistance
         run: pnpm test:integration
+      - name: Tester le protocole temporel et spatial GROW-Africa
+        run: |
+          python3 -m venv .grow-python
+          .grow-python/bin/python -m pip install --disable-pip-version-check -r research-data/grow-africa/requirements.lock.txt
+          .grow-python/bin/python -m unittest discover -s research-data/grow-africa -p 'test_*.py' -v
       - name: Tester les dernières corrections d’autorisations
         run: pnpm test:regressions
       - name: Compiler sans secrets ni base de production
