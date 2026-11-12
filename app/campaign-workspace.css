@@ -408,3 +408,54 @@
  .advisor-growth-stage small{font-size:11px}
 }
 @media(max-width:390px){.advisor-water-row{grid-template-columns:62px minmax(45px,.7fr) 82px}.advisor-water-stage small,.advisor-water-values small{font-size:10px}}
+
+/* Frame the campaign space so headers and campaign lists never touch the viewport. */
+.campaign-shell .seasonal-tool.is-campaign-workspace{
+  box-sizing:border-box;
+  width:calc(100% - 40px);
+  max-width:1560px;
+  min-height:calc(100dvh - 36px);
+  margin:18px auto;
+  border:1px solid #e0e6de;
+  border-radius:18px;
+  background:#f7f8f5;
+  box-shadow:0 10px 32px #273d2b0a;
+}
+.campaign-shell .farmer-app-bar{
+  top:14px;
+  min-height:72px;
+  margin:12px 14px 0;
+  padding-right:clamp(16px,2vw,28px);
+  padding-left:clamp(16px,2vw,28px);
+  border:1px solid #e0e6de;
+  border-radius:14px;
+  box-shadow:0 2px 9px #273d2b08;
+}
+.campaign-shell .recent-campaigns,
+.campaign-shell .simulation-library,
+.campaign-shell .seasonal-tool.is-campaign-workspace>.simulation-back{
+  box-sizing:border-box;
+  width:min(1120px,calc(100% - 48px));
+  margin-right:auto;
+  margin-left:auto;
+}
+.campaign-shell .recent-campaigns{margin-top:26px;margin-bottom:46px}
+.campaign-shell .recent-campaigns .campaign-grid{margin-top:13px}
+.campaign-shell .simulation-library{margin-top:26px;margin-bottom:46px}
+.campaign-shell .seasonal-tool.is-campaign-workspace>.simulation-back{margin-top:22px}
+.campaign-shell .seasonal-tool.is-campaign-workspace:has(.recent-campaigns) .farmer-campaign-view{padding-bottom:0}
+.campaign-shell .seasonal-tool.is-campaign-workspace:has(.recent-campaigns) .farmer-start-card{margin-bottom:22px}
+@media(max-width:700px){
+  .campaign-shell .seasonal-tool.is-campaign-workspace{
+    width:calc(100% - 20px);
+    min-height:calc(100dvh - 20px);
+    margin:10px auto;
+    border-radius:14px;
+  }
+  .campaign-shell .farmer-app-bar{top:10px;margin:9px 9px 0;border-radius:12px}
+  .campaign-shell .recent-campaigns,
+  .campaign-shell .simulation-library,
+  .campaign-shell .seasonal-tool.is-campaign-workspace>.simulation-back{width:calc(100% - 28px)}
+  .campaign-shell .recent-campaigns{margin-top:20px;margin-bottom:32px}
+  .campaign-shell .simulation-library{margin-top:20px;margin-bottom:32px}
+}

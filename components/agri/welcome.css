@@ -161,3 +161,35 @@
 }
 @media(max-width:380px){.home-topbar{padding-inline:10px}.home-new-action span{max-width:83px;overflow:hidden;text-overflow:ellipsis}.home-fields-panel{padding-inline:12px}.home-map-panel{padding-inline:9px}.home-map-canvas{min-height:390px}.home-map-legend{gap:6px;font-size:8px}}
 @media(prefers-reduced-motion:reduce){.home-workspace *,.home-workspace *::before,.home-workspace *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Keep the map workspace framed with consistent gutters on desktop and mobile. */
+.welcome-page.field-home.home-workspace{
+  box-sizing:border-box;
+  width:100%;
+  min-height:100dvh;
+  padding:clamp(10px,1.3vw,20px);
+  gap:12px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background:#edf1ec;
+}
+.home-topbar,
+.home-workbench,
+.home-footer{
+  box-sizing:border-box;
+  width:min(100%,1520px);
+  margin-inline:auto;
+  border:1px solid #dce3dd;
+  border-radius:14px;
+  box-shadow:0 3px 12px #203b2b08;
+}
+.home-topbar{border-bottom:1px solid #dce3dd}
+.home-workbench{min-width:0}
+.home-footer{border-top:1px solid #dce3dd}
+@media(max-width:700px){
+  .welcome-page.field-home.home-workspace{min-height:100dvh;padding:9px;gap:9px;overflow-y:auto}
+  .home-topbar,.home-workbench,.home-footer{border-radius:11px}
+}
+@media(max-width:380px){
+  .welcome-page.field-home.home-workspace{padding:7px;gap:8px}
+}

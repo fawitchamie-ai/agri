@@ -1,6 +1,10 @@
 {
-  "researchTeamsReplied": false,
-  "noMessagesSent": true,
+  "sekouAuthorReply": {
+    "receivedOn": "2026-11-12",
+    "clarification": "Freshweight_cob is fresh cob mass after husk removal; missing values remain missing; the author reports an associated Zenodo climate deposit but supplied no exact record/DOI/file pointer.",
+    "newFilesReceived": false,
+    "contactDetailsStored": false
+  },
   "ghana": {
     "sourceDoi": "10.5281/zenodo.6632083",
     "licence": "CC-BY-4.0",
@@ -15,15 +19,16 @@
       "2021-09-06",
       "2021-11-05"
     ],
-    "polygons": 51,
+    "polygons": null,
+    "polygonSourceStatus": "not present in the supplied input snapshot",
     "missingAttributesByPolygon": {
-      "DATE PLANT": 6,
-      "VARIETY": 6,
-      "FERT": 6,
-      "DATE APPLI": 6,
-      "QTY OF FER": 6,
-      "SOIL TYPE": 6,
-      "IRRIGATION": 6
+      "DATE PLANT": null,
+      "VARIETY": null,
+      "FERT": null,
+      "DATE APPLI": null,
+      "QTY OF FER": null,
+      "SOIL TYPE": null,
+      "IRRIGATION": null
     },
     "groups": [
       {
@@ -32,7 +37,7 @@
         "yieldMeanAsPublished": 2308.4,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "1055ZIN",
@@ -40,7 +45,7 @@
         "yieldMeanAsPublished": 1444.3333333333333,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "1056ZIN",
@@ -48,7 +53,7 @@
         "yieldMeanAsPublished": 1052.4,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "1061ZIN",
@@ -56,7 +61,7 @@
         "yieldMeanAsPublished": 1806.8666666666668,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "1067ZIN",
@@ -64,7 +69,7 @@
         "yieldMeanAsPublished": 683.0333333333333,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "2002ALH",
@@ -72,7 +77,7 @@
         "yieldMeanAsPublished": 1717.0333333333333,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "2050KPA",
@@ -80,7 +85,7 @@
         "yieldMeanAsPublished": 1463.9666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "2053KPA",
@@ -88,7 +93,7 @@
         "yieldMeanAsPublished": 993.2666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "3074TAM",
@@ -96,7 +101,7 @@
         "yieldMeanAsPublished": 439.8333333333333,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "3075TAM",
@@ -104,7 +109,7 @@
         "yieldMeanAsPublished": 1989.5666666666668,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "4020FUU",
@@ -112,7 +117,7 @@
         "yieldMeanAsPublished": 775.1666666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5002LAB",
@@ -120,7 +125,7 @@
         "yieldMeanAsPublished": 541.4333333333333,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5011LAB",
@@ -128,7 +133,7 @@
         "yieldMeanAsPublished": 1454.4666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5012LAB",
@@ -136,7 +141,7 @@
         "yieldMeanAsPublished": 927.0,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5014LAB",
@@ -144,7 +149,7 @@
         "yieldMeanAsPublished": 872.4,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5016ZOR",
@@ -152,7 +157,7 @@
         "yieldMeanAsPublished": 2148.8,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5017ZOR",
@@ -160,7 +165,7 @@
         "yieldMeanAsPublished": 1537.6666666666667,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5033TUG",
@@ -168,7 +173,7 @@
         "yieldMeanAsPublished": 1144.2666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5034TUG",
@@ -176,7 +181,7 @@
         "yieldMeanAsPublished": 1945.5333333333335,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5036TUG",
@@ -184,7 +189,7 @@
         "yieldMeanAsPublished": 1382.4,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5037TUG",
@@ -192,7 +197,7 @@
         "yieldMeanAsPublished": 2691.1,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "5057PAG",
@@ -200,7 +205,7 @@
         "yieldMeanAsPublished": 3245.6666666666665,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7010SAM",
@@ -208,7 +213,7 @@
         "yieldMeanAsPublished": 865.0333333333334,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7014SAM",
@@ -216,7 +221,7 @@
         "yieldMeanAsPublished": 1183.3333333333333,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7015ALH",
@@ -224,7 +229,7 @@
         "yieldMeanAsPublished": 550.9666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7015SAM",
@@ -232,7 +237,7 @@
         "yieldMeanAsPublished": 638.2,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7016ALH",
@@ -240,7 +245,7 @@
         "yieldMeanAsPublished": 684.7,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7016SAM",
@@ -248,7 +253,7 @@
         "yieldMeanAsPublished": 971.2,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7017SAM",
@@ -256,7 +261,7 @@
         "yieldMeanAsPublished": 637.3333333333334,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7018ALH",
@@ -264,7 +269,7 @@
         "yieldMeanAsPublished": 638.5666666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7019ZOR",
@@ -272,7 +277,7 @@
         "yieldMeanAsPublished": 1768.2666666666667,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7020YAM",
@@ -280,7 +285,7 @@
         "yieldMeanAsPublished": 2793.0666666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7021YAM",
@@ -288,7 +293,7 @@
         "yieldMeanAsPublished": 4580.9,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7022FUU",
@@ -296,7 +301,7 @@
         "yieldMeanAsPublished": 1446.8666666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7033FUU",
@@ -304,7 +309,7 @@
         "yieldMeanAsPublished": 190.73333333333332,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7035FUU",
@@ -312,7 +317,7 @@
         "yieldMeanAsPublished": 1350.1333333333334,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7036FUU",
@@ -320,7 +325,7 @@
         "yieldMeanAsPublished": 889.9333333333334,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7036SAN",
@@ -328,7 +333,7 @@
         "yieldMeanAsPublished": 3446.1,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7058CHE",
@@ -336,7 +341,7 @@
         "yieldMeanAsPublished": 222.46666666666667,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7059CHE",
@@ -344,7 +349,7 @@
         "yieldMeanAsPublished": 839.3333333333333,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7061CHE",
@@ -352,7 +357,7 @@
         "yieldMeanAsPublished": 1818.1,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7062CHE",
@@ -360,7 +365,7 @@
         "yieldMeanAsPublished": 672.3000000000001,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7069ZIN",
@@ -368,7 +373,7 @@
         "yieldMeanAsPublished": 1182.8166666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7070ZIN",
@@ -376,7 +381,7 @@
         "yieldMeanAsPublished": 1210.5666666666666,
         "split": "reserved-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7071ZIN",
@@ -384,7 +389,7 @@
         "yieldMeanAsPublished": 1372.9333333333334,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7072ZIN",
@@ -392,7 +397,7 @@
         "yieldMeanAsPublished": 1275.7666666666667,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       },
       {
         "field": "7074ZIN",
@@ -400,7 +405,7 @@
         "yieldMeanAsPublished": 1038.3666666666666,
         "split": "development-field",
         "groundSeriesAvailable": true,
-        "geometryAvailable": true
+        "geometryAvailable": false
       }
     ],
     "acceptedCompleteEngineYieldPairs": 0,
@@ -449,7 +454,7 @@
   "sekou": {
     "sourceDoi": "10.5281/zenodo.14357601",
     "file": "Maize_growth_data.xlsx",
-    "status": "Fresh cob masses cannot be converted to dry grain t/ha without same-basis shelling fraction, grain moisture and harvested area. Excluded from dry-grain metrics; raw missingness retained."
+    "status": "Author clarification identifies Freshweight_cob as fresh cob mass after husk removal, not grain-only or dry grain. It remains excluded from dry-grain metrics; raw missingness and repeated composite keys are retained without deduplication. A climate companion was reported but its exact Zenodo record/file is not identified or acquired."
   },
   "itra_fsrp": {
     "status": "No received plot-level field sheets; no local accuracy metrics."
