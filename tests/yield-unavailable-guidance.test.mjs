@@ -9,6 +9,7 @@ import {planSeason} from '../lib/seasonal/yield.ts';
 import {assessLandGeometry} from '../lib/seasonal/land.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
 import {declareScenario, geometryIdentity, migrateInputs} from '../lib/seasonal/provenance.ts';
+import {canopyFixture} from './support/canopy-fixture.ts';
 
 const window = new Window({url:'https://agri.test', settings:{enableJavaScriptEvaluation:false}});
 Object.assign(globalThis,{window,document:window.document,HTMLElement:window.HTMLElement,IS_REACT_ACT_ENVIRONMENT:true});
@@ -44,6 +45,32 @@ test('unavailable harvest is explained once and opens the yield view without fab
   await act(async()=>open.click());await act(async()=>water.click());
   assert.deepEqual(targets,['yield','water']);
  } finally {await m.close();}
+});
+
+test('the campaign overview shows a qualified Ghana maize nowcast when LAI data are present',async()=>{
+ const c=canopyFixture(),plan=planSeason(c);
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,simple:true,onAction:()=>{}}));
+ try {
+  assert.match(m.host.textContent,/Nowcast local expérimental/);
+  assert.match(m.host.textContent,/Grain estimé par le couvert/);
+  assert.match(m.host.textContent,/Production selon le couvert/);
+  assert.match(m.host.textContent,/LAI mesuré · humidité du grain non précisée/);
+  assert.doesNotMatch(m.host.textContent,/Rendement du champPas simulé|Production totalePas estimée/);
+ }finally{await m.close();}
+});
+
+test('the Ghana maize yield guide opens the experimental LAI follow-up without entering a fake yield',async()=>{
+ const c=canopyFixture();c.canopyNowcast=undefined;const plan=planSeason(c);
+ const m=await mount(React.createElement(YieldSummary,{config:c,plan,stale:false,onChange:()=>{}}));
+ try {
+  const open=button(m.host,/Ouvrir le suivi expérimental du couvert/i);assert.ok(open);
+  await act(async()=>open.click());
+  const panel=m.host.querySelector('#canopy-nowcast-panel');assert.ok(panel);
+  assert.equal(panel.querySelector('details')?.open,true);
+  assert.match(panel.textContent,/LAI est la surface de feuilles vertes/);
+  assert.match(panel.textContent,/Ce n’est pas une prévision/i);
+  assert.doesNotMatch(m.host.querySelector('.yield-overview-hero')?.textContent??'',/t\/ha/);
+ }finally{await m.close();}
 });
 
 test('simple campaign states that no yield is simulated and keeps the national statistic out of the result cards',async()=>{

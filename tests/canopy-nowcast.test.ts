@@ -16,6 +16,10 @@ test('water edits cannot masquerade as causal effects in the canopy-only statist
  c.fallback={label:'Synthetic dry alternative',rainMmDay:0,et0MmDay:9};
  assert.equal(planSeason(c).canopyNowcast!.yieldKgHa,before!.yieldKgHa);
 });
+test('the nowcast never uses a planned area as if it were already sown',()=>{
+ const c=fixture();c.yieldEstimation={version:'yield-input-1',method:'automatic',areaBasis:'sown',scopeGeometryId:geometryIdentity(c.parcelGeometry),homogeneityAssumption:'Test unit',units:[{id:'champ',sownAreaM2:null,harvestedAreaM2:null,areaSource:'Aucune surface réellement semée déclarée.',reference:null}]} as any;
+ const r=planSeason(c).canopyNowcast!;assert.equal(r.status,'experimental_nowcast');assert.equal(r.areaBasis,'sown');assert.equal(r.areaM2,null);assert.equal(r.productionKg,null);
+});
 test('future and late-available observations are excluded rather than used to improve a past issue',()=>{
  const c=fixture();c.asOfDate='2026-11-13';c.canopyNowcast!.observations.push({date:'2026-11-12',availableOn:'2026-11-12',laiSamples:[5,5,5],method:'field-green-lai',source:'Later sample must not leak'});
  const r=planSeason(c).canopyNowcast!;assert.equal(r.status,'experimental_nowcast');assert.ok(Math.abs(r.peakLai!-1.5)<1e-12);assert.equal(r.laterVisitsExcluded,1);
