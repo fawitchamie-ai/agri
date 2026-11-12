@@ -45,6 +45,20 @@ test('NPK additions act through limiting stocks, timing matters, recorded inputs
  c.asOfDate=addDays(c.sowingDate,15);c.managementPlan!.products[0].date=c.asOfDate;c.managementPlan!.products[0].status='declared';
  const recorded=planSeason(c).growth!;assert.equal(recorded.scenarios.find(s=>s.id==='proposed')!.yieldKgHa,recorded.scenarios.find(s=>s.id==='without-planned-fertilizer')!.yieldKgHa);
 });
+test('a past planned fertilizer remains unknown instead of being treated as an actual application',()=>{
+ const c=fixture();c.asOfDate=addDays(c.sowingDate,20);
+ c.managementPlan!.products=[{id:'unconfirmed',date:addDays(c.sowingDate,10),kind:'fertilizer',product:'Unconfirmed N',dose:150,unit:'kg/ha',status:'planned',source:'Synthetic test',npkPercent:[100,0,0]}];
+ const result=planSeason(c).growth!;
+ assert.equal(result.status,'unavailable');
+ assert.equal(result.scenarios.length,0);
+ assert.match(result.missing.join(' '),/apport prévu dans le passé à clarifier/);
+ // The same product explicitly recorded as applied can be included in every
+ // counterfactual; no application date or realized status is inferred.
+ c.managementPlan!.products[0].status='declared';
+ const recorded=planSeason(c).growth!;
+ assert.equal(recorded.status,'scenario');
+ assert.equal(recorded.scenarios.find(s=>s.id==='proposed')!.yieldKgHa,recorded.scenarios.find(s=>s.id==='without-planned-fertilizer')!.yieldKgHa);
+});
 test('pH stays diagnostic and legacy response curves cannot change the simulated yield',()=>{
  const c=fixture();c.growth!.soilSupply.initialKgHa=[0,0,0];c.soilAnalyses=[{source:'Synthetic pH',date:c.asOfDate,availableOn:c.asOfDate,topCm:0,bottomCm:20,status:'declared',measurements:[{parameter:'pH',value:4,unit:'pH',method:'water'}]}];
  const baseline=proposed(c).yieldKgHa;

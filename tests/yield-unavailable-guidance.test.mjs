@@ -50,15 +50,49 @@ test('simple campaign states that no yield is simulated and keeps the national s
  const c=fixture();c.inputPolicy={allowAssumptions:false,allowStale:false};const plan=planSeason(c),actions=[];
  const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,simple:true,onDetails:()=>actions.push('yield'),onAction:target=>actions.push(target)}));
  try{
-  assert.match(m.host.textContent,/Votre champ est bien enregistré/);
+  assert.match(m.host.textContent,/La récolte en tonnes ne peut pas encore être simulée automatiquement/);
+  assert.doesNotMatch(m.host.textContent,/Votre champ est bien enregistré|la date sont enregistrés/,'the result must not claim that a draft was saved');
   assert.match(m.host.textContent,/Rendement du champPas simulé/);assert.match(m.host.textContent,/Production totalePas estimée/);
-  assert.match(m.host.textContent,/Vous n’avez rien oublié/);assert.match(m.host.textContent,/ne crée pas de prévision automatique en tonnes/);
+  assert.match(m.host.textContent,/Pourquoi ce résultat manque/);assert.match(m.host.textContent,/ne crée pas de prévision automatique en tonnes/);
   assert.match(m.host.textContent,/Voir le repère statistique national · FAOSTAT 2022/);assert.match(m.host.textContent,/1,25 t\/ha/);
   assert.equal(m.host.querySelector('.farmer-reference-details').open,false,'national context stays collapsed');
   assert.doesNotMatch(m.host.textContent,/Exemple de volume|0,55 tonnes/);
   await act(async()=>button(m.host,/Pourquoi pas de rendement/i).click());
   await act(async()=>button(m.host,/Vérifier les hypothèses/i).click());assert.deepEqual(actions,['yield','water']);
  } finally {await m.close();}
+});
+
+test('an unavailable growth scenario shows its own missing reason rather than the automatic-mode message',async()=>{
+ const c=fixture(),plan=planSeason(c);c.growth={};
+ plan.growth={status:'unavailable',missing:['Rayonnement du cycle incomplet.']};
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,simple:true,onDetails:()=>{},onAction:()=>{}}));
+ try{
+  assert.match(m.host.textContent,/Rayonnement du cycle incomplet/);
+  assert.doesNotMatch(m.host.textContent,/Aucun modèle automatique ne calcule|Vous n’avez rien oublié/);
+  assert.doesNotMatch(m.host.textContent,/Production totalePas estimée/,'an unavailable configured scenario must not be mislabeled as the default automatic mode');
+ }finally{await m.close();}
+});
+
+test('growth production uses the growth surface and states that a planned surface is not already sown',async()=>{
+ const c=fixture(),plan=planSeason(c);c.growth={};c.inputPolicy={allowAssumptions:true,allowStale:false};
+ plan.status='ready';plan.complete=true;plan.days=[{}];plan.totals={...plan.totals,demandMm:10,actualEtMm:8};
+ plan.growth={status:'scenario',areaM2:10000,areaBasis:'planned',moisturePercent:15,scenarios:[{id:'recorded',yieldKgHa:2000,productionKg:2000}]};
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,simple:true,onDetails:()=>{},onAction:()=>{}}));
+ try{
+  const production=[...m.host.querySelectorAll('.farmer-harvest-value')].find(el=>el.textContent.includes('Production totale estimée'));
+  assert.ok(production);assert.match(production.textContent,/2 tonnes/);assert.match(production.textContent,/Pour 1 ha prévus/);
+  assert.doesNotMatch(production.textContent,/semés/);
+ }finally{await m.close();}
+});
+
+test('an interrupted calculation is not presented as an ordinary unavailable automatic forecast',async()=>{
+ const c=fixture();const m=await mount(React.createElement(FieldOverview,{config:c,plan:null,events:[],stale:false,loading:false,failed:true,simple:true,onDetails:()=>{},onAction:()=>{}}));
+ try{
+  const cards=[...m.host.querySelectorAll('.farmer-harvest-value')];
+  assert.equal(cards.length,2);
+  for(const card of cards)assert.match(card.textContent,/Calcul interrompu/);
+  assert.doesNotMatch(m.host.textContent,/Votre champ est bien enregistré|la date sont enregistrés/);
+ }finally{await m.close();}
 });
 
 test('missing seed-rate references never create a production estimate from a national average',async()=>{

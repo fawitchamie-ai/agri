@@ -7,14 +7,14 @@ import {fertilizerScope,parseFertilizerScenario} from '../../lib/seasonal/fertil
 import {QUEFTS_SOURCE} from '../../lib/seasonal/quefts';
 const fmt=(n:number,d=2)=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
 const range=(r:[number,number]|null,divisor=1)=>r?`${fmt(r[0]/divisor)} – ${fmt(r[1]/divisor)}`:'—';
-type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onAdvanced:(s:string)=>void};
+type Props={config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onProducts:()=>void};
 export default function FertilizerSimulator(props:Props){
  const {config}=props;
  if(config.cropProfile?.id!=='maize')return <HelpParagraph>Le simulateur mécaniste de cette version concerne le maïs. Les paramètres des autres cultures restent à qualifier.</HelpParagraph>;
  // Reinitialize edits when switching campaign scope or reopening saved parameters.
  return <SimulatorForm key={fertilizerScope(config)+JSON.stringify(config.fertilizerScenario)} {...props}/>;
 }
-function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
+function SimulatorForm({config,plan,stale,onChange,onProducts}:Props){
  const saved=config.fertilizerScenario;
  const [ceiling,setCeiling]=useState(saved?String(saved.ceilingKgHa/1000):'');
  const [source,setSource]=useState(saved?.ceilingSource??'');
@@ -76,6 +76,6 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
   <HelpParagraph>Cette plage est une analyse de sensibilité, <strong>pas un intervalle de confiance à 95 %</strong>. L’absence de réponse et les pertes ne sont pas exclues. Aucun optimum de dose n’est proposé.</HelpParagraph>
   {result&&<details><summary>Limites du calcul</summary>{result.limits.map(l=><HelpParagraph key={l}>{l}</HelpParagraph>)}</details>}
   <HelpParagraph><a href={QUEFTS_SOURCE} target="_blank" rel="noreferrer">Shehu et al., 2019 · QUEFTS pour le maïs en savanes nigérianes</a></HelpParagraph>
-  <button className="btn secondary" type="button" onClick={()=>onAdvanced('conseils')}>Renseigner ou modifier mes produits et doses</button>
+  <button className="btn secondary" type="button" onClick={onProducts}>Renseigner ou modifier mes produits et doses</button>
  </div>;
 }
