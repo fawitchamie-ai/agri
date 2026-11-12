@@ -47,20 +47,36 @@ function HelpDialog({ children, title, summary }: { children: ReactNode; title: 
   const titleId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? []).filter(element => !element.closest('[hidden]'));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !dialogRef.current?.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     const previousOverflow = document.body.style.overflow;
+    const trigger = triggerRef.current;
     closeRef.current?.focus();
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKeyDown);
-      triggerRef.current?.focus();
+      trigger?.focus();
     };
   }, [open]);
 
@@ -88,7 +104,7 @@ function HelpDialog({ children, title, summary }: { children: ReactNode; title: 
       <div hidden={!open} className="app-help-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) setOpen(false);
         }}>
-          <section className="app-help-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+          <section ref={dialogRef} className="app-help-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
             <header className="app-help-dialog-header">
               <h2 id={titleId}>{dialogTitle}</h2>
               <button type="button" ref={closeRef} className="app-help-close" aria-label="Fermer" onClick={() => setOpen(false)}>×</button>
@@ -106,7 +122,11 @@ export function HelpParagraph({ children, ...props }: HTMLAttributes<HTMLParagra
   const completeText = textContent(children).replace(/\s+/g, ' ').trim();
   const summary = conciseSummary(children);
 
-  if (critical || completeText.length <= 150) {
+  // Scientific qualifications must remain visible alongside a result, even
+  // when they occur after the first sentence of a longer explanation.
+  const scientificQualification = /(?<!\p{L})(?:expérimental(?:e|es|s)?|non validé(?:e|es|s)?|non calibré(?:e|es|s)?|indisponible|incertitude|hypothès(?:e|es)|nuages?|limites?|non documenté(?:e|es|s)?)(?!\p{L})/iu.test(completeText);
+
+  if (critical || scientificQualification || completeText.length <= 150) {
     return <p {...props}>{children}</p>;
   }
 

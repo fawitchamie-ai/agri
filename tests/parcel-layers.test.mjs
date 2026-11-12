@@ -8,7 +8,7 @@ test('water is visible as water in each country, native sources and area stay ex
  for(const country of Object.keys(COUNTRIES)){
   const config={...exampleCampaign('2026-11-02'),country,parcelGeometry:shape},assessment=assessLandGeometry(shape,[cell(80)]);
   const html=renderToStaticMarkup(React.createElement(Layers,{config,assessment,onMap:()=>{}}));
-  assert.match(html,/Eau permanente · 100 %/);assert.match(html,/Terre potentielle · 0 %/);assert.match(html,/#3679c2/);assert.match(html,/Test land/);assert.match(html,/Stress possible/);assert.doesNotMatch(html,/class="parcel-raster-image"/,'external images require visitor action');
+  assert.match(html,/Eau permanente · 100 %/);assert.match(html,/Terre potentielle · 0 %/);assert.match(html,/#3679c2/);assert.match(html,/Test land/);assert.match(html,/Écart de végétation/);assert.doesNotMatch(html,/class="parcel-raster-image"/,'external images require visitor action');
  }
 });
 test('unknown areas remain hatched, old geometry does not color a new field as known land',()=>{

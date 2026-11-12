@@ -27,7 +27,7 @@ test('presentation starts without API calls; navigation preserves the simulation
   await click('Récoltes réelles');assert.match(host.querySelector('.harvest-purpose').textContent,/distinctes des estimations et des simulations/);
   assert.equal(host.querySelector('.harvest-purpose + .split-grid').hidden,true,'Harvest entry is opened deliberately');
   await click('Ajouter une récolte');assert.equal(host.querySelector('.harvest-purpose + .split-grid').hidden,false);
-  await click('Simulations');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(globalThis.__draftMounts,1);
+  await click('Parcelle et campagne');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(globalThis.__draftMounts,1);
   await click('Présentation');assert.ok(host.querySelector('.welcome-page'));assert.equal(globalThis.__draftUnmounts??0,0);
   await click('Commencer une simulation');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(calls.length,2,'Returning to a loaded workspace does not reload its data');
   assert.equal(globalThis.__draftMounts,1);

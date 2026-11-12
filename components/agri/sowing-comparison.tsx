@@ -22,9 +22,9 @@ export default function SowingComparison({config,events}:{config:SeasonalConfig;
    if(id===sequence.current&&!abort.signal.aborted){setRows(result);setIssued(today);}
   }catch(e){if(id===sequence.current&&!abort.signal.aborted)setError((e as Error).message);}finally{if(id===sequence.current)setBusy(false);}
  }
- return <section className="card" aria-label="Comparer mes dates de semis"><h2>Et si je semais plus tard ?</h2>
-  <HelpParagraph>Cette étape est facultative. Votre date actuelle est le <strong>{date(config.sowingDate)}</strong>. Un clic compare cette date, puis 7 et 14 jours plus tard.</HelpParagraph>
-  <HelpParagraph>Vous n’avez aucun besoin NPK ni rendement à renseigner ici. L’application cherche la météo manquante jusqu’à la fin des trois cycles.</HelpParagraph>
+ return <section className="card" aria-label="Comparer mes dates de semis"><span className="qs-eyebrow">COMPARER LES SCÉNARIOS</span><h2>Quelle différence si je sème plus tard ?</h2>
+  <HelpParagraph>Comparez votre date prévue, le <strong>{date(config.sowingDate)}</strong>, avec un semis 7 ou 14 jours plus tard.</HelpParagraph>
+  <HelpParagraph>La comparaison porte sur les besoins en eau et les prélèvements simulés, pas sur le rendement. Vous n’avez aucun besoin NPK ni rendement à renseigner. La météo nécessaire est recherchée pour les trois cycles.</HelpParagraph>
   {block&&<HelpParagraph className="notice info">{block}</HelpParagraph>}
   <button className="btn primary" disabled={busy||!!block} onClick={compare}>{busy?'Chargement de la météo et comparaison…':'Actualiser la météo et comparer les trois dates'}</button>
   {busy&&<HelpParagraph role="status">La comparaison est en cours. Votre campagne et votre date de semis restent conservées.</HelpParagraph>}

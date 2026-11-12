@@ -12,7 +12,8 @@ import type {LandAssessment} from '../../lib/seasonal/land';
 import {LAND_COLORS,LAND_NAMES} from '../../lib/seasonal/land-display';
 import './parcel-imagery.css';
 const fmt=(n:number,d=1)=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
-const titles:[('terrain'|SatelliteLayer),string][]=[['terrain','Terre / eau'],['rgb','Satellite'],['ndvi','Vigueur'],['anomaly','Stress possible'],['classification','Nuages / eau']];
+const titles:[('terrain'|SatelliteLayer),string][]=[['terrain','Terre / eau'],['rgb','Satellite'],['ndvi','Vigueur'],['anomaly','Écart de végétation'],['classification','Nuages / eau']];
+const layerDescriptions:Record<'terrain'|SatelliteLayer,string>={terrain:'Comparez les classes de terrain disponibles à l’intérieur du contour dessiné.',rgb:'Situez votre parcelle sur une photo de repérage ou une observation datée.',ndvi:'Observez un indice de végétation ; il ne détermine pas la cause d’une variation.',anomaly:'Comparez la végétation à une référence historique, sans conclure à un stress précis.',classification:'Repérez les classes observées, notamment les nuages, leurs ombres et l’eau.',clear:'Consultez les observations claires disponibles pour la période.'};
 type Catalog=Awaited<ReturnType<typeof satelliteCatalog>>;
 type Coverage={key:string;percent:number|null};
 export default function ParcelLayers({config:c,assessment,onMap}:{config:SeasonalConfig;assessment?:LandAssessment;onMap:()=>void}){
@@ -73,6 +74,7 @@ export default function ParcelLayers({config:c,assessment,onMap}:{config:Seasona
  return <section className="field-map-card parcel-layer-card" aria-label="Images et classes du terrain">
   <div className="field-panel-title"><h3>Observer mon champ</h3><button className="qs-text-button" onClick={onMap}>Ouvrir la carte ↗</button></div>
   <div className="parcel-layer-tabs" aria-label="Choisir une couche du champ">{titles.map(([name,title])=><button key={name} aria-pressed={layer===name} onClick={()=>{setLayer(name);setDate('');setError('');}}>{title}</button>)}</div>
+  <p className="imagery-layer-description">{layerDescriptions[layer]}</p>
   {layer!=='terrain'&&!allowed?<div className="satellite-consent"><strong>Images de la parcelle</strong><HelpParagraph>Digital Earth Africa et le fond satellite Esri recevront l’emprise géographique de ce champ pour afficher leurs images publiques. Aucune donnée de compte, note ou récolte ne lui sera transmise.</HelpParagraph><button className="btn secondary" onClick={()=>setAllowedFor(identity)}>Charger les images de cette parcelle</button></div>:<>
    {layer!=='terrain'&&<>
     <div className="satellite-controls">
