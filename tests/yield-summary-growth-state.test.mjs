@@ -6,6 +6,9 @@ import {createRequire} from 'node:module';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {planSeason} from '../lib/seasonal/yield.ts';
+import {applyCropProfile} from '../lib/seasonal/catalog.ts';
+import {exampleCampaign} from '../lib/seasonal/example.ts';
+import {growAfricaRegionalTerritories} from '../lib/seasonal/grow-africa.ts';
 import {canopyFixture} from './support/canopy-fixture.ts';
 
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler')),{build}=wr('esbuild');
@@ -42,6 +45,19 @@ test('a failed recalculation does not display the previous growth values',t=>{
  const html=render(config,plan,{failed:true,failureMessage:'Calcul interrompu'});
  assert.match(html,/Calcul interrompu/);
  assert.doesNotMatch(html,/Autre simulation de rendement exploratoire/);
+});
+
+test('campaign yield view offers administrative results without treating them as parcel forecasts',()=>{
+ const c=applyCropProfile(exampleCampaign('2026-11-12'),'maize');c.country='BEN';c.territory='Parcelle GPS';
+ const options=growAfricaRegionalTerritories('BEN','maize');
+ const emptyHtml=render(c,planSeason(c));
+ assert.match(emptyHtml,/Repère régional administratif/);
+ assert.match(emptyHtml,/Choisir un territoire/);
+ assert.match(emptyHtml,/ne prédit pas le rendement de la parcelle/i);
+ const selected={...c,territory:options[0].name},selectedHtml=render(selected,planSeason(selected));
+ assert.match(selectedHtml,/Dernier rendement régional rapporté/);
+ assert.match(selectedHtml,/Statistique régionale historique/);
+ assert.match(selectedHtml,/production parcellaire n’est pas calculée/i);
 });
 
 test('growth preview follows the selected scenario instead of always showing the proposed scenario',t=>{
