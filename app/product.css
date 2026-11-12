@@ -303,3 +303,8 @@ body{font-family:'Lato',sans-serif}
 .harvest-result-card>details>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 20px;margin-top:7px}
 .agri-shell .harvest-result-card>details p{margin:4px 0;color:#52697a;font-size:12px;line-height:1.55}
 @media(max-width:780px){.agri-shell .result-metrics.metrics-2{grid-template-columns:1fr}.agri-shell .harvest-result-card{grid-template-columns:1fr;padding:18px;gap:14px}.agri-shell .harvest-result-card>.btn{width:100%;white-space:normal}.harvest-result-card>details>div{grid-template-columns:1fr}}
+.simulation-action.yield-is-unavailable{align-items:center;border-color:#d8e2e8;border-left:4px solid #587487;background:#f5f8fa;color:#334b59}
+.simulation-action.yield-is-unavailable strong{color:#263e4b;font-size:15px}
+.agri-shell .simulation-action.yield-is-unavailable p{max-width:780px;color:#526773;font-size:14px;line-height:1.55}
+.simulation-action.yield-is-unavailable .btn.primary{background:#315c43;border-color:#315c43}
+@media(max-width:780px){.simulation-action.yield-is-unavailable{align-items:stretch}}

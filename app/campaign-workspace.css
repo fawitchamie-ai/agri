@@ -1,5 +1,40 @@
 .campaign-shell button:focus-visible,.campaign-shell a:focus-visible{outline:3px solid #bc681c;outline-offset:3px}
 
+/* A field-level forecast and a national statistic are deliberately different cards. */
+.farmer-harvest-value.is-reference{background:#f2f6fa;border-color:#d5e0e9}
+.farmer-harvest-value.is-reference>span{color:#405d75}
+.farmer-harvest-value.is-reference>strong{color:#214866}
+.farmer-reference-details{margin:3px 0 18px;padding:13px 16px;border:1px solid #e0e7eb;border-radius:10px;background:#fbfcfc;color:#4f6272;font-size:13px;line-height:1.55}
+.farmer-reference-details summary,.farmer-other-actions summary{min-height:38px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:#34546c}
+.farmer-reference-details p{margin:8px 0}.farmer-reference-details a{color:#245f8a;font-weight:700;text-underline-offset:3px}
+.farmer-next-step{display:flex;align-items:center;justify-content:space-between;gap:22px;margin:18px 0 4px;padding:20px 22px;border:1px solid #d5e4d8;border-left:4px solid #2c6846;border-radius:11px;background:#f6faf6;color:#2d4434}
+.farmer-next-step>div{min-width:0}.farmer-next-step .farmer-simple-kicker{margin-bottom:4px;font-size:10px}
+.farmer-next-step strong{display:block;font-size:18px;color:#203d2b}.farmer-next-step p{margin:5px 0 0;color:#526658;font-size:14px;line-height:1.5}
+.farmer-next-step.is-yield-blocked{border-color:#d5e0e9;border-left-color:#315f82;background:#f5f8fb;color:#34495b}
+.farmer-next-step.is-yield-blocked strong{color:#263f55}
+.yield-availability-reminder{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:-8px 0 20px;padding:15px 18px;border:1px solid #d8e2e8;border-left:4px solid #587487;border-radius:9px;background:#f5f8fa;color:#334b59}
+.yield-availability-reminder>div{min-width:0}
+.yield-availability-reminder span{display:block;margin-bottom:3px;color:#627887;font-size:11px;font-weight:700;letter-spacing:.08em}
+.yield-availability-reminder strong{display:block;color:#263e4b;font-size:15px}
+.yield-availability-reminder p{margin:3px 0 0;color:#526773;font-size:14px;line-height:1.45}
+.yield-availability-reminder button{display:flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:42px;padding:9px 13px;border:1px solid #cbd8df;border-radius:8px;background:#fff;color:#294b5b;font:700 13px 'Lato',Arial,sans-serif;cursor:pointer}
+.yield-availability-reminder button:hover{background:#edf3f6}
+.farmer-next-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:none;flex-wrap:wrap}
+.farmer-next-actions>button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;padding:11px 16px;border:0;border-radius:8px;background:#27583b;color:#fff;font:700 14px 'Lato',Arial,sans-serif;cursor:pointer}
+.farmer-next-actions>button:hover{background:#1e472f}.farmer-next-actions>button:disabled{opacity:.6;cursor:wait}
+.farmer-next-actions>.farmer-water-action{min-height:40px;padding:8px 10px;border:1px solid #cbd8e1;background:#fff;color:#405d75;font-size:13px}
+.farmer-next-actions>.farmer-water-action:hover{background:#edf3f7}
+.farmer-next-actions>.farmer-water-action.is-primary{min-height:48px;padding:11px 16px;border-color:#27583b;background:#27583b;color:#fff;font-size:14px}
+.farmer-next-actions>.farmer-water-action.is-primary:hover{background:#1e472f}
+.farmer-next-actions>.farmer-yield-details-action{min-height:40px;padding:8px 10px;border:1px solid #cbd8e1;background:#fff;color:#405d75;font-size:13px}
+.farmer-next-actions>.farmer-yield-details-action:hover{background:#edf3f7}
+.farmer-next-actions>.farmer-yield-details-action.is-primary{min-height:48px;padding:11px 16px;border-color:#27583b;background:#27583b;color:#fff;font-size:14px}
+.farmer-next-actions>.farmer-yield-details-action.is-primary:hover{background:#1e472f}
+.farmer-other-actions{margin:13px 0 4px;padding:0 2px;border-bottom:1px solid #e3e8e2}
+.farmer-other-actions summary{color:#536454;font-size:14px}
+.farmer-other-actions .farmer-campaign-actions{grid-template-columns:repeat(2,minmax(0,1fr));margin:6px 0 16px}
+@media(max-width:700px){.farmer-next-step{align-items:stretch;flex-direction:column;gap:14px;padding:17px}.farmer-next-actions{align-items:stretch;flex-direction:column}.farmer-next-actions>button{width:100%}.farmer-other-actions .farmer-campaign-actions{grid-template-columns:1fr;gap:9px}.yield-availability-reminder{align-items:stretch;flex-direction:column;gap:11px;margin:-6px 0 16px;padding:14px}.yield-availability-reminder button{width:100%}}
+
 .agri-shell.campaign-shell{display:block;min-height:100dvh;background:#f4f6f1;color:#1e2d3b;font-size:16px}
 .campaign-shell .workspace{width:100%;min-height:100dvh}
 .campaign-shell .page-content,.campaign-shell .page-content.seasonal-page{width:100%;max-width:none;margin:0;padding:0!important}
@@ -50,6 +85,30 @@
 .farmer-harvest-value>em{color:#617162;font-size:14px;font-style:normal;line-height:1.55}
 .farmer-harvest-value.is-unavailable{background:#f4f5f1}
 .farmer-harvest-value.is-unavailable>strong{font-size:22px;color:#5b685b;letter-spacing:0}
+.farmer-result-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.farmer-result-title-row>div{min-width:0}
+.farmer-result-badge{display:inline-flex;align-items:center;gap:8px;flex:none;margin-top:4px;padding:8px 12px;border:1px solid #d9dfe3;border-radius:999px;background:#f4f6f7;color:#46565f;font-size:12px;font-weight:700;white-space:nowrap}
+.farmer-result-badge:before{width:8px;height:8px;border-radius:50%;background:#87969d;content:""}
+.farmer-result-badge.is-ready{border-color:#c8dccd;background:#edf5ee;color:#265638}
+.farmer-result-badge.is-ready:before{background:#3d8652}
+.farmer-no-yield-notice{display:flex;align-items:flex-start;gap:14px;margin:18px 0;padding:17px 19px;border:1px solid #d9e3ea;border-radius:12px;background:#f4f7f9;color:#243e50}
+.farmer-no-yield-notice>span{display:grid;place-items:center;flex:none;width:27px;height:27px;border-radius:50%;background:#dce9f0;color:#244e65;font-size:16px;font-weight:800}
+.farmer-no-yield-notice strong{display:block;font-size:15px;color:#203d50}
+.farmer-no-yield-notice p{margin:4px 0 0;color:#4d606b;font-size:14px;line-height:1.55}
+.farmer-water-summary{margin:18px 0;padding:19px 21px;border:1px solid #d9e2e6;border-radius:14px;background:#f6f8f9;color:#344d58}
+.farmer-water-summary-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.farmer-water-summary-heading .farmer-simple-kicker{color:#4f7257;font-size:10px}
+.farmer-water-summary-heading h3{margin:5px 0 0;color:#294654;font-size:18px}
+.farmer-water-summary-heading>strong{font-size:30px;line-height:1;color:#3e6876;white-space:nowrap}
+.farmer-water-summary-heading>strong small{font-size:14px;margin-left:2px}
+.farmer-water-meter{height:10px;margin:14px 0 8px;overflow:hidden;border-radius:999px;background:#e2e9eb}
+.farmer-water-meter>span{display:block;height:100%;border-radius:inherit;background:#7594a0}
+.farmer-water-summary>p{margin:0;color:#56666d;font-size:13px;line-height:1.5}
+.farmer-reference-value{display:flex;align-items:baseline;gap:12px;margin-top:10px}
+.farmer-reference-value strong{color:#304e65;font-size:18px}
+.farmer-reference-value span{color:#5e6e79;font-size:13px}
+.farmer-reference-details>small{display:block;color:#687782;font-size:12px;margin:4px 0}
+@media(max-width:700px){.farmer-result-title-row{align-items:flex-start;flex-direction:column;gap:10px}.farmer-result-badge{margin:0}.farmer-harvest-values{grid-template-columns:1fr}.farmer-no-yield-notice{padding:14px}.farmer-water-summary{padding:16px}.farmer-reference-value{align-items:flex-start;flex-direction:column;gap:2px}}
 .farmer-water-note{display:flex;align-items:flex-start;gap:15px;padding:18px 20px;border-radius:12px;background:#eef5eb;color:#314a37}
 .farmer-water-symbol{display:grid;place-items:center;flex:0 0 33px;height:33px;border-radius:50%;background:#dcebd9;font-size:20px;font-weight:700}
 .farmer-water-note strong{font-size:15px}
