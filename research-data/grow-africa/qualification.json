@@ -1,0 +1,2007 @@
+Warning: truncated output (original token count: 11502)
+Total output lines: 2288
+
+{
+  "dataset": "GROW-Africa Database v2.0",
+  "doi": "10.5281/zenodo.16544448",
+  "paper_doi": "10.1038/s41597-025-05257-5",
+  "license": "CC-BY-4.0",
+  "acquired_on": "2026-11-12",
+  "archive_size_bytes": 64638070,
+  "archive_md5": "e7c5b8d4783ab5bfee23ae143203b1af",
+  "archive_sha256": "1b574f98ec11f1b7a1f80070385235a8e15e110593cd5cf9901bfd9dff723b41",
+  "source_workbook": "GROW-Africa-Database/GROW-Africa_Regional.xlsx",
+  "published_record_size_bytes": 64638070,
+  "source_row_counts": {
+    "selected_regional_admin1_admin2_qc_A": 43793,
+    "excluded_by_reason": {
+      "crop_not_exactly_mapped_to_app": 7456,
+      "unsupported_administrative_level": 1648,
+      "yield_missing_nonfinite_or_nonpositive": 2372,
+      "yield_quality_flag_not_A": 5126
+    }
+  },
+  "coverage": [
+    {
+      "country": "Benin",
+      "crop": "Cassava",
+      "admin_level": 2,
+      "rows": 2002,
+      "regions": 77,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.0123333333333333,
+        87.35294118
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Cowpea",
+      "admin_level": 2,
+      "rows": 1989,
+      "regions": 77,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.0233333333333333,
+        6.8076923076923
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Groundnut",
+      "admin_level": 2,
+      "rows": 1992,
+      "regions": 77,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.131578947368421,
+        2.5960060122795
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Maize",
+      "admin_level": 2,
+      "rows": 2013,
+      "regions": 77,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.035125448,
+        3.86600949251551
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Millet",
+      "admin_level": 2,
+      "rows": 693,
+      "regions": 36,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.24,
+        2.51094890510948
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Okra",
+      "admin_level": 2,
+      "rows": 1503,
+      "regions": 75,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.2,
+        36.2222222222222
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Rice",
+      "admin_level": 2,
+      "rows": 1579,
+      "regions": 73,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.025393235,
+        10.6317829457364
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Sorghum",
+      "admin_level": 2,
+      "rows": 1112,
+      "regions": 43,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.144651122621184,
+        10.020618556701
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Soybean",
+      "admin_level": 2,
+      "rows": 1164,
+      "regions": 65,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.075555556,
+        7.3
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Sweet potato",
+      "admin_level": 2,
+      "rows": 1853,
+      "regions": 77,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.040983606557377,
+        24.0714285714285
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Benin",
+      "crop": "Yam",
+      "admin_level": 2,
+      "rows": 1293,
+      "regions": 55,
+      "year_range": [
+        1995,
+        2021
+      ],
+      "yield_range_t_ha": [
+        0.003870968,
+        47.1545454545454
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Cowpea",
+      "admin_level": 1,
+      "rows": 311,
+      "regions": 13,
+      "year_range": [
+        1995,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.72196261682243,
+        339.104761904762
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Cowpea",
+      "admin_level": 2,
+      "rows": 1369,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.0359168241965973,
+        250.85
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Groundnut",
+      "admin_level": 1,
+      "rows": 143,
+      "regions": 13,
+      "year_range": [
+        2008,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.432086614173228,
+        7.87622149837134
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Groundnut",
+      "admin_level": 2,
+      "rows": 1434,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.006642512,
+        14.0
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Maize",
+      "admin_level": 1,
+      "rows": 312,
+      "regions": 13,
+      "year_range": [
+        1995,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.174074074074074,
+        3.03305759662338
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Maize",
+      "admin_level": 2,
+      "rows": 1465,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.0340159666782367,
+        3.29138407435318
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Millet",
+      "admin_level": 1,
+      "rows": 312,
+      "regions": 13,
+      "year_range": [
+        1995,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.208851062495837,
+        5.0310780187763
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Millet",
+      "admin_level": 2,
+      "rows": 1491,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.0162717380250177,
+        3.70318725099602
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Rice",
+      "admin_level": 1,
+      "rows": 310,
+      "regions": 13,
+      "year_range": [
+        1995,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.25,
+        131.857142857143
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Rice",
+      "admin_level": 2,
+      "rows": 1392,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.103,
+        5.65028901734104
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Sorghum",
+      "admin_level": 1,
+      "rows": 312,
+      "regions": 13,
+      "year_range": [
+        1995,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.352739726027397,
+        3.33613573830633
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Sorghum",
+      "admin_level": 2,
+      "rows": 1489,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.013746353543621,
+        3.36585706439787
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Soybean",
+      "admin_level": 1,
+      "rows": 116,
+      "regions": 13,
+      "year_range": [
+        2008,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.0403726708074534,
+        5.2
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Soybean",
+      "admin_level": 2,
+      "rows": 652,
+      "regions": 45,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.0403726708074534,
+        153.5
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Sweet potato",
+      "admin_level": 2,
+      "rows": 572,
+      "regions": 37,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.315301391035548,
+        117.233885400802
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Yam",
+      "admin_level": 1,
+      "rows": 68,
+      "regions": 11,
+      "year_range": [
+        2008,
+        2018
+      ],
+      "yield_range_t_ha": [
+        0.666666666666667,
+        20.0
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Burkina Faso",
+      "crop": "Yam",
+      "admin_level": 2,
+      "rows": 315,
+      "regions": 25,
+      "year_range": [
+        1984,
+        2022
+      ],
+      "yield_range_t_ha": [
+        0.245,
+        63.259727484195
+      ],
+      "sources": [
+        "FAO_subnational",
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Cassava",
+      "admin_level": 2,
+      "rows": 433,
+      "regions": 168,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        1.61287313432836,
+        42.3524957936063
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Cowpea",
+      "admin_level": 2,
+      "rows": 187,
+      "regions": 82,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.25,
+        3.85
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Groundnut",
+      "admin_level": 2,
+      "rows": 62,
+      "regions": 62,
+      "year_range": [
+        2016,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.344675488342785,
+        2.62996965098634
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Maize",
+      "admin_level": 2,
+      "rows": 491,
+      "regions": 186,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.271723907455013,
+        9.56
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Millet",
+      "admin_level": 2,
+      "rows": 42,
+      "regions": 42,
+      "year_range": [
+        2016,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.361271551814238,
+        2.74295143800094
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Rice",
+      "admin_level": 2,
+      "rows": 374,
+      "regions": 146,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.754079909960608,
+        6.99533217542336
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Sorghum",
+      "admin_level": 2,
+      "rows": 52,
+      "regions": 52,
+      "year_range": [
+        2016,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.523793267212075,
+        3.7361133710111
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Soybean",
+      "admin_level": 2,
+      "rows": 79,
+      "regions": 49,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.43449303963179,
+        7.08080808080808
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Sweet potato",
+      "admin_level": 2,
+      "rows": 12,
+      "regions": 12,
+      "year_range": [
+        2016,
+        2016
+      ],
+      "yield_range_t_ha": [
+        7.0,
+        10.0
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Ghana",
+      "crop": "Yam",
+      "admin_level": 2,
+      "rows": 392,
+      "regions": 149,
+      "year_range": [
+        2012,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.594505494505495,
+        27.3463556851312
+      ],
+      "sources": [
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Cassava",
+      "admin_level": 1,
+      "rows": 70,
+      "regions": 7,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        3.06360424028269,
+        20.0643109540636
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Cassava",
+      "admin_level": 2,
+      "rows": 260,
+      "regions": 35,
+      "year_range": [
+        1996,
+        2015
+      ],
+      "yield_range_t_ha": [
+        0.393537808641975,
+        24.9999999999896
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Cowpea",
+      "admin_level": 1,
+      "rows": 75,
+      "regions": 7,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        0.173527422381846,
+        0.821190476190476
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Cowpea",
+      "admin_level": 2,
+      "rows": 1493,
+      "regions": 42,
+      "year_range": [
+        1962,
+        2015
+      ],
+      "yield_range_t_ha": [
+        0.002778086,
+        6.09876543209876
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Groundnut",
+      "admin_level": 2,
+      "rows": 1985,
+      "regions": 42,
+      "year_range": [
+        1960,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.001938736,
+        3.50000000007291
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Maize",
+      "admin_level": 1,
+      "rows": 75,
+      "regions": 7,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        0.277509778357236,
+        2.47652975691534
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Maize",
+      "admin_level": 2,
+      "rows": 1499,
+      "regions": 40,
+      "year_range": [
+        1960,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.075,
+        5.743840764
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Millet",
+      "admin_level": 1,
+      "rows": 75,
+      "regions": 7,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        0.241019782021516,
+        1.58343855218855
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Millet",
+      "admin_level": 2,
+      "rows": 1990,
+      "regions": 43,
+      "year_range": [
+        1960,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.0168,
+        2.15874855156431
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Rice",
+      "admin_level": 1,
+      "rows": 55,
+      "regions": 6,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        0.542307692307692,
+        6.28319783197832
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Rice",
+      "admin_level": 2,
+      "rows": 1242,
+      "regions": 37,
+      "year_range": [
+        1960,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.015702109,
+        7.04998897875996
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Sorghum",
+      "admin_level": 1,
+      "rows": 75,
+      "regions": 7,
+      "year_range": [
+        2009,
+        2019
+      ],
+      "yield_range_t_ha": [
+        0.316044457110288,
+        1.77277538461538
+      ],
+      "sources": [
+        "FAO_subnational"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Sorghum",
+      "admin_level": 2,
+      "rows": 1089,
+      "regions": 42,
+      "year_range": [
+        1982,
+        2016
+      ],
+      "yield_range_t_ha": [
+        0.01707779886148,
+        5.33963991455599
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Senegal",
+      "crop": "Sweet potato",
+      "admin_level": 2,
+      "rows": 5,
+      "regions": 3,
+      "year_range": [
+        2013,
+        2014
+      ],
+      "yield_range_t_ha": [
+        7.22222222222222,
+        12.0
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Cassava",
+      "admin_level": 2,
+      "rows": 207,
+      "regions": 33,
+      "year_range": [
+        2005,
+        2017
+      ],
+      "yield_range_t_ha": [
+        0.354,
+        9.34694631802642
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Cowpea",
+      "admin_level": 2,
+      "rows": 68,
+      "regions": 12,
+      "year_range": [
+        2010,
+        2015
+      ],
+      "yield_range_t_ha": [
+        0.217626321974148,
+        1.20422535211267
+      ],
+      "sources": [
+        "HarvestStat"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Groundnut",
+      "admin_level": 2,
+      "rows": 208,
+      "regions": 35,
+      "year_range": [
+        2005,
+        2017
+      ],
+      "yield_range_t_ha": [
+        0.219768664563617,
+        1.39033124440465
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Maize",
+      "admin_level": 2,
+      "rows": 729,
+      "regions": 35,
+      "year_range": [
+        1995,
+        2017
+      ],
+      "yield_range_t_ha": [
+        0.164799421756414,
+        8.39907550077041
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Millet",
+      "admin_level": 2,
+      "rows": 281,
+      "regions": 26,
+      "year_range": [
+        1995,
+        2017
+      ],
+      "yield_range_t_ha": [
+        0.074558385,
+        4.28581510232886
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Rice",
+      "admin_level": 2,
+      "rows": 166,
+      "regions": 34,
+      "year_range": [
+        2005,
+        2017
+      ],
+      "yield_range_t_ha": [
+        0.0472440944881889,
+        5.53983477217889
+      ],
+      "sources": [
+        "HarvestStat",
+        "RCeA"
+      ]
+    },
+    {
+      "country": "Togo",
+      "crop": "Sorghum",
+      "…1502 tokens truncated…    "rows": 1878
+            },
+            {
+              "name": "Millet",
+              "rows": 1854
+            },
+            {
+              "name": "Potato",
+              "rows": 608
+            },
+            {
+              "name": "Pulses",
+              "rows": 62
+            },
+            {
+              "name": "Rice",
+              "rows": 1835
+            },
+            {
+              "name": "Sesame",
+              "rows": 1458
+            },
+            {
+              "name": "Sorghum",
+              "rows": 1854
+            },
+            {
+              "name": "Soybean",
+              "rows": 979
+            },
+            {
+              "name": "Sugar cane",
+              "rows": 62
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 719
+            },
+            {
+              "name": "Yam",
+              "rows": 769
+            }
+          ],
+          "year_range": [
+            1961,
+            2022
+          ]
+        },
+        {
+          "country_code": "GHA",
+          "rows": 4967,
+          "crops": [
+            {
+              "name": "Cassava",
+              "rows": 592
+            },
+            {
+              "name": "Cowpea",
+              "rows": 574
+            },
+            {
+              "name": "Groundnut",
+              "rows": 156
+            },
+            {
+              "name": "Maize",
+              "rows": 615
+            },
+            {
+              "name": "Millet",
+              "rows": 92
+            },
+            {
+              "name": "Plantain",
+              "rows": 563
+            },
+            {
+              "name": "Rice",
+              "rows": 615
+            },
+            {
+              "name": "Sorghum",
+              "rows": 132
+            },
+            {
+              "name": "Soybean",
+              "rows": 460
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 12
+            },
+            {
+              "name": "Taro",
+              "rows": 563
+            },
+            {
+              "name": "Yam",
+              "rows": 593
+            }
+          ],
+          "year_range": [
+            1997,
+            2016
+          ]
+        },
+        {
+          "country_code": "CIV",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "SEN",
+          "rows": 11008,
+          "crops": [
+            {
+              "name": "Cassava",
+              "rows": 376
+            },
+            {
+              "name": "Cotton",
+              "rows": 26
+            },
+            {
+              "name": "Cowpea",
+              "rows": 1611
+            },
+            {
+              "name": "Fonio",
+              "rows": 128
+            },
+            {
+              "name": "Groundnut",
+              "rows": 2145
+            },
+            {
+              "name": "Maize",
+              "rows": 1635
+            },
+            {
+              "name": "Millet",
+              "rows": 2143
+            },
+            {
+              "name": "Potato",
+              "rows": 40
+            },
+            {
+              "name": "Rice",
+              "rows": 1408
+            },
+            {
+              "name": "Sesame",
+              "rows": 268
+            },
+            {
+              "name": "Sorghum",
+              "rows": 1213
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 15
+            }
+          ],
+          "year_range": [
+            1960,
+            2019
+          ]
+        }
+      ]
+    },
+    {
+      "file": "GROW-Africa-Database/GROW-Africa_LSMS_survey.xlsx",
+      "observation_type": "household plot surveys",
+      "rows_total": 195152,
+      "columns": [
+        "Country",
+        "Source1",
+        "Source2",
+        "Source",
+        "GPS_lat",
+        "GPS_lon",
+        "L0_GID",
+        "L1_GID",
+        "L2_GID",
+        "L3_GID",
+        "Crop",
+        "prcCrop",
+        "prcLeft",
+        "Prod_kg_",
+        "ProdEst2_kg_",
+        "ReportedArea_ha_",
+        "GPSArea_ha_",
+        "Yield_ton_ha_",
+        "YieldUsingGPS_ton_ha_",
+        "YieldEst2_ton_ha_",
+        "YieldEst2UsingGPS_ton_ha_",
+        "AgYearStart",
+        "AgYearEnd",
+        "hhid",
+        "parcel_id",
+        "plotid",
+        "SpatialPrecision_km_"
+      ],
+      "yield_columns_present": [
+        "Yield_ton_ha_",
+        "YieldUsingGPS_ton_ha_",
+        "YieldEst2_ton_ha_",
+        "YieldEst2UsingGPS_ton_ha_"
+      ],
+      "location_precision_column": "SpatialPrecision_km_",
+      "country_column": "Country",
+      "crop_column": "Crop",
+      "year_column": "AgYearEnd",
+      "by_country": [
+        {
+          "country_code": "TGO",
+          "rows": 11580,
+          "crops": [
+            {
+              "name": "Banana",
+              "rows": 9
+            },
+            {
+              "name": "Cassava",
+              "rows": 371
+            },
+            {
+              "name": "Coffee",
+              "rows": 37
+            },
+            {
+              "name": "Cotton",
+              "rows": 762
+            },
+            {
+              "name": "Cowpea",
+              "rows": 936
+            },
+            {
+              "name": "Fonio",
+              "rows": 25
+            },
+            {
+              "name": "Groundnut",
+              "rows": 38
+            },
+            {
+              "name": "Maize",
+              "rows": 4953
+            },
+            {
+              "name": "Millet",
+              "rows": 381
+            },
+            {
+              "name": "Okra",
+              "rows": 29
+            },
+            {
+              "name": "Rice",
+              "rows": 614
+            },
+            {
+              "name": "Sesame",
+              "rows": 134
+            },
+            {
+              "name": "Sorghum",
+              "rows": 1330
+            },
+            {
+              "name": "Soybean",
+              "rows": 1510
+            },
+            {
+              "name": "Sugar cane",
+              "rows": 2
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 31
+            },
+            {
+              "name": "Taro",
+              "rows": 5
+            },
+            {
+              "name": "Yam",
+              "rows": 413
+            }
+          ],
+          "year_range": [
+            2018,
+            2022
+          ]
+        },
+        {
+          "country_code": "BEN",
+          "rows": 3973,
+          "crops": [
+            {
+              "name": "Cassava",
+              "rows": 137
+            },
+            {
+              "name": "Cotton",
+              "rows": 382
+            },
+            {
+              "name": "Cowpea",
+              "rows": 186
+            },
+            {
+              "name": "Fonio",
+              "rows": 9
+            },
+            {
+              "name": "Groundnut",
+              "rows": 8
+            },
+            {
+              "name": "Maize",
+              "rows": 1993
+            },
+            {
+              "name": "Millet",
+              "rows": 111
+            },
+            {
+              "name": "Okra",
+              "rows": 1
+            },
+            {
+              "name": "Rice",
+              "rows": 149
+            },
+            {
+              "name": "Sesame",
+              "rows": 13
+            },
+            {
+              "name": "Sorghum",
+              "rows": 604
+            },
+            {
+              "name": "Soybean",
+              "rows": 12
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 10
+            },
+            {
+              "name": "Yam",
+              "rows": 358
+            }
+          ],
+          "year_range": [
+            2018,
+            2022
+          ]
+        },
+        {
+          "country_code": "BFA",
+          "rows": 1570,
+          "crops": [
+            {
+              "name": "Cotton",
+              "rows": 466
+            },
+            {
+              "name": "Cowpea",
+              "rows": 267
+            },
+            {
+              "name": "Groundnut",
+              "rows": 14
+            },
+            {
+              "name": "Maize",
+              "rows": 275
+            },
+            {
+              "name": "Millet",
+              "rows": 131
+            },
+            {
+              "name": "Okra",
+              "rows": 9
+            },
+            {
+              "name": "Potato",
+              "rows": 5
+            },
+            {
+              "name": "Rice",
+              "rows": 72
+            },
+            {
+              "name": "Sesame",
+              "rows": 87
+            },
+            {
+              "name": "Sorghum",
+              "rows": 234
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 9
+            },
+            {
+              "name": "Yam",
+              "rows": 1
+            }
+          ],
+          "year_range": [
+            2018,
+            2022
+          ]
+        },
+        {
+          "country_code": "GHA",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "CIV",
+          "rows": 1417,
+          "crops": [
+            {
+              "name": "Cassava",
+              "rows": 266
+            },
+            {
+              "name": "Coffee",
+              "rows": 326
+            },
+            {
+              "name": "Cotton",
+              "rows": 255
+            },
+            {
+              "name": "Cowpea",
+              "rows": 1
+            },
+            {
+              "name": "Maize",
+              "rows": 103
+            },
+            {
+              "name": "Millet",
+              "rows": 3
+            },
+            {
+              "name": "Okra",
+              "rows": 70
+            },
+            {
+              "name": "Rice",
+              "rows": 79
+            },
+            {
+              "name": "Sorghum",
+              "rows": 1
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 5
+            },
+            {
+              "name": "Taro",
+              "rows": 12
+            },
+            {
+              "name": "Yam",
+              "rows": 296
+            }
+          ],
+          "year_range": [
+            2019,
+            2022
+          ]
+        },
+        {
+          "country_code": "SEN",
+          "rows": 3044,
+          "crops": [
+            {
+              "name": "Banana",
+              "rows": 14
+            },
+            {
+              "name": "Cassava",
+              "rows": 12
+            },
+            {
+              "name": "Cotton",
+              "rows": 65
+            },
+            {
+              "name": "Cowpea",
+              "rows": 500
+            },
+            {
+              "name": "Fonio",
+              "rows": 6
+            },
+            {
+              "name": "Maize",
+              "rows": 500
+            },
+            {
+              "name": "Millet",
+              "rows": 1464
+            },
+            {
+              "name": "Okra",
+              "rows": 48
+            },
+            {
+              "name": "Potato",
+              "rows": 5
+            },
+            {
+              "name": "Rice",
+              "rows": 255
+            },
+            {
+              "name": "Sesame",
+              "rows": 32
+            },
+            {
+              "name": "Sorghum",
+              "rows": 133
+            },
+            {
+              "name": "Sweet potato",
+              "rows": 9
+            },
+            {
+              "name": "Taro",
+              "rows": 1
+            }
+          ],
+          "year_range": [
+            2018,
+            2022
+          ]
+        }
+      ]
+    },
+    {
+      "file": "GROW-Africa-Database/GROW-Africa_Point.xlsx",
+      "observation_type": "point-based surveys or crop cuts",
+      "rows_total": 131812,
+      "columns": [
+        "Source",
+        "Crop",
+        "HarvestYear",
+        "Latitude",
+        "Longitude",
+        "SpatialPrecision_km_",
+        "L0_GID",
+        "L1_GID",
+        "L2_GID",
+        "L3_GID",
+        "Country",
+        "SiteName",
+        "Area_ha_",
+        "Yield_ton_ha_",
+        "PlantDate",
+        "HarvestDate",
+        "Notes"
+      ],
+      "yield_columns_present": [
+        "Yield_ton_ha_"
+      ],
+      "location_precision_column": "SpatialPrecision_km_",
+      "country_column": "Country",
+      "crop_column": "Crop",
+      "year_column": "HarvestYear",
+      "by_country": [
+        {
+          "country_code": "TGO",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "BEN",
+          "rows": 24,
+          "crops": [
+            {
+              "name": "Rice",
+              "rows": 24
+            }
+          ],
+          "year_range": [
+            2015,
+            2015
+          ]
+        },
+        {
+          "country_code": "BFA",
+          "rows": 7198,
+          "crops": [
+            {
+              "name": "Banana",
+              "rows": 3
+            },
+            {
+              "name": "Beans",
+              "rows": 4
+            },
+            {
+              "name": "Cassava",
+              "rows": 4
+            },
+            {
+              "name": "Coffee",
+              "rows": 1
+            },
+            {
+              "name": "Cotton",
+              "rows": 537
+            },
+            {
+              "name": "Cowpea",
+              "rows": 700
+            },
+            {
+              "name": "Groundnut",
+              "rows": 1064
+            },
+            {
+              "name": "Maize",
+              "rows": 1272
+            },
+            {
+              "name": "Millet",
+              "rows": 1426
+            },
+            {
+              "name": "Okra",
+              "rows": 24
+            },
+            {
+              "name": "Pigeon pea",
+              "rows": 2
+            },
+            {
+              "name": "Rice",
+              "rows": 323
+            },
+            {
+              "name": "Sesame",
+              "rows": 193
+            },
+            {
+              "name": "Sorghum",
+              "rows": 1587
+            },
+            {
+              "name": "Soybean",
+              "rows": 12
+            },
+            {
+              "name": "Taro",
+              "rows": 1
+            },
+            {
+              "name": "Tobacco",
+              "rows": 10
+            },
+            {
+              "name": "Yam",
+              "rows": 35
+            }
+          ],
+          "year_range": [
+            2000,
+            2003
+          ]
+        },
+        {
+          "country_code": "GHA",
+          "rows": 1671,
+          "crops": [
+            {
+              "name": "Banana",
+              "rows": 2
+            },
+            {
+              "name": "Beans",
+              "rows": 26
+            },
+            {
+              "name": "Cassava",
+              "rows": 289
+            },
+            {
+              "name": "Cowpea",
+              "rows": 24
+            },
+            {
+              "name": "Groundnut",
+              "rows": 172
+            },
+            {
+              "name": "Maize",
+              "rows": 578
+            },
+            {
+              "name": "Millet",
+              "rows": 84
+            },
+            {
+              "name": "Okra",
+              "rows": 23
+            },
+            {
+              "name": "Potato",
+              "rows": 5
+            },
+            {
+              "name": "Rice",
+              "rows": 134
+            },
+            {
+              "name": "Sorghum",
+              "rows": 42
+            },
+            {
+              "name": "Soybean",
+              "rows": 23
+            },
+            {
+              "name": "Sugar cane",
+              "rows": 22
+            },
+            {
+              "name": "Taro",
+              "rows": 97
+            },
+            {
+              "name": "Tobacco",
+              "rows": 4
+            },
+            {
+              "name": "Yam",
+              "rows": 146
+            }
+          ],
+          "year_range": [
+            2003,
+            2013
+          ]
+        },
+        {
+          "country_code": "CIV",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "SEN",
+          "rows": 2791,
+          "crops": [
+            {
+              "name": "Banana",
+              "rows": 2
+            },
+            {
+              "name": "Beans",
+              "rows": 335
+            },
+            {
+              "name": "Cassava",
+              "rows": 40
+            },
+            {
+              "name": "Cotton",
+              "rows": 99
+            },
+            {
+              "name": "Groundnut",
+              "rows": 799
+            },
+            {
+              "name": "Maize",
+              "rows": 293
+            },
+            {
+              "name": "Millet",
+              "rows": 863
+            },
+            {
+              "name": "Okra",
+              "rows": 30
+            },
+            {
+              "name": "Rice",
+              "rows": 107
+            },
+            {
+              "name": "Sesame",
+              "rows": 1
+            },
+            {
+              "name": "Sorghum",
+              "rows": 222
+            }
+          ],
+          "year_range": [
+            2003,
+            2003
+          ]
+        }
+      ]
+    },
+    {
+      "file": "GROW-Africa-Database/GROW-Africa_LSMS_cropcut.xlsx",
+      "observation_type": "LSMS crop cuts",
+      "rows_total": 11345,
+      "columns": [
+        "Country",
+        "Source",
+        "Year",
+        "GPS_lat",
+        "GPS_lon",
+        "L0_GID",
+        "L1_GID",
+        "L2_GID",
+        "L3_GID",
+        "holder_id",
+        "household_id",
+        "parcel_id",
+        "field_id",
+        "Crop",
+        "crop_origname",
+        "cropCutDay",
+        "cropCutMonth",
+        "freshWeightKg",
+        "dryWeightKg",
+        "Yield_ton_ha_"
+      ],
+      "yield_columns_present": [
+        "Yield_ton_ha_"
+      ],
+      "location_precision_column": null,
+      "country_column": "Country",
+      "crop_column": "Crop",
+      "year_column": "Year",
+      "by_country": [
+        {
+          "country_code": "TGO",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "BEN",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "BFA",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "GHA",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "CIV",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        },
+        {
+          "country_code": "SEN",
+          "rows": 0,
+          "crops": [],
+          "year_range": null
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "The regional file contains reported administrative statistics, not 3,489 independent field cuts.",
+    "Yield reporting sources differ in crop/product and area denominator; common grain moisture is not established.",
+    "No weather, soil, management or satellite joins were used. These labels cannot estimate causal irrigation or fertilizer effects.",
+    "The temporal baseline is a diagnostic of historical stability, not a seasonal forecast. Spatial transfer is evaluated separately.",
+    "GROW-Africa has no qualifying regional series for Côte d’Ivoire; local Ghana field observations remain a separate, single-area data source.",
+    "No region is inferred from a parcel polygon. The application only exposes a row as a regional historical reference after an exact unique territory-name match."
+  ]
+}

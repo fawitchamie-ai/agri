@@ -59,6 +59,7 @@ yarn-error.log*
 *:Zone.Identifier
 /.ci-python/
 /.compute-python/
+/.grow-python/
 
 # Restricted research originals stay local; fetch explicitly under their own licence.
 research-data/calibration/raw/research-only/*.xlsx
