@@ -32,7 +32,7 @@ async function api(path: string, body?: unknown) { if(body&&path==='/api/seasona
 function download(name: string, content: string, type: string) { const url=URL.createObjectURL(new Blob([content],{type})); const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
 type QueueItem = { campaignId: string; expectedRevision: number; event: WaterEvent };
 
-export default function Seasonal({ workspace, science, onHome=()=>{}, onMenu=()=>{}, menuOpen=false }: { workspace: Bootstrap | null; science: Science | null; onHome?:()=>void; onMenu?:()=>void; menuOpen?:boolean }) {
+export default function Seasonal({ workspace, science, campaignsRequest=0, onHome=()=>{}, onMenu=()=>{}, menuOpen=false }: { workspace: Bootstrap | null; science: Science | null; campaignsRequest?:number; onHome?:()=>void; onMenu?:()=>void; menuOpen?:boolean }) {
   const [config,setConfig] = useState<SeasonalConfig>(()=>emptyCampaign());
   const [events,setEvents] = useState<WaterEvent[]>([]);
   const [simulationError,setSimulationError]=useState('');
@@ -45,8 +45,10 @@ export default function Seasonal({ workspace, science, onHome=()=>{}, onMenu=()=
   const [history,setHistory] = useState<{revision:number;reason:string;created_at:string}[]>([]);
   const [tab,setTab] = useState('simulation');
   const previousTab=useRef(tab);
+  const handledCampaignsRequest=useRef(0);
   const [startAtYield,setStartAtYield]=useState(false);
   const [libraryOpen,setLibraryOpen]=useState(false);
+  useEffect(()=>{if(campaignsRequest>handledCampaignsRequest.current){handledCampaignsRequest.current=campaignsRequest;setLibraryOpen(true);setTab('simulation');}},[campaignsRequest]);
   const isMapping=tab==='carte';
   useEffect(()=>{if(previousTab.current!==tab){if(tab==='carte')document.getElementById('seasonal-panel-carte')?.focus();else if(previousTab.current==='carte'&&tab==='simulation'&&!startAtYield)document.getElementById('field-tab-overview')?.focus();previousTab.current=tab;}},[tab,startAtYield]);
   const [error,setError] = useState(''), [notice,setNotice] = useState(''), [busy,setBusy]=useState(false), [dirty,setDirty]=useState(true);
