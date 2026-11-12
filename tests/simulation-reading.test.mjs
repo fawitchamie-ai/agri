@@ -51,7 +51,8 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/La pluie face aux besoins/);
  assert.doesNotMatch(html,/Aucune dose de semis référencée/);
  assert.match(render(c),/EAU À PRÉVOIR SUR LE CYCLE/);
- assert.match(html,/Comment obtenir un rendement et une production/);
+ assert.match(html,/Pourquoi les résultats ne s’affichent-ils pas/);
+ assert.match(html,/Le calcul automatique du rendement parcellaire n’est pas encore raccordé/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
  assert.match(html,/<title>[^<]+ : besoin [0-9]/);
  assert.doesNotMatch(html,/<title><\/title>/);
