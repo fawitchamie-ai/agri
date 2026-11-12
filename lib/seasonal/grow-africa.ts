@@ -14,6 +14,20 @@ const sharedLimits=[
 ];
 
 /** Exact name match only. The result is historical context and is never a Ym input. */
+export function growAfricaRegionalTerritories(country:Country,cropId:string){
+ const rows=data.records.filter(r=>r.country===countryName[country]&&r.app_crop_ids.includes(cropId));
+ const names=new Map<string,Map<string,{name:string;adminLevel:1|2;regionId:string}>>();
+ for(const row of rows){
+  for(const [adminLevel,name] of [[2,row.admin_2],[1,row.admin_1]] as const){
+   if(!name.trim())continue;
+   const key=normalize(name),units=names.get(key)??new Map();
+   units.set(`${adminLevel}:${row.region_id}`,{name,adminLevel,regionId:row.region_id});names.set(key,units);
+  }
+ }
+ return [...names.values()].filter(units=>units.size===1).map(units=>[...units.values()][0]).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+}
+
+/** Exact name match only. The result is historical context and is never a Ym input. */
 export function growAfricaRegionalContext(country:Country,cropId:string,territory:string,asOfDate:string){
  const base={dataset:data.dataset,doi:data.doi,paperDoi:data.paper_doi,version:data.version,license:data.license,acquiredOn:data.acquired_on,archiveSha256:data.archive_sha256,scope:'administrative_regional' as const,country,countryName:countryName[country],cropId,requestedTerritory:territory,usedForPrediction:false,usedAsIndependentYm:false,limits:sharedLimits};
  if(data.acquired_on>asOfDate)return {...base,status:'not_available_as_of' as const,matchedTerritory:null,adminLevel:null,rows:[],missing:'Cette source a été acquise après la date de référence ; elle ne peut pas compléter cette reconstitution.'};
