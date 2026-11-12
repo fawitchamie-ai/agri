@@ -60,10 +60,10 @@ Sekou,variety,TZEE W POP QPM,,measured/source data,10.5281/zenodo.14357601 / Mai
 Sekou,phase1,2023-01-19 to 2023-04-17,date,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
 Sekou,phase2,2023-05-06 to 2023-08-02,date,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
 Sekou,yieldRows,912,source rows,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
-Sekou,product,Freshweight_cob / Freshweight_cob_Spath,g fresh cob,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
+Sekou,product,"Freshweight_cob / Freshweight_cob_Spath","g fresh cob per observation record",measured; Freshweight_cob confirmed by author on 2026-11-12,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Freshweight_cob is fresh cob mass after husk removal, not kernels alone or dry grain; Freshweight_cob_Spath remains a separate variable"
 Sekou,weatherTreatment,W1 / W2,scenario codes,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
 Sekou,fertilizer,Organic / Chemical / 3 mixtures,source labels,measured/source data,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,"Greenhouse, not open-field maize grain dry t/ha"
-Sekou,dailyMicroclimate,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
+Sekou,dailyMicroclimate,unknown,,not acquired; author reports Zenodo climate companion,No exact DOI/file identified in correspondence or downloaded; workbook has no daily climate sheet,Gridded weather must not be substituted as observed greenhouse microclimate
 Sekou,dailyIrrigation,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
 Sekou,dryGrainFraction,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
 Sekou,grainMoisture,unknown,,missing,10.5281/zenodo.14357601 / Maize_growth_data.xlsx,No forced conversion from fresh cob mass to field grain yield
