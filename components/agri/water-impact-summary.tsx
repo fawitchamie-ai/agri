@@ -32,6 +32,16 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
      <ul>{impact!.missing.map((item,i)=><li key={i}>{item}</li>)}</ul>
     </div>
    :impact?.scenarios.length?<>
+     <figure className="water-comparison-chart" aria-labelledby="water-comparison-title">
+      <figcaption id="water-comparison-title"><strong>Score hydrique selon le scénario</strong><span>Sur une échelle de 0 à 100 · 100 = référence sans déficit d’eau</span></figcaption>
+      <div className="water-comparison-scale" aria-hidden="true"><span>0</span><span>50</span><span>100</span></div>
+      <div className="water-comparison-rows">{impact.scenarios.map(s=><div className="water-comparison-row" key={s.id}>
+       <div className="water-comparison-label"><strong>{s.label}</strong><span>{s.relativeYieldPercent===null?'Non calculable':`${fmt(s.relativeYieldPercent)} / 100`}</span></div>
+       <div className="water-comparison-track" aria-hidden="true">{s.relativeYieldPercent!==null&&<span className={`water-comparison-bar water-comparison-${s.id}`} style={{width:`${Math.max(0,Math.min(100,s.relativeYieldPercent))}%`}}/>}</div>
+       {s.relativeYieldPercent===null&&s.missing.length>0&&<small>{s.missing.join(' ')}</small>}
+      </div>)}</div>
+      <p>Ces scores comparent uniquement l’effet simulé de l’eau, pour la même météo et le même sol. Ils ne représentent pas des tonnes récoltées.</p>
+     </figure>
      <p className="water-impact-caption">L’écart est calculé par rapport au scénario sans irrigation ajoutée.</p>
      <div className="water-impact-table-wrap">
       <table className="data-table water-impact-table">

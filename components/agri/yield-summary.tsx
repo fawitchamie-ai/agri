@@ -2,6 +2,7 @@
 import CanopyNowcastPanel from './canopy-nowcast-panel';
 import {canReplayTogoStages,togoStageReplayInput} from '../../lib/seasonal/togo-stage-replay';
 import { HelpParagraph } from './help-dialog';
+import FertilizerResponseChart from './fertilizer-response-chart';
 import {useEffect,useState} from 'react';
 import {EditButton} from './editable-value';
 import GrowthPanel from './growth-panel';
@@ -39,7 +40,7 @@ export default function YieldSummary({config,plan,stale,onChange,onFertilizer}:{
   <CanopyNowcastPanel config={config} plan={plan} stale={stale} onChange={onChange}/>
   <WaterImpactSummary plan={plan} stale={stale}/>
   <section aria-label="Impact des engrais sur le rendement"><h3>Effet simulé des engrais NPK</h3>
-   {fr?<><p>Simulation exploratoire du maïs, sans validation locale. Elle ne constitue pas une prévision garantie.</p><HelpParagraph>Maïs grain à 15 % d’humidité · QUEFTS, paramètres transférés du Nigeria. Les apports réalisés sont conservés dans les deux situations.</HelpParagraph><div className="table-wrap"><table className="data-table"><thead><tr><th>Situation</th><th>Rendement simulé (t/ha)</th></tr></thead><tbody><tr><td>Sans nouvel apport prévu</td><td>{range(fr.yieldWithoutKgHa)}</td></tr><tr><td>Avec les engrais prévus</td><td>{range(fr.yieldWithKgHa)}</td></tr><tr><td>Écart simulé</td><td>{range(fr.deltaKgHa)}</td></tr></tbody></table></div><HelpParagraph>Plage entre deux profils, sans validation locale ni intervalle prédictif à 95 %. Les résultats eau et NPK ne sont pas additionnés : leur interaction n’est pas calibrée.</HelpParagraph></>:<HelpParagraph>{stale?'Recalcul des apports…':cropId==='maize'?'Préparez vos produits et doses, puis activez la comparaison QUEFTS dans Engrais.':'Réponse NPK non paramétrée pour cette culture.'}</HelpParagraph>}
+   {fr?<><p>Simulation exploratoire du maïs, sans validation locale. Elle ne constitue pas une prévision garantie.</p><HelpParagraph>Maïs grain à 15 % d’humidité · QUEFTS, paramètres transférés du Nigeria. Les apports réalisés sont conservés dans les deux situations.</HelpParagraph><FertilizerResponseChart profiles={fr.profiles}/><div className="table-wrap"><table className="data-table"><thead><tr><th>Situation</th><th>Rendement simulé (t/ha)</th></tr></thead><tbody><tr><td>Sans nouvel apport prévu</td><td>{range(fr.yieldWithoutKgHa)}</td></tr><tr><td>Avec les engrais prévus</td><td>{range(fr.yieldWithKgHa)}</td></tr><tr><td>Écart simulé</td><td>{range(fr.deltaKgHa)}</td></tr></tbody></table></div><HelpParagraph>Plage entre deux profils, sans validation locale ni intervalle prédictif à 95 %. Les résultats eau et NPK ne sont pas additionnés : leur interaction n’est pas calibrée.</HelpParagraph></>:<HelpParagraph>{stale?'Recalcul des apports…':cropId==='maize'?'Préparez vos produits et doses, puis activez la comparaison QUEFTS dans Engrais.':'Réponse NPK non paramétrée pour cette culture.'}</HelpParagraph>}
    {!stale&&fertilizer?.missing.map(m=><HelpParagraph key={m}>{m}</HelpParagraph>)}
    {onFertilizer&&<button className="btn secondary" onClick={onFertilizer}>Comparer avec et sans engrais →</button>}
   </section>
