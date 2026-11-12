@@ -42,3 +42,27 @@ test('a failed recalculation does not display the previous growth values',t=>{
  assert.match(html,/Calcul interrompu/);
  assert.doesNotMatch(html,/Autre simulation de rendement exploratoire/);
 });
+
+test('growth preview follows the selected scenario instead of always showing the proposed scenario',t=>{
+ t.mock.method(Date,'now',()=>Date.parse('2026-11-10T12:00:00Z'));
+ const config=structuredClone(archive.cases[2].config),plan=planSeason(config,archive.cases[2].reconstructionForcing);
+ const rainfed=plan.growth.scenarios.find(s=>s.id==='rainfed');
+ const proposed=plan.growth.scenarios.find(s=>s.id==='proposed');
+ assert.notEqual(rainfed.yieldKgHa,proposed.yieldKgHa,'the archived scenarios actually differ');
+ for(const [mode,expected] of [['rainfed',rainfed],['proposed',proposed]]){
+  const html=render({...config,yieldScenario:mode},plan);
+  const preview=html.match(/<section class="yield-growth-preview".*?<\/section>/s)?.[0];
+  assert.ok(preview);assert.match(preview,new RegExp(expected.label));
+  assert.ok(preview.includes(new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(expected.yieldKgHa/1000)));
+  assert.ok(preview.includes(new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(expected.productionKg/1000)));
+ }
+});
+
+test('a missing selected growth scenario never falls back to another scenario',t=>{
+ t.mock.method(Date,'now',()=>Date.parse('2026-11-10T12:00:00Z'));
+ const config=structuredClone(archive.cases[2].config),plan=planSeason(config,archive.cases[2].reconstructionForcing);
+ const incomplete={...plan,growth:{...plan.growth,scenarios:plan.growth.scenarios.filter(s=>s.id!=='rainfed')}};
+ const html=render({...config,yieldScenario:'rainfed'},incomplete);
+ assert.match(html,/Scénario choisi indisponible/);
+ assert.doesNotMatch(html,/<section class="yield-growth-preview"/);
+});
