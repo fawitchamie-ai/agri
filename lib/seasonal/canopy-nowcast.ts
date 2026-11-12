@@ -22,13 +22,13 @@ export function parseCanopyNowcast(value:unknown,c:SeasonalConfig):CanopyNowcast
  v.observations.sort((a,b)=>a.date.localeCompare(b.date));return v;
 }
 export type CanopyNowcastResult={version:string;profileId:string;status:'experimental_nowcast'|'unavailable';forecastValidated:false;missing:string[];limits:string[];
- yieldKgHa:number|null;productionKg:number|null;areaM2:number|null;moisturePercent:null;peakLai:number|null;issueDate:string|null;lastObservation:string|null;
+ yieldKgHa:number|null;productionKg:number|null;areaM2:number|null;areaBasis:'planned'|'sown'|null;moisturePercent:null;peakLai:number|null;issueDate:string|null;lastObservation:string|null;
  interval90KgHa:[number,number]|null;test:typeof profile.test;inputVisits:number;laterVisitsExcluded:number};
 /** A distinct inference from observed crop state. No FAO, RUE, QUEFTS or nutrient
  * ceiling multiplies this output; it cannot identify counterfactual interventions. */
 export function canopyNowcast(c:SeasonalConfig,plan:WaterPlan):CanopyNowcastResult{
  const v=c.canopyNowcast;
- const out:CanopyNowcastResult={version:CANOPY_NOWCAST_VERSION,profileId:profile.id,status:'unavailable',forecastValidated:false,missing:[],limits:[...profile.limits,'Évaluation rétrospective sur les champs réservés de 2021, après développement ; aucune saison ultérieure ni autre pays validé.','Intervalle nominal à 90 % évalué sur un petit échantillon local ; sa couverture future n’est pas établie.'],yieldKgHa:null,productionKg:null,areaM2:null,moisturePercent:null,peakLai:null,issueDate:null,lastObservation:null,interval90KgHa:null,test:profile.test,inputVisits:0,laterVisitsExcluded:0};
+ const out:CanopyNowcastResult={version:CANOPY_NOWCAST_VERSION,profileId:profile.id,status:'unavailable',forecastValidated:false,missing:[],limits:[...profile.limits,'Évaluation rétrospective sur les champs réservés de 2021, après développement ; aucune saison ultérieure ni autre pays validé.','Intervalle nominal à 90 % évalué sur un petit échantillon local ; sa couverture future n’est pas établie.'],yieldKgHa:null,productionKg:null,areaM2:null,areaBasis:null,moisturePercent:null,peakLai:null,issueDate:null,lastObservation:null,interval90KgHa:null,test:profile.test,inputVisits:0,laterVisitsExcluded:0};
  if(!v){out.missing.push('Deux semaines de mesures de LAI vert au champ et acceptation de l’hypothèse requises.');return out;}
  if(v.scope!==canopyNowcastScope(c))out.missing.push('Le champ, la culture, la variété ou le semis ont changé : réexaminer les observations.');
  if(c.asOfDate<profile.availableOn)out.missing.push('Profil expérimental encore indisponible à la date du calcul.');
@@ -49,8 +49,10 @@ export function canopyNowcast(c:SeasonalConfig,plan:WaterPlan):CanopyNowcastResu
  out.yieldKgHa=Math.max(0,profile.coefficients.interceptKgHa+profile.coefficients.slopeKgHaPerLai*out.peakLai!);
  out.interval90KgHa=[Math.max(0,out.yieldKgHa-profile.interval.halfWidthKgHa),out.yieldKgHa+profile.interval.halfWidthKgHa];
  // Spatial safety is independent of meteorological completeness for this method.
- const units=c.yieldEstimation?.units;
- const area=units?units.length===1&&c.yieldEstimation?.scopeGeometryId===geometryIdentity(c.parcelGeometry)?units[0].sownAreaM2??c.sowingPlan?.areaM2:null:c.sowingPlan?.areaM2;
+ const units=c.yieldEstimation?.units,areaBasis=c.yieldEstimation?.areaBasis??(c.yieldEstimation?'sown':'planned');
+ out.areaBasis=areaBasis;
+ const unit=units?.length===1&&c.yieldEstimation?.scopeGeometryId===geometryIdentity(c.parcelGeometry)?units[0]:null;
+ const area=units?(unit?(areaBasis==='planned'?unit.sownAreaM2??c.sowingPlan?.areaM2:unit.sownAreaM2):null):c.sowingPlan?.areaM2;
  const spatialIssue=landBlockReason(c);
  if(!spatialIssue&&area!=null&&area>0&&area<=(c.landAssessment?.candidateAreaM2??0)+.01){out.areaM2=area;out.productionKg=area/10000*out.yieldKgHa;}
  else out.limits.push('Production totale indisponible : surface prévue ou semée sur terre cartographiée à confirmer.');

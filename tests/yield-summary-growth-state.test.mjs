@@ -6,6 +6,7 @@ import {createRequire} from 'node:module';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {planSeason} from '../lib/seasonal/yield.ts';
+import {canopyFixture} from './support/canopy-fixture.ts';
 
 const require=createRequire(import.meta.url),wr=createRequire(require.resolve('wrangler')),{build}=wr('esbuild');
 const bundle=await build({entryPoints:['components/agri/yield-summary.tsx'],bundle:true,format:'cjs',platform:'node',packages:'external',write:false,jsx:'automatic'}),compiled={exports:{}};
@@ -65,4 +66,15 @@ test('a missing selected growth scenario never falls back to another scenario',t
  const html=render({...config,yieldScenario:'rainfed'},incomplete);
  assert.match(html,/Scénario choisi indisponible/);
  assert.doesNotMatch(html,/<section class="yield-growth-preview"/);
+});
+
+test('a Ghana canopy nowcast appears in the primary yield and production result with its experimental scope',()=>{
+ const config=canopyFixture(),plan=planSeason(config),html=render(config,plan);
+ assert.equal(plan.canopyNowcast.status,'experimental_nowcast');
+ assert.match(html,/Nowcast expérimental après mesures/);
+ assert.match(html,/Grain estimé après mesures du LAI/);
+ assert.match(html,/Production sur la surface déclarée/);
+ assert.match(html,/pas une prévision avant semis/i);
+ assert.match(html,/autre saison non évaluée/i);
+ assert.doesNotMatch(html,/Le rendement du champ n’est pas simulé/);
 });

@@ -6,7 +6,7 @@ import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
 const fmt=(v:number|null,d=2)=>v===null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 /** A separate crop-state estimate; changing irrigation cannot be mislabeled as
  * an observed causal yield effect in this empirical model. */
-export default function CanopyNowcastPanel({config:c,plan,stale,onChange}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void}){
+export default function CanopyNowcastPanel({config:c,plan,stale,onChange,open,onOpenChange}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;open?:boolean;onOpenChange?:(open:boolean)=>void}){
  const [date,setDate]=useState(c.asOfDate),[samples,setSamples]=useState(['','','','']),[source,setSource]=useState(''),[accepted,setAccepted]=useState(false),[error,setError]=useState('');
  const [stage,setStage]=useState<'vegetative'|'flowering'>('vegetative');
  const value=c.canopyNowcast,result=stale?undefined:plan?.canopyNowcast,p=CANOPY_NOWCAST_PROFILE;
@@ -19,9 +19,9 @@ export default function CanopyNowcastPanel({config:c,plan,stale,onChange}:{confi
   if(v.observations.some(o=>o.date===date))throw new Error('Une visite existe déjà à cette date.');
   onChange({...c,canopyNowcast:{...v,observations:[...v.observations,{date,availableOn:date,laiSamples:ns,method:'field-green-lai',source:source.trim()}]}});setSamples(['','','','']);setError('');
  }catch(e){setError((e as Error).message);}}
- return <section className="qs-card" aria-label="Estimation expérimentale par observation du couvert"><details open={!!value}>
+ return <section className="qs-card" id="canopy-nowcast-panel" aria-label="Estimation expérimentale par observation du couvert"><details open={open??!!value} onToggle={e=>onOpenChange?.(e.currentTarget.open)}>
  <summary>Suivi de la culture par mesures de LAI · Ghana nord</summary>
- <HelpParagraph>Cette méthode estime le grain à partir du couvert réellement observé pendant deux semaines. Elle a réduit l’erreur sur des champs réservés de 2021. Son transfert à une autre saison reste une hypothèse ; elle ne calcule pas l’effet futur d’un arrosage ou d’un engrais.</HelpParagraph>
+ <HelpParagraph>Après deux semaines d’observations du couvert, ce suivi donne une estimation de grain pour le maïs du nord du Ghana. Ce n’est pas une prévision au moment où vous dessinez la parcelle. Son transfert à une autre saison reste une hypothèse ; il ne calcule pas l’effet d’un arrosage ou d’un engrais.</HelpParagraph>
  {result?.status==='experimental_nowcast'&&<><div className="qs-kpis"><article><span>GRAIN ESTIMÉ PAR LE COUVERT</span><strong>{fmt(result.yieldKgHa===null?null:result.yieldKgHa/1000)}<small> t/ha</small></strong></article><article><span>PRODUCTION SUR LA SURFACE DÉCLARÉE</span><strong>{fmt(result.productionKg===null?null:result.productionKg/1000)}<small> tonnes</small></strong></article></div><HelpParagraph>Humidité de référence non précisée dans le jeu d’apprentissage. LAI maximal moyen : {fmt(result.peakLai)} m²/m² ; {result.inputVisits} visites utilisées jusqu’au {result.issueDate}.</HelpParagraph>
  <HelpParagraph>RMSE sur {p.test.canopy.nFields} champs réservés : {fmt(p.test.canopy.rmseKgHa/1000)} t/ha, contre {fmt(p.test.constant.rmseKgHa/1000)} t/ha pour la moyenne d’apprentissage. La plage nominale à 90 % n’a couvert que {fmt(p.test.coverage90*100,0)} % de ces champs ; elle n’est pas un intervalle validé pour votre récolte.</HelpParagraph></>}
  {value&&stale&&<HelpParagraph>Recalcul du suivi en cours.</HelpParagraph>}
