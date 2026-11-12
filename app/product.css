@@ -283,3 +283,8 @@ body{font-family:'Lato',sans-serif}
 .qs-chart-legend i.demand { border-radius:50%; }
 .qs-chart-legend i.rain { border-radius:0; transform:rotate(45deg); }
 .water-week-context { margin:10px 0 0; color:#344e6b; font-size:13px; line-height:1.5; }
+/* Explain missing values in the field summary without implying a zero harvest. */
+.agri-shell .result-metrics>button>.metric-unavailable{font-size:clamp(21px,2vw,27px);line-height:1.25;letter-spacing:0;overflow-wrap:anywhere}
+.agri-shell .result-metrics>button em{font-size:14px;line-height:1.5}
+.agri-shell .yield-reference-prompt strong{font-size:16px;line-height:1.35;color:#183b63}
+.agri-shell .yield-reference-prompt p{font-size:15px;line-height:1.55;color:#385674}
