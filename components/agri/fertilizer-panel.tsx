@@ -9,7 +9,7 @@ type Evidence=ReturnType<typeof fertilizerEvidence>;
 const fmt=(v:number|null|undefined,d=2)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 async function post(body:unknown,signal?:AbortSignal){return seasonalRequest<any>(body,signal);}
 
-export default function FertilizerPanel({config,plan,stale,onChange,onAdvanced}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onAdvanced:(tab:string)=>void}){
+export default function FertilizerPanel({config,plan,stale,onChange,onAdvanced,onProducts}:{config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onAdvanced:(tab:string)=>void;onProducts:()=>void}){
  const [data,setData]=useState<Evidence|null>(null),[error,setError]=useState(''),[action,setAction]=useState<ReturnType<typeof nextFertilizerInformation>|null>(null);
  const cropId=config.cropProfile?.id??'';
  useEffect(()=>{setData(null);setError('');if(!cropId)return;const c=new AbortController();post({action:'fertilizer-evidence',country:config.country,cropId,asOfDate:config.asOfDate},c.signal).then(setData).catch(e=>{if(!c.signal.aborted)setError(e.message);});return()=>c.abort();},[config.country,cropId,config.asOfDate]);
@@ -20,7 +20,7 @@ export default function FertilizerPanel({config,plan,stale,onChange,onAdvanced}:
  return <section className="qs-card" aria-label="Engrais et preuves expérimentales"><div className="qs-card-heading"><h2>Mes engrais et leurs effets</h2><span className="qs-tag">Réponse parcellaire non validée</span></div>
   {ready?.nationalReference&&<HelpParagraph><strong>Repère national {ready.nationalReference.year} : {fmt(ready.nationalReference.kgHa!/1000)} t/ha récolté.</strong> {ready.nationalReference.context} <a href={ready.nationalReference.source} target="_blank" rel="noreferrer">Source FAOSTAT</a>. Moyenne de pratiques diverses, y compris fertilisées ; ce repère n’est ni un témoin sans engrais ni un rendement garanti pour votre champ.</HelpParagraph>}
   <HelpParagraph>Vos produits, doses et dates permettent de calculer les quantités de nutriments. Pour le maïs, vous pouvez explorer leur effet avec deux profils publiés de nutrition N–P–K. La prévision parcellaire validée et la dose optimale restent indisponibles.</HelpParagraph>
-  <FertilizerSimulator config={config} plan={plan} stale={stale} onChange={onChange} onAdvanced={onAdvanced}/>
+  <FertilizerSimulator config={config} plan={plan} stale={stale} onChange={onChange} onProducts={onProducts}/>
   {error&&<HelpParagraph role="alert">{error} Les références ne sont pas disponibles pour le moment.</HelpParagraph>}
   {ready&&(cropId==='maize'||!ready.extension?.observations.length)&&<details><summary>{obs.length?'Voir les comparaisons réellement observées':'Consulter les données et limites pour cette culture'}</summary>
    {!obs.length?<HelpParagraph>Aucune comparaison témoin–NPK suffisamment appariée dans la version intégrée pour ce pays et cette culture. Une absence de données ne signifie pas une absence de réponse.</HelpParagraph>:<>
