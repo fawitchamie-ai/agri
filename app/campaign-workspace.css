@@ -188,6 +188,137 @@
 .advisor-source-block{padding:13px 0;border-bottom:1px solid #e8edf2}
 .advisor-source-block>strong{color:#3d5876;font-size:12px}
 .advisor-source-block p{margin:5px 0;color:#526983;font-size:11px;line-height:1.6}
+
+/* Keep the detailed campaign workspace readable on wide screens. */
+.campaign-shell .quick-sim.simulation-workbench{
+  box-sizing:border-box;
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:30px clamp(22px,3.4vw,48px) 72px;
+  color:#26352d;
+}
+.campaign-shell .quick-sim .details-return-bar{
+  margin:0 0 20px;
+  padding:13px 2px;
+  border:0;
+  border-bottom:1px solid #e0e5dc;
+  border-radius:0;
+  background:transparent;
+}
+.campaign-shell .quick-sim .details-return-bar>button{
+  border-color:#d4ddd1;
+  border-radius:9px;
+  color:#315b3d;
+}
+.campaign-shell .quick-sim .simulation-context{
+  min-height:92px;
+  margin:0 0 22px;
+  overflow:hidden;
+  border-color:#e0e5dc;
+  border-radius:14px;
+  box-shadow:0 3px 12px #263c2a08;
+}
+.campaign-shell .quick-sim .simulation-modules{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin:0 0 26px;
+  padding:5px;
+  overflow-x:auto;
+  border:0;
+  border-radius:12px;
+  background:#edf1e9;
+  scrollbar-width:thin;
+}
+.campaign-shell .quick-sim .simulation-modules>button,
+.campaign-shell .quick-sim .simulation-modules>button:last-child{
+  flex:0 0 auto;
+  justify-content:center;
+  min-height:44px;
+  padding:10px 15px;
+  border:0;
+  border-radius:9px;
+  color:#59695d;
+  font-size:13px;
+  font-weight:500;
+}
+.campaign-shell .quick-sim .simulation-modules>button[aria-selected=true]{
+  background:#fff;
+  color:#285438;
+  font-weight:700;
+  box-shadow:0 1px 4px #273b2912;
+}
+.campaign-shell .quick-sim .simulation-action{
+  gap:24px;
+  margin:0 0 30px;
+  padding:17px 20px;
+  border:1px solid #e4e5d9;
+  border-left:3px solid #b7a26a;
+  border-radius:12px;
+  background:#faf9f3;
+  color:#4f5846;
+}
+.campaign-shell .quick-sim .simulation-action strong{
+  color:#3b4a38;
+  font-size:15px;
+}
+.campaign-shell .quick-sim .simulation-action p{
+  max-width:680px;
+  color:#68715f;
+  font-size:13px;
+  line-height:1.55;
+}
+.campaign-shell .quick-sim .simulation-action>div:last-child{align-items:flex-end}
+.campaign-shell .quick-sim .simulation-action>div:last-child .btn{
+  min-height:44px;
+  border-radius:9px;
+  background:#2e6543;
+  box-shadow:none;
+  font-size:13px;
+}
+.campaign-shell .quick-sim .simulation-action>div:last-child .qs-text-button{
+  padding:3px 2px;
+  color:#4e6b53;
+  font-size:12px;
+}
+.campaign-shell .quick-sim .module-intro{margin:0 0 24px}
+.campaign-shell .quick-sim .module-intro .product-eyebrow{
+  color:#657761;
+  font-size:10px;
+  letter-spacing:.09em;
+}
+.campaign-shell .quick-sim .module-intro h2{
+  margin:7px 0 8px;
+  color:#243b2b;
+  font-size:29px;
+  font-weight:500;
+  letter-spacing:-.55px;
+  line-height:1.2;
+}
+.campaign-shell .quick-sim .module-intro>p{
+  max-width:680px;
+  color:#617064;
+  font-size:14px;
+  line-height:1.6;
+}
+.campaign-shell .quick-sim .module-intro>.btn{margin-top:15px}
+
+@media(max-width:780px){
+  .campaign-shell .quick-sim.simulation-workbench{padding:20px 17px 48px}
+  .campaign-shell .quick-sim .simulation-context{margin-bottom:16px;border-radius:12px}
+  .campaign-shell .quick-sim .simulation-modules{margin-bottom:22px;padding:4px;border-radius:10px}
+  .campaign-shell .quick-sim .simulation-modules>button,
+  .campaign-shell .quick-sim .simulation-modules>button:last-child{min-height:42px;padding:9px 12px;font-size:12px}
+  .campaign-shell .quick-sim .simulation-action{gap:14px;margin-bottom:24px;padding:15px}
+  .campaign-shell .quick-sim .simulation-action>div:last-child{align-items:stretch}
+  .campaign-shell .quick-sim .module-intro h2{font-size:25px}
+}
+@media(max-width:420px){
+  .campaign-shell .quick-sim.simulation-workbench{padding-right:14px;padding-left:14px}
+  .campaign-shell .quick-sim .simulation-modules>button,
+  .campaign-shell .quick-sim .simulation-modules>button:last-child{gap:6px;padding-right:10px;padding-left:10px;font-size:11px}
+}
 .advisor-source-block small{color:#8492a2;font-size:10px;line-height:1.5}
 .advisor-soil-list{display:grid;gap:8px;padding:0;margin:10px 0 0;list-style:none}
 .advisor-soil-list li{display:grid;gap:4px;padding:9px;border-radius:7px;background:#f6f8fa}
