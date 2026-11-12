@@ -18,3 +18,17 @@ export function historicalContext(country:Country,cropId:string,asOfDate:string)
  const rows=data.rows.filter(r=>r[0]===country&&r[1]===product.code).map(r=>({year:r[2],areaHa:r[3],productionT:r[4],yieldKgHaHarvested:r[5],warnings:data.warnings.filter(w=>w[0]===r[0]&&w[1]===r[1]&&w[2]===r[2]).map(w=>w[3])}));
  return {...base,status:rows.length?'context_only':'unavailable',rows,missing:rows.length?null:'Aucune ligne acquise pour ce pays/produit ; absence de donnée, pas production nulle.'};
 }
+
+/** Most recent official national yield, for context only; never an independent field Ym. */
+export function latestOfficialYieldReference(country:Country,cropId:string,asOfDate:string){
+ const context=historicalContext(country,cropId,asOfDate);
+ if(context.status!=='context_only')return null;
+ const row=context.rows
+  .filter(r=>r.yieldKgHaHarvested?.value!==null&&r.yieldKgHaHarvested?.value!==undefined&&r.yieldKgHaHarvested.flag==='A'&&r.year<Number(asOfDate.slice(0,4)))
+  .sort((a,b)=>b.year-a.year)[0];
+ if(!row?.yieldKgHaHarvested?.value)return null;
+ return {country,cropId,year:row.year,kgHaHarvested:row.yieldKgHaHarvested.value,flag:row.yieldKgHaHarvested.flag,
+  product:context.product,source:context.source,licence:context.licence,version:context.version,acquiredAt:context.acquiredAt,
+  archiveSha256:context.archiveSha256,scope:context.product?.scope??'Produit statistique national regroupé.',
+  limits:[...context.limits,'Statistique nationale par hectare récolté ; ce n’est ni un rendement de parcelle ni un Ym indépendant.']};
+}
