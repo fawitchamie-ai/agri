@@ -1,0 +1,29 @@
+/* The primary reading of a campaign is kept visually distinct from its settings. */
+.yield-overview-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px}
+.yield-overview-kicker{display:block;color:#42658e;font-weight:700;letter-spacing:.12em;font-size:11px;text-transform:uppercase;margin-bottom:8px}
+.yield-overview-heading h2{margin:0 0 7px;color:#102c4c;font-size:clamp(25px,3vw,34px);line-height:1.16;letter-spacing:-.025em}
+.yield-overview-heading p{margin:0;color:#526b86;font-size:15px;line-height:1.55;max-width:52ch}
+.yield-overview-status{flex:none;border:1px solid #cfdef0;background:#f0f6fc;color:#275685;border-radius:100px;padding:7px 12px;font-size:12px;font-weight:700}
+.yield-overview-hero{display:grid;grid-template-columns:1.05fr .95fr;background:#102f54;border-radius:18px;overflow:hidden;color:#fff;margin:0 0 18px}
+.yield-overview-main,.yield-overview-secondary{padding:30px clamp(22px,3vw,38px);min-width:0}
+.yield-overview-secondary{border-left:1px solid #ffffff32;background:#173e6b}
+.yield-overview-hero span{display:block;color:#c4ddf7;font-size:14px;font-weight:700}
+.yield-overview-hero strong{display:block;margin:12px 0 8px;color:#fff;font-size:clamp(36px,5vw,54px);line-height:1.1;letter-spacing:-.045em;overflow-wrap:anywhere}
+.yield-overview-hero strong small{font-size:18px;font-weight:400;letter-spacing:0}
+.yield-overview-hero p{color:#e3eefb;font-size:14px;line-height:1.5;margin:0}
+.yield-overview-scenario{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#f3f8fe;border:1px solid #dce8f6;border-radius:12px;padding:14px 16px}
+.yield-overview-scenario label{font-weight:700;color:#173b60;font-size:14px}
+.yield-overview-scenario select{max-width:100%;min-height:44px;background:#fff;border:1px solid #adc2db;border-radius:8px;padding:8px 34px 8px 12px;color:#173451}
+.yield-overview-scenario>span{color:#526b86;font-size:13px}
+.yield-overview-caution{margin:16px 0;color:#3a536e;font-size:14px;line-height:1.6}
+.yield-overview-explain{margin-bottom:26px;color:#285c94}
+.yield-overview-explain summary,.yield-overview-missing summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.yield-overview-empty{display:flex;align-items:flex-start;gap:18px;border:1px solid #d7e5f3;background:#f4f8fd;border-radius:16px;padding:24px;margin-bottom:28px}
+.yield-overview-empty-icon{flex:none;width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#d9eaff;color:#195a9e;font-weight:700;font-size:24px}
+.yield-overview-empty strong{font-size:19px;line-height:1.3;color:#153555}
+.yield-overview-empty p{font-size:14px;line-height:1.65;color:#415f7d;max-width:70ch;margin:8px 0 0}
+.yield-overview-action{margin-top:15px;border:0;border-radius:8px;background:#175fa8;color:white;font:inherit;font-weight:700;padding:12px 16px;min-height:44px;cursor:pointer}
+.yield-overview-action span{padding-left:8px}.yield-overview-missing{font-size:14px;color:#244f7a}.yield-overview-missing ul{padding-left:20px}.yield-overview-missing li{line-height:1.55}
+@media(max-width:650px){.yield-overview-heading{display:block}.yield-overview-status{display:inline-block;margin-top:14px}.yield-overview-hero{grid-template-columns:1fr}.yield-overview-secondary{border-left:0;border-top:1px solid #ffffff32}.yield-overview-main,.yield-overview-secondary{padding:24px}.yield-overview-scenario{display:grid}.yield-overview-scenario select{width:100%}.yield-overview-empty{padding:18px;gap:12px}.yield-overview-empty-icon{width:38px;height:38px;font-size:20px}}
+.yield-growth-preview{border:1px solid #bcd5ee;border-radius:15px;background:#f4f9ff;padding:22px;margin:20px 0 28px}
+.yield-growth-preview>div:first-child>span{font-size:11px;letter-spacing:.1em;font-weight:700;color:#355f8d}.yield-growth-preview h3{font-size:20px;color:#153a60;margin:8px 0}.yield-growth-preview p{color:#3c5874;line-height:1.55;font-size:14px}.yield-growth-values{display:flex;gap:36px;flex-wrap:wrap}.yield-growth-values p{margin:4px 0 12px}.yield-growth-values strong{font-size:27px;color:#153a60}.yield-growth-values span{display:block;font-size:12px;color:#506a85}.yield-growth-preview button{border:0;background:none;padding:10px 0;min-height:44px;color:#165da4;font:inherit;font-weight:700;cursor:pointer;text-align:left}
