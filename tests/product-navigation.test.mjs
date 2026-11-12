@@ -22,14 +22,14 @@ test('presentation starts without API calls; navigation preserves the simulation
  try{
   await act(async()=>root.render(React.createElement(App)));
   assert.equal(calls.length,0);assert.equal(host.querySelector('.welcome-page').querySelectorAll('input,select,textarea').length,0);
-  await click('Commencer une simulation');assert.deepEqual(calls,['/api/science','/api/workspace']);
+  await click('Situer mon champ');assert.deepEqual(calls,['/api/science','/api/workspace']);
   assert.equal(globalThis.__draftMounts,1);await click('Modifier le brouillon de test');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');
   await click('Récoltes réelles');assert.match(host.querySelector('.harvest-purpose').textContent,/distinctes des estimations et des simulations/);
   assert.equal(host.querySelector('.harvest-purpose + .split-grid').hidden,true,'Harvest entry is opened deliberately');
   await click('Ajouter une récolte');assert.equal(host.querySelector('.harvest-purpose + .split-grid').hidden,false);
   await click('Parcelle et campagne');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(globalThis.__draftMounts,1);
   await click('Présentation');assert.ok(host.querySelector('.welcome-page'));assert.equal(globalThis.__draftUnmounts??0,0);
-  await click('Commencer une simulation');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(calls.length,2,'Returning to a loaded workspace does not reload its data');
+  await click('Situer mon champ');assert.equal(host.querySelector('#test-draft').textContent,'Modifié');assert.equal(calls.length,2,'Returning to a loaded workspace does not reload its data');
   assert.equal(globalThis.__draftMounts,1);
  }finally{
   await act(async()=>root.unmount());globalThis.fetch=originalFetch;delete globalThis.__draftMounts;delete globalThis.__draftUnmounts;
