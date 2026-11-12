@@ -34,6 +34,8 @@ test('date comparison fetches the missing tail, explains next steps and keeps te
   await act(async()=>{compareButton(m.host).click();});
   assert.equal(calls.length,1);assert.equal(calls[0].action,'environment');assert.equal(calls[0].days,14);assert.equal(calls[0].start,addDays(today,c.weather.length));
   assert.equal(m.host.querySelectorAll('tbody tr').length,3);assert.equal((m.host.textContent.match(/Bilan complet/g)||[]).length,3);
+  const chart=m.host.querySelector('figure[aria-label="Comparaison des besoins en eau simulés par date de semis"]');
+  assert.ok(chart);assert.equal(chart.querySelectorAll('strong').length,4);assert.match(chart.textContent,/ne classe pas les récoltes/);
   assert.match(m.host.textContent,/pas une prévision saisonnière/);assert.equal(JSON.stringify(c),before);
  }finally{globalThis.fetch=oldFetch;await m.close();}
 });

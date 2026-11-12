@@ -12,7 +12,8 @@ import type {LandAssessment} from '../../lib/seasonal/land';
 import {LAND_COLORS,LAND_NAMES} from '../../lib/seasonal/land-display';
 import './parcel-imagery.css';
 const fmt=(n:number,d=1)=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
-const titles:[('terrain'|SatelliteLayer),string][]=[['terrain','Terre / eau'],['rgb','Satellite'],['ndvi','Vigueur'],['anomaly','Stress possible'],['classification','Nuages / eau']];
+const titles:[('terrain'|SatelliteLayer),string][]=[['terrain','Terre / eau'],['rgb','Satellite'],['ndvi','Vigueur'],['anomaly','Écart de végétation'],['classification','Nuages / eau']];
+const layerDescriptions:Record<'terrain'|SatelliteLayer,string>={terrain:'Comparez les classes de terrain disponibles à l’intérieur du contour dessiné.',rgb:'Situez votre parcelle sur une photo de repérage ou une observation datée.',ndvi:'Observez un indice de végétation ; il ne détermine pas la cause d’une variation.',anomaly:'Comparez la végétation à une référence historique, sans conclure à un stress précis.',classification:'Repérez les classes observées, notamment les nuages, leurs ombres et l’eau.',clear:'Consultez les observations claires disponibles pour la période.'};
 type Catalog=Awaited<ReturnType<typeof satelliteCatalog>>;
 type Coverage={key:string;percent:number|null};
 export default function ParcelLayers({config:c,assessment,onMap}:{config:SeasonalConfig;assessment?:LandAssessment;onMap:()=>void}){
@@ -73,6 +74,7 @@ export default function ParcelLayers({config:c,assessment,onMap}:{config:Seasona
  return <section className="field-map-card parcel-layer-card" aria-label="Images et classes du terrain">
   <div className="field-panel-title"><h3>Observer mon champ</h3><button className="qs-text-button" onClick={onMap}>Ouvrir la carte ↗</button></div>
   <div className="parcel-layer-tabs" aria-label="Choisir une couche du champ">{titles.map(([name,title])=><button key={name} aria-pressed={layer===name} onClick={()=>{setLayer(name);setDate('');setError('');}}>{title}</button>)}</div>
+  <p className="imagery-layer-description">{layerDescriptions[layer]}</p>
   {layer!=='terrain'&&!allowed?<div className="satellite-consent"><strong>Images de la parcelle</strong><HelpParagraph>Digital Earth Africa et le fond satellite Esri recevront l’emprise géographique de ce champ pour afficher leurs images publiques. Aucune donnée de compte, note ou récolte ne lui sera transmise.</HelpParagraph><button className="btn secondary" onClick={()=>setAllowedFor(identity)}>Charger les images de cette parcelle</button></div>:<>
    {layer!=='terrain'&&<>
     <div className="satellite-controls">
@@ -97,6 +99,11 @@ export default function ParcelLayers({config:c,assessment,onMap}:{config:Seasona
    </div>
    {layer==='terrain'?<>
     <div className="parcel-class-legend">{Object.entries(LAND_NAMES).map(([cls,name])=>{const v=land?.fractions[cls as keyof typeof LAND_NAMES];return <span key={cls}><i style={{background:LAND_COLORS[cls as keyof typeof LAND_COLORS]}}/>{name}{v?' · '+fmt(v.fraction*100)+' %':''}</span>;})}</div>
+    {land&&<figure className="parcel-area-breakdown" aria-labelledby={id+'area-title'}>
+     <figcaption id={id+'area-title'}><strong>Comment se répartit le contour ?</strong><span>Part de la surface dessinée, d’après les sources cartographiques disponibles.</span></figcaption>
+     <ul>{Object.entries(LAND_NAMES).map(([cls,name])=>{const fraction=land.fractions[cls as keyof typeof LAND_NAMES]?.fraction;if(!Number.isFinite(fraction)||fraction<=0)return null;return <li key={cls}><div className="parcel-area-label"><span>{name}</span><strong>{fmt(fraction*100)} % <small>· {fmt(land.areaM2*fraction/10000,3)} ha</small></strong></div><div className="parcel-area-track" aria-hidden="true"><span style={{width:Math.min(100,Math.max(0,fraction*100))+'%',background:LAND_COLORS[cls as keyof typeof LAND_COLORS]}}/></div></li>;})}</ul>
+     <p>Ces classes décrivent les données cartographiques, pas la surface effectivement semée. La terre potentielle doit être vérifiée sur le terrain ; les zones non déterminées restent inconnues.</p>
+    </figure>}
     <HelpParagraph className="satellite-note">{land?'Terre potentielle : '+fmt(land.candidateAreaM2/10000,3)+' ha sur '+fmt(land.areaM2/10000,3)+' ha de contour. ':'Analyse terre/eau en préparation. '}Une terre cartographiée n’est pas automatiquement cultivable.</HelpParagraph><details><summary>Sources et dates du terrain</summary>{land?.sources.map(s=><HelpParagraph key={s.id}>{s.provider} · {s.product} · {s.version} · {s.resolutionM??'—'} m · {s.observedAt??s.referencePeriod?.from??'date non documentée'}</HelpParagraph>)}</details>
    </>:<>
     {!basemap&&<div className="imagery-overlay-controls"><label><input type="checkbox" checked={photo} onChange={e=>setPhoto(e.target.checked)}/> Fond photo</label><label>Opacité des couleurs <input type="range" min="25" max="100" value={opacity} onChange={e=>setOpacity(Number(e.target.value))}/>{opacity} %</label><span>{displayedCoverage!==null?'Pixels affichés : '+displayedCoverage+' % du contour':'Couverture à vérifier'}</span></div>}

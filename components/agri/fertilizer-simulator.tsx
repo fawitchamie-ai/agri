@@ -1,5 +1,6 @@
 'use client';
 import { HelpParagraph } from './help-dialog';
+import FertilizerResponseChart from './fertilizer-response-chart';
 import {useState} from 'react';
 import type {SeasonalConfig,WaterPlan} from '../../lib/seasonal/types';
 import {fertilizerScope,parseFertilizerScenario} from '../../lib/seasonal/fertilizer-scenario';
@@ -57,6 +58,7 @@ function SimulatorForm({config,plan,stale,onChange,onAdvanced}:Props){
   {result?.missing.map(m=><HelpParagraph key={m}>{m}</HelpParagraph>)}
   {r&&<div aria-live="polite">
    <HelpParagraph><strong>Rendements simulés, grain à 15 % · plage entre deux profils.</strong> Les apports déjà réalisés sont conservés dans les deux situations.</HelpParagraph>
+   <FertilizerResponseChart profiles={r.profiles}/>
    <div className="table-wrap"><table className="data-table"><thead><tr><th>Situation</th><th>Rendement (t/ha du scénario)</th><th>Production (kg)</th></tr></thead><tbody>
     <tr><td>Sans nouvel apport prévu</td><td>{range(r.yieldWithoutKgHa,1000)}</td><td>{range(r.productionWithoutKg)}</td></tr>
     <tr><td>Avec les engrais prévus</td><td>{range(r.yieldWithKgHa,1000)}</td><td>{range(r.productionWithKg)}</td></tr>

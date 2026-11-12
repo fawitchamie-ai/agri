@@ -7,6 +7,18 @@ import {compareSowingDates,comparisonWeatherRequests,sowingComparisonBlock,type 
 import {seasonalRequest} from '../../lib/seasonal/request';
 const fmt=(n:number|null)=>n===null?'—':n.toLocaleString('fr-FR',{maximumFractionDigits:1});
 const date=(d:string)=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+function DemandComparison({rows}:{rows:SowingComparisonRow[]}){
+ const valid=rows.filter(r=>r.complete&&r.demandMm!==null&&Number.isFinite(r.demandMm)&&r.demandMm>=0);
+ if(!valid.length)return null;
+ const max=Math.max(...valid.map(r=>r.demandMm??0),1);
+ return <figure aria-label="Comparaison des besoins en eau simulés par date de semis" style={{margin:'24px 0',padding:'20px',border:'1px solid #d7e3f1',borderRadius:12,background:'#f5f9ff'}}>
+  <figcaption><strong>Besoins en eau sur le cycle</strong><p>Plus la barre est longue, plus le besoin simulé est élevé. Cela ne classe pas les récoltes.</p></figcaption>
+  <div style={{display:'grid',gap:16}}>{rows.map(r=>{const value=r.complete&&r.demandMm!==null&&Number.isFinite(r.demandMm)&&r.demandMm>=0?r.demandMm:null;return <div key={r.date}>
+   <div style={{display:'flex',justifyContent:'space-between',gap:12,flexWrap:'wrap'}}><span>{date(r.date)}</span><strong>{value===null?'Données incomplètes':`${fmt(value)} mm`}</strong></div>
+   {value!==null&&<div aria-hidden="true" style={{height:10,background:'#e0eaf5',borderRadius:8,marginTop:6}}><div style={{height:'100%',width:`${value/max*100}%`,background:'#2163b4',borderRadius:8}}/></div>}
+  </div>})}</div>
+ </figure>;
+}
 export default function SowingComparison({config,events}:{config:SeasonalConfig;events:WaterEvent[]}){
  const [rows,setRows]=useState<SowingComparisonRow[]>([]),[busy,setBusy]=useState(false),[error,setError]=useState(''),[issued,setIssued]=useState('');
  const controller=useRef<AbortController|null>(null),sequence=useRef(0);
@@ -22,14 +34,15 @@ export default function SowingComparison({config,events}:{config:SeasonalConfig;
    if(id===sequence.current&&!abort.signal.aborted){setRows(result);setIssued(today);}
   }catch(e){if(id===sequence.current&&!abort.signal.aborted)setError((e as Error).message);}finally{if(id===sequence.current)setBusy(false);}
  }
- return <section className="card" aria-label="Comparer mes dates de semis"><h2>Et si je semais plus tard ?</h2>
-  <HelpParagraph>Cette étape est facultative. Votre date actuelle est le <strong>{date(config.sowingDate)}</strong>. Un clic compare cette date, puis 7 et 14 jours plus tard.</HelpParagraph>
-  <HelpParagraph>Vous n’avez aucun besoin NPK ni rendement à renseigner ici. L’application cherche la météo manquante jusqu’à la fin des trois cycles.</HelpParagraph>
+ return <section className="card" aria-label="Comparer mes dates de semis"><span className="qs-eyebrow">COMPARER LES SCÉNARIOS</span><h2>Quelle différence si je sème plus tard ?</h2>
+  <HelpParagraph>Comparez votre date prévue, le <strong>{date(config.sowingDate)}</strong>, avec un semis 7 ou 14 jours plus tard.</HelpParagraph>
+  <HelpParagraph>La comparaison porte sur les besoins en eau et les prélèvements simulés, pas sur le rendement. Vous n’avez aucun besoin NPK ni rendement à renseigner. La météo nécessaire est recherchée pour les trois cycles.</HelpParagraph>
   {block&&<HelpParagraph className="notice info">{block}</HelpParagraph>}
   <button className="btn primary" disabled={busy||!!block} onClick={compare}>{busy?'Chargement de la météo et comparaison…':'Actualiser la météo et comparer les trois dates'}</button>
   {busy&&<HelpParagraph role="status">La comparaison est en cours. Votre campagne et votre date de semis restent conservées.</HelpParagraph>}
   {error&&<HelpParagraph className="notice warning" role="alert">{error} Réessayez ; votre campagne est conservée.</HelpParagraph>}
   {!!rows.length&&<><h3>Comment lire le résultat</h3><HelpParagraph>Les millimètres représentent le besoin en eau sur tout le cycle. Les m³ représentent le prélèvement simulé à la source avec vos contraintes d’arrosage. Un plus petit volume ne prouve pas une meilleure récolte.</HelpParagraph>
+   <DemandComparison rows={rows}/>
    <div className="table-wrap"><table className="data-table"><thead><tr><th>Date du semis</th><th>Fin du cycle</th><th>Besoin sur le cycle (mm)</th><th>Eau à la source (m³)</th><th>Résultat</th></tr></thead><tbody>{rows.map(r=><tr key={r.date}><td>{date(r.date)}</td><td>{date(r.end)}</td><td>{fmt(r.demandMm)}</td><td>{fmt(r.sourceM3)}</td><td>{r.complete?'Bilan complet':<>Comparaison impossible : données à compléter.<details><summary>Voir ce qui manque</summary>{r.missing.map(m=><HelpParagraph key={m}>{m}</HelpParagraph>)}</details></>}</td></tr>)}</tbody></table></div>
    {rows.some(r=>!r.complete)&&<HelpParagraph className="notice info">Une date n’a pas de résultat complet. Ses totaux restent masqués ; aucune meilleure date n’est annoncée.</HelpParagraph>}
    <details><summary>Données et hypothèses de cette comparaison</summary><HelpParagraph>Données disponibles au {date(issued)}. {rows.some(r=>r.historicalScenario)?'Une partie de la météo est un scénario historique ou une hypothèse explicite, pas une prévision saisonnière.':''}</HelpParagraph><HelpParagraph>Le même état initial du sol est supposé pour chaque date. Vos arrosages prévus sont décalés avec le semis ; les limites d’accès à l’eau restent attachées à leurs dates réelles. Aucun apport réalisé n’est transféré et aucun calendrier n’est enregistré par cette comparaison.</HelpParagraph><HelpParagraph>Le calendrier local, la variété et les conditions de levée restent à vérifier avant de changer réellement la date de semis. Cette comparaison hydrique ne classe pas le rendement agricole.</HelpParagraph></details>

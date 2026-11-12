@@ -8,11 +8,12 @@ test('water is visible as water in each country, native sources and area stay ex
  for(const country of Object.keys(COUNTRIES)){
   const config={...exampleCampaign('2026-11-02'),country,parcelGeometry:shape},assessment=assessLandGeometry(shape,[cell(80)]);
   const html=renderToStaticMarkup(React.createElement(Layers,{config,assessment,onMap:()=>{}}));
-  assert.match(html,/Eau permanente · 100 %/);assert.match(html,/Terre potentielle · 0 %/);assert.match(html,/#3679c2/);assert.match(html,/Test land/);assert.match(html,/Stress possible/);assert.doesNotMatch(html,/class="parcel-raster-image"/,'external images require visitor action');
+  assert.match(html,/Eau permanente · 100 %/);assert.match(html,/Terre potentielle · 0 %/);assert.match(html,/#3679c2/);assert.match(html,/Test land/);assert.match(html,/Écart de végétation/);assert.doesNotMatch(html,/class="parcel-raster-image"/,'external images require visitor action');
+  assert.match(html,/Comment se répartit le contour/);assert.match(html,/Eau permanente<\/span><strong>100 %/);assert.match(html,/pas la surface effectivement semée/);
  }
 });
 test('unknown areas remain hatched, old geometry does not color a new field as known land',()=>{
  const config={...exampleCampaign('2026-11-02'),parcelGeometry:shape};const old={...shape,coordinates:[[[2,8],[2.002,8],[2.002,8.002],[2,8.002],[2,8]]]};
  const html=renderToStaticMarkup(React.createElement(Layers,{config,assessment:assessLandGeometry(old,[{...cell(40),cells:[{id:'other',geometry:old,value:40}]}]),onMap:()=>{}}));
- assert.match(html,/Analyse terre\/eau en préparation/);assert.match(html,/<pattern/);assert.doesNotMatch(html,/Terre potentielle · 100 %/);
+ assert.match(html,/Analyse terre\/eau en préparation/);assert.match(html,/<pattern/);assert.doesNotMatch(html,/Terre potentielle · 100 %/);assert.doesNotMatch(html,/Comment se répartit le contour/,'no surface chart for an unrelated contour');
 });

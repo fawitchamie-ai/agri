@@ -1,15 +1,14 @@
-/* Cropin-inspired visual system for the full AgriPrévision workspace.
-   Blue leads the interface; green, amber, coral and violet identify crop signals. */
+/* AgriPrévision design tokens: a readable navy and blue interface. */
 :root{
-  --cropin-blue:#1678c8;
-  --cropin-blue-deep:#0f5fa8;
-  --cropin-navy:#173c53;
-  --cropin-ink:#253746;
-  --cropin-muted:#728391;
-  --cropin-line:#dce5eb;
-  --cropin-canvas:#f2f6f8;
+  --cropin-blue:#1765ad;
+  --cropin-blue-deep:#104d88;
+  --cropin-navy:#102b4d;
+  --cropin-ink:#172f4d;
+  --cropin-muted:#53677c;
+  --cropin-line:#d9e3ed;
+  --cropin-canvas:#f3f7fb;
   --cropin-white:#fff;
-  --cropin-green:#78b83f;
+  --cropin-green:#3b79b8;
   --cropin-amber:#e9a533;
   --cropin-coral:#e66e4e;
   --cropin-violet:#7754bd;
@@ -31,12 +30,12 @@
   border-right:0!important;
   color:#eaf3f7!important;
   padding:20px 13px 0!important;
-  box-shadow:4px 0 18px #173c5310;
+  box-shadow:4px 0 18px #102b4d10;
 }
 .product-sidebar .product-brand{color:#fff!important}
 .product-sidebar .product-brand-symbol{background:var(--cropin-blue)!important;color:#fff!important;border-radius:12px!important}
 .product-sidebar .product-brand small,.product-sidebar .brand-light{color:#a9c3d1!important}
-.product-sidebar .sidebar-section-label{color:#89a9b9!important}
+.product-sidebar .sidebar-section-label{color:#b9cbdc!important}
 .product-nav-item{
   color:#d3e0e7!important;
   border-radius:9px!important;
@@ -68,9 +67,9 @@
   padding:0 clamp(18px,2.3vw,36px)!important;
   box-shadow:0 2px 10px #163c5308;
 }
-.product-breadcrumb{color:#7b8b97!important}
+.product-breadcrumb{color:#52667b!important}
 .product-breadcrumb strong{color:var(--cropin-navy)!important;font-weight:700!important}
-.product-topbar-right{color:#778894!important}
+.product-topbar-right{color:#52667b!important}
 .product-topbar-right>button{color:var(--cropin-blue)!important;font-weight:700!important}
 .connection-state>i{background:var(--cropin-green)!important}
 .agri-shell .page-content{padding:30px clamp(18px,2.3vw,36px) 60px!important}
@@ -80,26 +79,26 @@
   letter-spacing:1.35px!important;
 }
 .agri-shell .page-heading h1{font-size:clamp(24px,2.1vw,32px)!important;letter-spacing:-.65px!important}
-.agri-shell .page-heading>div>p{color:#6f808d!important}
+.agri-shell .page-heading>div>p{color:#53677c!important}
 .agri-shell .card,.agri-shell .qs-card,.agri-shell .product-disclosure,.agri-shell .filter-bar,.campaign-card{
   background:#fff!important;
   border:1px solid var(--cropin-line)!important;
   border-radius:13px!important;
-  box-shadow:0 3px 14px #173c5309!important;
+  box-shadow:0 3px 14px #102b4d09!important;
 }
 .agri-shell .card,.agri-shell .qs-card{padding:24px!important}
 .agri-shell .card:hover,.agri-shell .qs-card:hover{border-color:#c4d8e5!important}
-.agri-shell .card-header p,.agri-shell .source-note{color:#71838f!important}
+.agri-shell .card-header p,.agri-shell .source-note{color:#53677c!important}
 .agri-shell .btn.primary,.welcome-page .btn.primary{
   background:var(--cropin-blue)!important;
   border-color:var(--cropin-blue)!important;
   color:#fff!important;
   border-radius:9px!important;
-  box-shadow:0 4px 10px #1678c826!important;
+  box-shadow:0 4px 10px #1765ad26!important;
 }
 .agri-shell .btn.primary:hover,.welcome-page .btn.primary:hover{
   background:var(--cropin-blue-deep)!important;border-color:var(--cropin-blue-deep)!important;
-  box-shadow:0 6px 15px #1678c83d!important;transform:translateY(-1px)
+  box-shadow:0 6px 15px #1765ad3d!important;transform:translateY(-1px)
 }
 .agri-shell .btn.secondary{border-color:#cddbe3!important;color:#34566c!important;border-radius:9px!important}
 .agri-shell input,.agri-shell select,.agri-shell textarea{
@@ -107,7 +106,7 @@
   color:#2b4252!important;transition:border-color .16s,box-shadow .16s;
 }
 .agri-shell input:focus,.agri-shell select:focus,.agri-shell textarea:focus{
-  border-color:var(--cropin-blue)!important;box-shadow:0 0 0 3px #1678c81c!important;outline:0!important
+  border-color:var(--cropin-blue)!important;box-shadow:0 0 0 3px #1765ad1c!important
 }
 .agri-shell input[type=checkbox],.agri-shell input[type=radio]{accent-color:var(--cropin-blue)!important}
 .agri-shell .badge{background:#e8f3fb!important;color:#1769a9!important;border-radius:20px!important}
@@ -124,21 +123,21 @@
 .agri-shell .product-disclosure[open]>summary{background:#f6fafc}
 .agri-shell .filter-bar{padding:17px!important}
 .agri-shell .campaign-card{transition:transform .18s,border-color .18s,box-shadow .18s!important;color:#29465a!important}
-.agri-shell .campaign-card:hover{transform:translateY(-2px);border-color:#9cc6df!important;box-shadow:0 9px 22px #173c5314!important}
+.agri-shell .campaign-card:hover{transform:translateY(-2px);border-color:#9cc6df!important;box-shadow:0 9px 22px #102b4d14!important}
 .agri-shell .campaign-card>span{color:var(--cropin-blue)!important}
 .agri-shell .campaign-card em{color:#1678a6!important}
-.agri-shell .simulation-start{border:1px solid var(--cropin-line)!important;border-radius:15px!important;box-shadow:0 5px 20px #173c530c}
-.agri-shell .simulation-start-visual{background:linear-gradient(145deg,#e4f2f7,#edf5ed)!important}
+.agri-shell .simulation-start{border:1px solid var(--cropin-line)!important;border-radius:15px!important;box-shadow:0 5px 20px #102b4d0c}
+.agri-shell .simulation-start-visual{background:linear-gradient(145deg,#e4f2f7,#e9f2fc)!important}
 .agri-shell .simulation-start-copy .product-eyebrow{color:var(--cropin-blue)!important}
 .agri-shell .simulation-steps .current b{background:#e4f2fb!important;color:var(--cropin-blue)!important;border-color:#a9cfe5!important}
 .agri-shell .simulation-steps .current>span{color:#216a9b!important}
-.agri-shell .simulation-context{border-color:var(--cropin-line)!important;border-radius:12px!important;box-shadow:0 3px 14px #173c5309}
+.agri-shell .simulation-context{border-color:var(--cropin-line)!important;border-radius:12px!important;box-shadow:0 3px 14px #102b4d09}
 .agri-shell .simulation-parcel>span{background:#e8f4fa!important;color:var(--cropin-blue)!important}
 .agri-shell .simulation-parcel strong{color:#24485e!important}
 .agri-shell .chart{background:#fff;border:1px solid var(--cropin-line);border-radius:12px;padding:15px}
 .agri-shell .chart-legend{color:#657985}
 .agri-shell .empty-state{background:#f7fafb!important;border-color:#d8e5ec!important}
-.agri-shell .toast{border-color:#b8dfc0!important;background:#edf8ef!important;color:#267044!important;border-radius:10px!important}
+.agri-shell .toast{border-color:#c3d7ec!important;background:#edf5fd!important;color:#194e80!important;border-radius:10px!important}
 .welcome-page{background:linear-gradient(180deg,#f4f9fc 0%,#fff 58%)!important}
 .welcome-copy .product-eyebrow{color:var(--cropin-blue)!important}
 .welcome-copy h1 em{color:var(--cropin-blue)!important}
@@ -155,4 +154,26 @@
   .agri-shell .page-heading h1{font-size:25px!important}
   .product-topbar{min-height:58px!important}
   .agri-shell .filter-bar{padding:13px!important}
+}
+
+/* Shared controls, reading comfort and motion preferences. */
+.agri-shell :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible,
+.welcome-page :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible {
+  outline:3px solid #1765ad!important; outline-offset:3px;
+}
+.product-sidebar :is(button,a,summary):focus-visible { outline-color:#a9d1ff!important; }
+.agri-shell .btn, .agri-shell .product-nav-item { min-height:44px; }
+.agri-shell .btn:disabled { cursor:not-allowed; }
+.agri-shell .table-wrap { overscroll-behavior-inline:contain; }
+.agri-shell .data-table th { color:#40566c!important; }
+.agri-shell .card-header p, .agri-shell .source-note { color:#52677e!important; }
+@media (max-width: 600px) {
+  .agri-shell .page-content { padding-inline:16px!important; }
+  .agri-shell .btn { white-space:normal; }
+  .agri-shell .data-table { font-size:13px; }
+  .product-sidebar { max-width:calc(100vw - 40px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior:auto; }
+  *, *::before, *::after { animation-duration:0.01ms!important; animation-iteration-count:1!important; transition-duration:0.01ms!important; scroll-behavior:auto!important; }
 }

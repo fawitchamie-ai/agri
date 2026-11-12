@@ -35,7 +35,9 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(render(c),/id="field-tab-water"[^>]*role="tab"/);
  assert.match(render(c),/id="field-tab-fertilizer"[^>]*role="tab"/);
  const expert=render(c,false,'settings');
- assert.doesNotMatch(render(c),/id="field-tab-(?:notes|images)"[^>]*role="tab"/);
+ assert.match(render(c),/id="field-tab-images"[^>]*role="tab"/);
+ assert.doesNotMatch(render(c),/id="field-tab-notes"[^>]*role="tab"/);
+ assert.match(render(c,false,'images'),/Images du champ/);
  assert.match(expert,/class="expert-subnav"/);
  assert.match(expert,/Carnet et essais/);
  assert.match(expert,/Images du champ/);
@@ -81,4 +83,10 @@ test('failed recalculation exposes retry and fertilizer references instead of an
  assert.doesNotMatch(render(config,false,'yield'),/option value="declared-scenario"/);
  assert.match(fertilizerHtml,/prévision parcellaire validée et la dose optimale restent indisponibles/);
  assert.match(fertilizerHtml,/Scénario exploratoire/);
+});
+test('unknown contour area is not presented as zero hectares',()=>{
+ const config=declareScenario(fixture());config.areaM2=null;
+ const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
+ assert.match(html,/Surface du contour indisponible/);
+ assert.doesNotMatch(html,/0 ha de contour/);
 });

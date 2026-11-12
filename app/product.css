@@ -263,3 +263,23 @@ body{font-family:'Lato',sans-serif}
   .expert-subnav { display:grid; grid-template-columns:1fr; }
   .expert-subnav>button { text-align:left; }
 }
+
+/* Reading aids for the water scenarios: exact values remain in text and table. */
+.water-comparison-chart { margin:20px 0; padding:20px; border:1px solid #d5e1ef; border-radius:12px; background:#f8fbff; }
+.water-comparison-chart figcaption { display:grid; gap:4px; color:#193e68; }
+.water-comparison-chart figcaption strong { font-size:16px; }
+.water-comparison-chart figcaption span, .water-comparison-chart p { color:#435d7b; font-size:13px; line-height:1.5; }
+.water-comparison-chart p { margin:15px 0 0; }
+.water-comparison-scale { display:flex; justify-content:space-between; margin:18px 0 5px; color:#516987; font-size:12px; font-variant-numeric:tabular-nums; }
+.water-comparison-rows { display:grid; gap:15px; }
+.water-comparison-label { display:flex; flex-wrap:wrap; gap:4px 12px; justify-content:space-between; margin-bottom:6px; color:#203e60; font-size:14px; }
+.water-comparison-label span { font-variant-numeric:tabular-nums; font-weight:700; }
+.water-comparison-track { height:13px; overflow:hidden; border-radius:8px; background:#dce8f5; }
+.water-comparison-bar { display:block; height:100%; border-radius:8px; background:#1459a8; }
+.water-comparison-recorded { background:#173963; }
+.water-comparison-proposed { background:#2871bf; }
+.water-comparison-row small { display:block; margin-top:5px; color:#5a4d31; line-height:1.5; }
+.qs-chart-legend i.recorded { background:repeating-linear-gradient(135deg,#173963 0 3px,#fff 3px 4px); }
+.qs-chart-legend i.demand { border-radius:50%; }
+.qs-chart-legend i.rain { border-radius:0; transform:rotate(45deg); }
+.water-week-context { margin:10px 0 0; color:#344e6b; font-size:13px; line-height:1.5; }
