@@ -1,0 +1,220 @@
+.campaign-shell button:focus-visible,.campaign-shell a:focus-visible{outline:3px solid #bc681c;outline-offset:3px}
+
+.agri-shell.campaign-shell{display:block;min-height:100dvh;background:#f4f6f1;color:#1e2d3b;font-size:16px}
+.campaign-shell .workspace{width:100%;min-height:100dvh}
+.campaign-shell .page-content,.campaign-shell .page-content.seasonal-page{width:100%;max-width:none;margin:0;padding:0!important}
+.campaign-shell .seasonal-tool{min-height:100dvh;background:#f4f6f1}
+.campaign-shell .product-sidebar{display:none}
+.campaign-shell.menu-open .product-sidebar{position:fixed;left:0;top:0;z-index:100;display:flex;width:270px;height:100dvh;background:#f8f9fb}
+.campaign-shell .product-nav-scrim{display:none}
+.campaign-shell.menu-open .product-nav-scrim{position:fixed;inset:0;z-index:90;display:block;border:0;background:#111d2d66}
+.farmer-app-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:22px;min-height:76px;padding:10px max(22px,calc((100vw - 1390px)/2));border-bottom:1px solid #dce3db;background:#fff}
+.farmer-app-bar .product-brand{flex:0 0 auto}
+.farmer-app-location{display:grid;gap:2px;min-width:150px;padding-left:20px;border-left:1px solid #e3e8e2}
+.farmer-app-location span{font-size:10px;font-weight:700;letter-spacing:1.1px;color:#748375}
+.farmer-app-location strong{font-size:15px;color:#233d30}
+.farmer-app-location{margin-right:auto}
+.farmer-header-menu,.farmer-header-campaigns,.farmer-header-new{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:9px 14px;border:1px solid #d8e1d7;border-radius:9px;background:#fff;color:#2d4936;font:700 13px 'Lato',Arial,sans-serif;cursor:pointer}
+.farmer-header-campaigns b{display:grid;place-items:center;min-width:22px;height:22px;border-radius:50%;background:#e9f0e5;font-size:11px}
+.farmer-header-new{border-color:#27583b;background:#27583b;color:#fff}
+.farmer-header-save{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:9px 14px;border:1px solid #cbd8ca;border-radius:9px;background:#f7faf6;color:#2d4936;font:700 13px 'Lato',Arial,sans-serif;cursor:pointer}
+.farmer-header-save:disabled{opacity:.55;cursor:wait}
+.campaign-shell .notice,.campaign-shell .toast{max-width:1100px;margin:18px auto}
+.farmer-campaign-view{width:min(1120px,calc(100% - 48px));margin:0 auto;padding:38px 0 68px}
+.farmer-start-card{max-width:860px;margin:34px auto 80px;padding:clamp(28px,5vw,68px);border:1px solid #dce4d9;border-radius:24px;background:#fff;box-shadow:0 14px 40px #263c2a0a}
+.farmer-step-line{display:flex;align-items:center;gap:14px;margin-bottom:48px;color:#718073}
+.farmer-step-line>span{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;white-space:nowrap}
+.farmer-step-line>span b{display:grid;place-items:center;width:31px;height:31px;border:1px solid #cfd9cd;border-radius:50%;font-size:13px}
+.farmer-step-line>span.is-current{color:#27583b}
+.farmer-step-line>span.is-current b{border-color:#27583b;background:#27583b;color:#fff}
+.farmer-step-line>i{height:1px;flex:1;background:#e0e6df}
+.farmer-simple-kicker{display:block;color:#567b5d;font-size:11px;font-weight:700;letter-spacing:1.15px}
+.farmer-start-card h1,.farmer-campaign-title h1{margin:13px 0;font-size:clamp(32px,5vw,49px);line-height:1.13;letter-spacing:-1.5px;color:#1d3627}
+.farmer-start-card>p{max-width:570px;margin:0 0 27px;color:#526254;font-size:18px;line-height:1.7}
+.farmer-primary-action{display:flex;align-items:center;justify-content:space-between;gap:18px;width:min(100%,500px);min-height:64px;padding:15px 19px;border:0;border-radius:12px;background:#27583b;color:white;font:700 17px 'Lato',Arial,sans-serif;cursor:pointer}
+.farmer-start-card>small{display:block;margin-top:13px;color:#69776b;font-size:14px;line-height:1.6}
+.farmer-country-choice{display:flex;align-items:center;gap:15px;width:min(100%,500px);margin-top:32px;padding-top:22px;border-top:1px solid #e7ebe6;color:#526254;font-size:14px;font-weight:700}
+.farmer-country-choice select{max-width:250px;min-height:48px;font-size:16px}
+.farmer-campaign-title{display:flex;justify-content:space-between;align-items:center;gap:25px;margin-bottom:24px;padding:27px 32px;border:1px solid #dce4d9;border-radius:18px;background:#fff}
+.farmer-campaign-title h1{margin:7px 0;font-size:34px}
+.farmer-campaign-title p{margin:0;color:#596b5b;font-size:16px}
+.farmer-outline-action{display:flex;align-items:center;gap:9px;min-height:48px;padding:10px 16px;border:1px solid #cfdace;border-radius:9px;background:#fff;color:#294c35;font-weight:700;cursor:pointer}
+.farmer-harvest-card{padding:clamp(24px,4vw,42px);border:1px solid #d9e3d7;border-radius:20px;background:#fff;box-shadow:0 10px 30px #263c2a0a}
+.farmer-harvest-heading h2{margin:8px 0;font-size:27px;color:#213b2a}
+.farmer-harvest-heading p{margin:0;color:#5b6c5d;font-size:16px;line-height:1.65}
+.farmer-harvest-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:25px 0}
+.farmer-harvest-value{display:flex;flex-direction:column;align-items:flex-start;min-height:168px;padding:21px;border:1px solid #dbe4da;border-radius:14px;background:#f8faf6}
+.farmer-harvest-value>span{color:#536755;font-size:15px;font-weight:700}
+.farmer-harvest-value>strong{margin:13px 0 7px;color:#1d402a;font-size:clamp(27px,4vw,39px);line-height:1.1;letter-spacing:-.6px;overflow-wrap:anywhere}
+.farmer-harvest-value>strong small{font-size:16px;font-weight:600;letter-spacing:0}
+.farmer-harvest-value>em{color:#617162;font-size:14px;font-style:normal;line-height:1.55}
+.farmer-harvest-value.is-unavailable{background:#f4f5f1}
+.farmer-harvest-value.is-unavailable>strong{font-size:22px;color:#5b685b;letter-spacing:0}
+.farmer-water-note{display:flex;align-items:flex-start;gap:15px;padding:18px 20px;border-radius:12px;background:#eef5eb;color:#314a37}
+.farmer-water-symbol{display:grid;place-items:center;flex:0 0 33px;height:33px;border-radius:50%;background:#dcebd9;font-size:20px;font-weight:700}
+.farmer-water-note strong{font-size:15px}
+.farmer-water-note p{margin:4px 0 0;color:#5a6b5b;font-size:14px;line-height:1.55}
+.farmer-more-details{display:flex;align-items:center;gap:10px;margin:20px 0 0;padding:10px 0;border:0;background:transparent;color:#255737;font-size:15px;font-weight:700;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.farmer-campaign-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:19px 0}
+.farmer-campaign-actions>button{display:flex;align-items:center;gap:12px;min-height:88px;padding:16px;border:1px solid #dbe3d8;border-radius:13px;background:#fff;color:#2e4432;text-align:left;cursor:pointer}
+.farmer-campaign-actions>button>span:nth-child(2){display:grid;gap:5px;flex:1}
+.farmer-campaign-actions strong{font-size:15px}
+.farmer-campaign-actions small{color:#657465;font-size:13px;line-height:1.45}
+.farmer-action-icon{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:11px;background:#edf4e9;color:#346143}
+.farmer-save-action{min-height:48px;padding:11px 18px;border:1px solid #b8cbb9;border-radius:9px;background:#fff;color:#2e5339;font-weight:700;cursor:pointer}
+.farmer-save-action:disabled{opacity:.55;cursor:wait}
+.farmer-small-print{margin:20px 0 0;color:#718071;font-size:13px}
+.farmer-error{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:18px;padding:15px;border:1px solid #e8d2bd;border-radius:10px;background:#fff7ed;color:#694a30}
+.farmer-error span{font-size:14px;line-height:1.5}
+.farmer-error button{min-height:42px;padding:9px 13px;border:1px solid #cfae8d;border-radius:8px;background:#fff;color:#694a30;font-weight:700}
+.details-return-bar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 20px;padding:17px 20px;border:1px solid #d8e2d6;border-radius:12px;background:#fff}
+.details-return-bar>div{display:grid;gap:4px}
+.details-return-bar>div>strong{color:#2a4330;font-size:16px}
+.details-return-bar>button{min-height:44px;padding:9px 13px;border:1px solid #c8d5c7;border-radius:8px;background:#fff;color:#2e5339;font-weight:700;cursor:pointer}
+
+.campaign-shell .parcel-experience.is-simple{max-width:1500px;margin:0 auto;padding:22px 22px 45px}
+.campaign-shell .parcel-experience.is-simple .parcel-journey-header{grid-template-columns:minmax(220px,.8fr) minmax(360px,1.2fr);gap:12px 28px;padding:22px 25px;border:1px solid #dce4d9;border-radius:16px;background:#fff}
+.campaign-shell .parcel-experience.is-simple .parcel-journey-copy h2{font-size:24px;color:#1d3627}
+.campaign-shell .parcel-experience.is-simple .parcel-journey-copy p{font-size:15px;line-height:1.6}
+.campaign-shell .parcel-experience.is-simple .parcel-journey-steps{margin:0}
+.campaign-shell .parcel-experience.is-simple .parcel-journey-next{display:none}
+.campaign-shell .parcel-experience.is-simple .parcel-workbench{grid-template-columns:minmax(0,1.55fr) minmax(320px,.75fr);gap:16px;margin-top:16px}
+.campaign-shell .parcel-experience.is-simple .parcel-map-stage{min-height:620px;border-radius:16px}
+.campaign-shell .parcel-experience.is-simple .parcel-sidepanel{padding:24px;border:1px solid #dce4d9;border-radius:16px;background:#fff}
+.campaign-shell .parcel-experience.is-simple .parcel-progress{display:none}
+.campaign-shell .parcel-experience.is-simple .parcel-panel-title h2{font-size:21px}
+.campaign-shell .parcel-experience.is-simple .parcel-sidepanel .field,.campaign-shell .parcel-experience.is-simple .parcel-sidepanel .parcel-main-button{font-size:15px}
+.campaign-shell .parcel-experience.is-simple .parcel-sidepanel .parcel-main-button{min-height:50px}
+.campaign-shell .parcel-experience.is-simple .parcel-sidepanel .parcel-coordinate-tools>summary{font-size:14px;font-weight:700}
+
+.agronomist-brief{margin:25px 0;padding:26px;border:1px solid #cad6e4;border-radius:14px;background:#f5f8fb;color:#26394e}
+.agronomist-brief-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+.advisor-kicker{display:block;color:#627b9b;font-size:10px;font-weight:700;letter-spacing:1.1px}
+.agronomist-brief-header h2{margin:7px 0 4px;font-size:24px;color:#203b5d}
+.agronomist-brief-header p{margin:0;color:#5d7087;font-size:13px}
+.advisor-calculation-status{flex:0 0 auto;padding:8px 11px;border:1px solid #cbd8e7;border-radius:999px;background:#eaf1f8;color:#365575;font-size:11px;font-weight:700}
+.advisor-calculation-status.is-pending{border-color:#e6d1ad;background:#fff6e8;color:#795d31}
+.advisor-context-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:17px 0}
+.advisor-context-grid article{min-width:0;padding:16px;border:1px solid #dbe3ed;border-radius:10px;background:#fff}
+.advisor-context-grid article>span{display:block;color:#72849a;font-size:9px;font-weight:700;letter-spacing:.7px;line-height:1.5}
+.advisor-context-grid article>strong{display:block;margin:10px 0 5px;color:#203d61;font-size:18px;line-height:1.35;overflow-wrap:anywhere}
+.advisor-context-grid article>p{margin:0;color:#485f79;font-size:12px;line-height:1.55}
+.advisor-context-grid article>small{display:block;margin-top:7px;color:#78899d;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.advisor-analysis-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:12px;margin-top:12px}
+.advisor-analysis-grid-secondary{grid-template-columns:repeat(2,minmax(0,1fr))}
+.advisor-analysis-card{min-width:0;padding:20px;border:1px solid #dbe3ed;border-radius:11px;background:#fff}
+.advisor-card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:15px}
+.advisor-card-heading h3{margin:5px 0 0;color:#213d60;font-size:17px}
+.advisor-unit{padding:5px 8px;border-radius:5px;background:#eef2f6;color:#64788e;font-size:10px}
+.advisor-chart-legend{display:flex;gap:17px;flex-wrap:wrap;margin-bottom:10px;color:#526881;font-size:10px}
+.advisor-chart-legend span{display:flex;align-items:center;gap:6px}
+.advisor-chart-legend i{display:block;width:15px;height:9px;border-radius:3px}
+.advisor-legend-demand{background:#a7bbd3}
+.advisor-legend-actual{background:#326ba3}
+.advisor-water-chart{display:grid;gap:11px}
+.advisor-water-row{display:grid;grid-template-columns:minmax(95px,.65fr) minmax(90px,1.1fr) minmax(110px,.65fr);align-items:center;gap:10px}
+.advisor-water-stage strong,.advisor-water-stage small,.advisor-water-values span,.advisor-water-values small{display:block}
+.advisor-water-stage strong{color:#354e6c;font-size:11px}
+.advisor-water-stage small,.advisor-water-values small{margin-top:3px;color:#8090a2;font-size:9px}
+.advisor-bar-stack{position:relative;height:13px;overflow:hidden;border-radius:4px;background:#edf1f5}
+.advisor-bar-stack i{position:absolute;left:0;display:block;height:100%;border-radius:4px}
+.advisor-demand-bar{top:0;background:#aec1d7}
+.advisor-actual-bar{top:4px;height:5px!important;background:#326ba3}
+.advisor-water-values span{color:#3b5471;font-size:10px;font-variant-numeric:tabular-nums}
+.advisor-chart-note{margin:14px 0 0;color:#728398;font-size:10px;line-height:1.65}
+.advisor-water-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:17px;padding-top:14px;border-top:1px solid #e3e8ef}
+.advisor-water-facts>div span{display:block;color:#7a8a9d;font-size:9px;line-height:1.45}
+.advisor-water-facts>div strong{display:block;margin-top:4px;color:#3b5573;font-size:12px}
+.advisor-data-empty{display:grid;gap:5px;padding:22px;border:1px dashed #cbd6e1;border-radius:8px;color:#60758e;font-size:12px}
+.advisor-source-block{padding:13px 0;border-bottom:1px solid #e8edf2}
+.advisor-source-block>strong{color:#3d5876;font-size:12px}
+.advisor-source-block p{margin:5px 0;color:#526983;font-size:11px;line-height:1.6}
+.advisor-source-block small{color:#8492a2;font-size:10px;line-height:1.5}
+.advisor-soil-list{display:grid;gap:8px;padding:0;margin:10px 0 0;list-style:none}
+.advisor-soil-list li{display:grid;gap:4px;padding:9px;border-radius:7px;background:#f6f8fa}
+.advisor-soil-list b{color:#506984;font-size:10px}
+.advisor-soil-list span{color:#425b76;font-size:10px;line-height:1.55}
+.advisor-soil-list em{color:#8291a1;font-size:9px;font-style:normal}
+.advisor-evidence-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}
+.advisor-evidence-counts span{display:flex;align-items:center;gap:6px;padding:7px;border-radius:6px;background:#f1f4f7;color:#607186;font-size:9px}
+.advisor-evidence-counts b{color:#345474;font-size:12px}
+.advisor-evidence-counts .evidence-missing{background:#fff2ec;color:#8b5944}
+.advisor-intervention-list{display:grid;margin:0 0 15px}
+.advisor-intervention-list>div{display:grid;grid-template-columns:minmax(110px,.5fr) minmax(0,1.5fr);gap:12px;padding:10px 0;border-bottom:1px solid #e8edf2}
+.advisor-intervention-list strong{color:#4a6380;font-size:11px}
+.advisor-intervention-list span{color:#526981;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.advisor-analysis-card>p{color:#697e94;font-size:10px;line-height:1.6}
+.advisor-method-card dl{display:grid;grid-template-columns:minmax(115px,.7fr) minmax(0,1.3fr);gap:8px 13px;margin:0 0 15px;font-size:10px}
+.advisor-method-card dt{color:#7a8ba0}
+.advisor-method-card dd{margin:0;color:#405a77;font-weight:700;overflow-wrap:anywhere}
+.advisor-missing-title{display:block;margin-top:12px;color:#8a5942;font-size:11px}
+.advisor-missing-list,.advisor-method-card details ul{padding-left:18px;color:#6c7786;font-size:10px;line-height:1.7}
+.advisor-method-card summary{font-size:11px;font-weight:700}
+.advisor-method-card details li{margin:4px 0}
+
+@media(max-width:950px){.farmer-app-bar{gap:12px;padding-right:18px;padding-left:18px}.farmer-app-location{min-width:100px}.campaign-shell .parcel-experience.is-simple .parcel-workbench{grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr)}.advisor-context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.advisor-analysis-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.farmer-app-bar{display:grid;grid-template-columns:1fr auto auto;gap:9px 8px;padding:10px 12px}.farmer-app-bar .product-brand{grid-column:1;grid-row:1}.farmer-app-location{display:none}.farmer-header-menu{grid-column:2;grid-row:1;padding:8px 10px;font-size:12px}.farmer-header-menu span{display:none}.farmer-header-campaigns{grid-column:3;grid-row:1;padding:8px 10px;font-size:12px}.farmer-header-campaigns span{display:none}.farmer-header-new{grid-column:1;grid-row:2;min-height:42px;padding:8px 10px;font-size:12px}.farmer-header-new span{display:inline}.farmer-header-save{grid-column:2/-1;grid-row:2;min-height:42px}.farmer-campaign-view{width:calc(100% - 28px);padding:20px 0 44px}.farmer-start-card{margin:8px auto 35px;padding:25px 21px;border-radius:17px}.farmer-step-line{gap:6px;margin-bottom:32px}.farmer-step-line>span{gap:5px;font-size:10px}.farmer-step-line>span b{width:25px;height:25px;font-size:10px}.farmer-start-card h1{font-size:34px}.farmer-start-card>p{font-size:16px}.farmer-primary-action{min-height:60px;font-size:15px}.farmer-country-choice{align-items:stretch;flex-direction:column;gap:8px}.farmer-country-choice select{max-width:none;width:100%}.farmer-campaign-title{align-items:flex-start;flex-direction:column;padding:20px;border-radius:14px}.farmer-campaign-title h1{font-size:29px}.farmer-campaign-title p{font-size:15px}.farmer-harvest-card{padding:21px 17px;border-radius:15px}.farmer-harvest-heading h2{font-size:23px}.farmer-harvest-heading p{font-size:15px}.farmer-harvest-values{grid-template-columns:1fr;gap:10px;margin:17px 0}.farmer-harvest-value{min-height:135px;padding:17px}.farmer-harvest-value>strong{font-size:31px}.farmer-campaign-actions{grid-template-columns:1fr;gap:9px}.farmer-campaign-actions>button{min-height:74px}.farmer-error{grid-template-columns:1fr}.farmer-error button{justify-self:start}.details-return-bar{align-items:flex-start;flex-direction:column;gap:12px}.details-return-bar>button{width:100%}.campaign-shell .parcel-experience.is-simple{padding:12px 10px 30px}.campaign-shell .parcel-experience.is-simple .parcel-journey-header{grid-template-columns:1fr;padding:18px}.campaign-shell .parcel-experience.is-simple .parcel-journey-steps{grid-row:auto;overflow-x:auto}.campaign-shell .parcel-experience.is-simple .parcel-workbench{grid-template-columns:1fr;gap:11px}.campaign-shell .parcel-experience.is-simple .parcel-map-stage{min-height:52dvh;max-height:70dvh}.campaign-shell .parcel-experience.is-simple .parcel-sidepanel{padding:20px}.agronomist-brief{padding:17px;margin:19px 0}.agronomist-brief-header{flex-direction:column;gap:10px}.advisor-context-grid{grid-template-columns:1fr 1fr;gap:7px}.advisor-context-grid article{padding:12px}.advisor-context-grid article>strong{font-size:15px}.advisor-analysis-card{padding:15px}.advisor-water-row{grid-template-columns:minmax(68px,.7fr) minmax(60px,.8fr) minmax(92px,.8fr);gap:6px}.advisor-water-stage strong{font-size:9px}.advisor-water-stage small{font-size:8px}.advisor-water-values span{font-size:9px}.advisor-water-values small{font-size:8px}.advisor-water-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.advisor-evidence-counts{grid-template-columns:repeat(2,minmax(0,1fr))}.advisor-intervention-list>div{grid-template-columns:1fr;gap:4px}.advisor-method-card dl{grid-template-columns:1fr;gap:4px}.advisor-method-card dd{margin-bottom:7px}}
+@media(max-width:390px){.farmer-header-new span{display:none}.advisor-water-row{grid-template-columns:62px minmax(45px,.7fr) 82px}.farmer-step-line>span{font-size:9px}}
+
+/* Make the on-demand agronomic report readable at a glance on desktop and mobile. */
+.advisor-kicker{font-size:12px}
+.advisor-calculation-status{font-size:12px}
+.advisor-context-grid article>span{font-size:11px}
+.advisor-context-grid article>p{font-size:13px}
+.advisor-context-grid article>small{font-size:12px}
+.advisor-chart-legend,.advisor-growth-legend{font-size:12px}
+.advisor-water-stage strong{font-size:12px}
+.advisor-water-stage small,.advisor-water-values small{font-size:11px}
+.advisor-water-values span{font-size:11px}
+.advisor-chart-note{font-size:12px}
+.advisor-water-facts>div span{font-size:11px}
+.advisor-water-facts>div strong{font-size:13px}
+.advisor-data-empty{font-size:13px}
+.advisor-source-block p,.advisor-source-block small{font-size:12px}
+.advisor-soil-list b,.advisor-soil-list span{font-size:12px}
+.advisor-soil-list em{font-size:11px}
+.advisor-evidence-counts span{font-size:11px}
+.advisor-evidence-counts b{font-size:14px}
+.advisor-intervention-list strong,.advisor-intervention-list span,.advisor-analysis-card>p{font-size:12px}
+.advisor-method-card dl,.advisor-missing-list,.advisor-method-card details ul{font-size:12px}
+.advisor-method-card summary{font-size:12px}
+.advisor-growth-card{margin-top:12px}
+.advisor-growth-qualification{margin:0 0 14px;color:#596f87;font-size:13px;line-height:1.6}
+.advisor-growth-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:18px}
+.advisor-growth-summary article{padding:13px;border:1px solid #dbe3ed;border-radius:8px;background:#f7f9fb}
+.advisor-growth-summary span{display:block;color:#61758b;font-size:12px;line-height:1.5}
+.advisor-growth-summary strong{display:block;margin-top:5px;color:#24496f;font-size:18px}
+.advisor-growth-legend{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0;color:#526881}
+.advisor-growth-legend span{display:flex;align-items:center;gap:7px}
+.advisor-growth-legend i{width:15px;height:9px;border-radius:3px}
+.advisor-legend-biomass,.advisor-biomass-bar{background:#4978a8}
+.advisor-legend-cover,.advisor-cover-bar{background:#5c9271}
+.advisor-growth-chart{display:grid;gap:13px;padding:14px;border:1px solid #e1e7ed;border-radius:9px;background:#fbfcfd}
+.advisor-growth-row{display:grid;grid-template-columns:minmax(100px,.6fr) minmax(150px,1fr) minmax(160px,1fr);align-items:center;gap:14px}
+.advisor-growth-stage strong,.advisor-growth-stage small{display:block}
+.advisor-growth-stage strong{color:#354e6c;font-size:13px}
+.advisor-growth-stage small{margin-top:4px;color:#718398;font-size:11px}
+.advisor-growth-series{display:grid;grid-template-columns:minmax(80px,.55fr) minmax(65px,1fr) auto;align-items:center;gap:7px}
+.advisor-growth-series>span{color:#526881;font-size:11px}
+.advisor-growth-track{height:11px;overflow:hidden;border-radius:4px;background:#edf1f5}
+.advisor-growth-track i{display:block;height:100%;border-radius:4px}
+.advisor-growth-series>strong{color:#3b5471;font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.advisor-growth-table-wrap{overflow-x:auto;margin-top:10px}
+.advisor-growth-table-wrap table{width:100%;border-collapse:collapse;font-size:12px}
+.advisor-growth-table-wrap th,.advisor-growth-table-wrap td{padding:9px 10px;border-bottom:1px solid #e3e8ef;text-align:left;white-space:nowrap}
+.advisor-growth-table-wrap thead th{color:#62788f;font-size:11px}
+.advisor-growth-table-wrap tbody th{color:#3d5876;font-weight:600}
+.advisor-growth-table-wrap tr[aria-current="true"]{background:#f0f5f9}
+.advisor-growth-scenarios summary{font-size:13px}
+.advisor-growth-card>.advisor-chart-note{margin-top:13px}
+@media(max-width:700px){
+ .advisor-water-stage strong{font-size:11px}
+ .advisor-water-stage small,.advisor-water-values small{font-size:10px}
+ .advisor-water-values span{font-size:10px}
+ .advisor-growth-summary{grid-template-columns:1fr}
+ .advisor-growth-row{grid-template-columns:1fr;gap:8px;padding-bottom:11px;border-bottom:1px solid #e3e8ef}
+ .advisor-growth-series{grid-template-columns:95px minmax(35px,1fr) auto}
+ .advisor-growth-series>span,.advisor-growth-series>strong{font-size:11px}
+ .advisor-growth-stage small{font-size:11px}
+}
+@media(max-width:390px){.advisor-water-row{grid-template-columns:62px minmax(45px,.7fr) 82px}.advisor-water-stage small,.advisor-water-values small{font-size:10px}}

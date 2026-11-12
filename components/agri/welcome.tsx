@@ -22,21 +22,20 @@ export default function Welcome({onStart,onReferences}:{onStart:()=>void;onRefer
  return <div className="welcome-page field-home">
   <header className="fh-header">
    <ProductBrand onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}/>
-   <nav aria-label="Navigation de présentation"><a href="#parcours">Comment commencer</a><a href="#outils">Les outils</a><a href="#pays">Couverture</a></nav>
-   <button className="fh-header-action" onClick={onStart}>Situer mon champ <ProductIcon name="arrow" size={17}/></button>
+   <button className="fh-header-action" onClick={onStart}>Commencer avec mon champ <ProductIcon name="arrow" size={17}/></button>
   </header>
 
   <main>
    <section className="fh-hero" aria-labelledby="home-title">
     <div className="fh-hero-copy">
      <span className="fh-eyebrow"><i aria-hidden="true"/> AGRIPRÉVISION <b/> TERRES D’AFRIQUE</span>
-     <h1 id="home-title">Votre champ.<br/><span>Votre saison.</span><br/>Mieux préparée.</h1>
-     <p className="fh-hero-intro">Situez votre parcelle, choisissez votre culture et explorez les informations utiles pour préparer la campagne.</p>
+     <h1 id="home-title">Votre champ.<br/><span>Votre saison.</span><br/>En toute clarté.</h1>
+     <p className="fh-hero-intro">Situez votre champ, choisissez ce que vous cultivez, puis consultez les résultats disponibles. Les détails et réglages restent accessibles quand vous en avez besoin.</p>
      <div className="fh-hero-actions">
-      <button className="fh-button" onClick={onStart}>Situer mon champ <ProductIcon name="arrow" size={18}/></button>
-      <button className="fh-text-button" onClick={onReferences}>Voir les références agronomiques <ProductIcon name="arrow" size={16}/></button>
+      <button className="fh-button" onClick={onStart}>Commencer avec mon champ <ProductIcon name="arrow" size={18}/></button>
+      <button className="fh-text-button" onClick={onReferences}>Voir les références agricoles <ProductIcon name="arrow" size={16}/></button>
      </div>
-     <p className="fh-result-note"><ProductIcon name="chart" size={17}/> Le moteur de prévision automatique du rendement parcellaire n’est pas encore raccordé. L’application montre les indicateurs et méthodes disponibles, puis explique ce qui manque avant d’afficher des tonnes.</p>
+     <p className="fh-result-note"><ProductIcon name="chart" size={17}/>Les rendements et productions apparaissent seulement lorsqu’un calcul et les données nécessaires sont disponibles. Une estimation n’est pas une garantie de récolte.</p>
      <div className="fh-coverage-line" aria-label="Pays couverts">Togo <i/> Bénin <i/> Burkina Faso <i/> Ghana <i/> Côte d’Ivoire <i/> Sénégal</div>
     </div>
 
@@ -52,9 +51,9 @@ export default function Welcome({onStart,onReferences}:{onStart:()=>void;onRefer
    </section>
 
    <section className="fh-start" id="parcours" aria-labelledby="journey-title">
-    <div className="fh-section-heading"><div><span className="fh-kicker">POUR COMMENCER</span><h2 id="journey-title">Trois étapes, du champ aux résultats.</h2></div><p>Commencez par localiser votre champ. L’application vous accompagne ensuite dans la préparation de la campagne.</p></div>
+    <div className="fh-section-heading"><div><span className="fh-kicker">POUR COMMENCER</span><h2 id="journey-title">Trois étapes, du champ aux résultats.</h2></div><p>Faites une étape à la fois. Vous pourrez ouvrir les détails et les réglages au moment utile.</p></div>
     <ol className="fh-steps">{steps.map(step=><li key={step.number}><div className="fh-step-top"><span>{step.number}</span><ProductIcon name={step.icon} size={22}/></div><h3>{step.title}</h3><p>{step.text}</p></li>)}</ol>
-    <div className="fh-next-step"><div><strong>Prêt à commencer ?</strong><span>La première étape consiste à situer votre champ.</span></div><button className="fh-button" onClick={onStart}>Situer mon champ <ProductIcon name="arrow" size={18}/></button></div>
+    <div className="fh-next-step"><div><strong>Prêt à commencer ?</strong><span>La première étape : choisir votre champ.</span></div><button className="fh-button" onClick={onStart}>Commencer <ProductIcon name="arrow" size={18}/></button></div>
    </section>
 
    <section className="fh-tools" id="outils" aria-labelledby="tools-title">
