@@ -29,24 +29,61 @@ function fixture(){
 async function mount(element){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);await act(async()=>root.render(element));return {host,root,async close(){await act(async()=>root.unmount());host.remove();}};}
 const button=(host,pattern)=>[...host.querySelectorAll('button')].find(b=>pattern.test(b.textContent));
 
-test('unavailable yield cards open actual yield guidance without fabricating output',async()=>{
+test('unavailable harvest is explained once and opens the yield view without fabricating output',async()=>{
  const c=fixture(),plan=planSeason(c),targets=[];
  const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,onAction:t=>targets.push(t)}));
  try {
-  const yieldCard=button(m.host,/RENDEMENT HYDRIQUE/),productionCard=button(m.host,/PRODUCTION SIMULÉE/);
-  assert.ok(yieldCard);assert.ok(productionCard);
-  assert.match(yieldCard.textContent,/Indisponible/i);assert.match(productionCard.textContent,/Indisponible/i);
-  await act(async()=>yieldCard.click());await act(async()=>productionCard.click());
-  assert.deepEqual(targets,['yield','yield']);
+  const harvest=m.host.querySelector('[aria-label="État du rendement et de la production"]');
+  assert.ok(harvest);assert.match(harvest.textContent,/Rendement et production non calculables/);
+  assert.match(harvest.textContent,/calcul automatique du rendement parcellaire n’est pas raccordé/i);
+  assert.doesNotMatch(m.host.textContent,/\bN\/A\b|Rendement hydrique.*Indisponible|Production simulée.*Indisponible/i);
+  const open=button(harvest,/Voir les méthodes et données disponibles/i),water=button(m.host,/BILAN D’EAU/);
+  assert.ok(open);assert.ok(water);
+  const overview=m.host.querySelector('.field-overview'),harvestIndex=[...overview.children].indexOf(m.host.querySelector('.harvest-result-card')),metricsIndex=[...overview.children].indexOf(m.host.querySelector('.result-metrics'));
+  assert.ok(harvestIndex>=0&&harvestIndex<metricsIndex,'the harvest state comes before water indicators');
+  await act(async()=>open.click());await act(async()=>water.click());
+  assert.deepEqual(targets,['yield','water']);
  } finally {await m.close();}
 });
 
-test('from the actual campaign overview, the unavailable card leads to yield guidance and then to water',async()=>{
+test('an available water index is not presented as a partial harvest',async()=>{
+ const c=fixture(),plan=planSeason(c);plan.waterImpact={scenarios:[{id:'recorded',relativeYieldPercent:82}]};
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,onAction:()=>{}}));
+ try{
+  const harvest=m.host.querySelector('.harvest-result-card');assert.ok(harvest);
+  assert.match(harvest.textContent,/Indice hydrique disponible ; rendement et production non calculables/);
+  assert.match(m.host.textContent,/INDICE HYDRIQUE/);assert.match(m.host.textContent,/82/);
+  assert.doesNotMatch(harvest.textContent,/Résultat partiel/);
+ }finally{await m.close();}
+});
+
+test('stale plans hide old harvest numbers and show an update state',async()=>{
+ const c=fixture(),plan=planSeason(c);plan.yieldEstimation={method:'fao-seasonal',missing:[],scenarios:[{id:'recorded',missing:[],totals:{yieldKgHaSown:6000,productionKg:12000}}]};
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:true,loading:false,onAction:()=>{}}));
+ try{
+  assert.match(m.host.querySelector('.harvest-result-card').textContent,/Résultats en cours de mise à jour/);
+  assert.equal(m.host.querySelectorAll('.result-metrics button').length,1,'only the water status remains while values are stale');
+  assert.doesNotMatch(m.host.querySelector('.result-metrics').textContent,/6,00|12,00/);
+ }finally{await m.close();}
+});
+
+test('the result message uses the model missing reason instead of guessing that surface is absent',async()=>{
+ const c=fixture(),plan=planSeason(c);c.yieldEstimation={method:'fao-seasonal'};
+ plan.waterImpact=undefined;plan.yieldEstimation={method:'fao-seasonal',missing:['Référence indépendante sans déficit absente.'],surface:{simulationM2:null,sownM2:null},scenarios:[{id:'recorded',missing:['Référence indépendante sans déficit absente.'],totals:null}]};
+ const m=await mount(React.createElement(FieldOverview,{config:c,plan,events:[],stale:false,loading:false,onAction:()=>{}}));
+ try{
+  const harvest=m.host.querySelector('.harvest-result-card');assert.ok(harvest);
+  assert.match(harvest.textContent,/Référence indépendante sans déficit absente/);
+  assert.doesNotMatch(harvest.textContent,/surface nécessaire.*manque/i);
+ }finally{await m.close();}
+});
+
+test('from the campaign overview, the harvest message leads to yield guidance and then to water',async()=>{
  const c=fixture(),plan=planSeason(c),changes=[];
  const m=await mount(React.createElement(QuickSimulation,{config:c,plan,stale:false,events:[],paused:true,onChange:next=>changes.push(next),onMap:()=>{},onAdvanced:()=>{},onSave:()=>{},canSave:false}));
  try {
-  const yieldCard=button(m.host,/RENDEMENT HYDRIQUE/);assert.ok(yieldCard);assert.match(yieldCard.textContent,/Indisponible/i);
-  await act(async()=>yieldCard.click());
+  const harvest=button(m.host,/Voir les méthodes et données disponibles/i);assert.ok(harvest);
+  await act(async()=>harvest.click());
   const guidance=m.host.querySelector('[aria-label="Comprendre pourquoi le rendement est indisponible"]');assert.ok(guidance);
   assert.equal(m.host.querySelector('#field-tab-yield').getAttribute('aria-selected'),'true');
   const water=button(guidance,/Vérifier l’eau de ma campagne/i);assert.ok(water);
@@ -54,6 +91,19 @@ test('from the actual campaign overview, the unavailable card leads to yield gui
   assert.equal(m.host.querySelector('#field-tab-water').getAttribute('aria-selected'),'true');
   assert.equal(changes.length,0,'navigation does not change the simulated campaign');
  } finally {await m.close();}
+});
+
+test('a mounted campaign opens the requested results tab after the parcel flow',async()=>{
+ const c=fixture(),plan=planSeason(c);
+ const props={config:c,plan,stale:false,events:[],paused:true,onChange:()=>{},onMap:()=>{},onAdvanced:()=>{},onSave:()=>{},canSave:false};
+ const m=await mount(React.createElement(QuickSimulation,{...props,initialSection:undefined}));
+ try{
+  assert.equal(m.host.querySelector('#field-tab-overview').getAttribute('aria-selected'),'true');
+  await act(async()=>m.root.render(React.createElement(QuickSimulation,{...props,initialSection:'yield'})));
+  assert.equal(m.host.querySelector('#field-tab-yield').getAttribute('aria-selected'),'true');
+  assert.match(m.host.querySelector('#field-panel-yield').textContent,/Rendement et production/);
+  assert.equal(m.host.ownerDocument.activeElement?.id,'field-tab-yield','focus follows the newly opened result tab');
+ }finally{await m.close();}
 });
 
 test('water and growth options lead to their destinations without enabling a model or changing inputs',async()=>{

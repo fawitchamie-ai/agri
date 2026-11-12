@@ -42,7 +42,7 @@ test('seasonal effects wait for terrain on restored parcels and retries; invalid
   await act(async()=>wait(400));assert.equal(lands.length,2);assert.equal(lands[1].body.refresh,true);assert.equal(simulations.length,1,'Retry must wait for the refreshed terrain');
   await act(async()=>lands[1].resolve(Response.json({assessment:landFixture(testParcel,40)})));
   await act(async()=>wait(400));assert.equal(simulations.length,2);
-  await act(async()=>view().onMap());assert.equal(view().paused,true,'Drawing suspends automatic acquisition');
+  await act(async()=>view().onMap());assert.equal(view().paused,true,'Drawing suspends automatic acquisition');assert.equal(window.document.activeElement?.id,'seasonal-panel-carte','focus follows navigation to the parcel map');
   await act(async()=>wait(400));assert.equal(simulations.length,2);
   await act(async()=>globalThis.__parcelView.onPrepare('sorghum',config.sowingDate));
   assert.equal(view().paused,false);assert.equal(view().config.cropProfile.id,'sorghum');
@@ -51,6 +51,7 @@ test('seasonal effects wait for terrain on restored parcels and retries; invalid
   const chosenDate=new Date(Date.parse(config.sowingDate)+7*86400000).toISOString().slice(0,10);
   await act(async()=>globalThis.__parcelView.onPrepare('maize',chosenDate));
   assert.equal(view().config.sowingDate,chosenDate);assert.equal(view().paused,false);
+  assert.equal(view().initialSection,'yield','the completed parcel flow opens the result view');
   await act(async()=>wait(400));assert.equal(simulations.length,3,'Preparing a parameterised crop resumes the calculation: '+view().calculationError);
   await act(async()=>view().onChange({...view().config,system:{...view().config.system,minIntervalDays:0}}));
   await act(async()=>wait(400));assert.equal(simulations.length,3);assert.match(view().calculationError,/Intervalle/);
