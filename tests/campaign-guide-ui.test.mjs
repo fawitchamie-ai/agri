@@ -22,6 +22,9 @@ test('campaign workspace exposes direct result destinations without a repeated i
  try{
   await act(async()=>root.render(React.createElement(compiled.exports.default,{config,plan:null,stale:false,onChange:()=>{},onMap:()=>{mapOpened=true;},onAdvanced:()=>{},onSave:()=>{},canSave:false,events:[],paused:true})));
   assert.equal(host.querySelector('[aria-label="Comment obtenir mes résultats"]'),null);
+  assert.equal(host.querySelector('#field-tab-yield'),null,'technical tabs stay closed until requested');
+  const details=[...host.querySelectorAll('button')].find(button=>/Voir les détails du rendement/.test(button.textContent));assert.ok(details);
+  await act(async()=>details.click());
   const tabs=['yield','water','fertilizer','images','settings'];
   for(const id of tabs){const tab=host.querySelector('#field-tab-'+id);assert.ok(tab,`Onglet ${id} présent`);await act(async()=>tab.click());assert.equal(tab.getAttribute('aria-selected'),'true');}
   assert.match(host.textContent,/Rendement & production/);

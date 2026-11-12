@@ -78,11 +78,11 @@ test('the result message uses the model missing reason instead of guessing that 
  }finally{await m.close();}
 });
 
-test('from the campaign overview, the harvest message leads to yield guidance and then to water',async()=>{
+test('from the simple campaign summary, details lead to yield guidance and then to water',async()=>{
  const c=fixture(),plan=planSeason(c),changes=[];
  const m=await mount(React.createElement(QuickSimulation,{config:c,plan,stale:false,events:[],paused:true,onChange:next=>changes.push(next),onMap:()=>{},onAdvanced:()=>{},onSave:()=>{},canSave:false}));
  try {
-  const harvest=button(m.host,/Voir les méthodes et données disponibles/i);assert.ok(harvest);
+  const harvest=button(m.host,/Voir les détails du rendement/i);assert.ok(harvest);
   await act(async()=>harvest.click());
   const guidance=m.host.querySelector('[aria-label="Comprendre pourquoi le rendement est indisponible"]');assert.ok(guidance);
   assert.equal(m.host.querySelector('#field-tab-yield').getAttribute('aria-selected'),'true');
@@ -98,7 +98,9 @@ test('a mounted campaign opens the requested results tab after the parcel flow',
  const props={config:c,plan,stale:false,events:[],paused:true,onChange:()=>{},onMap:()=>{},onAdvanced:()=>{},onSave:()=>{},canSave:false};
  const m=await mount(React.createElement(QuickSimulation,{...props,initialSection:undefined}));
  try{
-  assert.equal(m.host.querySelector('#field-tab-overview').getAttribute('aria-selected'),'true');
+  assert.equal(m.host.querySelector('#field-tab-overview'),null,'technical tabs are hidden in the simple summary');
+  await act(async()=>button(m.host,/Voir les détails du rendement/i).click());
+  assert.equal(m.host.querySelector('#field-tab-yield').getAttribute('aria-selected'),'true');
   await act(async()=>m.root.render(React.createElement(QuickSimulation,{...props,initialSection:'yield'})));
   assert.equal(m.host.querySelector('#field-tab-yield').getAttribute('aria-selected'),'true');
   assert.match(m.host.querySelector('#field-panel-yield').textContent,/Rendement et production/);

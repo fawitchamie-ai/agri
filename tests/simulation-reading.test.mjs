@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import React from 'react';
+import React,{act} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
+import {Window} from 'happy-dom';
 import {applyCropProfile} from '../lib/seasonal/catalog.ts';
 import {exampleCampaign} from '../lib/seasonal/example.ts';
 import {planSeason} from '../lib/seasonal/yield.ts';
@@ -17,6 +18,9 @@ const bundle=await build({entryPoints:['components/agri/quick-simulation.tsx'],b
 const compiled={exports:{}};
 new Function('require','module','exports',bundle.outputFiles[0].text)(require,compiled,compiled.exports);
 const Quick=compiled.exports.default;
+const window=new Window({url:'https://agri.test',settings:{enableJavaScriptEvaluation:false}});
+Object.assign(globalThis,{window,document:window.document,HTMLElement:window.HTMLElement,IS_REACT_ACT_ENVIRONMENT:true});
+const {createRoot}=await import('react-dom/client');
 async function component(path){const b=await build({entryPoints:[path],bundle:true,format:'cjs',platform:'node',packages:'external',write:false,loader:{'.css':'empty'},jsx:'automatic'});const m={exports:{}};new Function('require','module','exports',b.outputFiles[0].text)(require,m,m.exports);return m.exports.default;}
 const Sowing=await component('components/agri/sowing-summary.tsx'),WaterChart=await component('components/agri/water-chart.tsx'),Fertilizer=await component('components/agri/fertilizer-panel.tsx');
 function fixture(){
@@ -27,22 +31,36 @@ function fixture(){
  return migrateInputs(c);
 }
 const render=(config,stale=false,initialSection)=>renderToStaticMarkup(React.createElement(Quick,{config,plan:planSeason(config),stale,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[],initialSection}));
-test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',()=>{
+async function renderDetails(config,stale=false,section='overview',extra={}){
+ const host=document.createElement('div'),root=createRoot(host);
+ await act(async()=>root.render(React.createElement(Quick,{config,plan:planSeason(config),stale,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[],paused:true,...extra})));
+ const open=section==='yield'?host.querySelector('.farmer-more-details'):[...host.querySelectorAll('button')].find(button=>/Ouvrir le diagnostic complet/.test(button.textContent));
+ if(open)await act(async()=>open.click());
+ if(section!=='overview'&&section!=='yield'){
+  const tab=host.querySelector('#field-tab-'+section);if(tab)await act(async()=>tab.click());
+ }
+ const html=host.innerHTML;
+ await act(async()=>root.unmount());host.remove();
+ return html;
+}
+test('ready simulation explains conditional water, exposes weekly readings and does not invent harvest inputs',async()=>{
  const c=declareScenario(fixture()),plan=planSeason(c);
- const html=render(c)+render(c,false,'yield')+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
+ const simple=render(c),overview=await renderDetails(c),yieldDetails=await renderDetails(c,false,'yield'),settings=await renderDetails(c,false,'settings'),images=await renderDetails(c,false,'images');
+ const html=simple+overview+yieldDetails+settings+images+renderToStaticMarkup(React.createElement(Sowing,{config:c,plan,stale:false,onChange:()=>{}}))+renderToStaticMarkup(React.createElement(WaterChart,{config:c,plan}));
  assert.match(render(c),/Rendement et production/);
- assert.match(render(c),/id="field-tab-overview"[^>]*role="tab"[^>]*aria-selected="true"/);
- assert.match(render(c),/id="field-tab-water"[^>]*role="tab"/);
- assert.match(render(c),/id="field-tab-fertilizer"[^>]*role="tab"/);
- const expert=render(c,false,'settings');
- assert.match(render(c),/id="field-tab-images"[^>]*role="tab"/);
- assert.doesNotMatch(render(c),/id="field-tab-notes"[^>]*role="tab"/);
- assert.match(render(c,false,'images'),/Images du champ/);
+ assert.doesNotMatch(simple,/id="field-tab-overview"/,'technical tabs stay hidden until the user opens details');
+ assert.match(overview,/id="field-tab-overview"[^>]*role="tab"[^>]*aria-selected="true"/);
+ assert.match(overview,/id="field-tab-water"[^>]*role="tab"/);
+ assert.match(overview,/id="field-tab-fertilizer"[^>]*role="tab"/);
+ assert.match(overview,/id="field-tab-images"[^>]*role="tab"/);
+ assert.doesNotMatch(overview,/id="field-tab-notes"[^>]*role="tab"/);
+ assert.match(images,/Images du champ/);
+ const expert=settings;
  assert.match(expert,/class="expert-subnav"/);
  assert.match(expert,/Carnet et essais/);
  assert.match(expert,/Images du champ/);
  assert.doesNotMatch(render(c),/besoins couverts si le plan est réalisé/,'method details stay on demand');
- assert.match(render(c),/Sources et limites de cette simulation/);
+ assert.match(overview,/Sources et limites de cette simulation/);
  assert.match(html,/SEMENCES À PRÉVOIR/);
  assert.match(html,/Modifier ma culture/);
  assert.match(html,/Modifier date de semis/);
@@ -50,9 +68,9 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(html,/Les arrosages à prévoir/);
  assert.match(html,/La pluie face aux besoins/);
  assert.doesNotMatch(html,/Aucune dose de semis référencée/);
- assert.match(render(c),/BILAN D’EAU/);
+ assert.match(overview,/BILAN D’EAU/);
  assert.match(html,/Rendement et production non calculables/);
- assert.match(html,/Le calcul automatique du rendement parcellaire n’est pas raccordé/);
+ assert.match(html,/calcul automatique des tonnes n’est pas disponible|Le calcul automatique du rendement parcellaire n’est pas raccordé/);
  assert.match(html,/Choisir une semaine pour lire les quantités/);
  assert.match(html,/<title>[^<]+ : besoin [0-9]/);
  assert.doesNotMatch(html,/<title><\/title>/);
@@ -63,30 +81,32 @@ test('ready simulation explains conditional water, exposes weekly readings and d
 });
 test('the first campaign guides the user from country to parcel and results',()=>{
  const config=fixture();config.parcelGeometry=null;config.areaM2=null;
- const empty=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:false,events:[]}));assert.match(empty,/ÉTAPE 1 SUR 3/);assert.match(empty,/Pays de la parcelle/);assert.match(empty,/Situer mon champ/);assert.match(empty,/Préparer ma campagne/);assert.match(empty,/Comprendre mes résultats/);
- const started=render(declareScenario(fixture()),false,'yield');assert.match(started,/id="field-tab-yield"[^>]*aria-selected="true"/);assert.match(started,/Rendement &amp; production/);
+ const empty=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:false,onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:false,events:[]}));assert.match(empty,/ÉTAPE 1 · CHOISIR LE CHAMP/);assert.match(empty,/Mon pays/);assert.match(empty,/Trouver mon champ sur la carte/);assert.match(empty,/Mon champ/);assert.match(empty,/Ma récolte/);
+ const started=render(declareScenario(fixture()),false,'yield');assert.match(started,/Rendement et production/);assert.doesNotMatch(started,/id="field-tab-yield"/,'the result tab is opened only after requesting details');
 });
 test('blocked and stale simulations display the action needed without showing a new water percentage',()=>{
  const c=fixture();c.inputPolicy={allowAssumptions:false,allowStale:false};
- const blocked=render(c);assert.match(blocked,/Confirmer les hypothèses/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé/);
- const stale=render(declareScenario(c),true);assert.match(stale,/Recalcul en cours/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé/);
+ const blocked=render(c);assert.match(blocked,/Pas encore calculable|Bilan d’eau à vérifier/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé|\d+ %/);
+ const stale=render(declareScenario(c),true);assert.match(stale,/Calcul en cours/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé|\d+ %/);
 });
 test('overview displays the opted-in fertilizer range and hides it during recalculation',()=>{
  const c=declareScenario(fixture());c.asOfDate='2026-11-02';
  c.fertilizerScenario={version:'quefts-scenario-1',scope:fertilizerScope(c),acceptedTransfer:true,ceilingKgHa:6000,ceilingSource:'Synthetic UI ceiling',availableOn:c.asOfDate,control:null};
- const html=render(c);assert.match(html,/RENDEMENT AVEC ENGRAIS PRÉVUS/);assert.match(html,/Sans nouvel apport prévu/);assert.match(html,/sans intervalle prédictif ni validation locale/);
+ const html=render(c);assert.match(html,/Rendement avec les apports prévus|Pas encore calculable/);assert.match(html,/Pas encore calculable|Rendement avec les apports prévus/);
  assert.doesNotMatch(render(c,true),/RENDEMENT AVEC ENGRAIS PRÉVUS|Sans nouvel apport prévu/);
 });
-test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',()=>{
+test('failed recalculation exposes retry and fertilizer references instead of an endless spinner',async()=>{
  const config=declareScenario(fixture());
  const html=renderToStaticMarkup(React.createElement(Quick,{config,plan:null,stale:true,calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{},onChange:()=>{},onSave:()=>{},onMap:()=>{},onAdvanced:()=>{},canSave:true,events:[]}));
- assert.match(html,/Calcul interrompu/);assert.match(html,/Relancer le calcul/);
+ assert.match(html,/Le calcul n’a pas abouti/);assert.match(html,/Relancer le calcul/);
  assert.doesNotMatch(html,/Recalcul en cours…|Recalcul du bilan d’eau en cours/);
- assert.match(html,/id="field-tab-fertilizer"[^>]*role="tab"/);
+ const detailed=await renderDetails(config,false,'overview',{calculationError:'Connexion interrompue. Vos saisies sont conservées.',onRetry:()=>{}});
+ assert.match(detailed,/id="field-tab-fertilizer"[^>]*role="tab"/);
  const fertilizerHtml=renderToStaticMarkup(React.createElement(Fertilizer,{config,plan:null,stale:false,onChange:()=>{},onAdvanced:()=>{}}));
  assert.match(fertilizerHtml,/Voir les références et le bilan d’engrais/);
- assert.match(render(config,false,'yield'),/Aucun rendement à saisir/);
- assert.doesNotMatch(render(config,false,'yield'),/option value="declared-scenario"/);
+ const yieldDetails=await renderDetails(config,false,'yield');
+ assert.match(yieldDetails,/Aucun rendement à saisir/);
+ assert.doesNotMatch(yieldDetails,/option value="declared-scenario"/);
  assert.match(fertilizerHtml,/prévision parcellaire validée et la dose optimale restent indisponibles/);
  assert.match(fertilizerHtml,/Scénario exploratoire/);
 });

@@ -6,10 +6,11 @@ import {ProductIcon,ParcelFootprint,Disclosure} from './product-ui';
 import {addFieldNote,fieldBrief,fieldNotes,NOTE_PARAMETERS,weatherLabel,type FieldAction} from '../../lib/seasonal/field-intelligence';
 import {COUNTRIES,type SeasonalConfig,type WaterPlan,type WaterEvent} from '../../lib/seasonal/types';
 import {seasonalCapabilities} from '../../lib/seasonal/capabilities';
+import AgronomistBrief from './agronomist-brief';
 const fmt=(n:number|null|undefined,d=1)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
 const date=(d:string)=>new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-type Props={config:SeasonalConfig;plan:WaterPlan|null;events:WaterEvent[];stale:boolean;loading:boolean;failed?:boolean;onAction:(target:FieldAction['target'])=>void};
-export function FieldOverview({config:c,plan,events,stale,loading,failed=false,onAction}:Props){
+type Props={config:SeasonalConfig;plan:WaterPlan|null;events:WaterEvent[];stale:boolean;loading:boolean;failed?:boolean;simple?:boolean;advisor?:boolean;onDetails?:()=>void;onAction:(target:FieldAction['target'])=>void};
+export function FieldOverview({config:c,plan,events,stale,loading,failed=false,simple=false,advisor=false,onDetails,onAction}:Props){
  const b=fieldBrief(c,failed?null:plan,events,stale&&!failed,loading&&!failed);
  const stageGrain=!!c.yieldEstimation?.responseCalendar&&['fao-stages','fao-seasonal'].includes(c.yieldEstimation.method);
  const integrated=!!c.growth&&!stageGrain,growth=b.growth;
@@ -54,6 +55,15 @@ export function FieldOverview({config:c,plan,events,stale,loading,failed=false,o
   :modelMissing?`Le calcul ne peut pas produire de rendement ou de production pour cette campagne : ${modelMissing}`
   :hasYield&&!hasProduction?'Le rendement est disponible, mais le calcul ne fournit pas la production totale. Vérifiez la surface associée à la méthode.'
   :unavailableReason;
+ if(simple)return <section className="farmer-harvest-card" aria-label="Résultat de la campagne">
+  <div className="farmer-harvest-heading"><span className="farmer-simple-kicker">VOTRE RÉSULTAT</span><h2>Rendement et production · {c.crop}</h2><p>{failed?'Le calcul a été interrompu.':calculating?'Les informations du champ sont en cours de calcul.':hasYield||hasProduction?`Résultat conditionnel pour votre campagne en ${COUNTRIES[c.country].name}.`:'Le rendement en tonnes n’est pas encore calculable pour cette campagne.'}</p></div>
+  <div className="farmer-harvest-values">
+   {(hasYield||relative)?<article className="farmer-harvest-value"><span>{relative&&!fertilizer?'Effet estimé de l’eau':integrated?'Rendement du scénario':fertilizer?'Rendement avec les apports prévus':'Rendement estimé'}</span><strong>{integrated?fmt(growth!.yieldKgHa/1000,2):fertilizer?span(fertilizer.yieldWithKgHa):relative?fmt(water!.relativeYieldPercent):fmt(b.result!.yieldKgHaSown!/1000,2)} <small>{relative&&!fertilizer?'sur 100':'t/ha'}</small></strong><em>{relative&&!fertilizer?'Cet indice décrit l’effet de l’eau. Ce n’est pas un rendement.':integrated||fertilizer?'Scénario exploratoire, à vérifier avec un conseiller.':'Estimation liée au bilan d’eau et à la référence utilisée.'}</em></article>:<article className="farmer-harvest-value is-unavailable"><span>Rendement en tonnes</span><strong>{calculating?'Calcul en cours':'Pas encore calculable'}</strong><em>{failed?'Relancez le calcul ou demandez l’aide d’un conseiller.':automaticUnavailable?'Le calcul automatique des tonnes n’est pas disponible pour cette campagne. Ouvrez les détails pour voir les méthodes et données manquantes.':'Une méthode ou une donnée nécessaire manque. Ouvrez les détails pour savoir laquelle.'}</em></article>}
+   {hasProduction?<article className="farmer-harvest-value"><span>Récolte totale estimée</span><strong>{integrated?fmt(growth!.productionKg/1000,2):fertilizer?span(fertilizer.productionWithKg):fmt(b.result!.productionKg/1000,2)} <small>tonnes</small></strong><em>Pour {fmt(sown==null?null:sown/10000,3)} ha {plan?.yieldEstimation?.surface?.areaBasis==='planned'?'prévus':'semés'}.</em></article>:<article className="farmer-harvest-value is-unavailable"><span>Récolte totale estimée</span><strong>Pas encore calculable</strong><em>Une surface adaptée et un rendement calculé sont nécessaires.</em></article>}
+  </div>
+  <div className="farmer-water-note"><span className="farmer-water-symbol" aria-hidden="true">≈</span><div><strong>{b.usable&&plan?`${fmt(plan.totals.unmetEtMm)} mm de besoin en eau non couvert dans le calcul`:'Bilan d’eau à vérifier'}</strong><p>{b.usable?'C’est un repère de calcul, pas une mesure directe de la plante.':'Le bilan dépend des informations météo, du sol et des arrosages disponibles.'}</p></div></div>
+  <button className="farmer-more-details" onClick={onDetails}>Voir les détails du rendement <ProductIcon name="arrow" size={17}/></button>
+ </section>;
  return <section className="field-overview product-overview" aria-label="Synthèse de la parcelle">
   <div className="overview-heading"><div><span className="product-eyebrow">VOTRE CAMPAGNE EN UN COUP D’ŒIL</span><h2>Rendement et production</h2><p>Chaque résultat dépend du modèle et des données disponibles pour votre campagne.</p></div><span>Au {date(c.asOfDate)}</span></div>
   {(!hasYield||!hasProduction)&&<section className={'harvest-result-card'+(failed?' is-error':'')} aria-label="État du rendement et de la production">
@@ -78,6 +88,7 @@ export function FieldOverview({config:c,plan,events,stale,loading,failed=false,o
   </div>
   <section className="overview-cycle"><div><h3>Du semis à la récolte</h3><span>{b.stage} · cycle de référence de {b.duration} jours</span></div><div className="field-stage-track">{b.stages.map((s,i)=><div key={i} className={s.state} style={{flex:s.days}}><b>{s.name}</b><small>{date(s.from)} – {date(s.to)}</small><span aria-hidden="true"/></div>)}</div><HelpParagraph>Dates indicatives selon le cycle de référence ; levée et maturité à vérifier au champ.</HelpParagraph></section>
   <Disclosure title="La météo des 7 prochains jours" description={`${b.covered}/7 jours renseignés hors scénarios personnels${b.rain!==null?` · ${fmt(b.rain)} mm cumulés`:''}`}><div className="field-weather-days">{b.weather.map(({date:d,day:w})=><article key={d}><time dateTime={d}>{new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'})}</time><ProductIcon name="sun"/><strong>{fmt(w?.rainMm)} <small>mm</small></strong><span>{w?.temperatureMinC!=null&&w?.temperatureMaxC!=null?`${fmt(w.temperatureMinC)}° / ${fmt(w.temperatureMaxC)}°`:w?.temperatureMeanC!=null?`${fmt(w.temperatureMeanC)} °C moy.`:'Temp. indisponible'}</span><em>{weatherLabel(w)}</em></article>)}</div><details><summary>Sources et portée</summary>{b.sources.map(s=><HelpParagraph key={s}>{s}</HelpParagraph>)}<HelpParagraph>Une donnée sur une maille ne mesure pas la pluie exacte de la parcelle. Les cases vides restent inconnues.</HelpParagraph></details></Disclosure>
+  {advisor&&<AgronomistBrief config={c} plan={failed?null:plan} events={events} stale={stale} loading={loading}/>}
  </section>;
 }
 export function FieldNotebook({config:c,onChange}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void}){
