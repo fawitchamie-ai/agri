@@ -1,0 +1,346 @@
+{
+  "reportVersion": "benin-quefts-microdose-aggregate-benchmark-1",
+  "runDate": "2026-11-14",
+  "purpose": "Fit one common fertilizer-recovery multiplier on published 2014 maize treatment means; evaluate without refitting on published 2015 treatment means.",
+  "study": {
+    "country": "BEN",
+    "domain": "Ina district, northern Benin; rainfed maize; 2014–2015 on-farm trials",
+    "crop": "maize grain, DMR-ESR, 90-day maturity",
+    "source": {
+      "title": "Variability in maize yield and profitability following hill-placement of reduced mineral fertilizer and manure rates under smallholder farm conditions in northern Benin",
+      "doi": "10.1016/j.fcr.2018.10.018",
+      "url": "https://doi.org/10.1016/j.fcr.2018.10.018",
+      "citation": "Tovihoudji et al., Field Crops Research 230 (2019), 139–150"
+    },
+    "reportedYieldBasis": "grain dry matter (kg/ha)",
+    "modelYieldMoisturePercent": 15,
+    "seasons": [
+      {
+        "year": 2014,
+        "controlDryKgHa": 1089,
+        "farmerTrials": 18,
+        "treatments": [
+          {
+            "id": "MD1",
+            "observedDryKgHa": 2240,
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ]
+          },
+          {
+            "id": "MD2",
+            "observedDryKgHa": 2330,
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ]
+          }
+        ]
+      },
+      {
+        "year": 2015,
+        "controlDryKgHa": 1103,
+        "farmerTrials": 33,
+        "treatments": [
+          {
+            "id": "MD1",
+            "observedDryKgHa": 2127,
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ]
+          },
+          {
+            "id": "MD2",
+            "observedDryKgHa": 2262,
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ]
+          }
+        ]
+      }
+    ],
+    "yieldCeilingKgHa": 10000,
+    "yieldCeilingSource": "Shehu et al. 2019 QUEFTS maize study, potential-yield setting for the two Nigerian savanna profiles; transferred unchanged as a fixed scenario boundary."
+  },
+  "method": {
+    "candidateModels": "Both pre-existing Nigerian QUEFTS profiles evaluated separately; neither is selected using 2015.",
+    "calibrationSplit": "2014 treatment means only (MD1, MD2).",
+    "temporalHoldout": "2015 treatment means only (MD1, MD2), from a separate season and farmer set in the same published study area.",
+    "conditionalAnchor": "Each season’s observed unfertilized-control mean is used to anchor fixed-ratio soil nutrient supply. This makes the evaluation conditional on a known control yield; it is not a standalone yield forecast.",
+    "moistureConversion": "The Benin article reports dry-grain yields. Convert to the model’s 15% moisture basis with dry kg/ha ÷ 0.85.",
+    "modelYieldCeiling": "10,000 kg/ha, held fixed for both source profiles and both seasons; this is the published QUEFTS study setting, not fitted to the Benin outcomes.",
+    "scoreUnit": "Each of the two treatment means receives equal weight. The 18 and 33 underlying farmer trials are not treated as 36 or 66 parcel predictions because plot-level outcomes are unavailable.",
+    "uncertainty": "Not estimable from the published means without the paired field-level values, their dispersion/covariance and prediction residuals."
+  },
+  "decision": {
+    "parcelForecastQualified": false,
+    "productionCalibrationApplied": false,
+    "productionActivation": "blocked",
+    "reason": "Two aggregate treatment means in one held-out season can only test a narrow conditional average treatment response. They do not identify field-specific baseline supply, soil/fertilizer recovery by nutrient, water interactions, or parcel prediction error."
+  },
+  "profiles": [
+    {
+      "profile": "NGS",
+      "profileLabel": "Savane guinéenne du Nord — Nigeria",
+      "originalRecoveryNpk": [
+        0.42,
+        0.16,
+        0.54
+      ],
+      "fittedCommonRecoveryMultiplier": 1.8518518518518516,
+      "candidateRecoveryNpk": [
+        0.7777777777777777,
+        0.2962962962962963,
+        1
+      ],
+      "training": {
+        "season": 2014,
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 458.17822672202897,
+          "rmseKgHa": 480.76519115644015,
+          "biasKgHa": -458.17822672202897,
+          "meansWithin20Percent": 1
+        },
+        "predictions": [
+          {
+            "year": 2014,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 2031.4866301786215,
+            "observedKgHaAt15Pct": 2635.294117647059,
+            "errorKgHa": -603.8074874684376,
+            "relativeError": -0.22912337694114818
+          },
+          {
+            "year": 2014,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 2428.627504612615,
+            "observedKgHaAt15Pct": 2741.1764705882356,
+            "errorKgHa": -312.5489659756204,
+            "relativeError": -0.11402000904690013
+          }
+        ]
+      },
+      "validation": {
+        "season": 2015,
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 334.5963169752247,
+          "rmseKgHa": 355.1747882218543,
+          "biasKgHa": -334.5963169752247,
+          "meansWithin20Percent": 2
+        },
+        "predictions": [
+          {
+            "year": 2015,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 2048.6162244409043,
+            "observedKgHaAt15Pct": 2502.3529411764707,
+            "errorKgHa": -453.73671673556646,
+            "relativeError": -0.18132402878478207
+          },
+          {
+            "year": 2015,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 2445.7205533733527,
+            "observedKgHaAt15Pct": 2661.1764705882356,
+            "errorKgHa": -215.4559172148829,
+            "relativeError": -0.08096265677836005
+          }
+        ]
+      },
+      "unadjustedValidation": {
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 749.2724461889662,
+          "rmseKgHa": 749.7878425921975,
+          "biasKgHa": -749.2724461889662,
+          "meansWithin20Percent": 0
+        },
+        "predictions": [
+          {
+            "year": 2015,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 1725.2846269300978,
+            "observedKgHaAt15Pct": 2502.3529411764707,
+            "errorKgHa": -777.0683142463729,
+            "relativeError": -0.3105350574092228
+          },
+          {
+            "year": 2015,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 1939.699892456676,
+            "observedKgHaAt15Pct": 2661.1764705882356,
+            "errorKgHa": -721.4765781315596,
+            "relativeError": -0.2711118883341404
+          }
+        ]
+      }
+    },
+    {
+      "profile": "SS",
+      "profileLabel": "Savane soudanienne — Nigeria",
+      "originalRecoveryNpk": [
+        0.32,
+        0.08,
+        0.37
+      ],
+      "fittedCommonRecoveryMultiplier": 2.5779459459459457,
+      "candidateRecoveryNpk": [
+        0.8249427027027026,
+        0.20623567567567566,
+        0.9538399999999999
+      ],
+      "training": {
+        "season": 2014,
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 139.1323778831345,
+          "rmseKgHa": 196.75415279210756,
+          "biasKgHa": -139.12001317396675,
+          "meansWithin20Percent": 2
+        },
+        "predictions": [
+          {
+            "year": 2014,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 2357.0417265899578,
+            "observedKgHaAt15Pct": 2635.294117647059,
+            "errorKgHa": -278.25239105710125,
+            "relativeError": -0.10558684482077502
+          },
+          {
+            "year": 2014,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 2741.1888352974033,
+            "observedKgHaAt15Pct": 2741.1764705882356,
+            "errorKgHa": 0.012364709167741239,
+            "relativeError": 0.000004510730812266117
+          }
+        ]
+      },
+      "validation": {
+        "season": 2015,
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 112.93825286579772,
+          "rmseKgHa": 113.92659879382066,
+          "biasKgHa": -14.974009227635406,
+          "meansWithin20Percent": 2
+        },
+        "predictions": [
+          {
+            "year": 2015,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 2374.4406790830376,
+            "observedKgHaAt15Pct": 2502.3529411764707,
+            "errorKgHa": -127.91226209343313,
+            "relativeError": -0.05111679491274949
+          },
+          {
+            "year": 2015,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 2759.140714226398,
+            "observedKgHaAt15Pct": 2661.1764705882356,
+            "errorKgHa": 97.96424363816232,
+            "relativeError": 0.03681238156164366
+          }
+        ]
+      },
+      "unadjustedValidation": {
+        "metrics": {
+          "nAggregateTreatmentMeans": 2,
+          "maeKgHa": 721.0734932043913,
+          "rmseKgHa": 721.1207525348929,
+          "biasKgHa": -721.0734932043913,
+          "meansWithin20Percent": 0
+        },
+        "predictions": [
+          {
+            "year": 2015,
+            "treatment": "MD1",
+            "doseNpkKgHa": [
+              23.8,
+              4.1,
+              7.8
+            ],
+            "predictedKgHaAt15Pct": 1773.0237145396775,
+            "observedKgHaAt15Pct": 2502.3529411764707,
+            "errorKgHa": -729.3292266367932,
+            "relativeError": -0.2914573778285257
+          },
+          {
+            "year": 2015,
+            "treatment": "MD2",
+            "doseNpkKgHa": [
+              33.1,
+              8.2,
+              15.6
+            ],
+            "predictedKgHaAt15Pct": 1948.3587108162462,
+            "observedKgHaAt15Pct": 2661.1764705882356,
+            "errorKgHa": -712.8177597719894,
+            "relativeError": -0.26785813254031426
+          }
+        ]
+      }
+    }
+  ]
+}

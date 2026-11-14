@@ -68,6 +68,17 @@ test('zero planned dose equals baseline; realized fertilizer retained, conversio
 test('all six countries have explicit transferred maize scenarios without local validation claims',()=>{
  for(const country of Object.keys(COUNTRIES) as (keyof typeof COUNTRIES)[]){const c=scenario();c.country=country;c.fertilizerScenario!.scope=fertilizerScope(c);const r=fertilizerScenario(c,{} as WaterPlan);assert.equal(r.status,'exploratory_transfer');assert.equal(r.validated,false);assert.equal(r.predictiveInterval95,null);assert.equal(r.optimalDose,null);}
 });
+test('Benin microdose pilot reproduces the held-out MD1 mean only when a local control and published dose are supplied',()=>{
+ const c=scenario();c.country='BEN';c.fertilizerScenario={version:'quefts-scenario-1',scope:fertilizerScope(c),acceptedTransfer:true,calibration:'benin-microdose-aggregate-v1',ceilingKgHa:10000,ceilingSource:'Fixed benchmark ceiling',availableOn:c.asOfDate,control:{kgHa:1103/.85,source:'Same-season unfertilized field control',moisturePercent:15,withoutFertilizer:true,denominator:'sown'}};
+ const pProduct=(id:string,dose:number,npkPercent:[number,number,number])=>({...fertilizer(c,id),dose,npkPercent});
+ c.managementPlan!.products=[pProduct('N',100,[23.8,0,0]),pProduct('P',4.1/.4364,[0,100,0]),pProduct('K',7.8/.8301,[0,0,100])];
+ const r=fertilizerScenario(c,{} as WaterPlan);assert.equal(r.status,'exploratory_transfer');assert.equal(r.validated,false);assert.equal(r.predictiveInterval95,null);assert.equal(r.optimalDose,null);
+ near(r.results!.plannedKgHa[0],23.8,1e-8);near(r.results!.plannedKgHa[1],4.1,1e-8);near(r.results!.plannedKgHa[2],7.8,1e-8);
+ near(r.results!.yieldWithoutKgHa[0],1103/.85,1e-5);near(r.results!.yieldWithKgHa[0],2049,2);near(r.results!.yieldWithKgHa[1],2374,2);
+ const withoutControl=structuredClone(c);withoutControl.fertilizerScenario!.control=null;assert.equal(fertilizerScenario(withoutControl,{} as WaterPlan).status,'unavailable');
+ const outsideDose=structuredClone(c);outsideDose.managementPlan!.products[0].dose=50;assert.equal(fertilizerScenario(outsideDose,{} as WaterPlan).status,'unavailable');
+ const wrongCountry=structuredClone(c);wrongCountry.country='TGO';wrongCountry.fertilizerScenario!.scope=fertilizerScope(wrongCountry);assert.equal(fertilizerScenario(wrongCountry,{} as WaterPlan).status,'unavailable');
+});
 test('unknown nutrient is not zero, domain ceiling and stale or changed contexts block',()=>{
  const base=scenario();base.managementPlan!.products=[fertilizer(base)];
  const variations=[
