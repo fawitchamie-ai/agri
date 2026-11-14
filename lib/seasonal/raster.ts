@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import {bbox,type RasterCell} from './land.ts';
 import type {ParcelPolygon,Position} from './parcel.ts';
 
-const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com']);
+const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com','deafrica-sentinel-2.s3.af-south-1.amazonaws.com','sentinel-cogs.s3.us-west-2.amazonaws.com']);
 // Bound total geometry work separately from each decoder window.
 export const MAX_NATIVE_PIXELS=16000000;
 const WINDOW_SIDE=100;
@@ -67,7 +67,7 @@ function transformFor(epsg:number){
 }
 
 /** Native pixels only. No overview or RGB values used for the classification. */
-export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:typeof fetch=fetch,signal=AbortSignal.timeout(50000),samples=[0],compact=false):Promise<RasterWindow>{
+export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:typeof fetch=fetch,signal=AbortSignal.timeout(50000),samples=[0],compact=false,maxPixels=MAX_NATIVE_PIXELS):Promise<RasterWindow>{
   const options={allowFullFile:false,maxRanges:0,blockSize:65536,cacheSize:32};
   const tiff=await fromCustomClient(new RangeClient(url,fetcher,signal),options,signal);
   try{
@@ -80,6 +80,7 @@ export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:ty
     const native=shape.coordinates.flat().map(toNative),xs=native.map(p=>(p[0]-origin[0])/res[0]),ys=native.map(p=>(p[1]-origin[1])/res[1]);
     const x0=Math.max(0,Math.floor(Math.min(...xs))-1),y0=Math.max(0,Math.floor(Math.min(...ys))-1),x1=Math.min(image.getWidth(),Math.ceil(Math.max(...xs))+1),y1=Math.min(image.getHeight(),Math.ceil(Math.max(...ys))+1);
     if(x1<=x0||y1<=y0)return {cells:[],resolutionM:epsg===4326?Math.abs(res[0])*111320:Math.abs(res[0]),crs:`EPSG:${epsg}`};
+    if(!Number.isInteger(maxPixels)||maxPixels<1||maxPixels>MAX_NATIVE_PIXELS||(x1-x0)*(y1-y0)>maxPixels)throw new Error('Emprise trop étendue pour cette lecture raster bornée.');
     const windows=rasterWindows(x0,y0,x1,y1);
     const noData=image.getGDALNoData(),cells:RasterCell[]=[],bounds=bbox(shape);
     // Sequential bounded windows preserve every native pixel, without resampling

@@ -23,6 +23,12 @@ test('field acquisition dates are bounded and scene cloudiness never becomes par
  const r=await satelliteScenes(shape,'2026-11-02',fetcher);assert.deepEqual(r.dates,[{date:'2026-10-12',sceneCloudMin:12,sceneCloudMax:30}]);assert.match(r.scope,/scène entière/);assert.equal(new URL(requested).origin,'https://explorer.digitalearth.africa');assert.equal(new URL(requested).searchParams.get('sortby'),'-datetime');assert.equal(new URL(requested).searchParams.get('limit'),'60');
 });
 
+test('field acquisition dates fall back to Earth Search when Digital Earth Africa is blocked',async()=>{
+ const {satelliteScenes}=await import('../lib/seasonal/satellite.ts');let calls=0;
+ const fetcher=(async(input:RequestInfo|URL,init?:RequestInit)=>{calls++;const url=String(input);if(url.includes('explorer.digitalearth.africa'))return new Response('forbidden',{status:403});assert.equal(init?.method,'POST');return Response.json({features:[{properties:{datetime:'2026-10-12T10:00:00Z','eo:cloud_cover':24}}]});}) as typeof fetch;
+ const result=await satelliteScenes(shape,'2026-11-02',fetcher);assert.equal(calls,2);assert.equal(result.source,'Earth Search STAC / Sentinel-2 L2A');assert.deepEqual(result.dates,[{date:'2026-10-12',sceneCloudMin:24,sceneCloudMax:24}]);
+});
+
 test('real-world WMS timestamps, namespace and interval dimensions do not become an empty catalogue',()=>{
  const stamp=caps.replace('2026-11-03,2026-10-13,2026-10-12','2026-10-12T00:00:00.000Z/2026-11-03T00:00:00.000Z/P1D').replace('2026-09-01,2026-08-01','2026-08-01T00:00:00Z,2026-09-01T00:00:00Z');
  const d=satelliteDates(stamp,'2026-11-02');assert.equal(d.rgb.dates[0],'2026-11-02');assert.equal(d.rgb.dates.at(-1),'2026-10-12');assert.deepEqual(d.anomaly.dates,['2026-09-01','2026-08-01']);

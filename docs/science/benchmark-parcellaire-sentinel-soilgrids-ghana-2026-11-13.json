@@ -1,0 +1,4620 @@
+{
+  "protocol": {
+    "version": "ghana-sentinel-yield-2026-11-13.1",
+    "sourceDoi": "10.5281/zenodo.6632083",
+    "outcome": "Field-average reported maize grain yield in kg/ha; source does not report reference moisture, so no dry-grain conversion is claimed.",
+    "fields": 46,
+    "split": "27 train, 9 calibration, 10 locked spatial-test fields; the same partition is reused for every issue date.",
+    "issueDates": [
+      "2021-09-20",
+      "2021-10-04",
+      "2021-10-18",
+      "2021-11-05"
+    ],
+    "availabilityRule": "Only satellite acquisitions dated at least five days before an issue date are eligible. This is a conservative latency scenario; exact historical source-publication timestamps are unavailable.",
+    "satelliteCollection": "Earth Search public Sentinel-2 L2A COGs, queried with the same field geometry; at most 12 dates are sampled uniformly from scenes available by each issue cutoff. SCL classes 4 and 5 define clear vegetation/bare-soil pixels; summaries require at least 10 usable field pixels and at least 20% clear coverage.",
+    "predictorAblations": [
+      "Train-set mean yield baseline; used for fields lacking usable imagery.",
+      "NDVI only: latest usable observation, mean to date, and maximum to date, evaluated as separate one-feature ridge models.",
+      "EVI only: latest usable observation, mean to date, and maximum to date, evaluated as separate one-feature ridge models.",
+      "NDVI + EVI: latest usable values and season-to-date means, one fixed four-feature ridge model.",
+      "SoilGrids only: pH, SOC, total N, CEC, bulk density, sand, silt and clay sampled at each field's interior point at 250 m native support; one fixed regularized model.",
+      "Sentinel NDVI/EVI + SoilGrids: the same fixed satellite summaries plus the same eight soil covariates.",
+      "Existing ground-measured LAI model from the locked Ghana benchmark, as an upper-quality comparator that is not operationally available from Sentinel.",
+      "Previous-year HarvestStat admin1 maize yield prior (2020, spatially uniform within Northern and Savannah); retrospective local field comparison, not a within-region parcel downscaling."
+    ],
+    "fit": "Median imputation and standardization are fitted on the training subset only; Ridge alpha=1 fixed before test evaluation. No hyperparameter selection or feature selection on calibration/test fields. Conformal interval uses calibration fields only.",
+    "metrics": [
+      "MAE kg/ha",
+      "RMSE kg/ha",
+      "signed bias kg/ha",
+      "test fields within ±20%",
+      "test coverage of nominal 90% interval",
+      "fields with usable satellite data",
+      "satellite-observation age and clear-pixel coverage"
+    ],
+    "activationGate": "This n=10 held-out set can falsify a candidate but cannot establish the user's 70/100 parcel target. Activation requires at least 100 independent field forecasts across multiple held-out seasons and sites, with at least 70% within ±20%, alongside the project's MAE/bias and interval-coverage gates.",
+    "limitations": [
+      "Single north-Ghana area and one 2021 season; no prospective or cross-season validation.",
+      "Yield reference is quadrat-based and reported moisture is unspecified.",
+      "Five-day availability lag is a sensitivity assumption, not a verified historical publication timestamp.",
+      "This experiment evaluates a satellite yield covariate on known field polygons; it does not test automated field-boundary or crop-type detection.",
+      "The polygon-file soil/management attributes are incomplete/misaligned and are excluded. SoilGrids is a 250 m map prediction, not a field test; total N is not plant-available N."
+    ],
+    "selectionRule": "Report every predeclared ablation and every issue date. The locked test set is not used to choose a winning variant or activate production.",
+    "confirmationStatus": "The test split was already inspected in the initial partial-coverage run. The complete-coverage rerun is exploratory and is not a blind confirmatory evaluation.",
+    "regionalDownscalingDecision": "A yield-weighted relative-score redistribution was not fit: the available 46 research polygons are a selected sample, not the complete maize area of Northern/Savannah, so their area-weighted denominator cannot conserve the published regional yield without using an unsupported crop mask.",
+    "soilHydraulicProfileDecision": "The six modeled available-water layers are present for all 46 fields (27 train, 9 calibration, 10 test) and were evaluated in secondary exploratory ablations. The profile alone had MAE 704 kg/ha and 2/10 held-out fields within ±20%; soil scalars plus profile had MAE 838 kg/ha and 1/10; Sentinel amplitude plus profile ranged 509-825 kg/ha and 2-3/10 across issue dates; trajectory plus all 18 soil features had MAE 982-1252 kg/ha and 1-3/10. These non-blind retrospective results do not establish a stable gain or justify production use."
+  },
+  "analysisStatus": "Exploratory complete-coverage rerun. The same held-out fields were already inspected in an earlier partial-coverage run; these results are not a blind confirmatory evaluation and are not used to select or activate a production model.",
+  "dataSources": {
+    "sentinel": {
+      "version": "ghana-sentinel-extract-2026-11-13.2",
+      "sourceDoi": "10.5281/zenodo.6632083",
+      "sourceProvider": "Earth Search STAC and public Sentinel-2 COGs; research fallback because Digital Earth Africa STAC returned HTTP 403 in this runner.",
+      "fieldCount": 46,
+      "polygonCount": 51,
+      "sceneLimitPerIssueDate": 12,
+      "acquisitionWindow": [
+        "2021-06-01",
+        "2021-10-31"
+      ],
+      "issueDates": [
+        "2021-09-20",
+        "2021-10-04",
+        "2021-10-18",
+        "2021-11-05"
+      ],
+      "temporalCutoffRule": "Per issue date, acquisitions no later than issue date minus five days; five days is a conservative availability-lag assumption, not a verified historical publication timestamp.",
+      "geometryRepair": "Original polygons that passed the project validator are reused byte-for-byte; only invalid research polygons are repaired with GDAL/OGR MakeValid. Production validation is unchanged. All repaired components and holes are sampled.",
+      "noYieldFitInExtraction": true
+    },
+    "soil": {
+      "version": "ghana-soilgrids-extract-2026-11-13.1",
+      "sourceDoi": "10.5281/zenodo.6632083",
+      "soilSource": "ISRIC SoilGrids 2.0 WCS; 250 m predictive maps, not field assays; total N is not plant-available N.",
+      "spatialSupport": "SoilGrids values sampled at an interior point of the repaired public study polygon (GDAL MakeValid + ST_PointOnSurface); one modelled 250 m cell may cover several nearby fields.",
+      "geometryRepair": "Research-only geometry repair; source polygons and application parcel validation are unchanged.",
+      "fieldCount": 46,
+      "polygonCount": 51,
+      "split": "Reused the locked field-ID SHA256 split from the Ghana canopy benchmark.",
+      "repairVersion": "ghana-study-geometry-repair-2026-11-13.1",
+      "noYieldFitInExtraction": true
+    }
+  },
+  "soilInputCoverage": {
+    "train": {
+      "nFields": 27,
+      "scalarFieldsWithValue": {
+        "ph": 27,
+        "organicC": 27,
+        "totalN": 27,
+        "cec": 27,
+        "bulkDensity": 27,
+        "sand": 27,
+        "silt": 27,
+        "clay": 27,
+        "organicCarbonDensity": 27,
+        "organicCarbonStock": 27,
+        "coarseFragments": 27,
+        "waterContent10kPa": 27
+      },
+      "completeSixLayerAvailableWaterProfiles": 27,
+      "completeLayerCountDistribution": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 27
+      }
+    },
+    "calibration": {
+      "nFields": 9,
+      "scalarFieldsWithValue": {
+        "ph": 9,
+        "organicC": 9,
+        "totalN": 9,
+        "cec": 9,
+        "bulkDensity": 9,
+        "sand": 9,
+        "silt": 9,
+        "clay": 9,
+        "organicCarbonDensity": 9,
+        "organicCarbonStock": 9,
+        "coarseFragments": 9,
+        "waterContent10kPa": 9
+      },
+      "completeSixLayerAvailableWaterProfiles": 9,
+      "completeLayerCountDistribution": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 9
+      }
+    },
+    "test": {
+      "nFields": 10,
+      "scalarFieldsWithValue": {
+        "ph": 10,
+        "organicC": 9,
+        "totalN": 9,
+        "cec": 10,
+        "bulkDensity": 10,
+        "sand": 8,
+        "silt": 9,
+        "clay": 10,
+        "organicCarbonDensity": 9,
+        "organicCarbonStock": 10,
+        "coarseFragments": 10,
+        "waterContent10kPa": 8
+      },
+      "completeSixLayerAvailableWaterProfiles": 10,
+      "completeLayerCountDistribution": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 10
+      }
+    }
+  },
+  "validationScope": "Retrospective spatial holdout within one 2021 Ghana study area; the training fields' same-season yield labels were not available at those historical issue dates. This is not a prospective forecast validation.",
+  "results": [
+    {
+      "issueDate": "2021-09-20",
+      "nTrain": 27,
+      "nCalibration": 9,
+      "nTest": 10,
+      "testSatelliteCoverage": 10,
+      "medianUsableScenesTest": 5.0,
+      "medianLatestSceneAgeDaysTest": 27.0,
+      "variants": {
+        "ndvi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 886.1068622161562,
+            "rmseKgHa": 972.9564412035951,
+            "biasKgHa": 414.83608785250544,
+            "medianAbsoluteRelativeErrorPercent": 75.60168700747563,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1635.8968984676962,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 729.020245709978,
+            "rmseKgHa": 790.2687552912724,
+            "biasKgHa": 184.18207551174055,
+            "medianAbsoluteRelativeErrorPercent": 48.80160641895066,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1195.3160595830814,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_max": {
+          "status": "exploratory",
+          "features": [
+            "ndviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 692.6010561441459,
+            "rmseKgHa": 760.9402090467948,
+            "biasKgHa": 138.29807065720928,
+            "medianAbsoluteRelativeErrorPercent": 40.970467854450675,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1061.0740580306865,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 762.7757714681329,
+            "rmseKgHa": 820.6212597370588,
+            "biasKgHa": 306.3282693187123,
+            "medianAbsoluteRelativeErrorPercent": 78.54085493008486,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1830.9738908689515,
+            "testCoverage90": 1.0
+          }
+        },
+        "evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 775.0041856425798,
+            "rmseKgHa": 808.3261940717259,
+            "biasKgHa": 264.54088623972416,
+            "medianAbsoluteRelativeErrorPercent": 64.91922764069817,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1361.730790661953,
+            "testCoverage90": 1.0
+          }
+        },
+        "evi_max": {
+          "status": "exploratory",
+          "features": [
+            "eviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 704.1436064481366,
+            "rmseKgHa": 770.2339486401792,
+            "biasKgHa": 187.4889941834937,
+            "medianAbsoluteRelativeErrorPercent": 58.840071712748156,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1198.158077554464,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 890.1684403020681,
+            "rmseKgHa": 979.9744883941092,
+            "biasKgHa": 416.31880471465627,
+            "medianAbsoluteRelativeErrorPercent": 74.24888709908673,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1600.48237821673,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 774.6069460499943,
+            "rmseKgHa": 808.0515476833957,
+            "biasKgHa": 262.8842016724877,
+            "medianAbsoluteRelativeErrorPercent": 64.40139862213215,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1359.6017717936074,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_evi_4features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 879.469567405314,
+            "rmseKgHa": 1016.7427138021949,
+            "biasKgHa": 365.4146423222819,
+            "medianAbsoluteRelativeErrorPercent": 63.6113393119941,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1525.4683705020284,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "ndviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 781.813242413407,
+            "rmseKgHa": 888.9085778444386,
+            "biasKgHa": 344.63763574222787,
+            "medianAbsoluteRelativeErrorPercent": 77.67463556955455,
+            "nTrainFields": 25,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1101.774331573978,
+            "testCoverage90": 0.7
+          }
+        },
+        "evi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 749.4345061756649,
+            "rmseKgHa": 837.0384620181505,
+            "biasKgHa": 265.17080979190325,
+            "medianAbsoluteRelativeErrorPercent": 77.95455214032374,
+            "nTrainFields": 25,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1119.59132267438,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 717.0866277574834,
+            "rmseKgHa": 789.600354829554,
+            "biasKgHa": 178.91119689594402,
+            "medianAbsoluteRelativeErrorPercent": 49.25596316059179,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1093.7536840926427,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 752.1010901729719,
+            "rmseKgHa": 794.2089731726256,
+            "biasKgHa": 247.36342752771225,
+            "medianAbsoluteRelativeErrorPercent": 58.74685739443025,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1215.9556859285458,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 633.3464364921113,
+            "rmseKgHa": 732.8739835696983,
+            "biasKgHa": 97.41889546763623,
+            "medianAbsoluteRelativeErrorPercent": 43.4577801612138,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 968.1858299937061,
+            "testCoverage90": 0.7
+          }
+        },
+        "evi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 658.0361012449705,
+            "rmseKgHa": 751.6003098027288,
+            "biasKgHa": 123.17545446145043,
+            "medianAbsoluteRelativeErrorPercent": 53.240234199097046,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 951.2015990628066,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_amplitudes_2features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 630.3210985695406,
+            "rmseKgHa": 732.1251951750814,
+            "biasKgHa": 95.1572030521346,
+            "medianAbsoluteRelativeErrorPercent": 43.245960865062116,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 965.2341868479278,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_trajectory": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 839.2217708247679,
+            "rmseKgHa": 947.5249288811927,
+            "biasKgHa": 305.67529771399904,
+            "medianAbsoluteRelativeErrorPercent": 59.846252268269694,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1672.3275517285397,
+            "testCoverage90": 1.0
+          }
+        },
+        "soilgrids_8features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 724.2139018875412,
+            "rmseKgHa": 854.6089838342907,
+            "biasKgHa": 247.572040957035,
+            "medianAbsoluteRelativeErrorPercent": 57.96184745801526,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1323.6841037338963,
+            "testCoverage90": 0.9
+          }
+        },
+        "soil_watercontent_10kpa": {
+          "status": "exploratory",
+          "features": [
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 649.7614717026978,
+            "rmseKgHa": 768.1948649505642,
+            "biasKgHa": 202.3272870955634,
+            "medianAbsoluteRelativeErrorPercent": 52.20642220448395,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 8,
+            "nTestFieldsFallback": 2,
+            "conformal90HalfWidthKgHa": 948.082138378364,
+            "testCoverage90": 0.7
+          }
+        },
+        "soil_chemistry_plus_water_9features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 743.4368070981476,
+            "rmseKgHa": 936.4448804195279,
+            "biasKgHa": 361.35863925199055,
+            "medianAbsoluteRelativeErrorPercent": 47.450643772679044,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1237.9902553232296,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_scalar_12features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 919.5610924882074,
+            "rmseKgHa": 1213.050297030264,
+            "biasKgHa": 357.11807961247985,
+            "medianAbsoluteRelativeErrorPercent": 50.84726297539171,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1484.2602038729763,
+            "testCoverage90": 0.6
+          }
+        },
+        "soil_hydraulic_profile_6features": {
+          "status": "exploratory",
+          "features": [
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 704.3803595527581,
+            "rmseKgHa": 793.8941170682991,
+            "biasKgHa": 123.96324143588018,
+            "medianAbsoluteRelativeErrorPercent": 40.46030827393017,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1172.8527597868767,
+            "testCoverage90": 1.0
+          }
+        },
+        "soil_chemistry_plus_hydraulic_14features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 838.0932566881853,
+            "rmseKgHa": 997.8268373664306,
+            "biasKgHa": 152.84818723796607,
+            "medianAbsoluteRelativeErrorPercent": 54.03786519879379,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1392.1404401445832,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_available_18features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 1058.3903692714625,
+            "rmseKgHa": 1312.9472366066918,
+            "biasKgHa": 329.1148459484554,
+            "medianAbsoluteRelativeErrorPercent": 71.78740548649765,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1150.9916938947363,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 757.8367657602478,
+            "rmseKgHa": 1032.7503101608827,
+            "biasKgHa": 228.68961590262205,
+            "medianAbsoluteRelativeErrorPercent": 43.97357329767617,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2166.4469351677544,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 641.4222449707552,
+            "rmseKgHa": 850.3661222339324,
+            "biasKgHa": 274.9137347135578,
+            "medianAbsoluteRelativeErrorPercent": 44.10253283639939,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1431.019688741129,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 939.2573984411508,
+            "rmseKgHa": 1141.6351971500242,
+            "biasKgHa": 251.79903571427977,
+            "medianAbsoluteRelativeErrorPercent": 60.31117294159245,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1797.2298650826965,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 800.8640227008825,
+            "rmseKgHa": 1054.3335628537,
+            "biasKgHa": 409.61850075469675,
+            "medianAbsoluteRelativeErrorPercent": 46.24527493435501,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1356.0724936876968,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_amplitudes_plus_hydraulic_8features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 824.8745415195241,
+            "rmseKgHa": 1019.9391144776484,
+            "biasKgHa": 17.847543165524076,
+            "medianAbsoluteRelativeErrorPercent": 59.93325017300653,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1768.2666666666667,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_amplitudes_plus_core_soil_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 736.7056496401129,
+            "rmseKgHa": 853.213311607691,
+            "biasKgHa": 277.25607698767345,
+            "medianAbsoluteRelativeErrorPercent": 49.45175528331357,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1233.1556347772507,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_amplitudes_plus_scalar_soil_14features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 956.7044538667518,
+            "rmseKgHa": 1177.5568003550297,
+            "biasKgHa": 364.9335655109682,
+            "medianAbsoluteRelativeErrorPercent": 54.56873254646643,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1849.6402408452034,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_amplitudes_plus_all_soil_20features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 1033.004746586932,
+            "rmseKgHa": 1250.1752441737935,
+            "biasKgHa": 383.1205268540204,
+            "medianAbsoluteRelativeErrorPercent": 74.36113646883781,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1066.2329277885008,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_trajectory_plus_hydraulic_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 703.5842698037177,
+            "rmseKgHa": 960.5546716741962,
+            "biasKgHa": 265.8409350170649,
+            "medianAbsoluteRelativeErrorPercent": 48.70105756318572,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1824.5871701130723,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_all_soil_22features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 981.5477419665747,
+            "rmseKgHa": 1209.30165222725,
+            "biasKgHa": 395.77471684635464,
+            "medianAbsoluteRelativeErrorPercent": 60.769742127086836,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1159.7459477394827,
+            "testCoverage90": 0.7
+          }
+        },
+        "train_mean_baseline": {
+          "status": "baseline",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 641.8254320987656,
+            "rmseKgHa": 749.9554154299803,
+            "biasKgHa": 118.50716049382712,
+            "medianAbsoluteRelativeErrorPercent": 54.93134232596114
+          }
+        },
+        "ground_measured_lai_comparator": {
+          "status": "comparator_not_operationally_available",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 446.7324778324102,
+            "rmseKgHa": 533.6022522179701,
+            "biasKgHa": 122.01710858008104,
+            "medianAbsoluteRelativeErrorPercent": 28.836490492319978
+          }
+        },
+        "previous_year_admin1_prior": {
+          "status": "historical_admin1_prior",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 750.5717087441675,
+            "rmseKgHa": 859.8159534620803,
+            "biasKgHa": 416.42458509926547,
+            "medianAbsoluteRelativeErrorPercent": 70.4344652700862
+          }
+        }
+      }
+    },
+    {
+      "issueDate": "2021-10-04",
+      "nTrain": 27,
+      "nCalibration": 9,
+      "nTest": 10,
+      "testSatelliteCoverage": 10,
+      "medianUsableScenesTest": 4.5,
+      "medianLatestSceneAgeDaysTest": 6.0,
+      "variants": {
+        "ndvi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 686.996617651427,
+            "rmseKgHa": 775.240745058889,
+            "biasKgHa": 210.00630713394838,
+            "medianAbsoluteRelativeErrorPercent": 32.847001251501936,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1377.1118271197656,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 854.5898794312241,
+            "rmseKgHa": 920.3524999924309,
+            "biasKgHa": 165.1753452397859,
+            "medianAbsoluteRelativeErrorPercent": 68.44535836367925,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1453.0432288118213,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_max": {
+          "status": "exploratory",
+          "features": [
+            "ndviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 726.7942425357274,
+            "rmseKgHa": 787.5549513310773,
+            "biasKgHa": 80.77289075957883,
+            "medianAbsoluteRelativeErrorPercent": 54.55633824790871,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1248.614648466121,
+            "testCoverage90": 1.0
+          }
+        },
+        "evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 791.6132260883023,
+            "rmseKgHa": 963.1445878878075,
+            "biasKgHa": 224.31700766542835,
+            "medianAbsoluteRelativeErrorPercent": 49.5847015519258,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1444.8943402673349,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 853.4582086487859,
+            "rmseKgHa": 894.3906719688958,
+            "biasKgHa": 221.89807163175414,
+            "medianAbsoluteRelativeErrorPercent": 57.65709286448257,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1275.4222719952622,
+            "testCoverage90": 1.0
+          }
+        },
+        "evi_max": {
+          "status": "exploratory",
+          "features": [
+            "eviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 939.7254057365215,
+            "rmseKgHa": 972.9769929381721,
+            "biasKgHa": 272.4535472154212,
+            "medianAbsoluteRelativeErrorPercent": 79.42768895206767,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1220.1086000059922,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 766.3300594586334,
+            "rmseKgHa": 906.1696752073412,
+            "biasKgHa": 233.52848590606385,
+            "medianAbsoluteRelativeErrorPercent": 44.40437834283666,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1496.1585160589325,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 799.1272489286813,
+            "rmseKgHa": 880.06961246257,
+            "biasKgHa": 98.15793307210947,
+            "medianAbsoluteRelativeErrorPercent": 62.20136079469507,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1453.903187373257,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_evi_4features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 771.4843101125573,
+            "rmseKgHa": 895.3683591766327,
+            "biasKgHa": 178.7191961669979,
+            "medianAbsoluteRelativeErrorPercent": 50.303488515563345,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1543.553009705739,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "ndviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 613.3855857713355,
+            "rmseKgHa": 726.4680598088362,
+            "biasKgHa": 96.39035784595345,
+            "medianAbsoluteRelativeErrorPercent": 52.43344965830698,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 855.4273589716894,
+            "testCoverage90": 0.7
+          }
+        },
+        "evi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 606.5378088413041,
+            "rmseKgHa": 717.3959874311843,
+            "biasKgHa": 67.19319528551291,
+            "medianAbsoluteRelativeErrorPercent": 49.51144949343422,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 837.4970425078358,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 868.9994985891997,
+            "rmseKgHa": 944.4968662306092,
+            "biasKgHa": 173.8358779764083,
+            "medianAbsoluteRelativeErrorPercent": 64.42286947694356,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1312.6954902453472,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 839.0812537408649,
+            "rmseKgHa": 886.8325697981118,
+            "biasKgHa": 224.84648357107844,
+            "medianAbsoluteRelativeErrorPercent": 63.7436433115292,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1132.091420842518,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 435.59484771552496,
+            "rmseKgHa": 518.4697364034804,
+            "biasKgHa": 4.411295896509069,
+            "medianAbsoluteRelativeErrorPercent": 33.815935026433245,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 703.9756805751617,
+            "testCoverage90": 0.8
+          }
+        },
+        "evi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 665.7536118098121,
+            "rmseKgHa": 787.9599715597851,
+            "biasKgHa": 90.29178546661838,
+            "medianAbsoluteRelativeErrorPercent": 39.85430533791129,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 955.6277152230851,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_evi_amplitudes_2features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 521.4455214955179,
+            "rmseKgHa": 634.5202868096898,
+            "biasKgHa": 39.07964135489478,
+            "medianAbsoluteRelativeErrorPercent": 39.93241939314996,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 748.2821718035931,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_trajectory": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 889.3393720208172,
+            "rmseKgHa": 983.2414368083239,
+            "biasKgHa": -25.82567801929192,
+            "medianAbsoluteRelativeErrorPercent": 74.35586882127281,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1374.256495383511,
+            "testCoverage90": 0.9
+          }
+        },
+        "soilgrids_8features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 724.2139018875412,
+            "rmseKgHa": 854.6089838342907,
+            "biasKgHa": 247.572040957035,
+            "medianAbsoluteRelativeErrorPercent": 57.96184745801526,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1323.6841037338963,
+            "testCoverage90": 0.9
+          }
+        },
+        "soil_watercontent_10kpa": {
+          "status": "exploratory",
+          "features": [
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 649.7614717026978,
+            "rmseKgHa": 768.1948649505642,
+            "biasKgHa": 202.3272870955634,
+            "medianAbsoluteRelativeErrorPercent": 52.20642220448395,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 8,
+            "nTestFieldsFallback": 2,
+            "conformal90HalfWidthKgHa": 948.082138378364,
+            "testCoverage90": 0.7
+          }
+        },
+        "soil_chemistry_plus_water_9features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 743.4368070981476,
+            "rmseKgHa": 936.4448804195279,
+            "biasKgHa": 361.35863925199055,
+            "medianAbsoluteRelativeErrorPercent": 47.450643772679044,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1237.9902553232296,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_scalar_12features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 919.5610924882074,
+            "rmseKgHa": 1213.050297030264,
+            "biasKgHa": 357.11807961247985,
+            "medianAbsoluteRelativeErrorPercent": 50.84726297539171,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1484.2602038729763,
+            "testCoverage90": 0.6
+          }
+        },
+        "soil_hydraulic_profile_6features": {
+          "status": "exploratory",
+          "features": [
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 704.3803595527581,
+            "rmseKgHa": 793.8941170682991,
+            "biasKgHa": 123.96324143588018,
+            "medianAbsoluteRelativeErrorPercent": 40.46030827393017,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1172.8527597868767,
+            "testCoverage90": 1.0
+          }
+        },
+        "soil_chemistry_plus_hydraulic_14features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 838.0932566881853,
+            "rmseKgHa": 997.8268373664306,
+            "biasKgHa": 152.84818723796607,
+            "medianAbsoluteRelativeErrorPercent": 54.03786519879379,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1392.1404401445832,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_available_18features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 1058.3903692714625,
+            "rmseKgHa": 1312.9472366066918,
+            "biasKgHa": 329.1148459484554,
+            "medianAbsoluteRelativeErrorPercent": 71.78740548649765,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1150.9916938947363,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 890.5698535554405,
+            "rmseKgHa": 1042.3433272972557,
+            "biasKgHa": 448.4151545575431,
+            "medianAbsoluteRelativeErrorPercent": 47.869345853141425,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2177.2428531427204,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_trajectory_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 950.1343971067496,
+            "rmseKgHa": 1081.255016241478,
+            "biasKgHa": 166.41461415011437,
+            "medianAbsoluteRelativeErrorPercent": 77.05942616483273,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1734.9390876882571,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 941.6495285681673,
+            "rmseKgHa": 1053.1337387636556,
+            "biasKgHa": 428.21147333973295,
+            "medianAbsoluteRelativeErrorPercent": 62.714821814639386,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1868.246416886026,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_trajectory_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 973.3641429730635,
+            "rmseKgHa": 1154.6939194414101,
+            "biasKgHa": 409.99167664379473,
+            "medianAbsoluteRelativeErrorPercent": 72.83019023513995,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2064.0422381801927,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_amplitudes_plus_hydraulic_8features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 509.30570148334084,
+            "rmseKgHa": 642.2604777208909,
+            "biasKgHa": 4.761888289007561,
+            "medianAbsoluteRelativeErrorPercent": 24.746956569753234,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 979.8960736029319,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_amplitudes_plus_core_soil_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 553.3149925320688,
+            "rmseKgHa": 728.3146277272978,
+            "biasKgHa": 28.47991413960299,
+            "medianAbsoluteRelativeErrorPercent": 34.32372929957377,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1286.0178206031055,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_amplitudes_plus_scalar_soil_14features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 882.7247538448868,
+            "rmseKgHa": 1071.7258066904928,
+            "biasKgHa": 96.31987008262266,
+            "medianAbsoluteRelativeErrorPercent": 78.4597338794384,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1589.8992908781536,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_amplitudes_plus_all_soil_20features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 940.9406762422852,
+            "rmseKgHa": 1190.5050465744284,
+            "biasKgHa": 171.14164106404613,
+            "medianAbsoluteRelativeErrorPercent": 64.69556444537339,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1234.0584376054535,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_trajectory_plus_hydraulic_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 1015.8369372452917,
+            "rmseKgHa": 1178.051728984425,
+            "biasKgHa": 146.94654027123585,
+            "medianAbsoluteRelativeErrorPercent": 86.45021416431568,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1358.5858563755387,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_trajectory_plus_all_soil_22features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 1251.5963443248208,
+            "rmseKgHa": 1468.6007685920458,
+            "biasKgHa": 469.0060170534877,
+            "medianAbsoluteRelativeErrorPercent": 100.0,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1807.103387592284,
+            "testCoverage90": 0.7
+          }
+        },
+        "train_mean_baseline": {
+          "status": "baseline",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 641.8254320987656,
+            "rmseKgHa": 749.9554154299803,
+            "biasKgHa": 118.50716049382712,
+            "medianAbsoluteRelativeErrorPercent": 54.93134232596114
+          }
+        },
+        "ground_measured_lai_comparator": {
+          "status": "comparator_not_operationally_available",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 458.96236459512585,
+            "rmseKgHa": 568.9620698090259,
+            "biasKgHa": 125.52059181525628,
+            "medianAbsoluteRelativeErrorPercent": 30.97470033761222
+          }
+        },
+        "previous_year_admin1_prior": {
+          "status": "historical_admin1_prior",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 750.5717087441675,
+            "rmseKgHa": 859.8159534620803,
+            "biasKgHa": 416.42458509926547,
+            "medianAbsoluteRelativeErrorPercent": 70.4344652700862
+          }
+        }
+      }
+    },
+    {
+      "issueDate": "2021-10-18",
+      "nTrain": 27,
+      "nCalibration": 9,
+      "nTest": 10,
+      "testSatelliteCoverage": 10,
+      "medianUsableScenesTest": 6.0,
+      "medianLatestSceneAgeDaysTest": 5.0,
+      "variants": {
+        "ndvi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 671.4361237719289,
+            "rmseKgHa": 770.0266712231344,
+            "biasKgHa": 49.88486498316938,
+            "medianAbsoluteRelativeErrorPercent": 52.87663579900401,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 853.9210049232869,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 650.9706333233217,
+            "rmseKgHa": 750.2675286741678,
+            "biasKgHa": 130.85801667481007,
+            "medianAbsoluteRelativeErrorPercent": 47.914014085053736,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1077.0037114006527,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_max": {
+          "status": "exploratory",
+          "features": [
+            "ndviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 670.3135916679634,
+            "rmseKgHa": 864.9611413820032,
+            "biasKgHa": 98.0444609861228,
+            "medianAbsoluteRelativeErrorPercent": 55.64236269071522,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1213.2412689938533,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 716.0886389645502,
+            "rmseKgHa": 843.8544497584032,
+            "biasKgHa": 167.17119033296223,
+            "medianAbsoluteRelativeErrorPercent": 61.705081416207875,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 886.7138694506133,
+            "testCoverage90": 0.6
+          }
+        },
+        "evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 826.2068642232373,
+            "rmseKgHa": 880.4553849580029,
+            "biasKgHa": 299.9537154928183,
+            "medianAbsoluteRelativeErrorPercent": 68.53453938928646,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1454.6321780381945,
+            "testCoverage90": 1.0
+          }
+        },
+        "evi_max": {
+          "status": "exploratory",
+          "features": [
+            "eviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 918.202163215401,
+            "rmseKgHa": 995.4294639184233,
+            "biasKgHa": 460.76755104582344,
+            "medianAbsoluteRelativeErrorPercent": 79.7051203516164,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1577.3398389762692,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 978.6502560505539,
+            "rmseKgHa": 1220.1609317053815,
+            "biasKgHa": 132.95950876743137,
+            "medianAbsoluteRelativeErrorPercent": 60.810535522121526,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1568.313804043229,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 943.4327658573133,
+            "rmseKgHa": 997.8612044190336,
+            "biasKgHa": 423.45823091424063,
+            "medianAbsoluteRelativeErrorPercent": 81.09815675533135,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1631.116720407677,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_evi_4features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 1013.3776375249032,
+            "rmseKgHa": 1228.7024339733593,
+            "biasKgHa": 88.15656114741073,
+            "medianAbsoluteRelativeErrorPercent": 66.42497100259762,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2321.4715694830275,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "ndviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 762.8248501504033,
+            "rmseKgHa": 846.2322958437798,
+            "biasKgHa": 115.94354419064162,
+            "medianAbsoluteRelativeErrorPercent": 64.0918342379387,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1001.6901006202501,
+            "testCoverage90": 0.8
+          }
+        },
+        "evi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 660.1347915186705,
+            "rmseKgHa": 756.3025874094711,
+            "biasKgHa": 115.79579234404552,
+            "medianAbsoluteRelativeErrorPercent": 55.26861403377655,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 919.4026352074078,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 623.7272324016773,
+            "rmseKgHa": 710.7132944378086,
+            "biasKgHa": 110.88924227831947,
+            "medianAbsoluteRelativeErrorPercent": 43.67176827157459,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1089.3194494827221,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 815.4798034694031,
+            "rmseKgHa": 871.6676500680636,
+            "biasKgHa": 367.74737260747594,
+            "medianAbsoluteRelativeErrorPercent": 64.5699360917611,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1613.451193120247,
+            "testCoverage90": 1.0
+          }
+        },
+        "ndvi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 669.6170242717246,
+            "rmseKgHa": 807.8189750642838,
+            "biasKgHa": 114.03140211804387,
+            "medianAbsoluteRelativeErrorPercent": 40.61838781228964,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1007.1956427109902,
+            "testCoverage90": 0.7
+          }
+        },
+        "evi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 616.9217961169428,
+            "rmseKgHa": 783.2389354213286,
+            "biasKgHa": 109.93773160194014,
+            "medianAbsoluteRelativeErrorPercent": 51.87042300272816,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 702.8741416901312,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_amplitudes_2features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 619.7656633442267,
+            "rmseKgHa": 782.6067648694966,
+            "biasKgHa": 109.86325400492638,
+            "medianAbsoluteRelativeErrorPercent": 52.616637798429586,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 726.1726158936035,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_trajectory": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 625.0542616535682,
+            "rmseKgHa": 750.6589333902228,
+            "biasKgHa": 235.87138944988055,
+            "medianAbsoluteRelativeErrorPercent": 37.86391478717497,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1133.93239160663,
+            "testCoverage90": 0.9
+          }
+        },
+        "soilgrids_8features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 724.2139018875412,
+            "rmseKgHa": 854.6089838342907,
+            "biasKgHa": 247.572040957035,
+            "medianAbsoluteRelativeErrorPercent": 57.96184745801526,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1323.6841037338963,
+            "testCoverage90": 0.9
+          }
+        },
+        "soil_watercontent_10kpa": {
+          "status": "exploratory",
+          "features": [
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 649.7614717026978,
+            "rmseKgHa": 768.1948649505642,
+            "biasKgHa": 202.3272870955634,
+            "medianAbsoluteRelativeErrorPercent": 52.20642220448395,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 8,
+            "nTestFieldsFallback": 2,
+            "conformal90HalfWidthKgHa": 948.082138378364,
+            "testCoverage90": 0.7
+          }
+        },
+        "soil_chemistry_plus_water_9features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 743.4368070981476,
+            "rmseKgHa": 936.4448804195279,
+            "biasKgHa": 361.35863925199055,
+            "medianAbsoluteRelativeErrorPercent": 47.450643772679044,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1237.9902553232296,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_scalar_12features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 919.5610924882074,
+            "rmseKgHa": 1213.050297030264,
+            "biasKgHa": 357.11807961247985,
+            "medianAbsoluteRelativeErrorPercent": 50.84726297539171,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1484.2602038729763,
+            "testCoverage90": 0.6
+          }
+        },
+        "soil_hydraulic_profile_6features": {
+          "status": "exploratory",
+          "features": [
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 704.3803595527581,
+            "rmseKgHa": 793.8941170682991,
+            "biasKgHa": 123.96324143588018,
+            "medianAbsoluteRelativeErrorPercent": 40.46030827393017,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1172.8527597868767,
+            "testCoverage90": 1.0
+          }
+        },
+        "soil_chemistry_plus_hydraulic_14features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 838.0932566881853,
+            "rmseKgHa": 997.8268373664306,
+            "biasKgHa": 152.84818723796607,
+            "medianAbsoluteRelativeErrorPercent": 54.03786519879379,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1392.1404401445832,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_available_18features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 1058.3903692714625,
+            "rmseKgHa": 1312.9472366066918,
+            "biasKgHa": 329.1148459484554,
+            "medianAbsoluteRelativeErrorPercent": 71.78740548649765,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1150.9916938947363,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 1250.8417021425287,
+            "rmseKgHa": 1439.2850237726846,
+            "biasKgHa": 250.56347321544143,
+            "medianAbsoluteRelativeErrorPercent": 95.23690174932327,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1408.1572174569906,
+            "testCoverage90": 0.5
+          }
+        },
+        "s2_trajectory_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 893.3780299308022,
+            "rmseKgHa": 991.7990290069504,
+            "biasKgHa": 511.1215781086431,
+            "medianAbsoluteRelativeErrorPercent": 71.44867244434236,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 912.2860774140398,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 1207.7053465154136,
+            "rmseKgHa": 1556.8525727224776,
+            "biasKgHa": 574.6977135390596,
+            "medianAbsoluteRelativeErrorPercent": 85.37536734407325,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2481.584287887071,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_trajectory_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 983.5364261108328,
+            "rmseKgHa": 1296.8044354471701,
+            "biasKgHa": 513.0811863997036,
+            "medianAbsoluteRelativeErrorPercent": 56.061259896012295,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1695.7108758343957,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_amplitudes_plus_hydraulic_8features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 661.3635350231073,
+            "rmseKgHa": 850.0956634863586,
+            "biasKgHa": 78.26320408954344,
+            "medianAbsoluteRelativeErrorPercent": 38.089682125448135,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 994.4848973038102,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_amplitudes_plus_core_soil_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 736.8684724423586,
+            "rmseKgHa": 964.5870563854037,
+            "biasKgHa": 168.51631751068544,
+            "medianAbsoluteRelativeErrorPercent": 38.334321281067396,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 748.4628891982302,
+            "testCoverage90": 0.5
+          }
+        },
+        "s2_amplitudes_plus_scalar_soil_14features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 937.6080403027809,
+            "rmseKgHa": 1193.3578453831615,
+            "biasKgHa": 293.72515521034103,
+            "medianAbsoluteRelativeErrorPercent": 58.80305703122482,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1395.4953419531969,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_amplitudes_plus_all_soil_20features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 926.0977698475293,
+            "rmseKgHa": 1155.5859956067018,
+            "biasKgHa": 278.4439007396096,
+            "medianAbsoluteRelativeErrorPercent": 75.0081948666795,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1017.9927884997414,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_trajectory_plus_hydraulic_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 696.5253000555296,
+            "rmseKgHa": 750.6505739833771,
+            "biasKgHa": 233.22846224232535,
+            "medianAbsoluteRelativeErrorPercent": 62.52761760116719,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1768.2666666666667,
+            "testCoverage90": 1.0
+          }
+        },
+        "s2_trajectory_plus_all_soil_22features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 1083.7896789810952,
+            "rmseKgHa": 1346.110723788387,
+            "biasKgHa": 432.21623969017145,
+            "medianAbsoluteRelativeErrorPercent": 75.43484279811057,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1737.470485236256,
+            "testCoverage90": 0.8
+          }
+        },
+        "train_mean_baseline": {
+          "status": "baseline",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 641.8254320987656,
+            "rmseKgHa": 749.9554154299803,
+            "biasKgHa": 118.50716049382712,
+            "medianAbsoluteRelativeErrorPercent": 54.93134232596114
+          }
+        },
+        "ground_measured_lai_comparator": {
+          "status": "comparator_not_operationally_available",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 451.22487416884525,
+            "rmseKgHa": 561.803541274281,
+            "biasKgHa": 130.25535741211206,
+            "medianAbsoluteRelativeErrorPercent": 31.661694763919314
+          }
+        },
+        "previous_year_admin1_prior": {
+          "status": "historical_admin1_prior",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 750.5717087441675,
+            "rmseKgHa": 859.8159534620803,
+            "biasKgHa": 416.42458509926547,
+            "medianAbsoluteRelativeErrorPercent": 70.4344652700862
+          }
+        }
+      }
+    },
+    {
+      "issueDate": "2021-11-05",
+      "nTrain": 27,
+      "nCalibration": 9,
+      "nTest": 10,
+      "testSatelliteCoverage": 10,
+      "medianUsableScenesTest": 5.5,
+      "medianLatestSceneAgeDaysTest": 8.0,
+      "variants": {
+        "ndvi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 701.6537190390122,
+            "rmseKgHa": 852.2740139998264,
+            "biasKgHa": -90.69415076791846,
+            "medianAbsoluteRelativeErrorPercent": 41.268863082672446,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1403.8679418583315,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 727.9609152572236,
+            "rmseKgHa": 839.9140043076127,
+            "biasKgHa": 195.61556869650497,
+            "medianAbsoluteRelativeErrorPercent": 58.82369209734605,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1085.0426624661782,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_max": {
+          "status": "exploratory",
+          "features": [
+            "ndviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 624.35760627582,
+            "rmseKgHa": 783.1024059408838,
+            "biasKgHa": 165.52619185856753,
+            "medianAbsoluteRelativeErrorPercent": 46.72798020190834,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1232.6419829062634,
+            "testCoverage90": 0.9
+          }
+        },
+        "evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 699.7301471103771,
+            "rmseKgHa": 838.9363725361503,
+            "biasKgHa": 165.90602139151056,
+            "medianAbsoluteRelativeErrorPercent": 65.81890260313511,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 769.0442874130318,
+            "testCoverage90": 0.5
+          }
+        },
+        "evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 946.8640124810424,
+            "rmseKgHa": 1005.3283443850441,
+            "biasKgHa": 337.16324136398293,
+            "medianAbsoluteRelativeErrorPercent": 64.04642943174206,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 934.3687930596201,
+            "testCoverage90": 0.5
+          }
+        },
+        "evi_max": {
+          "status": "exploratory",
+          "features": [
+            "eviMax"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 827.3259242923917,
+            "rmseKgHa": 910.4784253320041,
+            "biasKgHa": 337.24509375961713,
+            "medianAbsoluteRelativeErrorPercent": 62.714848533731214,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1245.499682121308,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_evi_latest": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "eviLatest"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 921.226051913765,
+            "rmseKgHa": 1182.4407058855602,
+            "biasKgHa": -72.48927783604896,
+            "medianAbsoluteRelativeErrorPercent": 59.27322971370853,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1329.57439430077,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_evi_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviMean",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 920.910458549161,
+            "rmseKgHa": 986.3300015126287,
+            "biasKgHa": 321.1009101152751,
+            "medianAbsoluteRelativeErrorPercent": 63.015708080185085,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 975.7256600085622,
+            "testCoverage90": 0.6
+          }
+        },
+        "ndvi_evi_4features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 851.4869247372839,
+            "rmseKgHa": 1157.1741217546669,
+            "biasKgHa": -36.278762274098405,
+            "medianAbsoluteRelativeErrorPercent": 51.981152472081924,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1720.0808505616496,
+            "testCoverage90": 0.9
+          }
+        },
+        "ndvi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "ndviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 792.3637397739042,
+            "rmseKgHa": 889.4078533003615,
+            "biasKgHa": 135.31550402185604,
+            "medianAbsoluteRelativeErrorPercent": 61.781099973764185,
+            "nTrainFields": 26,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1082.3726203005472,
+            "testCoverage90": 0.8
+          }
+        },
+        "evi_slope_30d": {
+          "status": "exploratory",
+          "features": [
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 619.1603307020174,
+            "rmseKgHa": 750.351813146381,
+            "biasKgHa": 156.68086946976652,
+            "medianAbsoluteRelativeErrorPercent": 52.625960539463904,
+            "nTrainFields": 26,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 897.73289736412,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 741.4603414244273,
+            "rmseKgHa": 869.8030466869291,
+            "biasKgHa": 163.2980348167887,
+            "medianAbsoluteRelativeErrorPercent": 57.312521159463195,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1174.9629651686623,
+            "testCoverage90": 0.8
+          }
+        },
+        "evi_time_weighted_mean": {
+          "status": "exploratory",
+          "features": [
+            "eviTimeWeightedMean"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 819.1496810373231,
+            "rmseKgHa": 900.8283762696284,
+            "biasKgHa": 230.70202933536171,
+            "medianAbsoluteRelativeErrorPercent": 64.0501473786949,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 931.326772795437,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 509.02924713799587,
+            "rmseKgHa": 631.3410872675261,
+            "biasKgHa": 140.96719670736965,
+            "medianAbsoluteRelativeErrorPercent": 36.206530280061855,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 940.5457059502852,
+            "testCoverage90": 0.8
+          }
+        },
+        "evi_amplitude": {
+          "status": "exploratory",
+          "features": [
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 494.02851446147844,
+            "rmseKgHa": 624.5397544411046,
+            "biasKgHa": 89.25456499009749,
+            "medianAbsoluteRelativeErrorPercent": 40.07196083022748,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 864.928689159694,
+            "testCoverage90": 0.7
+          }
+        },
+        "ndvi_evi_amplitudes_2features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 501.2981755269955,
+            "rmseKgHa": 615.2990539480884,
+            "biasKgHa": 130.64591944468185,
+            "medianAbsoluteRelativeErrorPercent": 30.33963474912621,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 904.4292179890214,
+            "testCoverage90": 0.8
+          }
+        },
+        "ndvi_evi_trajectory": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 956.1862485177578,
+            "rmseKgHa": 1273.4736925521547,
+            "biasKgHa": 224.88811707425643,
+            "medianAbsoluteRelativeErrorPercent": 48.634618515137575,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1297.3699033912721,
+            "testCoverage90": 0.8
+          }
+        },
+        "soilgrids_8features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 724.2139018875412,
+            "rmseKgHa": 854.6089838342907,
+            "biasKgHa": 247.572040957035,
+            "medianAbsoluteRelativeErrorPercent": 57.96184745801526,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1323.6841037338963,
+            "testCoverage90": 0.9
+          }
+        },
+        "soil_watercontent_10kpa": {
+          "status": "exploratory",
+          "features": [
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 649.7614717026978,
+            "rmseKgHa": 768.1948649505642,
+            "biasKgHa": 202.3272870955634,
+            "medianAbsoluteRelativeErrorPercent": 52.20642220448395,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 8,
+            "nTestFieldsFallback": 2,
+            "conformal90HalfWidthKgHa": 948.082138378364,
+            "testCoverage90": 0.7
+          }
+        },
+        "soil_chemistry_plus_water_9features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 743.4368070981476,
+            "rmseKgHa": 936.4448804195279,
+            "biasKgHa": 361.35863925199055,
+            "medianAbsoluteRelativeErrorPercent": 47.450643772679044,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1237.9902553232296,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_scalar_12features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 4,
+            "within20Percent": 0.4,
+            "within20PercentWilson95": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "maeKgHa": 919.5610924882074,
+            "rmseKgHa": 1213.050297030264,
+            "biasKgHa": 357.11807961247985,
+            "medianAbsoluteRelativeErrorPercent": 50.84726297539171,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1484.2602038729763,
+            "testCoverage90": 0.6
+          }
+        },
+        "soil_hydraulic_profile_6features": {
+          "status": "exploratory",
+          "features": [
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 704.3803595527581,
+            "rmseKgHa": 793.8941170682991,
+            "biasKgHa": 123.96324143588018,
+            "medianAbsoluteRelativeErrorPercent": 40.46030827393017,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1172.8527597868767,
+            "testCoverage90": 1.0
+          }
+        },
+        "soil_chemistry_plus_hydraulic_14features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 838.0932566881853,
+            "rmseKgHa": 997.8268373664306,
+            "biasKgHa": 152.84818723796607,
+            "medianAbsoluteRelativeErrorPercent": 54.03786519879379,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1392.1404401445832,
+            "testCoverage90": 0.8
+          }
+        },
+        "soil_all_available_18features": {
+          "status": "exploratory",
+          "features": [
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 1058.3903692714625,
+            "rmseKgHa": 1312.9472366066918,
+            "biasKgHa": 329.1148459484554,
+            "medianAbsoluteRelativeErrorPercent": 71.78740548649765,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1150.9916938947363,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 815.4458571246798,
+            "rmseKgHa": 1052.5817916255598,
+            "biasKgHa": 104.20088244179087,
+            "medianAbsoluteRelativeErrorPercent": 52.27056969884425,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2031.5538135234765,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_soil_12features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 1071.6753270854356,
+            "rmseKgHa": 1408.8640397643903,
+            "biasKgHa": 481.02951204248785,
+            "medianAbsoluteRelativeErrorPercent": 58.1468521072495,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1774.3703972309463,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviLatest",
+            "ndviMean",
+            "eviLatest",
+            "eviMean",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 939.788448151348,
+            "rmseKgHa": 1179.8472044139767,
+            "biasKgHa": 390.5766369769891,
+            "medianAbsoluteRelativeErrorPercent": 45.58989126828941,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 2074.4596688542606,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_all_soil_16features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 1301.649565985318,
+            "rmseKgHa": 1563.523062188625,
+            "biasKgHa": 511.9539011531917,
+            "medianAbsoluteRelativeErrorPercent": 73.77656035197647,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1205.2660813144414,
+            "testCoverage90": 0.6
+          }
+        },
+        "s2_amplitudes_plus_hydraulic_8features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 567.9457641296347,
+            "rmseKgHa": 668.8225042234609,
+            "biasKgHa": 148.87729657297774,
+            "medianAbsoluteRelativeErrorPercent": 46.82599788695034,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 872.7102022036792,
+            "testCoverage90": 0.8
+          }
+        },
+        "s2_amplitudes_plus_core_soil_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 1,
+            "within20Percent": 0.1,
+            "within20PercentWilson95": [
+              0.017876213095072896,
+              0.4041500267952385
+            ],
+            "maeKgHa": 818.7821906596175,
+            "rmseKgHa": 898.2951738061959,
+            "biasKgHa": 358.92750363729385,
+            "medianAbsoluteRelativeErrorPercent": 65.87494099445018,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1114.8945973287327,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_amplitudes_plus_scalar_soil_14features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 911.4722797190809,
+            "rmseKgHa": 1192.2051144782142,
+            "biasKgHa": 561.2255521019832,
+            "medianAbsoluteRelativeErrorPercent": 48.10946275034838,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1639.2234759480034,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_amplitudes_plus_all_soil_20features": {
+          "status": "exploratory",
+          "features": [
+            "ndviAmplitude",
+            "eviAmplitude",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 985.3915412431168,
+            "rmseKgHa": 1334.849163798058,
+            "biasKgHa": 540.8782935484616,
+            "medianAbsoluteRelativeErrorPercent": 57.19058858121882,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1724.656472253178,
+            "testCoverage90": 0.7
+          }
+        },
+        "s2_trajectory_plus_hydraulic_10features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 0,
+            "within20Percent": 0.0,
+            "within20PercentWilson95": [
+              0,
+              0.2775327998628892
+            ],
+            "maeKgHa": 983.8282560012989,
+            "rmseKgHa": 1253.1616696925394,
+            "biasKgHa": 135.0653214794458,
+            "medianAbsoluteRelativeErrorPercent": 53.3998052914598,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1689.7564389256938,
+            "testCoverage90": 0.9
+          }
+        },
+        "s2_trajectory_plus_all_soil_22features": {
+          "status": "exploratory",
+          "features": [
+            "ndviTimeWeightedMean",
+            "ndviSlope30",
+            "eviTimeWeightedMean",
+            "eviSlope30",
+            "soil_ph",
+            "soil_organicC",
+            "soil_totalN",
+            "soil_cec",
+            "soil_bulkDensity",
+            "soil_sand",
+            "soil_silt",
+            "soil_clay",
+            "soil_organicCarbonDensity",
+            "soil_organicCarbonStock",
+            "soil_coarseFragments",
+            "soil_waterContent10kPa",
+            "soil_availableWaterLayer1",
+            "soil_availableWaterLayer2",
+            "soil_availableWaterLayer3",
+            "soil_availableWaterLayer4",
+            "soil_availableWaterLayer5",
+            "soil_availableWaterLayer6"
+          ],
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 1073.0577628908673,
+            "rmseKgHa": 1416.8248659981978,
+            "biasKgHa": 415.4641450633179,
+            "medianAbsoluteRelativeErrorPercent": 54.3857200560536,
+            "nTrainFields": 27,
+            "nCalibrationFieldsWithInputs": 9,
+            "nTestFieldsWithInputs": 10,
+            "nTestFieldsFallback": 0,
+            "conformal90HalfWidthKgHa": 1011.2353739651323,
+            "testCoverage90": 0.5
+          }
+        },
+        "train_mean_baseline": {
+          "status": "baseline",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 641.8254320987656,
+            "rmseKgHa": 749.9554154299803,
+            "biasKgHa": 118.50716049382712,
+            "medianAbsoluteRelativeErrorPercent": 54.93134232596114
+          }
+        },
+        "ground_measured_lai_comparator": {
+          "status": "comparator_not_operationally_available",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 3,
+            "within20Percent": 0.3,
+            "within20PercentWilson95": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "maeKgHa": 414.3197007399117,
+            "rmseKgHa": 547.5832735945573,
+            "biasKgHa": 57.00671403658329,
+            "medianAbsoluteRelativeErrorPercent": 35.54727222585056
+          }
+        },
+        "previous_year_admin1_prior": {
+          "status": "historical_admin1_prior",
+          "features": null,
+          "metrics": {
+            "nTestFields": 10,
+            "nWithin20Percent": 2,
+            "within20Percent": 0.2,
+            "within20PercentWilson95": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "maeKgHa": 750.5717087441675,
+            "rmseKgHa": 859.8159534620803,
+            "biasKgHa": 416.42458509926547,
+            "medianAbsoluteRelativeErrorPercent": 70.4344652700862
+          }
+        }
+      }
+    }
+  ],
+  "privacyNote": "Aggregate metrics only. Row-level field identifiers, coordinates, observed yields, and individual predictions are intentionally omitted."
+}

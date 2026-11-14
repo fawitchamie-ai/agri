@@ -12,10 +12,41 @@ export const SATELLITE_LAYERS={
 export type SatelliteLayer=keyof typeof SATELLITE_LAYERS;
 /** Workers supports manual/follow, but rejects redirect:error before fetching.
  * Reject redirects explicitly so parcel coordinates never reach a new host. */
-async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typeof fetch){
- const response=await fetcher(url,{signal:AbortSignal.timeout(timeoutMs),redirect:'manual'});
+export async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typeof fetch,init:RequestInit={}){
+ const response=await fetcher(url,{...init,signal:init.signal??AbortSignal.timeout(timeoutMs),redirect:'manual'});
  if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('Redirection du fournisseur satellite refusée.');}
  return response;
+}
+export type SatelliteStacItem={id?:string;properties?:{datetime?:string;'eo:cloud_cover'?:number};assets?:Record<string,{href?:string;['raster:bands']?:{scale?:number;offset?:number}[]}>};
+const STAC_MAX_BYTES=4_000_000;
+async function readStacFeatures(response:Response){
+ if(!response.ok){await response.body?.cancel();throw new Error(`Catalogue STAC ${response.status}.`);}
+ const contentLength=Number(response.headers.get('content-length')??0);if(contentLength>STAC_MAX_BYTES){await response.body?.cancel();throw new Error('Catalogue Sentinel-2 trop volumineux.');}
+ const text=await response.text();if(text.length>STAC_MAX_BYTES)throw new Error('Catalogue Sentinel-2 trop volumineux.');
+ let data:{features?:SatelliteStacItem[]};try{data=JSON.parse(text);}catch{throw new Error('Réponse STAC Sentinel-2 illisible.');}
+ if(!Array.isArray(data.features)||data.features.length>60)throw new Error('Catalogue STAC Sentinel-2 invalide.');
+ return data.features;
+}
+/** Query the preferred African catalogue, then the public Earth Search mirror. */
+export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands=false){
+ if(!iso(startDate)||!iso(asOf)||startDate>asOf||bounds.length!==4||bounds.some(v=>!Number.isFinite(v)))throw new Error('Recherche STAC Sentinel-2 invalide.');
+ const datetime=`${startDate}T00:00:00Z/${asOf}T23:59:59Z`,attempts:[string,()=>Promise<Response>][]=[
+  ['Digital Earth Africa',()=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:'s2_l2a',bbox:bounds.join(','),datetime,sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
+  ['Earth Search',()=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:['sentinel-2-l2a'],bbox:bounds,datetime,sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
+ ];
+ const failures:string[]=[];
+ for(const [provider,request] of attempts){
+  try{
+   const features=await readStacFeatures(await request());
+   const usable=features.some(item=>{
+    const date=item.properties?.datetime?.slice(0,10),assets=item.assets??{},has=(...keys:string[])=>keys.some(key=>typeof assets[key]?.href==='string');
+    return !!date&&iso(date)&&date>=startDate&&date<=asOf&&(!requireIndexBands||(has('B02','blue')&&has('B04','red')&&has('B08','nir','nir_1')&&has('SCL','scl','mask')));
+   });
+   if(usable)return {provider,features};
+   failures.push(`${provider}:aucune scène exploitable`);
+  }catch(error){failures.push(`${provider}:${(error as Error).message}`);}
+ }
+ throw new Error(`Catalogues Sentinel-2 indisponibles (${failures.join(' ; ')}).`);
 }
 const iso=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 /** Normalize advertised dates only; timestamps and declared ISO intervals are
@@ -98,15 +129,18 @@ export function satelliteClientUrl(layer:SatelliteLayer,date:string,shape:Parcel
 /** Called only after the visitor explicitly requests images for this geometry. */
 export async function satelliteScenes(input:unknown,asOf:string,fetcher:typeof fetch=fetch){
  const shape=validateParcel(input);if(!iso(asOf)||asOf>new Date().toISOString().slice(0,10))throw new Error('Date satellite invalide.');
- const from=new Date(Date.parse(asOf)-120*86400000).toISOString(),u=new URL('https://explorer.digitalearth.africa/stac/search');
- u.search=new URLSearchParams({collections:'s2_l2a',bbox:bbox(shape).join(','),datetime:`${from}/${asOf}T23:59:59Z`,sortby:'-datetime',limit:'60'}).toString();
- const r=await satelliteFetch(u,25000,fetcher);if(!r.ok){await r.body?.cancel();throw new Error('Dates d’acquisition de la parcelle indisponibles.');}
- const data=await r.json() as {features?:{properties?:{datetime?:string;'eo:cloud_cover'?:number}}[]};if(!Array.isArray(data.features)||data.features.length>60)throw new Error('Catalogue des scènes satellite invalide.');
+ const from=new Date(Date.parse(asOf)-120*86400000).toISOString().slice(0,10),catalog=await satelliteStacSearch(bbox(shape),from,asOf,fetcher);
  const dates=new Map<string,{date:string;sceneCloudMin:number|null;sceneCloudMax:number|null}>();
- for(const item of data.features){const p=item.properties,date=p?.datetime?.slice(0,10);if(!date||!iso(date)||date>asOf||date<from.slice(0,10))continue;const cloud=p?.['eo:cloud_cover'],qualified=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;const old=dates.get(date);dates.set(date,{date,sceneCloudMin:qualified===null?old?.sceneCloudMin??null:old?.sceneCloudMin==null?qualified:Math.min(qualified,old.sceneCloudMin),sceneCloudMax:qualified===null?old?.sceneCloudMax??null:old?.sceneCloudMax==null?qualified:Math.max(qualified,old.sceneCloudMax)});}
- return {dates:[...dates.values()].sort((a,b)=>b.date.localeCompare(a.date)),source:'Digital Earth Africa STAC / Sentinel-2 L2A',scope:'Scènes intersectant l’emprise. La couverture nuageuse concerne la scène entière, pas une mesure sur votre parcelle.'};
+ for(const item of catalog.features){const p=item.properties,date=p?.datetime?.slice(0,10);if(!date||!iso(date)||date>asOf||date<from)continue;const cloud=p?.['eo:cloud_cover'],qualified=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;const old=dates.get(date);dates.set(date,{date,sceneCloudMin:qualified===null?old?.sceneCloudMin??null:old?.sceneCloudMin==null?qualified:Math.min(qualified,old.sceneCloudMin),sceneCloudMax:qualified===null?old?.sceneCloudMax??null:old?.sceneCloudMax==null?qualified:Math.max(qualified,old.sceneCloudMax)});}
+ return {dates:[...dates.values()].sort((a,b)=>b.date.localeCompare(a.date)),source:`${catalog.provider} STAC / Sentinel-2 L2A`,scope:'Scènes intersectant l’emprise. La couverture nuageuse concerne la scène entière, pas une mesure sur votre parcelle.'};
 }
 
+export const SATELLITE_INDEX_VERSION='sentinel-parcel-indices-1' as const;
+export type SatelliteIndexObservation={date:string;availableOn:string;itemId:string;ndviMedian:number|null;eviMedian:number|null;validPixels:number;parcelPixels:number;clearFraction:number;sceneCloudPercent:number|null;quality:'usable'|'low-coverage'|'too-few-pixels'};
+export type SatelliteIndexMonitoring={version:typeof SATELLITE_INDEX_VERSION;scope:string;source:string;retrievedOn:string;observations:SatelliteIndexObservation[]};
+export function satelliteMonitoringScope(c:{country:string;parcelGeometry?:unknown;cropProfile?:{id:string}|null;crop:string;variety?:string;sowingDate:string;stages:{days:number}[]}){
+ return JSON.stringify([c.country,c.parcelGeometry??null,c.cropProfile?.id??null,c.crop,c.variety,c.sowingDate,c.stages.reduce((days,stage)=>days+stage.days,0)]);
+}
 /** Public undated basemap, distinct from a dated Sentinel observation or index. */
 export function satelliteBasemapUrl(bounds:number[],width:1600|1024|640=1600){
  if(![1600,1024,640].includes(width))throw new Error('Taille de fond satellite invalide.');

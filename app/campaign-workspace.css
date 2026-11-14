@@ -170,6 +170,10 @@
 .advisor-chart-legend i{display:block;width:15px;height:9px;border-radius:3px}
 .advisor-legend-demand{background:#a7bbd3}
 .advisor-legend-actual{background:#326ba3}
+.satellite-legend-ndvi{background:#246f9c}
+.satellite-legend-evi{background:#c07b24}
+.satellite-index-chart-wrap{margin:14px 0 18px;padding:14px;border:1px solid #e0e7ee;border-radius:9px;background:#fbfcfe}
+.satellite-index-chart{display:block;width:100%;height:auto;min-height:150px}
 .advisor-water-chart{display:grid;gap:11px}
 .advisor-water-row{display:grid;grid-template-columns:minmax(95px,.65fr) minmax(90px,1.1fr) minmax(110px,.65fr);align-items:center;gap:10px}
 .advisor-water-stage strong,.advisor-water-stage small,.advisor-water-values span,.advisor-water-values small{display:block}
