@@ -31,6 +31,8 @@ export type SeasonalConfig = {
   /** Explicit structural sensitivity experiment; not an accepted forecast profile. */
   soilWaterModel?:{version:'profile-recharge-1';usage:'diagnostic';acceptedHypothesis:true;source:string;availableOn:string};
   canopyNowcast?:import('./canopy-nowcast.ts').CanopyNowcastInput;
+  /** Archived parcel-level Sentinel observations for monitoring/calibration; not consumed as yield calibration. */
+  satelliteMonitoring?:import('./satellite.ts').SatelliteIndexMonitoring;
   waterModel?: import('./dual-kc.ts').DualKcInput;
   growth?: import('./growth.ts').GrowthInput;
   yieldScenario?: 'rainfed'|'recorded'|'proposed';

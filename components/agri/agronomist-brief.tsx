@@ -2,6 +2,7 @@
 
 import {HelpParagraph} from './help-dialog';
 import {COUNTRIES,type SeasonalConfig,type WaterEvent,type WaterPlan} from '../../lib/seasonal/types';
+import {satelliteMonitoringScope} from '../../lib/seasonal/satellite';
 
 const number=(value:number|null|undefined,digits=1)=>value==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:digits}).format(value);
 const day=(value:string)=>new Date(value+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
@@ -24,6 +25,12 @@ export default function AgronomistBrief({config,plan,events,stale,loading}:{conf
  const weatherCounts=config.weather.reduce<Record<string,number>>((counts,value)=>{counts[value.status]=(counts[value.status]??0)+1;return counts;},{});
  const totalWeather=config.weather.length;
  const incompleteWeather=config.weather.filter(value=>value.rainMm===null||value.et0Mm===null).length;
+ const satelliteArchive=config.satelliteMonitoring;
+ const satelliteScopeMatches=satelliteArchive?.scope===satelliteMonitoringScope(config);
+ const satelliteObservations=satelliteScopeMatches?(satelliteArchive?.observations??[]).filter(o=>o.date<=config.asOfDate&&o.availableOn<=config.asOfDate&&o.quality==='usable'&&o.ndviMedian!==null&&o.eviMedian!==null).sort((a,b)=>a.date.localeCompare(b.date)):[];
+ const latestSatellite=satelliteObservations.at(-1),previousSatellite=satelliteObservations.at(-2);
+ const satelliteDeltaNdvi=latestSatellite&&previousSatellite?latestSatellite.ndviMedian!-previousSatellite.ndviMedian!:null;
+ const satelliteDeltaEvi=latestSatellite&&previousSatellite?latestSatellite.eviMedian!-previousSatellite.eviMedian!:null;
  const areaM2=plan?.calculationArea?.areaM2??config.areaM2;
  const method=plan?.yieldEstimation?.method;
  const canShowChart=periods.length>0&&!stale&&!loading;
@@ -67,6 +74,7 @@ export default function AgronomistBrief({config,plan,events,stale,loading}:{conf
     <div className="advisor-source-block"><strong>Sol physique</strong><p>{config.soil.layers.length} couche(s) · {number(config.soil.layers.reduce((sum,layer)=>sum+layer.thicknessM,0)*100,0)} cm · réserve utile calculée : {number(soilCapacity)} mm · infiltration : {number(config.soil.infiltrationMmDay)} mm/j.</p><small>Source déclarée : {config.soil.source||'non documentée'}. Une réserve issue de texture ou d’un profil par défaut reste une estimation.</small></div>
     <div className="advisor-source-block"><strong>Analyses chimiques</strong>{config.soilAnalyses?.length?<ul className="advisor-soil-list">{config.soilAnalyses.map((analysis,index)=><li key={`${analysis.source}-${index}`}><b>{analysis.topCm}–{analysis.bottomCm} cm</b><span>{analysis.measurements.map(measurement=>`${parameterLabel[measurement.parameter]??measurement.parameter} ${number(measurement.value,2)} ${measurement.unit} (${measurement.method})`).join(' · ')}</span><em>{statusLabel[analysis.status]??analysis.status} · {analysis.source} · {analysis.date??'date inconnue'}</em></li>)}</ul>:<p>Aucune analyse de sol saisie. La composition chimique et la disponibilité locale des nutriments ne sont pas établies.</p>}</div>
     <div className="advisor-source-block"><strong>Météo du cycle</strong><p>{totalWeather} jour(s) disponibles · {incompleteWeather} avec pluie ou ETo manquante. {Object.entries(weatherCounts).map(([status,count])=>`${statusLabel[status]??status} : ${count}`).join(' · ')||'Aucune série journalière chargée.'}</p><small>{[...new Set(config.weather.map(value=>value.source).filter(Boolean))].slice(0,3).join(' ; ')||config.fallback?.label||'Source météo non documentée'}.</small></div>
+    <div className="advisor-source-block"><strong>Sentinel‑2 · observation du couvert</strong>{latestSatellite?<><p>{satelliteObservations.length} observation(s) exploitable(s) sur le contour · dernière image {day(latestSatellite.date)} · NDVI {number(latestSatellite.ndviMedian,3)} · EVI {number(latestSatellite.eviMedian,3)} · {number(latestSatellite.clearFraction*100,0)} % de pixels clairs.</p>{previousSatellite&&satelliteDeltaNdvi!==null&&satelliteDeltaEvi!==null&&<small>Variation depuis le {day(previousSatellite.date)} : NDVI {satelliteDeltaNdvi>=0?'+':''}{number(satelliteDeltaNdvi,3)} · EVI {satelliteDeltaEvi>=0?'+':''}{number(satelliteDeltaEvi,3)}. Indices descriptifs, sans diagnostic de cause.</small>}</>:<p>{satelliteArchive&&!satelliteScopeMatches?'Les observations archivées ne correspondent plus au contour, à la culture ou au cycle actuel.':satelliteArchive?'Aucune image exploitable disponible à la date de cette analyse.':'Aucune observation Sentinel‑2 enregistrée pour ce cycle.'}</p>}<small>{satelliteArchive?.source??'Les médianes du contour seront récupérées si des images exploitables sont disponibles.'} NDVI/EVI décrivent le couvert ; ils ne mesurent ni stress précis ni rendement.</small></div>
     <div className="advisor-evidence-counts" aria-label="État de provenance des entrées">{(['measured','declared','estimated','forecast','scenario','assumed','missing'] as const).map(status=><span key={status} className={'evidence-'+status}><b>{evidence[status]??0}</b>{statusLabel[status]}</span>)}</div>
    </section>
   </div>

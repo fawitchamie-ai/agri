@@ -144,6 +144,26 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
   validated.canopyNowcast=parseCanopyNowcast(c.canopyNowcast,validated);
+  if(c.satelliteMonitoring!==undefined){
+    const m=obj(c.satelliteMonitoring);
+    if(m.version!=='sentinel-parcel-indices-1'||typeof m.scope!=='string'||!m.scope||m.scope.length>300000)throw new InputError('Suivi Sentinel-2 : version ou portée invalide.');
+    const retrievedOn=isoDate(m.retrievedOn,'Date de récupération des images');
+    if(retrievedOn>new Date().toISOString().slice(0,10))throw new InputError('Date de récupération Sentinel-2 future invalide.');
+    const observations=array(m.observations,'Observations Sentinel-2',120).map(raw=>{
+      const o=obj(raw),date=isoDate(o.date,'Date de l’image'),availableOn=isoDate(o.availableOn,'Disponibilité de l’image');
+      if(date<sowingDate||date>end||availableOn<date||availableOn>retrievedOn)throw new InputError('Image Sentinel-2 hors cycle ou disponible après la date de récupération.');
+      const validPixels=number(o.validPixels,'Pixels clairs',0,50_000),parcelPixels=number(o.parcelPixels,'Pixels du contour',0,50_000),clearFraction=number(o.clearFraction,'Couverture claire',0,1);
+      if(!Number.isInteger(validPixels)||!Number.isInteger(parcelPixels)||validPixels>parcelPixels||Math.abs(clearFraction-(parcelPixels?validPixels/parcelPixels:0))>1e-8)throw new InputError('Comptage ou couverture Sentinel-2 incohérent.');
+      const quality=o.quality;if(!['usable','low-coverage','too-few-pixels'].includes(quality))throw new InputError('Qualité Sentinel-2 inconnue.');
+      const expected=validPixels<10?'too-few-pixels':clearFraction<.2?'low-coverage':'usable';if(quality!==expected)throw new InputError('Qualité Sentinel-2 incompatible avec les pixels valides.');
+      const ndvi=o.ndviMedian===null?null:number(o.ndviMedian,'NDVI médian',-1,1),evi=o.eviMedian===null?null:number(o.eviMedian,'EVI médian',-1,1);
+      if(quality==='too-few-pixels'?(ndvi!==null||evi!==null):(ndvi===null||evi===null))throw new InputError('Indices Sentinel-2 absents ou non exploitables incompatibles avec la qualité.');
+      const cloud=o.sceneCloudPercent===null?null:number(o.sceneCloudPercent,'Nuages de la scène',0,100),itemId=str(o.itemId,'Identifiant de scène',200);
+      return {date,availableOn,itemId,ndviMedian:ndvi,eviMedian:evi,validPixels,parcelPixels,clearFraction,sceneCloudPercent:cloud,quality};
+    });
+    if(new Set(observations.map(o=>o.date)).size!==observations.length)throw new InputError('Une seule scène Sentinel-2 par date est requise.');
+    validated.satelliteMonitoring={version:'sentinel-parcel-indices-1',scope:str(m.scope,'Portée Sentinel-2',300000),source:str(m.source,'Source des indices Sentinel-2',1200),retrievedOn,observations};
+  }
   if(c.soilWaterModel!==undefined){const s=obj(c.soilWaterModel),availableOn=isoDate(s.availableOn);if(s.version!=='profile-recharge-1'||s.usage!=='diagnostic'||s.acceptedHypothesis!==true||availableOn>asOfDate)throw new InputError('Recharge du profil : hypothèse diagnostique et date valides requises.');validated.soilWaterModel={version:'profile-recharge-1',usage:'diagnostic',acceptedHypothesis:true,source:str(s.source,'Source du profil hydrique',1200),availableOn};}
   if(c.waterModel!==undefined){
     const m=obj(c.waterModel);
