@@ -47,7 +47,7 @@ export function FieldOverview({config:c,plan,events,stale,loading,failed=false,s
   :nowcast
    ?'Nowcast expérimental du maïs au nord du Ghana, après observation du LAI vert. Le test réservé de 2021 a porté sur 10 champs (RMSE 0,57 t/ha) ; aucune autre saison ou zone n’est validée, et l’humidité du grain de référence est inconnue.'
   :fertilizer
-   ?'L’effet des engrais est exploratoire et transféré de profils de culture hors de votre zone. Il ne constitue pas une recommandation locale et ne s’ajoute pas au calcul de l’eau.'
+   ?fertilizer.calibration==='benin-microdose-aggregate-v1'?'Réponse aux microdoses du nord du Bénin, ancrée à un témoin sans engrais saisi. Contrôle sur deux moyennes de traitements seulement ; ce n’est pas une prévision de rendement de base validée pour votre parcelle.':'L’effet des engrais est exploratoire et transféré de profils de culture hors de votre zone. Il ne constitue pas une recommandation locale et ne s’ajoute pas au calcul de l’eau.'
    :relative
     ?'Ce score sur 100 exprime uniquement l’effet simulé du manque d’eau par rapport à une référence sans déficit. Ce n’est pas un rendement en tonnes.'
     :b.result
