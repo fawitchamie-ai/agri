@@ -29,8 +29,8 @@ import {declareScenario} from '../../lib/seasonal/provenance';
 import {geometryIdentity,environmentContext} from '../../lib/seasonal/provenance';
 const fmt=(v:number|null|undefined,d=0)=>v==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(v);
 const date=(s:string)=>new Date(s+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-type Props={landProgress?:LandProgress|null;config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[];calculationError?:string;onRetry?:()=>void;initialSection?:string;paused?:boolean};
-export default function QuickSimulation({landProgress,config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry,initialSection,paused=false}:Props){
+type Props={landProgress?:LandProgress|null;config:SeasonalConfig;plan:WaterPlan|null;stale:boolean;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onAdvanced:(tab:string)=>void;onSave:()=>void;canSave:boolean;events:WaterEvent[];calculationError?:string;onRetry?:()=>void;canOpenDemo?:boolean;onOpenDemo?:()=>Promise<boolean>;demoBusy?:boolean;initialSection?:string;paused?:boolean};
+export default function QuickSimulation({landProgress,config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry,canOpenDemo=false,onOpenDemo,demoBusy=false,initialSection,paused=false}:Props){
  const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[sectorJob,setSectorJob]=useState<any>(null);
  const [section,setSection]=useState(initialSection??'overview');
  const [detailsOpen,setDetailsOpen]=useState(false);
@@ -55,6 +55,7 @@ export default function QuickSimulation({landProgress,config,plan,stale,onChange
  const parcelKey=config.parcelGeometry?JSON.stringify(config.parcelGeometry):'';
  const previousParcel=useRef(parcelKey),refreshKey=useRef<string|null>(null);
  function refreshData(){refreshKey.current=key;setRetry(x=>x+1);}
+ async function openDemoAndRetry(){if(await onOpenDemo?.())refreshData();}
  useEffect(()=>{if(previousParcel.current!==parcelKey){previousParcel.current=parcelKey;setEnvironment(null);setSectorJob(null);setError('');}},[parcelKey]);
  useEffect(()=>{
   if(paused||!key||!duration){setLoading(false);return;}
@@ -91,6 +92,7 @@ export default function QuickSimulation({landProgress,config,plan,stale,onChange
    <section className="farmer-campaign-title"><div><span className="farmer-simple-kicker">MA CAMPAGNE</span><h1>{config.name||'Mon champ'}</h1><p>{config.crop} · semis prévu le {new Date(config.sowingDate+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})} · {config.areaM2==null?'Surface du contour indisponible':`${fmt(config.areaM2/10000,3)} ha`}</p></div><button className="farmer-outline-action" onClick={onMap}><ProductIcon name="map" size={18}/>Modifier le champ</button></section>
    {calculationError&&<div className="farmer-error" role="alert"><strong>Le calcul n’a pas abouti.</strong><span>{calculationError}</span><button onClick={onRetry??refreshData}>Relancer le calcul</button></div>}
    {error&&<div className="farmer-error" role="alert"><strong>Une information doit être vérifiée.</strong><span>{error}</span><button onClick={refreshData}>Réessayer</button></div>}
+   {canOpenDemo&&[calculationError,error].some(message=>/Connectez-vous|Ouvrez votre espace/.test(message??''))&&<div className="farmer-error demo-session-prompt" role="group" aria-label="Ouvrir un espace de démonstration"><strong>Accès au calcul</strong><span>Ouvrez une session de démonstration pour relancer le calcul. Votre contour et les paramètres de cette campagne seront conservés.</span><button type="button" disabled={demoBusy} onClick={openDemoAndRetry}>{demoBusy?'Ouverture…':'Ouvrir la démonstration et relancer'}</button></div>}
    <FieldOverview simple config={config} plan={plan} events={events} stale={stale} loading={loading} failed={!!calculationError||!!error} onDetails={()=>{setSection('yield');setDetailsOpen(true);}} onRetry={calculationError&&onRetry?onRetry:refreshData} onAction={fieldAction}/>
    <details className="farmer-other-actions"><summary>Autres actions de la campagne</summary><section className="farmer-campaign-actions" aria-label="Autres actions">
     <button onClick={()=>{setDetailsOpen(true);onAdvanced('suivi');}}><span className="farmer-action-icon"><ProductIcon name="sun" size={21}/></span><span><strong>Noter la pluie ou un arrosage</strong><small>Garder une trace de ce qui s’est passé</small></span><ProductIcon name="arrow" size={17}/></button>
