@@ -4,10 +4,20 @@ import {intersection} from './geometry-ops.ts';
 import {geometryIdentity} from './provenance.ts';
 import {readRasterWindow} from './raster.ts';
 import {satelliteStacSearch,type SatelliteStacItem} from './satellite.ts';
-import {sentinelAssetUrl,reflectanceTransform,pixelCenter,sclAt} from './satellite-index.ts';
+import {sentinelAssetUrl,reflectanceTransform,pixelCenter} from './satellite-index.ts';
+import {containsPoint} from './parcel.ts';
 import {zoneGrid,parseZoneSeason,middle,FIELD_ZONES_VERSION,type ZoneSeasonRead} from './field-zones.ts';
 
 const pointKey=(p:Position)=>p.map(n=>n.toFixed(7)).join(':');
+const SCL_BUCKET_DEGREES=.0002;
+function indexedSclAt(buckets:Map<string,RasterCell[]>,p:Position):number|null{
+ const ix=Math.floor(p[0]/SCL_BUCKET_DEGREES),iy=Math.floor(p[1]/SCL_BUCKET_DEGREES);
+ // African Sentinel-2 tiles stay below 40° latitude. A 20 m SCL pixel spans
+ // less than one bucket there; adjacent buckets cover boundary rounding.
+ for(let x=ix-1;x<=ix+1;x++)for(let y=iy-1;y<=iy+1;y++)
+  for(const cell of buckets.get(`${x}:${y}`)??[])if(containsPoint(cell.geometry.coordinates[0],p))return cell.value;
+ return null;
+}
 function pixelAreaInsideRectangle(rasterPixel:Position[],bounds:{left:number;right:number;bottom:number;top:number}):number{
  let points=rasterPixel.slice(0,-1);
  const edges:[0|1,number,boolean][]=[[0,bounds.left,true],[0,bounds.right,false],[1,bounds.bottom,true],[1,bounds.top,false]];
@@ -56,7 +66,10 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
   const group=candidates.slice(Math.floor(i*candidates.length/count),Math.floor((i+1)*candidates.length/count));
   group.sort((a,b)=>(a[1].properties?.['eo:cloud_cover']??100)-(b[1].properties?.['eo:cloud_cover']??100));selected.push(group[0]);
  }
- const extra=candidates.filter(([d])=>!selected.some(([chosen])=>chosen===d)).sort((a,b)=>(a[1].properties?.['eo:cloud_cover']??100)-(b[1].properties?.['eo:cloud_cover']??100)).slice(0,2);
+ // A single fallback can recover cloudy/partial seasons without letting one
+ // Worker invocation decode four full acquisitions and hit Cloudflare 1102.
+ const extra=candidates.filter(([d])=>!selected.some(([chosen])=>chosen===d))
+  .sort((a,b)=>(a[1].properties?.['eo:cloud_cover']??100)-(b[1].properties?.['eo:cloud_cover']??100)).slice(0,1);
  if(!selected.length)throw new Error('Aucune scène à radiométrie vérifiée publiée pendant cette fenêtre.');
  const [w,s,,north]=grid.bounds,cos=Math.max(.2,Math.cos((s+north)/2*Math.PI/180)),dx=grid.gridM/(111320*cos),dy=grid.gridM/111320;
  const lattice=(p:Position)=>`${Math.floor((p[0]-w)/dx)}:${Math.floor((p[1]-s)/dy)}`;
@@ -90,24 +103,27 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
   if(red.resolutionM>grid.gridM||nir.resolutionM>grid.gridM||scl.resolutionM>grid.gridM)throw new Error('Résolution source plus grossière que la grille : analyse suspendue.');
   const nirCells=new Map(nir.cells.map(c=>[pointKey(pixelCenter(c)),c]));
   const buckets=new Map<string,RasterCell[]>();
-  for(const c of scl.cells){const p=pixelCenter(c),key=`${Math.floor(p[0]/.00005)}:${Math.floor(p[1]/.00005)}`;buckets.set(key,[...(buckets.get(key)??[]),c]);}
+  for(const c of scl.cells){const p=pixelCenter(c),key=`${Math.floor(p[0]/SCL_BUCKET_DEGREES)}:${Math.floor(p[1]/SCL_BUCKET_DEGREES)}`;buckets.set(key,[...(buckets.get(key)??[]),c]);}
   const rt=reflectanceTransform(redAsset,item),nt=reflectanceTransform(nirAsset,item),values=new Map<number,{ndvi:number;area:number}[]>();let clearAreaTotal=0;
   for(const cell of red.cells){const p=pixelCenter(cell);
-   const cls=sclAt(scl.cells,buckets,p);if(cls!==4&&cls!==5)continue;
+   const cls=indexedSclAt(buckets,p);if(cls!==4&&cls!==5)continue;
    const nr=nirCells.get(pointKey(p))?.value,rr=cell.value;
    if(nr==null||rr==null||!Number.isFinite(nr)||!Number.isFinite(rr)||nr<=0||rr<=0)continue;
    const redRho=(rr*rt.scale+rt.offset)/rt.light,nirRho=(nr*nt.scale+nt.offset)/nt.light;
    if(redRho<0||nirRho<0||redRho+nirRho<=0)continue;
    const ndvi=(nirRho-redRho)/(nirRho+redRho);if(ndvi<-1||ndvi>1)continue;
-   const b=bbox(cell.geometry),epsilon=1e-10,x0=Math.floor((b[0]-w)/dx+epsilon),x1=Math.ceil((b[2]-w)/dx-epsilon)-1,y0=Math.floor((b[1]-s)/dy+epsilon),y1=Math.ceil((b[3]-s)/dy-epsilon)-1;
+   const ring=cell.geometry.coordinates[0],corners=ring.slice(0,4),b:[number,number,number,number]=[
+    Math.min(...corners.map(p=>p[0])),Math.min(...corners.map(p=>p[1])),Math.max(...corners.map(p=>p[0])),Math.max(...corners.map(p=>p[1]))];
+   const epsilon=1e-10,x0=Math.floor((b[0]-w)/dx+epsilon),x1=Math.ceil((b[2]-w)/dx-epsilon)-1,y0=Math.floor((b[1]-s)/dy+epsilon),y1=Math.ceil((b[3]-s)/dy-epsilon)-1;
    // A native pixel can straddle multiple grid cells. Intersect its footprint
    // with every candidate, counting only actual clear surface inside the field.
    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
     const id=cellIds.get(`${x}:${y}`);if(id===undefined)continue;
     const info=cellLattices.get(id)!;
-    // Full cells need only four inexpensive rectangle clips; irregular field
-    // boundaries still use the robust polygon boolean operation.
-    const area=info.full?pixelAreaInsideRectangle(cell.geometry.coordinates[0],info):multiArea(intersection(cell.geometry.coordinates,grid.cells[id].geometry.coordinates));if(area<=.001)continue;
+    // Most native pixels fit fully inside one 20 m cell; avoid clipping those.
+    // Only pixels crossing a grid edge or the parcel boundary need clipping.
+    const fullyInside=info.full&&b[0]>=info.left&&b[2]<=info.right&&b[1]>=info.bottom&&b[3]<=info.top;
+    const area=fullyInside?multiArea([[ring]]):info.full?pixelAreaInsideRectangle(ring,info):multiArea(intersection(cell.geometry.coordinates,grid.cells[id].geometry.coordinates));if(area<=.001)continue;
     clearAreaTotal+=area;const list=values.get(id)??[];list.push({ndvi,area});values.set(id,list);
    }
   }
