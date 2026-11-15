@@ -53,7 +53,7 @@ function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>
 }
 export default function FieldMonitoringWorkspace({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
  const scope=fieldMonitoringScope(c);
- return <FieldMonitoringBody key={scope} config={c} initialView={initialView} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
+ return <FieldMonitoringBody key={`${scope}:${initialView??''}`} config={c} initialView={initialView} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
 }
 function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
  const scope=fieldMonitoringScope(c),current=c.fieldMonitoring?.scope===scope,stored=current?c.fieldMonitoring:undefined;
@@ -61,9 +61,9 @@ function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{co
  const [consent,setConsent]=useState(false),[cultivated,setCultivated]=useState(stored?.cultivatedContour??false),[comparable,setComparable]=useState(stored?.comparableManagement??false);
  const [busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const defaultDose:ZoneDoseInput={kind:'fertilizer',product:'',unit:'kg/ha',reference:'',baseline:0,rates:{},confirmed:false};
- const [dose,setDose]=useState<ZoneDoseInput>(stored?.prescription??defaultDose),controller=useRef<AbortController|null>(null),latest=useRef(c);latest.current=c;
+ const [dose,setDose]=useState<ZoneDoseInput>(stored?.prescription??defaultDose),controller=useRef<AbortController|null>(null),latest=useRef(c);
  useEffect(()=>()=>controller.current?.abort(),[]);
- useEffect(()=>{if(initialView)setView(initialView);},[initialView]);
+ useEffect(()=>{latest.current=c;},[c]);
  const derived=useMemo(()=>{try{return {analysis:analyzeFieldZones(c),error:''};}catch(e){return {analysis:null,error:(e as Error).message};}},[c]);
  const analysis=derived.analysis,target=c.cropProfile?.id??c.crop;
  const prescription=useMemo(()=>{if(!analysis)return {result:null,error:''};try{return {result:zonePrescription(analysis,dose),error:''};}catch(e){return {result:null,error:(e as Error).message};}},[analysis,dose]);
@@ -79,7 +79,7 @@ function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{co
   let reads:ZoneSeasonRead[]=matchingReads();const failures:string[]=[];
   try{for(let i=0;i<drafts.length;i++){
    if(ctrl.signal.aborted)break;const season=drafts[i];setProgress(`Saison ${i+1}/${drafts.length} · ${season.startDate.slice(0,4)} : lecture des pixels…`);
-   try{const r=await seasonalRequest<ZoneSeasonRead>({action:'field-zone-season',consent:true,geometry:c.parcelGeometry,season},ctrl.signal,180000);
+   try{const {readZoneSeason}=await import('../../lib/seasonal/field-zones-provider');const r=await readZoneSeason(c.parcelGeometry,season,fetch,undefined,ctrl.signal,p=>setProgress(`Saison ${i+1}/${drafts.length} · ${season.startDate.slice(0,4)} : scène ${p.attempt}/${p.maxAttempts} · ${new Date(p.date+'T12:00:00Z').toLocaleDateString('fr-FR')}`));
     if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)break;
     reads=[...reads.filter(old=>old.season.id!==r.season.id),r];onChange({...latest.current,fieldMonitoring:archive(reads)});
    }catch(e){if(ctrl.signal.aborted)break;failures.push(`${season.id} : ${(e as Error).message}`);}
