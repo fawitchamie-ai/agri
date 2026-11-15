@@ -51,18 +51,19 @@ function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>
  <button className="qs-text-button" onClick={onWeather}>Ouvrir la météo et les mesures de la campagne →</button>
  <details><summary>Sources et disponibilité</summary>{live?<p>{live.attribution} Récupérées le {live.retrievedAt}. Ces prévisions consultées sont à intégrer dans les paramètres météo pour actualiser le calcul.</p>:[...new Set(days.map(w=>w.source))].map(s=><p key={s}>{s}</p>)}<p>Une prévision n’est pas une mesure de pluie sur la parcelle. Les valeurs absentes restent inconnues.</p></details></section>;
 }
-export default function FieldMonitoringWorkspace({config:c,onChange,onMap,onWeather}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
+export default function FieldMonitoringWorkspace({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
  const scope=fieldMonitoringScope(c);
- return <FieldMonitoringBody key={scope} config={c} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
+ return <FieldMonitoringBody key={scope} config={c} initialView={initialView} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
 }
-function FieldMonitoringBody({config:c,onChange,onMap,onWeather}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
+function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
  const scope=fieldMonitoringScope(c),current=c.fieldMonitoring?.scope===scope,stored=current?c.fieldMonitoring:undefined;
- const [view,setView]=useState('satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
+ const [view,setView]=useState(initialView??'satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
  const [consent,setConsent]=useState(false),[cultivated,setCultivated]=useState(stored?.cultivatedContour??false),[comparable,setComparable]=useState(stored?.comparableManagement??false);
  const [busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const defaultDose:ZoneDoseInput={kind:'fertilizer',product:'',unit:'kg/ha',reference:'',baseline:0,rates:{},confirmed:false};
  const [dose,setDose]=useState<ZoneDoseInput>(stored?.prescription??defaultDose),controller=useRef<AbortController|null>(null),latest=useRef(c);latest.current=c;
  useEffect(()=>()=>controller.current?.abort(),[]);
+ useEffect(()=>{if(initialView)setView(initialView);},[initialView]);
  const derived=useMemo(()=>{try{return {analysis:analyzeFieldZones(c),error:''};}catch(e){return {analysis:null,error:(e as Error).message};}},[c]);
  const analysis=derived.analysis,target=c.cropProfile?.id??c.crop;
  const prescription=useMemo(()=>{if(!analysis)return {result:null,error:''};try{return {result:zonePrescription(analysis,dose),error:''};}catch(e){return {result:null,error:(e as Error).message};}},[analysis,dose]);
