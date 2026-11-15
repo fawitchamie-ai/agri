@@ -4,7 +4,7 @@ import {ProductBrand,ProductIcon} from './product-ui';
 type Item=[string,string,string?];
 const sections=[
  {title:'Décisions et cartes',icon:'chart',items:[['zones','Zones historiques','grid'],['doses','Cartes de doses','map'],['yield','Rendement et production','chart'],['water','Semis et eau','water'],['fertilizer','Engrais','leaf']] as Item[]},
- {title:'Coopérative',icon:'people',items:[['recoltes','Récoltes observées','basket'],['collecte','Collectes et logistique','basket'],['gestion','Membres et moyens','people'],['fiche','Bilan de campagne','file']] as Item[]},
+ {title:'Coopérative',icon:'people',items:[['recoltes','Récoltes réelles','basket'],['collecte','Collectes et logistique','basket'],['gestion','Membres et moyens','people'],['fiche','Bilan de campagne','file']] as Item[]},
  {title:'Données et méthodes',icon:'book',items:[['dashboard','Vue d’ensemble','chart'],['atlas','Atlas des rendements','map'],['previsions','Estimations historiques','chart'],['comparaison','Comparer les campagnes','chart'],['models','Modèles et résultats','settings'],['quality','Qualité des données','check'],['lineage','Origine des résultats','file'],['explorer','Catalogue des données','book'],['simulation','Convertir un rendement','settings'],['import','Importer des données','file'],['guide','Guide pratique','book']] as Item[]},
 ];
 
@@ -14,7 +14,7 @@ export default function ApplicationNavigation({view,onNavigate,onClose,name}:{vi
   <span className="sidebar-section-label">MON EXPLOITATION</span>
   {item(['home','Mes champs','grid'])}
   {item(['campaigns','Campagnes','file'])}
-  {item(['seasonal','Ma campagne','leaf'])}
+  {item(['seasonal','Parcelle et campagne','leaf'])}
   {item(['monitoring','Suivi du champ','satellite'])}
   {item(['notes','Carnet terrain','book'])}
   <div className="sidebar-separator"/>

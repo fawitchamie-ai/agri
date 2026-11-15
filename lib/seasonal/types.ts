@@ -117,3 +117,4 @@ export type WaterPlan = {
     fieldM3: number | null; remainingBudgetM3: number | null };
 };
 export type Campaign = { id: string; revision: number; config: SeasonalConfig; events: WaterEvent[]; plan: WaterPlan; updatedAt: string; demo: boolean };
+export type CampaignSummary = { id: string; name: string; country: keyof typeof COUNTRIES; crop: string; revision: number; updatedAt?: string };

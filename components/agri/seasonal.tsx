@@ -5,7 +5,7 @@ import SowingWorkspace from './sowing-workspace';
 import {seasonalRequest} from '../../lib/seasonal/request';
 
 import { useEffect, useState, useRef, type ReactNode } from 'react';
-import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type Campaign, type WaterPeriod } from '../../lib/seasonal/types';
+import { COUNTRIES, type SeasonalConfig, type WaterEvent, type WaterPlan, type Campaign, type CampaignSummary, type WaterPeriod } from '../../lib/seasonal/types';
 import { planWater, waterPlanCsv } from '../../lib/seasonal/engine';
 import { emptyCampaign, exampleCampaign } from '../../lib/seasonal/example';
 import { nutrientBalance } from '../../lib/seasonal/agronomy';
@@ -32,7 +32,7 @@ async function api(path: string, body?: unknown) { if(body&&path==='/api/seasona
 function download(name: string, content: string, type: string) { const url=URL.createObjectURL(new Blob([content],{type})); const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
 type QueueItem = { campaignId: string; expectedRevision: number; event: WaterEvent };
 
-export default function Seasonal({ workspace, science, campaignsRequest=0, initialSection, initialMonitoringView, campaignOpenId='', campaignOpenRequest=0, onHome=()=>{}, onMenu=()=>{}, menuOpen=false }: { workspace: Bootstrap | null; science: Science | null; campaignsRequest?:number; initialSection?:string; initialMonitoringView?:string; campaignOpenId?:string; campaignOpenRequest?:number; onHome?:()=>void; onMenu?:()=>void; menuOpen?:boolean }) {
+export default function Seasonal({ workspace, science, campaignsRequest=0, initialSection, initialMonitoringView, campaignOpenId='', campaignOpenRequest=0, onCampaignsLoaded, onHome=()=>{}, onMenu=()=>{}, menuOpen=false }: { workspace: Bootstrap | null; science: Science | null; campaignsRequest?:number; initialSection?:string; initialMonitoringView?:string; campaignOpenId?:string; campaignOpenRequest?:number; onCampaignsLoaded?:(campaigns:CampaignSummary[]|null)=>void; onHome?:()=>void; onMenu?:()=>void; menuOpen?:boolean }) {
   const [config,setConfig] = useState<SeasonalConfig>(()=>emptyCampaign());
   const [events,setEvents] = useState<WaterEvent[]>([]);
   const [simulationError,setSimulationError]=useState('');
@@ -42,7 +42,7 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   const [lastPlan,setPlan] = useState<WaterPlan|null>(null);
   const [draftId,setDraftId]=useState(newId);
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
-  const [list,setList] = useState<{id:string;name:string;country:keyof typeof COUNTRIES;crop:string;revision:number}[]>([]);
+  const [list,setList] = useState<CampaignSummary[]>([]);
   const [history,setHistory] = useState<{revision:number;reason:string;created_at:string}[]>([]);
   const [tab,setTab] = useState('simulation');
   const previousTab=useRef(tab);
@@ -111,9 +111,9 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   },[config,events,parcelDraft,simulationRetry,scope,loadedScope,isMapping]);
 
   useEffect(()=>{
-    simulationSequence.current++;setLandProgress(null);setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);setError('');setNotice('');
+    simulationSequence.current++;setLandProgress(null);setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);onCampaignsLoaded?.(null);setError('');setNotice('');
     try { setQueue(JSON.parse(localStorage.getItem(queueKey)||'[]')); } catch { setQueue([]); }
-    if(workspace) api('/api/seasonal').then(r=>setList(r.campaigns)).catch(e=>setError(e.message));
+    if(workspace) api('/api/seasonal').then(r=>{const campaigns=r.campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);}).catch(e=>setError(e.message));
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
   function edit(next: SeasonalConfig) { const updated=next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next);const withoutIrrigation=(c:SeasonalConfig)=>JSON.stringify({...c,managementPlan:c.managementPlan?{...c.managementPlan,irrigation:null}:c.managementPlan});const irrigationOnly=JSON.stringify(config.managementPlan?.irrigation)!==JSON.stringify(updated.managementPlan?.irrigation)&&withoutIrrigation(config)===withoutIrrigation(updated);simulationDebounce.current=irrigationOnly?1000:350;simulationSequence.current++;setNutrientResult(null);setConfig(updated);setDirty(true);setPlanStale(true); }
@@ -151,8 +151,8 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   const handledCampaignOpen=useRef(0);
   useEffect(()=>{if(campaignOpenRequest>handledCampaignOpen.current&&campaignOpenId){handledCampaignOpen.current=campaignOpenRequest;void open(campaignOpenId);}},[campaignOpenRequest,campaignOpenId]);
   function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}setTab('plan');edit({...config}); }
-  async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');setList((await api('/api/seasonal')).campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
-  async function openDemoSession(): Promise<boolean> {setBusy(true);setError('');try {await api('/api/demo',{role:'responsable',coopId:'demo-a'});const result=await api('/api/seasonal');setList(result.campaigns??[]);setDemoSessionReady(true);setSimulationError('');setSimulationRetry(value=>value+1);setNotice('Espace de démonstration ouvert. Votre contour et vos paramètres sont conservés.');return true;}catch(e){setError((e as Error).message);return false;}finally{setBusy(false);} }
+  async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');const campaigns=(await api('/api/seasonal')).campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
+  async function openDemoSession(): Promise<boolean> {setBusy(true);setError('');try {await api('/api/demo',{role:'responsable',coopId:'demo-a'});const result=await api('/api/seasonal');const campaigns=result.campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);setDemoSessionReady(true);setSimulationError('');setSimulationRetry(value=>value+1);setNotice('Espace de démonstration ouvert. Votre contour et vos paramètres sont conservés.');return true;}catch(e){setError((e as Error).message);return false;}finally{setBusy(false);} }
   function persistQueue(next: QueueItem[]) { localStorage.setItem(queueKey,JSON.stringify(next));setQueue(next); }
   async function recordEvent(e:WaterEvent) {
     setError('');
