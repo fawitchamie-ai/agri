@@ -13,10 +13,12 @@ test('campaign workspace and saved campaigns stay inside desktop and mobile gutt
  assert.match(campaign,/\.seasonal-tool\.is-campaign-workspace:has\(\.recent-campaigns\) \.farmer-start-card\{margin-bottom:22px\}/);
 });
 
-test('home screen panels are framed with a responsive page gutter',()=>{
- assert.match(home,/\.welcome-page\.field-home\.home-workspace\s*\{[^}]*padding:clamp\(10px,1\.3vw,20px\)[^}]*gap:12px[^}]*overflow-x:hidden/s);
- assert.match(home,/\.home-topbar,[\s\S]*?\.home-workbench,[\s\S]*?\.home-footer\s*\{[^}]*width:min\(100%,1520px\)[^}]*margin-inline:auto[^}]*border-radius:14px/s);
- assert.doesNotMatch(home,/\.home-workbench\{[^}]*overflow:hidden/);
- assert.match(home,/@media\(max-width:700px\)\s*\{[\s\S]*?padding:9px[\s\S]*?\.home-topbar,[\s\S]*?border-radius:11px/s);
- assert.match(home,/@media\(max-width:380px\)\s*\{[\s\S]*?padding:7px/);
+test('field home centers saved parcels on a responsive two-pane map workspace',()=>{
+ assert.match(home,/\.welcome-page\.field-home\.home-workspace\s*\{[^}]*height:calc\(100dvh - 160px\)[^}]*min-height:540px/s);
+ assert.match(home,/\.home-workbench\{display:grid;grid-template-columns:minmax\(300px,352px\) minmax\(0,1fr\)[^}]*overflow:hidden/);
+ assert.match(home,/\.field-overview-map-wrap\{position:absolute;inset:0\}/);
+ assert.match(home,/\.field-map-layer-switch\{[^}]*position:absolute/);
+ assert.match(home,/@media\(max-width:760px\)\{[\s\S]*?\.home-view-switch\{display:grid[\s\S]*?\.home-fields-panel\.mobile-hidden,\.home-map-panel\.mobile-hidden\{display:none\}/);
+ assert.match(home,/@media\(max-width:760px\)\{[\s\S]*?\.home-map-mobile-card\{[^}]*display:flex/);
+ assert.doesNotMatch(home,/home-coverage-map|west-africa-coverage/);
 });

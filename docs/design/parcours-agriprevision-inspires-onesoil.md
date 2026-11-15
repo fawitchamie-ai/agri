@@ -8,8 +8,8 @@ parcours, pas une affiliation ni une copie de marque ou de calculs.
 
 | Besoin | Parcours OneSoil public | Adaptation AgriPrévision |
 |---|---|---|
-| Retrouver ses champs | Liste de champs, ajout depuis carte, dessin ou fichier ; fiche de champ sélectionnée | « Mes champs » et « Campagnes » partagent désormais l’entrée principale ; un champ peut être recherché puis rouvert directement |
-| Suivre une culture | Fiche de statut avec image, indice, dates, météo et évolution intra-saison | « Suivi du champ » ouvre directement images et indices ; météo et carnet sont des vues sœurs |
+| Retrouver ses champs | Liste de champs, ajout depuis carte, dessin ou fichier ; champ sélectionné sur une carte | « Carte des champs » associe la liste recherchable aux limites réellement enregistrées ; sélectionner une parcelle la centre et expose ses informations |
+| Suivre une culture | Fiche de statut avec image, indice, dates, météo et évolution intra-saison | Les raccourcis ouvrent directement le suivi du champ sélectionné ; images et indices, météo, zones historiques, doses et carnet restent liés à ce champ |
 | Analyser les différences internes | Rapport du champ avec zones historiques, stabilité et motifs d’inéligibilité | « Zones historiques » ouvre la comparaison pluriannuelle et expose les raisons de suspension |
 | Préparer une action | Cartes de tâches pour semis, fertilisation ou pulvérisation, selon l’image courante ou les zones historiques | « Cartes de doses » ouvre la carte préparée par l’opérateur et ses totaux ; les recommandations automatiques restent désactivées sans calibration |
 | Faire le suivi terrain | Notes de reconnaissance et données de récolte reliées au champ | « Carnet terrain » et « Récoltes observées » sont placés dans le même parcours de campagne |
@@ -19,8 +19,14 @@ parcours, pas une affiliation ni une copie de marque ou de calculs.
 
 - Une navigation latérale commune remplace les deux menus séparés de l’accueil et
   de l’espace applicatif.
-- L’accueil devient une liste de campagnes et de champs consultables, accompagnée
-  d’une recherche, d’un ajout de parcelle et de la couverture régionale des données.
+- L’accueil devient un espace de travail cartographique : liste et recherche à
+  gauche, contours réels sur la carte, bascule Plan/Satellite et détail du champ
+  sélectionné. Sur mobile, liste et carte se consultent dans deux vues adaptées.
+- Le bouton d’ajout ouvre directement le tracé de parcelle. Un champ existant
+  ouvre soit son suivi, soit son tracé si aucun contour n’est encore enregistré.
+- Le contexte du champ sélectionné est conservé dans la navigation : les entrées
+  Suivi satellite, Zones historiques, Cartes de doses et Carnet terrain s’ouvrent
+  sur ce champ. Sans sélection, l’application revient à la liste et l’indique.
 - Les raccourcis de navigation conduisent directement à l’onglet de campagne
   correspondant. La destination reste dans l’adresse et suit précédent/suivant.
 - Les tableaux de référence, le catalogue scientifique et les outils coopératifs

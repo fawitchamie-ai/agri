@@ -71,7 +71,7 @@ export async function GET(request: Request) { try {
     return json({ campaign: campaign(row), history: histories.results });
   }
   const s = await session(request), rows = await database().prepare('SELECT id,coop_id,owner_id,revision,config,demo,updated_at FROM seasonal_campaigns WHERE coop_id=? ORDER BY updated_at DESC LIMIT 100').bind(s.coopId).all<any>();
-  return json({ campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,updatedAt:r.updated_at,demo:!!r.demo};}) });
+  return json({ campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,demo:!!r.demo};}) });
 } catch (e) { return error(e); } }
 export async function POST(request:Request){
  const traceId=crypto.randomUUID(),start=Date.now();let action='unread';
