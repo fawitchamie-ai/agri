@@ -8,7 +8,25 @@ import {sentinelAssetUrl,reflectanceTransform,pixelCenter,sclAt} from './satelli
 import {zoneGrid,parseZoneSeason,middle,FIELD_ZONES_VERSION,type ZoneSeasonRead} from './field-zones.ts';
 
 const pointKey=(p:Position)=>p.map(n=>n.toFixed(7)).join(':');
-/** One season per request: four stratified dates, up to two cloud fallbacks.
+function pixelAreaInsideRectangle(rasterPixel:Position[],bounds:{left:number;right:number;bottom:number;top:number}):number{
+ let points=rasterPixel.slice(0,-1);
+ const edges:[0|1,number,boolean][]=[[0,bounds.left,true],[0,bounds.right,false],[1,bounds.bottom,true],[1,bounds.top,false]];
+ for(const [axis,limit,greater] of edges){
+  const input=points;points=[];if(!input.length)break;
+  const inside=(p:Position)=>greater?p[axis]>=limit:p[axis]<=limit;
+  let previous=input.at(-1)!,previousInside=inside(previous);
+  for(const current of input){
+   const currentInside=inside(current);
+   if(currentInside!==previousInside){const span=current[axis]-previous[axis];if(span!==0){const t=(limit-previous[axis])/span;points.push([previous[0]+t*(current[0]-previous[0]),previous[1]+t*(current[1]-previous[1])]);}}
+   if(currentInside)points.push(current);
+   previous=current;previousInside=currentInside;
+  }
+ }
+ if(points.length<3)return 0;
+ const ring=[...points,points[0]];
+ return multiArea([[ring]]);
+}
+/** One season per request: two stratified dates, up to two cloud fallbacks.
  * Never consumes harvests, inferred crop labels or future interpolation. */
 export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow):Promise<ZoneSeasonRead>{
  const grid=zoneGrid(geometry),today=new Date().toISOString().slice(0,10),season=parseZoneSeason(rawSeason,today);
@@ -30,7 +48,10 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
   if(!old||cloud<oldCloud)byDate.set(date,item);
  }
  const candidates=[...byDate.entries()].sort(([a],[b])=>a.localeCompare(b)),selected:typeof candidates=[];
- const count=Math.min(4,candidates.length);
+ // Start with two dates from opposite halves of the requested window. Most
+ // seasons can meet the two-clear-date rule with these; only cloudy/partial
+ // seasons pay for additional acquisitions.
+ const count=Math.min(2,candidates.length);
  for(let i=0;i<count;i++){
   const group=candidates.slice(Math.floor(i*candidates.length/count),Math.floor((i+1)*candidates.length/count));
   group.sort((a,b)=>(a[1].properties?.['eo:cloud_cover']??100)-(b[1].properties?.['eo:cloud_cover']??100));selected.push(group[0]);
@@ -40,9 +61,24 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
  const [w,s,,north]=grid.bounds,cos=Math.max(.2,Math.cos((s+north)/2*Math.PI/180)),dx=grid.gridM/(111320*cos),dy=grid.gridM/111320;
  const lattice=(p:Position)=>`${Math.floor((p[0]-w)/dx)}:${Math.floor((p[1]-s)/dy)}`;
  const cellIds=new Map(grid.cells.map(c=>[lattice(c.center),c.id])),perCell=new Map<number,number[]>();
+ // Interior 20 m cells are unchanged rectangles. Native pixels completely
+ // inside one of them have an exact spherical area without polygon clipping.
+ // Keep clipping for every boundary/partial cell so field edges and holes stay
+ // exact. This removes most per-pixel polygon intersections on small fields.
+ const cellLattices=new Map<number,{x:number;y:number;left:number;right:number;bottom:number;top:number;full:boolean}>();
+ for(const c of grid.cells){
+  const x=Math.floor((c.center[0]-w)/dx),y=Math.floor((c.center[1]-s)/dy),left=w+x*dx,right=left+dx,bottom=s+y*dy,top=bottom+dy;
+  const polygon=c.geometry.coordinates;
+  const points=polygon.flat(2) as Position[];
+  const bounds=points.length?[Math.min(...points.map(p=>p[0])),Math.min(...points.map(p=>p[1])),Math.max(...points.map(p=>p[0])),Math.max(...points.map(p=>p[1]))] as const:null;
+  const expectedArea=multiArea([[[[left,bottom],[right,bottom],[right,top],[left,top],[left,bottom]]]]);
+  const full=polygon.length===1&&polygon[0].length===1&&bounds!==null&&
+   Math.abs(c.areaM2-expectedArea)<.01&&Math.abs(bounds[0]-left)<1e-10&&Math.abs(bounds[1]-bottom)<1e-10&&Math.abs(bounds[2]-right)<1e-10&&Math.abs(bounds[3]-top)<1e-10;
+  cellLattices.set(c.id,{x,y,left,right,bottom,top,full});
+ }
  const scenes:ZoneSeasonRead['scenes']=[],issues:string[]=[],signal=AbortSignal.timeout(160000);
  for(const [attempt,[date,item]] of [...selected,...extra].entries()){
-  if(attempt>=4){const twice=grid.cells.filter(c=>(perCell.get(c.id)?.length??0)>=2).reduce((n,c)=>n+c.areaM2,0);if(twice/grid.areaM2>=.6)break;}
+  if(attempt>=2){const twice=grid.cells.filter(c=>(perCell.get(c.id)?.length??0)>=2).reduce((n,c)=>n+c.areaM2,0);if(twice/grid.areaM2>=.6)break;}
   try{
   const assets=item.assets??{},asset=(...keys:string[])=>{const a=keys.map(k=>assets[k]).find(a=>a?.href);if(!a)throw new Error('Bande absente');return a;};
   const redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1'),sclAsset=asset('SCL','scl','mask');
@@ -63,12 +99,15 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
    const redRho=(rr*rt.scale+rt.offset)/rt.light,nirRho=(nr*nt.scale+nt.offset)/nt.light;
    if(redRho<0||nirRho<0||redRho+nirRho<=0)continue;
    const ndvi=(nirRho-redRho)/(nirRho+redRho);if(ndvi<-1||ndvi>1)continue;
-   const b=bbox(cell.geometry),x0=Math.floor((b[0]-w)/dx),x1=Math.floor((b[2]-w)/dx),y0=Math.floor((b[1]-s)/dy),y1=Math.floor((b[3]-s)/dy);
+   const b=bbox(cell.geometry),epsilon=1e-10,x0=Math.floor((b[0]-w)/dx+epsilon),x1=Math.ceil((b[2]-w)/dx-epsilon)-1,y0=Math.floor((b[1]-s)/dy+epsilon),y1=Math.ceil((b[3]-s)/dy-epsilon)-1;
    // A native pixel can straddle multiple grid cells. Intersect its footprint
    // with every candidate, counting only actual clear surface inside the field.
    for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
     const id=cellIds.get(`${x}:${y}`);if(id===undefined)continue;
-    const area=multiArea(intersection(cell.geometry.coordinates,grid.cells[id].geometry.coordinates));if(area<=.001)continue;
+    const info=cellLattices.get(id)!;
+    // Full cells need only four inexpensive rectangle clips; irregular field
+    // boundaries still use the robust polygon boolean operation.
+    const area=info.full?pixelAreaInsideRectangle(cell.geometry.coordinates[0],info):multiArea(intersection(cell.geometry.coordinates,grid.cells[id].geometry.coordinates));if(area<=.001)continue;
     clearAreaTotal+=area;const list=values.get(id)??[];list.push({ndvi,area});values.set(id,list);
    }
   }
