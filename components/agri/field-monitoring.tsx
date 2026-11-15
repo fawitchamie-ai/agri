@@ -1,0 +1,123 @@
+'use client';
+import {useEffect,useMemo,useRef,useState} from 'react';
+import type {SeasonalConfig,WeatherDay} from '../../lib/seasonal/types';
+import {parcelMetrics} from '../../lib/seasonal/parcel';
+import {seasonalRequest} from '../../lib/seasonal/request';
+import {fieldMonitoringScope,analyzeFieldZones,FIELD_ZONES_VERSION,ZONE_NAMES,ZONE_COLORS,zonePrescription,zonesGeoJson,zonePrescriptionCsv,type ZoneClass,type FieldMonitoring,type ZoneSeason,type ZoneSeasonRead,type ZoneDoseInput,type ZoneAnalysis} from '../../lib/seasonal/field-zones';
+import {weatherLabel} from '../../lib/seasonal/field-intelligence';
+import ParcelLayers from './parcel-layers';
+import SatelliteNowcastPanel from './satellite-nowcast-panel';
+import {FieldNotebook} from './field-workspace';
+import {ProductIcon} from './product-ui';
+import './field-monitoring.css';
+
+const fmt=(n:number|null|undefined,d=1)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
+const shift=(day:string,n:number)=>new Date(Date.parse(day)+n*86400000).toISOString().slice(0,10);
+function saveFile(name:string,data:string,type='application/geo+json'){
+ const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function suggestedSeasons(c:SeasonalConfig):ZoneSeason[]{
+ const duration=c.stages.reduce((n,s)=>n+s.days,0)||120,start=shift(c.sowingDate,Math.min(35,Math.floor(duration*.3))),end=shift(c.sowingDate,Math.min(100,Math.floor(duration*.75)));
+ return Array.from({length:5},(_,i)=>{const year=Number(c.sowingDate.slice(0,4))-5+i,offset=year-Number(c.sowingDate.slice(0,4));
+  const previous=(day:string)=>{const d=new Date(day);d.setUTCFullYear(d.getUTCFullYear()+offset);return d.toISOString().slice(0,10);};
+  return {id:'saison-'+year,startDate:previous(start),endDate:previous(end),cropId:'unknown',comparable:false};});
+}
+function ZonesMap({analysis,mode='history',doses}:{analysis:ZoneAnalysis;mode?:'history'|'projection'|'dose';doses?:ZoneDoseInput}){
+ const [selected,setSelected]=useState<number|null>(null),points=analysis.cells.flatMap(c=>c.geometry.coordinates.flat(2)),xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
+ const west=Math.min(...xs),east=Math.max(...xs),south=Math.min(...ys),north=Math.max(...ys),cos=Math.cos((south+north)/2*Math.PI/180),scale=Math.min(590/((east-west)*cos),330/(north-south));
+ const point=([x,y]:number[])=>`${320+(x-(west+east)/2)*cos*scale},${190-(y-(south+north)/2)*scale}`;
+ const path=(coordinates:number[][][][])=>coordinates.map(p=>p.map(r=>'M'+r.map(point).join('L')+'Z').join(' ')).join(' ');
+ const selectedCell=analysis.cells.find(c=>c.id===selected);
+ const rates=analysis.zones.filter(z=>z.areaM2>0).map(z=>doses?.rates[z.id]).filter((n):n is number=>typeof n==='number'&&Number.isFinite(n));
+ const minRate=rates.length?Math.min(...rates):null,maxRate=rates.length?Math.max(...rates):null;
+ const color=(zone:ZoneClass)=>{if(mode!=='dose')return zone==='unknown'?'url(#zone-no-data-'+mode+')':ZONE_COLORS[zone];const rate=doses?.rates[zone];if(rate===undefined||minRate===null||maxRate===null)return 'url(#zone-no-data-'+mode+')';const t=maxRate===minRate ? .5 : (rate-minRate)/(maxRate-minRate);return `rgb(${Math.round(198-175*t)},${Math.round(221-160*t)},${Math.round(243-144*t)})`;};
+ return <figure className="monitoring-map"><svg viewBox="0 0 640 380" role="img" aria-label={mode==='dose'?'Carte des doses saisies par zone':mode==='projection'?'Hypothèse de répartition relative pour la prochaine campagne':'Zones de vigueur historique et leur stabilité'}>
+  <defs><pattern id={'zone-no-data-'+mode} width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#e5ebf1"/><path d="M0 10 10 0" stroke="#bbc8d5" strokeWidth="1"/></pattern></defs>
+  <rect width="640" height="380" fill="#f3f7fb"/>
+  {analysis.cells.map(cell=><path key={cell.id} d={path(cell.geometry.coordinates)} fill={color(cell.zone)} fillRule="evenodd" stroke={cell.id===selected?'#d18427':'#ffffff55'} strokeWidth={cell.id===selected?2:.35} tabIndex={0} onFocus={()=>setSelected(cell.id)} onClick={()=>setSelected(cell.id)}><title>{ZONE_NAMES[cell.zone]} · {fmt(cell.areaM2)} m² · {cell.seasons} saisons{mode==='dose'?' · dose '+fmt(doses?.rates[cell.zone])+' '+(doses?.unit??''):''}</title></path>)}
+  <text x="596" y="28" fill="#234a70" fontSize="12">N ↑</text>
+ </svg><figcaption>{selectedCell?<><strong>{ZONE_NAMES[selectedCell.zone]}</strong><span>{mode==='dose'?fmt(doses?.rates[selectedCell.zone])+' '+(doses?.unit??'')+' · ':''}{fmt(selectedCell.areaM2)} m² · {selectedCell.seasons} saisons · accord historique {fmt(selectedCell.agreement===null?null:selectedCell.agreement*100,0)} %</span></>:<><strong>Sélectionnez une cellule du champ</strong><span>Grille d’analyse de {analysis.gridM} m · géométrie découpée au contour</span></>}{mode==='dose'&&<span className="monitoring-dose-key"><i/>{minRate===null?'Doses à définir':fmt(minRate)+' à '+fmt(maxRate)+' '+doses?.unit}</span>}</figcaption></figure>;
+}
+function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>void}){
+ const today=new Date().toISOString().slice(0,10),[live,setLive]=useState<{weather:WeatherDay[];retrievedAt:string;attribution:string}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const days=(live?.weather??c.weather).filter(w=>w.date>=c.asOfDate&&w.availableAt.slice(0,10)<=c.asOfDate).slice(0,16);
+ async function refresh(){if(!c.parcelGeometry)return;setBusy(true);setError('');try{const p=parcelMetrics(c.parcelGeometry).point;setLive(await seasonalRequest({action:'weather',latitude:p[1],longitude:p[0],country:c.country}));}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ return <section className="qs-card monitor-weather"><div className="field-panel-title"><div><span className="product-eyebrow">PLUIE · TEMPÉRATURE · DEMANDE EN EAU</span><h3>Météo du champ</h3></div><button className="btn secondary" disabled={busy||c.asOfDate!==today} onClick={refresh}>{busy?'Actualisation…':'Consulter les prévisions actuelles'}</button></div>
+ <p>Prévisions de modèles au voisinage du champ. Les pluies réellement mesurées se conservent dans le carnet d’eau.</p>
+ {c.asOfDate!==today&&<p>Cette campagne est consultée à une date passée. Les nouvelles prévisions sont disponibles avec une date d’analyse au jour courant.</p>}
+ {error&&<p role="alert">{error}</p>}
+ <div className="monitor-weather-grid">{days.map(w=><article key={w.date}><time>{new Date(w.date+'T12:00:00Z').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})}</time><ProductIcon name="sun"/><strong>{fmt(w.rainMm)} <small>mm</small></strong><span>{fmt(w.temperatureMinC)}° / {fmt(w.temperatureMaxC)}°</span><span>ET0 {fmt(w.et0Mm)} mm</span><small>{weatherLabel(w)}</small></article>)}</div>
+ {!days.length&&<p>Aucune météo disponible à cette date. Actualisez les prévisions ou renseignez votre campagne.</p>}
+ <button className="qs-text-button" onClick={onWeather}>Ouvrir la météo et les mesures de la campagne →</button>
+ <details><summary>Sources et disponibilité</summary>{live?<p>{live.attribution} Récupérées le {live.retrievedAt}. Ces prévisions consultées sont à intégrer dans les paramètres météo pour actualiser le calcul.</p>:[...new Set(days.map(w=>w.source))].map(s=><p key={s}>{s}</p>)}<p>Une prévision n’est pas une mesure de pluie sur la parcelle. Les valeurs absentes restent inconnues.</p></details></section>;
+}
+export default function FieldMonitoringWorkspace({config:c,onChange,onMap,onWeather}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
+ const scope=fieldMonitoringScope(c);
+ return <FieldMonitoringBody key={scope} config={c} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
+}
+function FieldMonitoringBody({config:c,onChange,onMap,onWeather}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
+ const scope=fieldMonitoringScope(c),current=c.fieldMonitoring?.scope===scope,stored=current?c.fieldMonitoring:undefined;
+ const [view,setView]=useState('satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
+ const [consent,setConsent]=useState(false),[cultivated,setCultivated]=useState(stored?.cultivatedContour??false),[comparable,setComparable]=useState(stored?.comparableManagement??false);
+ const [busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ const defaultDose:ZoneDoseInput={kind:'fertilizer',product:'',unit:'kg/ha',reference:'',baseline:0,rates:{},confirmed:false};
+ const [dose,setDose]=useState<ZoneDoseInput>(stored?.prescription??defaultDose),controller=useRef<AbortController|null>(null),latest=useRef(c);latest.current=c;
+ useEffect(()=>()=>controller.current?.abort(),[]);
+ const derived=useMemo(()=>{try{return {analysis:analyzeFieldZones(c),error:''};}catch(e){return {analysis:null,error:(e as Error).message};}},[c]);
+ const analysis=derived.analysis,target=c.cropProfile?.id??c.crop;
+ const prescription=useMemo(()=>{if(!analysis)return {result:null,error:''};try{return {result:zonePrescription(analysis,dose),error:''};}catch(e){return {result:null,error:(e as Error).message};}},[analysis,dose]);
+ function archive(reads:ZoneSeasonRead[],prescription?:ZoneDoseInput):FieldMonitoring{return {version:FIELD_ZONES_VERSION,scope,cultivatedContour:cultivated,comparableManagement:comparable,seasons:reads,...(prescription?{prescription}:{})};}
+ function matchingReads(){return (stored?.seasons??[]).filter(r=>drafts.some(d=>d.id===r.season.id&&d.startDate===r.season.startDate&&d.endDate===r.season.endDate)).map(r=>({...r,season:{...r.season,cropId:drafts.find(d=>d.id===r.season.id)!.cropId,comparable:drafts.find(d=>d.id===r.season.id)!.comparable}}));}
+ function settings(){
+  const reads=matchingReads();
+  onChange({...c,fieldMonitoring:archive(reads,{...dose,confirmed:false})});setDose(d=>({...d,confirmed:false}));setNotice('Comparabilité mise à jour. Les fenêtres modifiées doivent être rechargées. Enregistrez la campagne pour conserver le suivi.');
+ }
+ async function loadHistory(){
+  if(!c.parcelGeometry||!consent||busy)return;
+  const ctrl=new AbortController();controller.current=ctrl;setBusy(true);setError('');setNotice('');
+  let reads:ZoneSeasonRead[]=matchingReads();const failures:string[]=[];
+  try{for(let i=0;i<drafts.length;i++){
+   if(ctrl.signal.aborted)break;const season=drafts[i];setProgress(`Saison ${i+1}/${drafts.length} · ${season.startDate.slice(0,4)} : lecture des pixels…`);
+   try{const r=await seasonalRequest<ZoneSeasonRead>({action:'field-zone-season',consent:true,geometry:c.parcelGeometry,season},ctrl.signal,180000);
+    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)break;
+    reads=[...reads.filter(old=>old.season.id!==r.season.id),r];onChange({...latest.current,fieldMonitoring:archive(reads)});
+   }catch(e){if(ctrl.signal.aborted)break;failures.push(`${season.id} : ${(e as Error).message}`);}
+  }
+  if(!ctrl.signal.aborted){setError(failures.join(' · '));setNotice(`${reads.length}/${drafts.length} saisons récupérées. Enregistrez la campagne pour conserver les observations et leurs dates.`);}
+  }finally{setBusy(false);setProgress('');}
+ }
+ function exportMap(withRates:boolean){try{if(!analysis)throw new Error('Analyse absente');saveFile(withRates?'carte-doses.geojson':'zones-historiques.geojson',JSON.stringify(zonesGeoJson(analysis,withRates?dose:undefined),null,2));setError('');}catch(e){setError((e as Error).message);}}
+ function saveDoses(){try{if(!analysis)throw new Error('Analyse absente');zonePrescription(analysis,dose);onChange({...c,fieldMonitoring:archive(stored?.seasons??[],dose)});setNotice('Carte de doses préparée. Enregistrez la campagne pour conserver ce scénario.');setError('');}catch(e){setError((e as Error).message);}}
+ const tabs=[['satellite','Satellite & indices','satellite'],['history','Zones historiques','grid'],['doses','Cartes de doses','leaf'],['weather','Météo','sun'],['notes','Carnet terrain','book']];
+ if(!c.parcelGeometry)return <section className="qs-card"><h2>Suivi du champ</h2><p>Tracez d’abord le contour de votre parcelle.</p><button className="btn primary" onClick={onMap}>Tracer le champ</button></section>;
+ return <div className="field-monitoring"><header className="monitoring-header"><div><span className="product-eyebrow">OBSERVER · COMPARER · PRÉPARER</span><h2>Suivi du champ</h2><p>Les images, les saisons passées et vos observations réunies autour de votre parcelle.</p></div><span className="monitoring-badge">{c.crop} · {fmt(parcelMetrics(c.parcelGeometry).areaM2/10000,2)} ha</span></header>
+ <nav className="monitoring-tabs" aria-label="Outils de suivi du champ">{tabs.map(([id,label,icon])=><button type="button" key={id} aria-pressed={view===id} onClick={()=>setView(id)}><ProductIcon name={icon} size={17}/>{label}</button>)}</nav>
+ {view==='satellite'&&<><ParcelLayers config={c} assessment={c.landAssessment} onMap={onMap}/><SatelliteNowcastPanel config={c} onChange={onChange}/></>}
+ {view==='weather'&&<WeatherPanel config={c} onWeather={onWeather}/>}
+ {view==='notes'&&<FieldNotebook config={c} onChange={onChange}/>}
+ {(view==='history'||view==='doses')&&<>
+ {view==='history'&&<section className="qs-card monitoring-setup"><div className="field-panel-title"><div><span className="product-eyebrow">SENTINEL-2 · PLUSIEURS SAISONS</span><h3>Comparer les saisons</h3></div><span>Jusqu’à 6 fenêtres · 100 ha par secteur</span></div>
+ <p>Les dates proposées reprennent la fenêtre de croissance de la campagne cible. Corrigez-les d’après les semis et les stades réellement observés chaque année.</p>
+ <div className="monitor-season-list">{drafts.map((d,i)=><div className="monitor-season" key={d.id}><strong>{d.startDate.slice(0,4)}</strong><label>Début des observations<input aria-label={'Début saison '+(i+1)} disabled={busy} type="date" value={d.startDate} onChange={e=>setDrafts(a=>a.map((v,j)=>i===j?{...v,startDate:e.target.value}:v))}/></label><label>Fin des observations<input aria-label={'Fin saison '+(i+1)} disabled={busy} type="date" value={d.endDate} onChange={e=>setDrafts(a=>a.map((v,j)=>i===j?{...v,endDate:e.target.value}:v))}/></label><label>Culture de cette saison<select disabled={busy} value={d.cropId} onChange={e=>setDrafts(a=>a.map((v,j)=>i===j?{...v,cropId:e.target.value}:v))}><option value="unknown">À confirmer</option><option value={target}>{c.crop}</option><option value="other">Autre / associée</option></select></label><label className="monitor-check"><input disabled={busy} type="checkbox" checked={d.comparable} onChange={e=>setDrafts(a=>a.map((v,j)=>i===j?{...v,comparable:e.target.checked}:v))}/> Stade comparable</label><button className="qs-text-button" disabled={busy||drafts.length<=1} aria-label={'Retirer saison '+(i+1)} onClick={()=>setDrafts(a=>a.filter((_,j)=>j!==i))}>Retirer</button></div>)}</div>
+ <div className="button-row"><button className="qs-text-button" disabled={busy||drafts.length>=6} onClick={()=>{const first=drafts[0],year=Number(first.startDate.slice(0,4))-1;setDrafts(a=>[{...first,id:'saison-'+year,startDate:year+first.startDate.slice(4),endDate:(Number(first.endDate.slice(0,4))-1)+first.endDate.slice(4),cropId:'unknown',comparable:false},...a]);}}>+ Ajouter une année</button><button className="qs-text-button" disabled={busy} onClick={settings}>Appliquer les confirmations sans recharger</button></div>
+ <div className="monitor-confirmations"><label><input disabled={busy} type="checkbox" checked={cultivated} onChange={e=>setCultivated(e.target.checked)}/> Le contour correspond à la surface cultivée et n’a pas changé sur ces saisons.</label><label><input disabled={busy} type="checkbox" checked={comparable} onChange={e=>setComparable(e.target.checked)}/> La conduite et les fenêtres de développement choisies sont comparables.</label><label><input disabled={busy} type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Charger cet historique : l’emprise du champ sera transmise à Digital Earth Africa ou Earth Search. Les notes et récoltes ne leur sont pas envoyées.</label></div>
+ <div className="button-row"><button className="btn primary" disabled={busy||!consent} onClick={loadHistory}>{busy?'Analyse en cours…':'Analyser les saisons sélectionnées'}</button>{busy&&<button className="btn secondary" onClick={()=>controller.current?.abort()}>Arrêter après les résultats reçus</button>}</div>
+ {busy&&<div className="monitoring-progress" role="status"><progress/><span>{progress}</span></div>}
+ </section>}
+ {derived.error&&<p role="alert">{derived.error}</p>}
+ {analysis&&<>
+ <div className="monitoring-metrics"><article><span>Saisons analysables</span><strong>{analysis.reads.length}</strong><small>2 dates claires minimum par cellule</small></article><article><span>Surface commune observée</span><strong>{fmt(analysis.coverage*100,0)} %</strong><small>{analysis.commonCells} cellules · grille {analysis.gridM} m</small></article><article><span>Surface au classement stable</span><strong>{fmt(analysis.stableFraction*100,0)} %</strong><small>Accord d’au moins 2 saisons sur 3</small></article></div>
+ <div className="monitoring-results"><section className="qs-card"><div className="field-panel-title"><h3>{view==='doses'?'Répartir les apports':'Carte de vigueur historique'}</h3>{view==='history'&&<button className="btn secondary small" disabled={!analysis.reads.length} onClick={()=>exportMap(false)}>Exporter GeoJSON</button>}</div><ZonesMap analysis={analysis} mode={view==='doses'?'dose':'history'} doses={dose}/>{view==='history'&&<div className="monitoring-legend">{analysis.zones.map(z=><span key={z.id}><i style={{background:ZONE_COLORS[z.id]}}/>{z.label}<b>{fmt(z.areaM2/10000,3)} ha</b></span>)}</div>}</section>
+ {view==='history'?<section className="qs-card monitoring-projection"><span className="product-eyebrow">CAMPAGNE CIBLE · {c.sowingDate}</span><h3>Répartition relative attendue</h3><strong className="monitoring-status">{analysis.projection==='relative-hypothesis'?'Hypothèse de persistance disponible':'Conditions à compléter'}</strong><p>Les zones stables suggèrent où la vigueur pourrait rester plus faible ou plus forte si la culture et la conduite restent comparables.</p>{analysis.projection==='relative-hypothesis'?<><ZonesMap analysis={analysis} mode="projection"/><p>Classement relatif fondé sur l’historique ; aucune quantité de grain n’est calculée.</p></>:<ul>{analysis.reasons.map(r=><li key={r}>{r}</li>)}</ul>}<p><strong>Contrôle sur {analysis.backtestSeason??'la dernière saison'} :</strong> {analysis.backtestAgreement===null?'pas encore disponible':fmt(analysis.backtestAgreement*100,0)+' % de surface au même niveau de classement'}.</p><small>La dernière saison est réservée au contrôle du classement construit avec les précédentes, sur leurs cellules communes. Ce score spatial n’est pas une probabilité de rendement.</small></section>:<section className="qs-card monitoring-doses"><span className="product-eyebrow">SCÉNARIO DE MODULATION</span><h3>Mes doses par zone</h3><p>Renseignez les doses issues de votre conseil agronomique. Une faible vigueur ne suffit pas à choisir une dose supplémentaire.</p><div className="form-grid"><label className="field"><span>Intervention</span><select value={dose.kind} onChange={e=>setDose(d=>({...d,kind:e.target.value as ZoneDoseInput['kind'],unit:e.target.value==='seeds'?'seeds/ha':'kg/ha',confirmed:false}))}><option value="seeds">Semences</option><option value="fertilizer">Engrais</option><option value="treatment">Traitement</option></select></label><label className="field"><span>Produit / variété</span><input value={dose.product} maxLength={160} onChange={e=>setDose(d=>({...d,product:e.target.value,confirmed:false}))}/></label><label className="field"><span>Unité</span><select value={dose.unit} onChange={e=>setDose(d=>({...d,unit:e.target.value as ZoneDoseInput['unit'],confirmed:false}))}>{dose.kind==='seeds'&&<option value="seeds/ha">graines/ha</option>}<option value="kg/ha">kg/ha</option><option value="L/ha">L/ha</option></select></label><label className="field"><span>Dose uniforme de comparaison</span><input type="number" min="0" max="1000000" value={dose.baseline} onChange={e=>setDose(d=>({...d,baseline:Number(e.target.value),confirmed:false}))}/></label></div>
+ <div className="monitor-rate-list">{analysis.zones.filter(z=>z.areaM2>0).map(z=><label key={z.id}><span><i style={{background:ZONE_COLORS[z.id]}}/>{z.label}<small>{fmt(z.areaM2/10000,3)} ha</small></span><input aria-label={'Dose '+z.label} type="number" min="0" max="1000000" step="any" placeholder="À définir" value={dose.rates[z.id]??''} onChange={e=>setDose(d=>({...d,rates:{...d.rates,[z.id]:e.target.value===''?undefined:Number(e.target.value)},confirmed:false}))}/><small>{dose.unit}</small></label>)}</div>
+ <button className="qs-text-button" onClick={()=>setDose(d=>({...d,rates:Object.fromEntries(analysis.zones.filter(z=>z.areaM2>0).map(z=>[z.id,d.baseline])),confirmed:false}))}>Commencer avec la même dose partout</button><label className="field"><span>Référence des doses</span><input maxLength={600} value={dose.reference} onChange={e=>setDose(d=>({...d,reference:e.target.value,confirmed:false}))} placeholder="Conseiller, analyse de sol, protocole et date"/></label><label className="monitor-check"><input type="checkbox" checked={dose.confirmed} onChange={e=>setDose(d=>({...d,confirmed:e.target.checked}))}/> Je confirme ces doses pour préparer mon scénario.</label>
+ {prescription.result&&<div className="monitoring-dose-total"><span>Quantité totale</span><strong>{fmt(prescription.result.total,2)} {prescription.result.totalUnit}</strong><p>Uniforme : {fmt(prescription.result.baselineTotal,2)} · Écart : {fmt(prescription.result.changeTotal,2)} {prescription.result.totalUnit}</p></div>}
+ {prescription.error&&<p className="monitoring-hint">{prescription.error}</p>}
+ <div className="button-row"><button className="btn primary" disabled={!prescription.result} onClick={saveDoses}>Conserver la carte</button><button className="btn secondary" disabled={!prescription.result} onClick={()=>exportMap(true)}>GeoJSON</button><button className="btn secondary" disabled={!prescription.result} onClick={()=>{try{saveFile('doses-par-zone.csv',zonePrescriptionCsv(analysis,dose),'text/csv;charset=utf-8');}catch(e){setError((e as Error).message);}}}>CSV</button></div><small>Scénario cartographique : aucune dose optimale, homologation ou compatibilité machine n’est certifiée. Les surfaces sans donnée demandent une dose explicite ; elles ne deviennent pas automatiquement une dose nulle.</small></section>}
+ </div>
+ <details className="qs-card monitoring-audit"><summary>Acquisitions, méthode et limites</summary><p>Trois années minimum pour la carte, quatre pour le contrôle temporel. Cellules communes sur au moins 60 % du contour ; SCL 4/5 ; au moins deux dates claires par cellule et saison. Classement par rang NDVI intra-champ, accord de classe ≥ 2/3. Les seuils sont des règles exploratoires versionnées.</p>{analysis.reads.map(r=><div key={r.id}><strong>{r.id} · {r.season.startDate} au {r.season.endDate}</strong><p>{r.source} · contraste NDVI P90−P10 : {fmt(r.contrast,3)}</p>{r.scenes.map(s=><p key={s.date}>{s.date} · couverture claire ≈ {fmt(s.clearFraction*100,0)} % · {s.itemId}</p>)}</div>)}{analysis.excluded.map(r=><p key={r.id}>{r.id} : {r.reason}</p>)}{analysis.notes.map(n=><p key={n}>{n}</p>)}<a href="https://docs.digitalearthafrica.org/en/latest/data_specs/Sentinel-2_Level-2A_specs.html" target="_blank" rel="noreferrer">Source Copernicus / Digital Earth Africa</a></details>
+ </>}
+ </>}
+ {error&&<div className="notice warning" role="alert">{error}</div>}{notice&&<p className="monitoring-notice" role="status">{notice}</p>}
+ </div>;
+}

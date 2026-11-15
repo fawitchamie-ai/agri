@@ -78,4 +78,5 @@ export const COUNTRY_VIEWS={
  TGO:{center:[1.1,8.65] as Position,zoom:6.6,iso2:'TG'},BEN:{center:[2.3,9.3] as Position,zoom:6.3,iso2:'BJ'},
  GHA:{center:[-1.05,7.95] as Position,zoom:6.2,iso2:'GH'},BFA:{center:[-1.7,12.35] as Position,zoom:6.1,iso2:'BF'},
  CIV:{center:[-5.55,7.55] as Position,zoom:6.1,iso2:'CI'},SEN:{center:[-14.5,14.45] as Position,zoom:6.3,iso2:'SN'},
+ NGA:{center:[8.5,9.1] as Position,zoom:5.6,iso2:'NG'},
 };

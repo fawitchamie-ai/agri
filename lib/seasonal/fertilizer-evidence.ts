@@ -22,7 +22,7 @@ export function fertilizerEvidence(country:Country,cropId:string,asOfDate:string
    version:extension.version,productionEnabled:false,
    observations:extension.observations.filter(r=>r.country===country&&r.cropId===cropId),
    research:extension.research.filter(r=>r.country===country&&r.cropId===cropId),
-   missingInformation:extension.missingByCountry[country],limits:extension.limits,
+   missingInformation:country==='NGA'?['Les essais TAMASA acquis ne qualifient pas encore une prévision parcellaire autonome. Les coordonnées des essais sont masquées.']:extension.missingByCountry[country],limits:extension.limits,
   }:null,
   nationalReference:rows.length?{year:rows[0].year,kgHa:rows[0].yieldKgHaHarvested!.value,flag:rows[0].yieldKgHaHarvested!.flag,
    denominator:'harvested',scope:'national',independentYm:false,source:historical.source,version:historical.version,

@@ -17,7 +17,7 @@ export async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typ
  if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('Redirection du fournisseur satellite refusée.');}
  return response;
 }
-export type SatelliteStacItem={id?:string;properties?:{datetime?:string;'eo:cloud_cover'?:number};assets?:Record<string,{href?:string;['raster:bands']?:{scale?:number;offset?:number}[]}>};
+export type SatelliteStacItem={id?:string;properties?:{datetime?:string;'eo:cloud_cover'?:number;'earthsearch:boa_offset_applied'?:boolean;'sentinel:boa_offset_applied'?:boolean};assets?:Record<string,{href?:string;['raster:bands']?:{scale?:number;offset?:number}[]}>};
 const STAC_MAX_BYTES=4_000_000;
 async function readStacFeatures(response:Response){
  if(!response.ok){await response.body?.cancel();throw new Error(`Catalogue STAC ${response.status}.`);}
@@ -28,11 +28,11 @@ async function readStacFeatures(response:Response){
  return data.features;
 }
 /** Query the preferred African catalogue, then the public Earth Search mirror. */
-export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands=false){
+export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands:boolean|'ndvi'=false,harmonized=false){
  if(!iso(startDate)||!iso(asOf)||startDate>asOf||bounds.length!==4||bounds.some(v=>!Number.isFinite(v)))throw new Error('Recherche STAC Sentinel-2 invalide.');
  const datetime=`${startDate}T00:00:00Z/${asOf}T23:59:59Z`,attempts:[string,()=>Promise<Response>][]=[
-  ['Digital Earth Africa',()=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:'s2_l2a',bbox:bounds.join(','),datetime,sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
-  ['Earth Search',()=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:['sentinel-2-l2a'],bbox:bounds,datetime,sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
+  ['Digital Earth Africa',()=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:harmonized?'s2_l2a_c1':'s2_l2a',bbox:bounds.join(','),datetime,sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
+  ['Earth Search',()=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:[harmonized?'sentinel-2-c1-l2a':'sentinel-2-l2a'],bbox:bounds,datetime,sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
  ];
  const failures:string[]=[];
  for(const [provider,request] of attempts){
@@ -40,7 +40,7 @@ export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:
    const features=await readStacFeatures(await request());
    const usable=features.some(item=>{
     const date=item.properties?.datetime?.slice(0,10),assets=item.assets??{},has=(...keys:string[])=>keys.some(key=>typeof assets[key]?.href==='string');
-    return !!date&&iso(date)&&date>=startDate&&date<=asOf&&(!requireIndexBands||(has('B02','blue')&&has('B04','red')&&has('B08','nir','nir_1')&&has('SCL','scl','mask')));
+    return !!date&&iso(date)&&date>=startDate&&date<=asOf&&(!requireIndexBands||((requireIndexBands==='ndvi'||has('B02','blue'))&&has('B04','red')&&has('B08','nir','nir_1')&&has('SCL','scl','mask')));
    });
    if(usable)return {provider,features};
    failures.push(`${provider}:aucune scène exploitable`);

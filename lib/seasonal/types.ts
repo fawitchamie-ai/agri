@@ -7,6 +7,7 @@ export const COUNTRIES = {
   GHA: { name: 'Ghana', timezone: 'Africa/Accra' },
   CIV: { name: 'Côte d’Ivoire', timezone: 'Africa/Abidjan' },
   SEN: { name: 'Sénégal', timezone: 'Africa/Dakar' },
+  NGA: { name: 'Nigeria', timezone: 'Africa/Lagos' },
 } as const;
 export type Country = keyof typeof COUNTRIES;
 export type SoilLayer = { thicknessM: number; thetaFC: number; thetaWP: number; initialTheta: number | null };
@@ -28,6 +29,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  fieldMonitoring?:import('./field-zones.ts').FieldMonitoring;
   /** Explicit structural sensitivity experiment; not an accepted forecast profile. */
   soilWaterModel?:{version:'profile-recharge-1';usage:'diagnostic';acceptedHypothesis:true;source:string;availableOn:string};
   canopyNowcast?:import('./canopy-nowcast.ts').CanopyNowcastInput;

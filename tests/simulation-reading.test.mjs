@@ -54,7 +54,7 @@ test('ready simulation explains conditional water, exposes weekly readings and d
  assert.match(overview,/id="field-tab-fertilizer"[^>]*role="tab"/);
  assert.match(overview,/id="field-tab-images"[^>]*role="tab"/);
  assert.doesNotMatch(overview,/id="field-tab-notes"[^>]*role="tab"/);
- assert.match(images,/Images du champ/);
+ assert.match(images,/Suivi du champ/);assert.match(images,/Satellite &amp; indices/);
  const expert=settings;
  assert.match(expert,/class="expert-subnav"/);
  assert.match(expert,/Carnet et essais/);

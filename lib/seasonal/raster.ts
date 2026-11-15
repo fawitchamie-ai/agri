@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import {bbox,type RasterCell} from './land.ts';
 import type {ParcelPolygon,Position} from './parcel.ts';
 
-const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com','deafrica-sentinel-2.s3.af-south-1.amazonaws.com','sentinel-cogs.s3.us-west-2.amazonaws.com']);
+const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com','deafrica-sentinel-2.s3.af-south-1.amazonaws.com','sentinel-cogs.s3.us-west-2.amazonaws.com','deafrica-sentinel-2-l2a-c1.s3.af-south-1.amazonaws.com','e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com']);
 // Bound total geometry work separately from each decoder window.
 export const MAX_NATIVE_PIXELS=16000000;
 const WINDOW_SIDE=100;
