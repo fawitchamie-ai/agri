@@ -3,6 +3,7 @@ import {fieldZonesFixture} from './support/field-zones-fixture.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 import {readZoneSeason} from '../lib/seasonal/field-zones-provider.ts';
 import {readRasterWindow} from '../lib/seasonal/raster.ts';
+import type {ParcelPolygon} from '../lib/seasonal/parcel.ts';
 
 test('historical reads use native C1 assets, actual dates and cloud masks without making crop or harvest labels',async()=>{
  const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),season={...c.fieldMonitoring!.seasons[0].season,cropId:'unknown',comparable:false};let queries=0;
@@ -25,6 +26,33 @@ test('a wholly cloudy historical scene records its date while all vegetation cel
  const fetcher=(async()=>Response.json({features:[{id:'all-cloud',properties:{datetime:season.startDate+'T00:00:00Z'},assets}]})) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>({resolutionM:20,crs:'EPSG:4326',cells:g.cells.map(p=>({id:String(p.id),geometry:{type:'Polygon' as const,coordinates:p.geometry.coordinates[0]},value:url.endsWith('scl.tif')?9:6000}))});
  const r=await readZoneSeason(c.parcelGeometry,season,fetcher,reader);assert.equal(r.cells.length,0);assert.equal(r.scenes[0].clearFraction,0);
+});
+test('starts with two dates and avoids reading extra scenes when coverage is already sufficient',async()=>{
+ const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),season=c.fieldMonitoring!.seasons[0].season;let reads=0;
+ const dates=Array.from({length:8},(_,i)=>new Date(Date.parse(season.startDate+'T00:00:00Z')+i*7*86400000).toISOString().slice(0,10));
+ const features=dates.map(date=>({id:date,properties:{datetime:date+'T10:00:00Z','eo:cloud_cover':10},assets:Object.fromEntries(['red','nir','scl'].map(b=>[b,{href:`https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/${date}/${b}.tif`,'raster:bands':b==='scl'?[]:[{scale:.0001,offset:-.1}]}]))}));
+ const fetcher=(async()=>Response.json({features})) as typeof fetch;
+ const reader:typeof readRasterWindow=async(url)=>{reads++;return {resolutionM:20,crs:'EPSG:4326',cells:g.cells.map((p,i)=>({id:String(i),geometry:{type:'Polygon' as const,coordinates:p.geometry.coordinates[0]},value:url.endsWith('/scl.tif')?4:url.endsWith('/red.tif')?3000:7000}))};};
+ const r=await readZoneSeason(c.parcelGeometry,season,fetcher,reader);
+ assert.equal(r.scenes.length,2);assert.equal(reads,6);assert.equal(r.cells.length,g.cells.length);assert.ok(r.cells.every(v=>v[2]===2));
+});
+test('adds cloudy fallbacks only until two clear dates provide enough field coverage',async()=>{
+ const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),season=c.fieldMonitoring!.seasons[0].season;let reads=0;
+ const dates=Array.from({length:4},(_,i)=>new Date(Date.parse(season.startDate+'T00:00:00Z')+i*14*86400000).toISOString().slice(0,10));
+ const features=dates.map((date,i)=>({id:date,properties:{datetime:date+'T10:00:00Z','eo:cloud_cover':i===0||i===2?0:20},assets:Object.fromEntries(['red','nir','scl'].map(b=>[b,{href:`https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/${date}/${b}.tif`,'raster:bands':b==='scl'?[]:[{scale:.0001,offset:-.1}]}]))}));
+ const fetcher=(async()=>Response.json({features})) as typeof fetch;
+ const reader:typeof readRasterWindow=async(url)=>{reads++;const date=dates.find(d=>url.includes(d));return {resolutionM:20,crs:'EPSG:4326',cells:g.cells.map((p,i)=>({id:String(i),geometry:{type:'Polygon' as const,coordinates:p.geometry.coordinates[0]},value:url.endsWith('/scl.tif')?(date===dates[0]||date===dates[2]?9:4):url.endsWith('/red.tif')?3000:7000}))};};
+ const r=await readZoneSeason(c.parcelGeometry,season,fetcher,reader);
+ assert.equal(r.scenes.length,4);assert.equal(reads,12);assert.equal(r.cells.length,g.cells.length);assert.ok(r.cells.every(v=>v[2]===2));
+});
+test('clips a native pixel across two interior cells without counting its full area twice',async()=>{
+ const south=9.4,dy=20/111320,cos=Math.cos((south+dy/2)*Math.PI/180),west=1.2,dx=20/(111320*cos),geometry:ParcelPolygon={type:'Polygon',coordinates:[[[west,south],[west+2*dx,south],[west+2*dx,south+dy],[west,south+dy],[west,south]]]},season={id:'cross-boundary',startDate:'2022-06-01',endDate:'2022-07-01',cropId:'maize',comparable:true};
+ const midX=west+dx,midY=south+dy/2,halfW=5/(111320*cos),halfH=5/111320;
+ const cross:ParcelPolygon={type:'Polygon',coordinates:[[[midX-halfW,midY-halfH],[midX+halfW,midY-halfH],[midX+halfW,midY+halfH],[midX-halfW,midY+halfH],[midX-halfW,midY-halfH]]]},mask:ParcelPolygon={type:'Polygon',coordinates:[geometry.coordinates[0]]};
+ const fetcher=(async()=>Response.json({features:['2022-06-10','2022-06-20'].map(date=>({id:date,properties:{datetime:date+'T10:00:00Z'},assets:Object.fromEntries(['red','nir','scl'].map(b=>[b,{href:`https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/${date}/${b}.tif`,'raster:bands':[{scale:.0001,offset:-.1}]}]))}))})) as typeof fetch;
+ const reader:typeof readRasterWindow=async(url)=>({resolutionM:10,crs:'EPSG:4326',cells:[{id:'test-pixel',geometry:url.endsWith('/scl.tif')?mask:cross,value:url.endsWith('/scl.tif')?4:url.endsWith('/red.tif')?3000:7000}]});
+ const r=await readZoneSeason(geometry,season,fetcher,reader);
+ assert.ok(Math.abs(r.scenes[0].clearFraction-.125)<.001);assert.ok(Math.abs(r.scenes[1].clearFraction-.125)<.001);assert.equal(r.cells.length,0);
 });
 test('older imagery is accepted only with an explicitly already-applied BOA offset when C1 has no coverage',async()=>{
  const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),season=c.fieldMonitoring!.seasons[0].season;
