@@ -22,6 +22,7 @@ test('Campagnes : routes, persistance, révisions, idempotence, accès et correc
     await req('/api/seasonal',{action:'capabilities',country:'TGO',cropId:'unknown'},400);
     const config=exampleCampaign(new Date().toISOString().slice(0,10));config.parcelGeometry=testParcel;config.landAssessment=landFixture(testParcel);
     const save=await req('/api/seasonal',{action:'save',id:'campaign-1',expectedRevision:0,config},201);
+    const listed=await req('/api/seasonal');assert.equal(listed.campaigns.length,1);assert.deepEqual(listed.campaigns[0].geometry,testParcel);assert.equal(listed.campaigns[0].areaM2,save.campaign.config.areaM2);assert.equal(listed.campaigns[0].sowingDate,config.sowingDate);
     sameWater(save.campaign.plan,planWater(config));assert.equal(save.campaign.revision,1);
     const e={id:'rain-stable',date:config.sowingDate,kind:'rain',amount:20,unit:'mm',point:'field',status:'measured',source:'Synthetic fixture'};
     const updated=await req('/api/seasonal',{action:'event',id:'campaign-1',expectedRevision:1,event:e});assert.equal(updated.campaign.revision,2);assert.equal(updated.campaign.events.length,1);
