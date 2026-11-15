@@ -36,18 +36,20 @@ function pixelAreaInsideRectangle(rasterPixel:Position[],bounds:{left:number;rig
  const ring=[...points,points[0]];
  return multiArea([[ring]]);
 }
-/** One season per request: two stratified dates, up to two cloud fallbacks.
+/** One season per read: two stratified dates, up to two cloud fallbacks.
  * Never consumes harvests, inferred crop labels or future interpolation. */
-export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow):Promise<ZoneSeasonRead>{
+export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,requestSignal?:AbortSignal,onSceneProgress?:(progress:{date:string;attempt:number;maxAttempts:number})=>void):Promise<ZoneSeasonRead>{
  const grid=zoneGrid(geometry),today=new Date().toISOString().slice(0,10),season=parseZoneSeason(rawSeason,today);
  if(grid.areaM2>1_000_000)throw new Error('Découpez le champ en secteurs de 100 ha maximum pour l’historique satellite.');
+ const deadline=AbortSignal.timeout(160000),signal=requestSignal?AbortSignal.any([deadline,requestSignal]):deadline;
+ const scopedFetcher:typeof fetch=(input,init={})=>fetcher(input,{...init,signal:init.signal?AbortSignal.any([signal,init.signal]):signal});
  let catalog:Awaited<ReturnType<typeof satelliteStacSearch>>,radiometry='Collection 1';
- try{catalog=await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,fetcher,'ndvi',true);}
+ try{catalog=await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,scopedFetcher,'ndvi',true);}
  catch{
   // C1 backfill is not complete everywhere. Accept a legacy COG only when
   // its provider explicitly certifies that the BOA offset was already applied.
   // Never guess from the year or silently mix unqualified raw digital numbers.
-  const legacy=await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,fetcher,'ndvi',false);
+  const legacy=await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,scopedFetcher,'ndvi',false);
   const features=legacy.features.filter(i=>i.properties?.['earthsearch:boa_offset_applied']===true||i.properties?.['sentinel:boa_offset_applied']===true);
   if(!features.length)throw new Error('Aucun historique avec radiométrie vérifiable : Collection 1 absente et anciens offsets non certifiés.');
   catalog={...legacy,features};radiometry='COG harmonisé · offset déjà appliqué selon les métadonnées';
@@ -89,16 +91,18 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
    Math.abs(c.areaM2-expectedArea)<.01&&Math.abs(bounds[0]-left)<1e-10&&Math.abs(bounds[1]-bottom)<1e-10&&Math.abs(bounds[2]-right)<1e-10&&Math.abs(bounds[3]-top)<1e-10;
   cellLattices.set(c.id,{x,y,left,right,bottom,top,full});
  }
- const scenes:ZoneSeasonRead['scenes']=[],issues:string[]=[],signal=AbortSignal.timeout(160000);
- for(const [attempt,[date,item]] of [...selected,...extra].entries()){
+ const scenes:ZoneSeasonRead['scenes']=[],issues:string[]=[];
+ const acquisitions=[...selected,...extra];
+ for(const [attempt,[date,item]] of acquisitions.entries()){
   if(attempt>=2){const twice=grid.cells.filter(c=>(perCell.get(c.id)?.length??0)>=2).reduce((n,c)=>n+c.areaM2,0);if(twice/grid.areaM2>=.6)break;}
+  onSceneProgress?.({date,attempt:attempt+1,maxAttempts:acquisitions.length});
   try{
   const assets=item.assets??{},asset=(...keys:string[])=>{const a=keys.map(k=>assets[k]).find(a=>a?.href);if(!a)throw new Error('Bande absente');return a;};
   const redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1'),sclAsset=asset('SCL','scl','mask');
   const [red,nir,scl]=await Promise.all([
-   reader(sentinelAssetUrl(redAsset.href),grid.shape,fetcher,signal,[0],false,25000),
-   reader(sentinelAssetUrl(nirAsset.href),grid.shape,fetcher,signal,[0],false,25000),
-   reader(sentinelAssetUrl(sclAsset.href),grid.shape,fetcher,signal,[0],false,25000),
+   reader(sentinelAssetUrl(redAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
+   reader(sentinelAssetUrl(nirAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
+   reader(sentinelAssetUrl(sclAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
   ]);
   if(red.resolutionM>grid.gridM||nir.resolutionM>grid.gridM||scl.resolutionM>grid.gridM)throw new Error('Résolution source plus grossière que la grille : analyse suspendue.');
   const nirCells=new Map(nir.cells.map(c=>[pointKey(pixelCenter(c)),c]));

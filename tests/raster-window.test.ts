@@ -23,8 +23,8 @@ test('WorldCover-sized contour above 10,000 pixels preserves all native values a
     ModelPixelScale:[.0001,.0001,0],ModelTiepoint:[0,0,0,0,.012,0]
   }));
   const fetcher:typeof fetch=async(_input,options)=>{
-    const range=new Headers(options?.headers).get('range')!;
-    const [start,end]=range.slice(6).split('-').map(Number),last=Math.min(end,bytes.length-1);
+    const range=new Headers(options?.headers).get('range')!,match=range.match(/^bytes=(\d+)-(\d+)/)!;
+    const start=Number(match[1]),end=Number(match[2]),last=Math.min(end,bytes.length-1);
     return new Response(bytes.slice(start,last+1),{status:206,headers:{'content-range':`bytes ${start}-${last}/${bytes.length}`}});
   };
   const shape:ParcelPolygon={type:'Polygon',coordinates:[[[0,0],[.015,0],[.015,.012],[0,.012],[0,0]]]};
@@ -36,6 +36,25 @@ test('WorldCover-sized contour above 10,000 pixels preserves all native values a
     assert.ok(Math.abs(c.geometry.coordinates[0][0][0]-x*.0001)<1e-12);
     assert.ok(Math.abs(c.geometry.coordinates[0][0][1]-(.012-y*.0001))<1e-12);
   }
+});
+
+test('recovers a CORS-hidden Content-Range from the safelisted HEAD length',async()=>{
+  const width=30,height=20;
+  const bytes=new Uint8Array(writeArrayBuffer(Uint8Array.from({length:width*height},(_,i)=>i%251),{
+    width,height,BitsPerSample:[8],GeographicTypeGeoKey:4326,
+    ModelPixelScale:[.0001,.0001,0],ModelTiepoint:[0,0,0,0,.002,0]
+  }));
+  const fetcher:typeof fetch=async(_input,options)=>{
+    if(options?.method==='HEAD')return new Response(null,{status:200,headers:{'content-length':String(bytes.length)}});
+    const range=new Headers(options?.headers).get('range')!,match=range.match(/^bytes=(\d+)-(\d+)/)!;
+    const start=Number(match[1]),end=Number(match[2]),last=Math.min(end,bytes.length-1);
+    // Browsers hide Content-Range on a CORS response unless the source exposes it.
+    return new Response(bytes.slice(start,last+1),{status:206,headers:{'content-length':String(last-start+1)}});
+  };
+  const shape:ParcelPolygon={type:'Polygon',coordinates:[[[0,0],[.003,0],[.003,.002],[0,.002],[0,0]]]};
+  const result=await readRasterWindow('https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/test.tif',shape,fetcher);
+  assert.equal(result.cells.length,width*height);
+  assert.equal(result.cells[width*height-1].value,(width*height-1)%251);
 });
 
 test('Large contour: exact native rectangles avoid per-pixel geometry explosion',async()=>{
