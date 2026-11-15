@@ -4,6 +4,8 @@ type Datum={value:number|null;flag:string;note:string;rawValue:number|null;rawUn
 type Row=[Country,number,number,Datum|null,Datum|null,Datum|null];
 type Snapshot={version:string;source:string;licence:string;acquiredAt:string;archiveSha256:string;period:{from:number;to:number};items:Record<string,{name:string;cpc:string}>;flags:Record<string,string>;limits:string[];warnings:[Country,number,number,string][];rows:Row[]};
 const data=raw as unknown as Snapshot;
+/** Countries actually present in the acquired archive, independent of UI coverage. */
+export const NATIONAL_CONTEXT_COUNTRIES=[...new Set(data.rows.map(r=>r[0]))];
 // Mapping is for context only. Aggregate products never establish compatibility with field Ym.
 const products:Record<string,{code:number;scope:string}>={
  maize:{code:56,scope:'Maïs grain national ; pas maïs vert.'},sorghum:{code:83,scope:'Sorgho national, variétés et conduites regroupées.'},millet:{code:79,scope:'Millet national, espèces regroupées ; pas une série propre au mil perlé.'},

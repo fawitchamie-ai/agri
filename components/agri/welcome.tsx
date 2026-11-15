@@ -1,10 +1,11 @@
 'use client';
 import {ProductBrand,ProductIcon} from './product-ui';
+import {COUNTRIES} from '../../lib/seasonal/types';
 import './welcome.css';
 
 type WelcomeProps={onStart:()=>void;onCampaigns:()=>void;onReferences:()=>void};
 
-const countries=['Togo','Bénin','Burkina Faso','Ghana','Côte d’Ivoire','Sénégal'];
+const countries=Object.values(COUNTRIES).map(c=>c.name);
 
 export default function Welcome({onStart,onCampaigns,onReferences}:WelcomeProps){
  return <div className="welcome-page field-home home-workspace">
@@ -23,7 +24,7 @@ export default function Welcome({onStart,onCampaigns,onReferences}:WelcomeProps)
 
   <main className="home-workbench">
    <aside className="home-fields-panel" aria-labelledby="home-title">
-    <div className="home-panel-caption"><span><i/> Votre espace de travail</span><span className="home-country-count">6 pays</span></div>
+    <div className="home-panel-caption"><span><i/> Votre espace de travail</span><span className="home-country-count">{countries.length} pays</span></div>
     <div className="home-fields-heading">
      <div><h1 id="home-title">Mes champs</h1><p>Choisissez une parcelle ou ajoutez-en une.</p></div>
     </div>
@@ -55,7 +56,7 @@ export default function Welcome({onStart,onCampaigns,onReferences}:WelcomeProps)
     </div>
     <div className="home-map-canvas">
      <div className="home-map-graticule" aria-hidden="true"/>
-     <div className="home-map-top-note"><span className="home-map-status-dot"/><span>Six pays disponibles</span></div>
+     <div className="home-map-top-note"><span className="home-map-status-dot"/><span>{countries.length} pays disponibles</span></div>
      <img className="home-coverage-map" src="/images/west-africa-coverage.svg" alt="Carte de l’Afrique de l’Ouest. Les pays en bleu font partie de la zone couverte par AgriPrévision."/>
      <div className="home-map-instruction"><span className="home-map-instruction-icon"><ProductIcon name="map" size={19}/></span><span><strong>Votre champ, sur la carte</strong><small>Recherchez un lieu ou dessinez son contour.</small></span><button onClick={onStart} aria-label="Commencer la localisation du champ"><ProductIcon name="arrow" size={17}/></button></div>
      <div className="home-map-legend"><span><i className="home-legend-covered"/> Pays couverts</span><span><i className="home-legend-other"/> Autres pays</span></div>

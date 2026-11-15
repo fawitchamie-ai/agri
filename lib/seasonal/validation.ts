@@ -1,4 +1,5 @@
 import {parseGrowth} from './growth.ts';
+import {parseFieldMonitoring} from './field-zones.ts';
 import {parseCanopyNowcast} from './canopy-nowcast.ts';
 import {LAND_VERSION} from './land.ts';
 import {parseManagement} from './management.ts';
@@ -144,6 +145,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
   validated.fertilizerScenario=parseFertilizerScenario(c.fertilizerScenario);
   validated.fieldTrials=parseFieldTrials(c.fieldTrials,validated);
   validated.canopyNowcast=parseCanopyNowcast(c.canopyNowcast,validated);
+  try{validated.fieldMonitoring=parseFieldMonitoring(c.fieldMonitoring,validated);}catch(e){throw new InputError((e as Error).message);}
   if(c.satelliteMonitoring!==undefined){
     const m=obj(c.satelliteMonitoring);
     if(m.version!=='sentinel-parcel-indices-1'||typeof m.scope!=='string'||!m.scope||m.scope.length>300000)throw new InputError('Suivi Sentinel-2 : version ou portée invalide.');

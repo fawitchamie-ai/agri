@@ -4,7 +4,7 @@ import type {Country} from './types.ts';
 type GrowRow={country:string;region_id:string;admin_level:1|2;admin_1:string;admin_2:string;crop:string;app_crop_ids:string[];harvest_year:number;yield_t_ha:number;yield_qc_flag:string;source:string};
 type Snapshot={dataset:string;doi:string;paper_doi:string;version:string;license:string;acquired_on:string;archive_md5:string;archive_sha256:string;source_file:string;source_rows_selected:number;runtime_rows_latest_five_years_per_region_crop:number;records:GrowRow[]};
 const data=source as Snapshot;
-const countryName:Record<Country,string>={TGO:'Togo',BEN:'Benin',BFA:'Burkina Faso',GHA:'Ghana',CIV:'Cote dIvoire',SEN:'Senegal'};
+const countryName:Record<Country,string>={TGO:'Togo',BEN:'Benin',BFA:'Burkina Faso',GHA:'Ghana',CIV:'Cote dIvoire',SEN:'Senegal',NGA:'Nigeria'};
 const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const sharedLimits=[
  'Statistique régionale rapportée, non mesure de cette parcelle et non prévision de récolte.',

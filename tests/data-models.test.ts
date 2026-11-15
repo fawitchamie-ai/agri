@@ -75,3 +75,6 @@ test('large campaign snapshots compress below D1 row limit, preserve every value
 test('production health identifies seasonal models, six real national references and the executing storage codec',async()=>{
  const {seasonalHealth}=await import('../lib/seasonal/health.ts');const h=seasonalHealth();assert.equal(h.kyCrops,9);assert.equal(h.nationalCountries,6);assert.equal(h.storage,'ok');assert.equal(h.version,'source-models-2026-10-31');assert.match(h.nationalArchiveSha256,/^[a-f0-9]{64}$/);
 });
+test('monitoring country coverage does not manufacture a Nigerian national-reference archive',async()=>{
+ const {seasonalHealth}=await import('../lib/seasonal/health.ts');const h=seasonalHealth();assert.equal(h.monitoringCountries,7);assert.ok(h.missingNationalCountries.includes('NGA'));assert.equal(h.nationalCountries,6);
+});

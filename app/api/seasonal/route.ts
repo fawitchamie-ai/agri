@@ -1,5 +1,7 @@
 import {satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} from '@/lib/seasonal/satellite';
 import {satelliteIndexSeries} from '@/lib/seasonal/satellite-index';
+import {readZoneSeason} from '@/lib/seasonal/field-zones-provider';
+import {parseZoneSeason} from '@/lib/seasonal/field-zones';
 import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
 import {fertilizerEvidence,marginalScenario,nextFertilizerInformation} from '@/lib/seasonal/fertilizer-evidence';
 import {parseFieldTrials,protectFieldTrials,summarizeTrial} from '@/lib/seasonal/field-trials';
@@ -85,6 +87,11 @@ export async function POST(request:Request){
 async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
   onAction(b.action);
+  if(b.action==='field-zone-season'){
+    if(b.consent!==true)throw new InputError('Autorisez la recherche satellite pour ce contour avant de charger son historique.');
+    let season;try{season=parseZoneSeason(b.season);validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
+    try{return json(await readZoneSeason(b.geometry,season));}catch(e){throw new HttpError(502,(e as Error).message);}
+  }
   if(b.action==='satellite-scenes'){try{return json(await satelliteScenes(b.geometry,b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if(b.action==='satellite-index-series'){try{return json(await satelliteIndexSeries(b.geometry,b.startDate,b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if(b.action==='satellite-catalog'){try{return json(await satelliteCatalog(b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}

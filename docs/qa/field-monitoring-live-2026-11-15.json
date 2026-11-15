@@ -1,0 +1,124 @@
+{
+  "actualPublicRasterData": true,
+  "measuredCropYield": false,
+  "cropHistoryKnown": false,
+  "nativeClearCellMinimumFraction": 0.6,
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          1.2,
+          9.4
+        ],
+        [
+          1.202,
+          9.4
+        ],
+        [
+          1.202,
+          9.402
+        ],
+        [
+          1.2,
+          9.402
+        ],
+        [
+          1.2,
+          9.4
+        ]
+      ]
+    ]
+  },
+  "areaHa": 4.879313672799945,
+  "gridM": 20,
+  "status": "mapped",
+  "coverage": 0.9999999999999992,
+  "stableFraction": 0.5834189829854097,
+  "backtestAgreement": 0.5917416742033678,
+  "projection": "unavailable",
+  "projectionReasons": [
+    "Confirmez que le contour couvre uniquement la surface cultivée et reste identique.",
+    "Confirmez la même culture, un stade et une conduite comparables pour chaque saison.",
+    "Le classement prévu reproduit moins de 65 % de la surface de la dernière saison réservée."
+  ],
+  "excluded": [
+    {
+      "id": "live-2022",
+      "reason": "Moins de 60 % du champ observé sur deux dates pendant cette saison"
+    }
+  ],
+  "zones": [
+    {
+      "id": "low",
+      "label": "Vigueur plus faible",
+      "areaM2": 9956.610352700776
+    },
+    {
+      "id": "medium",
+      "label": "Vigueur intermédiaire",
+      "areaM2": 7183.8550649025665
+    },
+    {
+      "id": "high",
+      "label": "Vigueur plus forte",
+      "areaM2": 11326.376788914145
+    },
+    {
+      "id": "variable",
+      "label": "Zone variable",
+      "areaM2": 20326.294521481956
+    },
+    {
+      "id": "unknown",
+      "label": "Données insuffisantes",
+      "areaM2": 0
+    }
+  ],
+  "seasons": [
+    {
+      "id": "live-2021",
+      "dates": [
+        "2021-10-05",
+        "2021-10-15",
+        "2021-10-20",
+        "2021-10-25"
+      ],
+      "contrast": 0.20138999999999996,
+      "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5"
+    },
+    {
+      "id": "live-2023",
+      "dates": [
+        "2023-10-05",
+        "2023-10-10",
+        "2023-10-20",
+        "2023-10-25"
+      ],
+      "contrast": 0.18894999999999995,
+      "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5"
+    },
+    {
+      "id": "live-2024",
+      "dates": [
+        "2024-10-04",
+        "2024-10-14",
+        "2024-10-19",
+        "2024-10-29"
+      ],
+      "contrast": 0.19628,
+      "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5"
+    },
+    {
+      "id": "live-2025",
+      "dates": [
+        "2025-10-04",
+        "2025-10-09",
+        "2025-10-14",
+        "2025-10-21"
+      ],
+      "contrast": 0.19083,
+      "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5"
+    }
+  ]
+}
