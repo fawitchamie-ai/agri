@@ -33,10 +33,10 @@ type Props={landProgress?:LandProgress|null;config:SeasonalConfig;plan:WaterPlan
 export default function QuickSimulation({landProgress,config,plan,stale,onChange,onMap,onAdvanced,onSave,canSave,events,calculationError,onRetry,canOpenDemo=false,onOpenDemo,demoBusy=false,initialSection,initialMonitoringView,paused=false}:Props){
  const requestedWorkspace=initialSection==='images'?({satellite:'le suivi satellite',history:'les zones historiques',doses:'les cartes de doses',weather:'la météo du champ',notes:'le carnet terrain'} as Record<string,string>)[initialMonitoringView||'satellite']||'le suivi du champ':initialSection==='yield'?'le rendement et la production':initialSection==='water'?'le suivi des semis et de l’eau':initialSection==='fertilizer'?'les engrais':null;
  const [environment,setEnvironment]=useState<Environment|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[sectorJob,setSectorJob]=useState<any>(null);
- const [section,setSection]=useState(initialSection??'overview');
- const [detailsOpen,setDetailsOpen]=useState(!!initialSection);
+ const [section,setSection]=useState('overview');
+ const [detailsOpen,setDetailsOpen]=useState(false);
  const focusYieldAfterSection=useRef(false);
- useEffect(()=>{setSection(initialSection??'overview');setDetailsOpen(!!initialSection);focusYieldAfterSection.current=initialSection==='yield';},[initialSection]);
+ useEffect(()=>{setSection(initialSection??'overview');setDetailsOpen(current=>initialSection==='yield'?current:!!initialSection);focusYieldAfterSection.current=initialSection==='yield';},[initialSection]);
  useEffect(()=>{if(section==='yield'&&(focusYieldAfterSection.current||detailsOpen)){const target=detailsOpen?document.getElementById('field-tab-yield'):document.getElementById('farmer-harvest-card');if(target){target.focus();focusYieldAfterSection.current=false;}}},[section,detailsOpen]);
  const [fertilizerView,setFertilizerView]=useState('products');
  const [advancedView,setAdvancedView]=useState('settings');
