@@ -6,7 +6,7 @@ import {fieldObservationFixture} from './support/field-zones-fixture.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 
 test('default search covers recent sowing and keeps a past campaign in its actual period',()=>{
- const c=fieldObservationFixture();delete c.fieldMonitoring;c.asOfDate='2026-11-16';c.sowingDate=c.asOfDate;
+ const c=fieldObservationFixture();assert.ok(fieldImagePeriod(c).from<c.asOfDate,'A single archived date must not shrink the next search to one day');delete c.fieldMonitoring;c.asOfDate='2026-11-16';c.sowingDate=c.asOfDate;
  assert.deepEqual(fieldImagePeriod(c),{from:'2026-08-18',to:'2026-11-16'});
  c.sowingDate='2024-07-01';const period=fieldImagePeriod(c);assert.equal(period.from,'2024-07-01');assert.ok(period.to>='2024-10-01'&&period.to<'2025-01-01');
 });

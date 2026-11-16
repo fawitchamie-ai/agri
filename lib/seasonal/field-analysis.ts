@@ -7,7 +7,7 @@ export const dayAfter=(day:string,n:number)=>new Date(Date.parse(day)+n*86400000
 /** Keep old campaigns on their own season; recent sowing needs a useful look-back. */
 export function fieldImagePeriod(c:SeasonalConfig){
  const archived=fieldImageArchive(c);
- if(archived.length)return {from:archived[0].season.startDate,to:archived.at(-1)!.season.startDate};
+ if(archived.length&&!c.stages.length)return {from:archived[0].season.startDate,to:archived.at(-1)!.season.startDate};
  const end=dayAfter(c.sowingDate,Math.max(1,c.stages.reduce((n,s)=>n+s.days,0))-1);
  const to=c.sowingDate<c.asOfDate&&end<c.asOfDate?end:c.asOfDate;
  const from=c.sowingDate<=dayAfter(to,-30)?c.sowingDate:dayAfter(to,-90);
