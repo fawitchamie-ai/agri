@@ -5,7 +5,15 @@ type GrowRow={country:string;region_id:string;admin_level:1|2;admin_1:string;adm
 type Snapshot={dataset:string;doi:string;paper_doi:string;version:string;license:string;acquired_on:string;archive_md5:string;archive_sha256:string;source_file:string;source_rows_selected:number;runtime_rows_latest_five_years_per_region_crop:number;records:GrowRow[]};
 const data=source as Snapshot;
 const countryName:Record<Country,string>={TGO:'Togo',BEN:'Benin',BFA:'Burkina Faso',GHA:'Ghana',CIV:'Cote dIvoire',SEN:'Senegal',NGA:'Nigeria'};
-const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+function readableName(value:string){
+ let s=value.trim().replace(/\s+/g,' ');
+ if(/[√≈ÃÂ]/.test(s))try{
+  const decoder=new TextDecoder(/[√≈]/.test(s)?'macintosh':'windows-1252'),reverse=new Map(Array.from({length:256},(_,i)=>[decoder.decode(Uint8Array.of(i)),i]));
+  const bytes=[...s].map(c=>reverse.get(c));if(bytes.every((n):n is number=>n!==undefined))s=new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(bytes));
+ }catch{/* Keep the source spelling if a reversible decoding is unavailable. */}
+ return s.normalize('NFC');
+}
+const normalize=(s:string)=>readableName(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const sharedLimits=[
  'Statistique régionale rapportée, non mesure de cette parcelle et non prévision de récolte.',
  'La table ne fournit pas une définition harmonisée du produit récolté, de son humidité ou du dénominateur de surface.',
@@ -18,13 +26,16 @@ export function growAfricaRegionalTerritories(country:Country,cropId:string){
  const rows=data.records.filter(r=>r.country===countryName[country]&&r.app_crop_ids.includes(cropId));
  const names=new Map<string,Map<string,{name:string;adminLevel:1|2;regionId:string}>>();
  for(const row of rows){
-  for(const [adminLevel,name] of [[2,row.admin_2],[1,row.admin_1]] as const){
+  for(const [adminLevel,rawName] of [[2,row.admin_2],[1,row.admin_1]] as const){
+   const name=readableName(rawName);
    if(!name.trim())continue;
    const key=normalize(name),units=names.get(key)??new Map();
    units.set(`${adminLevel}:${row.region_id}`,{name,adminLevel,regionId:row.region_id});names.set(key,units);
   }
  }
- return [...names.values()].filter(units=>units.size===1).map(units=>[...units.values()][0]).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+ const unique=new Map<string,{name:string;adminLevel:1|2;regionId:string}>();
+ for(const units of names.values())if(units.size===1){const item=[...units.values()][0];unique.set(item.adminLevel+':'+item.regionId,item);}
+ return [...unique.values()].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
 }
 
 /** Exact name match only. The result is historical context and is never a Ym input. */
@@ -62,5 +73,5 @@ export function growAfricaRegionalContext(country:Country,cropId:string,territor
  if(!rows.length)return {...base,status:'unavailable' as const,matchedTerritory:level===2?first.admin_2:first.admin_1,adminLevel:level,regionId,rows,missing:'La série disponible est postérieure à la date de référence.'};
  const riceLimit=cropId==='rice-upland'||cropId==='rice-flooded'?['Le produit statistique regroupe le riz sans séparer systèmes pluvial et submergé.']:[];
  const scopeNote=level===2?'Unité administrative GROW-Africa niveau 2':'Unité administrative GROW-Africa niveau 1';
- return {...base,status:'context_only' as const,matchedTerritory:level===2?first.admin_2:first.admin_1,adminLevel:level,regionId,scopeNote,rows,missing:null,limits:[...sharedLimits,...riceLimit]};
+ return {...base,status:'context_only' as const,matchedTerritory:readableName(level===2?first.admin_2:first.admin_1),adminLevel:level,regionId,scopeNote,rows,missing:null,limits:[...sharedLimits,...riceLimit]};
 }

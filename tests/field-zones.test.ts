@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {fieldZonesFixture} from './support/field-zones-fixture.ts';
-import {spatialRanks,zoneGrid,analyzeFieldZones,zonePrescription,zonesGeoJson,zonePrescriptionCsv,parseFieldMonitoring,parseZoneSeason,type ZoneDoseInput} from '../lib/seasonal/field-zones.ts';
+import {spatialRanks,zoneGrid,analyzeFieldZones,zonePrescription,zonesGeoJson,zonePrescriptionCsv,parseFieldMonitoring,parseZoneSeason,fitZonePersistence,scoreZonePersistence,FIELD_ZONES_VALIDATION_VERSION,type ZoneDoseInput} from '../lib/seasonal/field-zones.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
 import {multiArea} from '../lib/seasonal/land.ts';
 import {reflectanceTransform,vegetationIndices,sentinelAssetUrl} from '../lib/seasonal/satellite-index.ts';
@@ -27,6 +27,42 @@ test('a stable four-year gradient produces a relative hypothesis with a withheld
 test('a reversal in the reserved latest year blocks relative projection even when the older majority is stable',()=>{
  const c=fieldZonesFixture();for(const v of c.fieldMonitoring!.seasons.at(-1)!.cells)v[1]=1-v[1];
  const a=analyzeFieldZones(c);assert.equal(a.projection,'unavailable');assert.ok(a.backtestAgreement!<.65);assert.ok(a.reasons.some(r=>r.includes('65 %')));
+});
+test('the held-year cloud mask cannot refit the earlier spatial ranks or predictions',()=>{
+ const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),maps=c.fieldMonitoring!.seasons.map(s=>new Map(s.cells.map(([id,value])=>[id,value])));
+ const model=fitZonePersistence(g,maps.slice(0,-1))!,before=[...model.values];
+ const full=scoreZonePersistence(g,model,maps.at(-1)!)!;
+ const partial=new Map([...maps.at(-1)!].filter(([id])=>id<g.cells.length*.8));
+ const masked=scoreZonePersistence(g,model,partial)!;
+ assert.deepEqual([...model.values],before);assert.equal(full.agreement,1);
+ assert.ok(masked.coverage<full.coverage);assert.equal(masked.trainingCoverage,full.trainingCoverage);
+ assert.ok(masked.agreement<1,'evaluating a different observed support must not silently renormalize predictions to match it');
+ // Exercise the application path too: the old all-years normalization would
+ // report 100% here after adapting its training ranks to the held-year mask.
+ c.fieldMonitoring!.seasons.at(-1)!.cells=c.fieldMonitoring!.seasons.at(-1)!.cells.filter(([id])=>partial.has(id));
+ const analysis=analyzeFieldZones(c);
+ assert.equal(analysis.backtestAgreement,masked.agreement);assert.equal(analysis.backtest!.trainingCoverage,full.trainingCoverage);
+});
+test('temporal diagnostics conserve area and expose per-class errors, baseline and spatial blocks',()=>{
+ const c=fieldZonesFixture(),a=analyzeFieldZones(c),d=a.backtest!;
+ assert.equal(d.version,FIELD_ZONES_VALIDATION_VERSION);assert.equal(d.agreement,1);assert.equal(d.balancedAccuracy,1);assert.equal(d.kappa,1);
+ assert.ok(Math.abs(d.majorityBaseline-1/3)<.02);assert.deepEqual(d.classOrder,['low','medium','high']);
+ assert.ok(Math.abs(d.confusionHa.flat().reduce((s,v)=>s+v,0)*10000-a.areaM2*d.coverage)<.01);
+ assert.ok(Math.abs(d.blocks.reduce((s,b)=>s+b.areaM2,0)-a.areaM2*d.coverage)<.01);
+ assert.equal(zonesGeoJson(a).metadata.temporalValidation!.version,FIELD_ZONES_VALIDATION_VERSION);
+});
+test('a constant medium prediction scores only its actual class, rather than reporting a perfect map',()=>{
+ const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),flat=new Map(g.cells.map(p=>[p.id,.5])),actual=new Map(c.fieldMonitoring!.seasons[0].cells.map(([id,value])=>[id,value]));
+ const model=fitZonePersistence(g,[flat,flat])!,d=scoreZonePersistence(g,model,actual)!;
+ assert.ok(Math.abs(d.agreement-1/3)<.02);assert.ok(Math.abs(d.balancedAccuracy-1/3)<1e-9);assert.ok(Math.abs(d.kappa!)<1e-9);
+});
+test('training and evaluation both abstain for insufficient support; spatial filtering never fills missing cells',()=>{
+ const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),full=new Map(c.fieldMonitoring!.seasons[0].cells.map(([id,value])=>[id,value]));
+ const tiny=new Map([...full].slice(0,8));assert.equal(fitZonePersistence(g,[full,tiny]),null);
+ const partial=new Map([...full].filter(([id])=>id%5!==0));
+ const model=fitZonePersistence(g,[full,partial],{predictor:'median',filter:'one-ring-mean'})!;
+ assert.equal(model.values.size,partial.size);assert.ok([...model.values.keys()].every(id=>partial.has(id)));
+ assert.equal(scoreZonePersistence(g,model,tiny),null);assert.ok([...model.values.values()].every(v=>v>=0&&v<=1));
 });
 test('unknown crops and only three seasons remain descriptive; a changed scope cannot reuse another crop history',()=>{
  const c=fieldZonesFixture();c.fieldMonitoring!.seasons=c.fieldMonitoring!.seasons.slice(0,3);
