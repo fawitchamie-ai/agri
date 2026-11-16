@@ -52,16 +52,16 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
  async function findDates(){
-  if(!consent||busy||!canRead||!from||!to||from>to)return;const ctrl=new AbortController();controller.current=ctrl;setBusy(true);setError('');setProgress('Recherche des acquisitions du champ…');
+  if(!consent||busy||!canRead||!from||!to||from>to)return;const ctrl=new AbortController();controller.current=ctrl;setBusy(true);setError('');setNotice('');setProgress('Recherche des acquisitions du champ…');
   const fetcher:typeof fetch=(input,init={})=>fetch(input,{...init,signal:init.signal?AbortSignal.any([ctrl.signal,init.signal]):ctrl.signal});
-  try{const {fieldImageDates,loadUsableFieldImage}=await import('../../lib/seasonal/field-image-loader');
+  try{const {fieldImageDates,loadUsableFieldImage,fieldImageFailureMessage}=await import('../../lib/seasonal/field-image-loader');
    const found=await fieldImageDates(c.parcelGeometry,from,to,fetcher);
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
    setCatalogDates(found);
    const result=await loadUsableFieldImage(c.parcelGeometry,found,{signal:ctrl.signal,fetcher,onRead:retainRead,onProgress:(day,i,total)=>setProgress('Vérification du champ · '+dateLabel(day)+' · '+i+'/'+total)});
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
    if(result.read){setSelected(result.read.season.startDate);setNotice(found.length+' dates trouvées. Une observation exploitable est chargée. Enregistrez la campagne pour conserver les cartes.');}
-   else setNotice('Aucune image suffisamment claire parmi les '+result.attempts+' dernières acquisitions. Les cartes précédentes sont conservées. Essayez une autre période. '+result.issues.join(' ; '));
+   else if(result.readFailures)setError(fieldImageFailureMessage(result));else setNotice(fieldImageFailureMessage(result));
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
  function selectDate(day:string,side='left'){if(side==='left')setSelected(day);else{setSelected(date);setRightDate(day);}setCell(null);if(consent&&!archive.some(r=>r.season.startDate===day))void acquire(day,side);}

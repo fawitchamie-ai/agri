@@ -3,26 +3,12 @@ import {containsPoint,parcelMetrics,validateParcel,type ParcelPolygon,type Posit
 import {readRasterWindow} from './raster.ts';
 import {SATELLITE_INDEX_VERSION,satelliteStacSearch,type SatelliteIndexObservation,type SatelliteStacItem} from './satellite.ts';
 
-const SENTINEL_HOST='deafrica-sentinel-2.s3.af-south-1.amazonaws.com';
-const EARTH_SEARCH_HOST='sentinel-cogs.s3.us-west-2.amazonaws.com';
-const C1_DEAFRICA_HOST='deafrica-sentinel-2-l2a-c1.s3.af-south-1.amazonaws.com';
-const C1_EARTH_SEARCH_HOST='e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com';
+import {sentinelAssetUrl} from './sentinel-assets.ts';
+export {sentinelAssetUrl} from './sentinel-assets.ts';
 const SATELLITE_READ_MAX_PIXELS=50_000,MAX_INDEX_SCENES=6;
 const isoDay=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 type StacAsset=NonNullable<SatelliteStacItem['assets']>[string];
 type StacIndexItem=SatelliteStacItem;
-
-/** Convert only the public DE Africa Sentinel bucket to HTTPS; never follow a STAC asset host. */
-export function sentinelAssetUrl(href:unknown):string{
- if(typeof href!=='string'||href.length>2000)throw new Error('Asset Sentinel-2 invalide.');
- let url:URL;
- if(href.startsWith('s3://deafrica-sentinel-2/'))url=new URL(href.slice('s3://deafrica-sentinel-2/'.length),`https://${SENTINEL_HOST}/`);
- else if(href.startsWith('s3://deafrica-sentinel-2-l2a-c1/'))url=new URL(href.slice('s3://deafrica-sentinel-2-l2a-c1/'.length),`https://${C1_DEAFRICA_HOST}/`);
- else {try{url=new URL(href);}catch{throw new Error('URL Sentinel-2 invalide.');}}
- const prefix=[C1_DEAFRICA_HOST,C1_EARTH_SEARCH_HOST].includes(url.hostname)?'/sentinel-2-c1-l2a/':'/sentinel-s2-l2a-cogs/';
- if(url.protocol!=='https:'||![SENTINEL_HOST,EARTH_SEARCH_HOST,C1_DEAFRICA_HOST,C1_EARTH_SEARCH_HOST].includes(url.hostname)||url.username||url.password||url.port||url.search||url.hash||!url.pathname.startsWith(prefix))throw new Error('Asset Sentinel-2 hors du catalogue public autorisé.');
- return url.toString();
-}
 
 /** Sentinel asset metadata use the STAC Raster extension when transforms are present. */
 export function reflectanceTransform(asset:StacAsset,item?:SatelliteStacItem){

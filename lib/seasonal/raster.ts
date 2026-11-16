@@ -3,6 +3,7 @@ import {decompress} from 'fzstd';
 import proj4 from 'proj4';
 import {bbox,type RasterCell} from './land.ts';
 import type {ParcelPolygon,Position} from './parcel.ts';
+import {canRelaySentinel,relaySentinelRequest} from './sentinel-raster-transport.ts';
 
 const ALLOWED_HOSTS=new Set(['esa-worldcover.s3.eu-central-1.amazonaws.com','s3.waw4-1.cloudferro.com','deafrica-services.s3.af-south-1.amazonaws.com','deafrica-sentinel-2.s3.af-south-1.amazonaws.com','sentinel-cogs.s3.us-west-2.amazonaws.com','deafrica-sentinel-2-l2a-c1.s3.af-south-1.amazonaws.com','e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com']);
 // Bound total geometry work separately from each decoder window.
@@ -30,10 +31,11 @@ class JavaScriptZstdDecoder extends BaseDecoder {
 }
 addDecoder(50000,async()=>JavaScriptZstdDecoder,undefined,false);
 class SafeResponse extends BaseResponse {
-  constructor(private response:Response,private budget:{bytes:number}){super();}
+  constructor(private response:Response,private budget:{bytes:number},private onError:(error:unknown)=>void){super();}
   get ok(){return this.response.ok;} get status(){return this.response.status;}
   getHeader(name:string){return this.response.headers.get(name)??undefined;}
-  async getData(){
+  async getData(){try{return await this.readData();}catch(error){this.onError(error);throw error;}}
+  private async readData(){
     const length=Number(this.response.headers.get('content-length')??0);
     if(length>4000000)throw new Error('Bloc raster trop volumineux.');
     const reader=this.response.body?.getReader();if(!reader)throw new Error('Raster vide.');
@@ -44,25 +46,33 @@ class SafeResponse extends BaseResponse {
 }
 class RangeClient extends BaseClient {
   private budget={bytes:0};private requests=0;private totalLength?:Promise<number>;
+  private relayed=false;lastError:unknown;
   constructor(url:string,private fetcher:typeof fetch,private deadline:AbortSignal){super(url);if(!ALLOWED_HOSTS.has(new URL(url).hostname)||new URL(url).protocol!=='https:')throw new Error('Hôte raster non autorisé.');}
   private fileLength(signal:AbortSignal){
     return this.totalLength??= (async()=>{
       // Cross-origin COG responses often permit byte ranges but hide
       // Content-Range from JavaScript. Content-Length on HEAD is CORS-safelisted.
-      const response=await this.fetcher(this.url,{method:'HEAD',redirect:'manual',signal});
+      const response=await this.transport({method:'HEAD',redirect:'manual',signal});
       const length=Number(response.headers.get('content-length'));
       if(response.status!==200||!Number.isSafeInteger(length)||length<1)throw new Error('Taille du raster inaccessible pour une lecture partielle sûre.');
       return length;
     })();
   }
-  async request(options:RequestInit={}){
+  private async transport(options:RequestInit){
+    const fetcher=this.fetcher,eligible=typeof window!=='undefined'&&canRelaySentinel(this.url);
+    if(this.relayed)return relaySentinelRequest(this.url,options,fetcher);
+    try{const response=await fetcher(this.url,options);if(eligible&&response.status!==(options.method==='HEAD'?200:206)){await response.body?.cancel();throw new Error('Accès direct aux pixels refusé (HTTP '+response.status+').');}return response;}
+    catch(error){if(!eligible||options.signal?.aborted)throw error;this.relayed=true;return relaySentinelRequest(this.url,options,fetcher);}
+  }
+  async request(options:RequestInit={}){try{return await this.requestRange(options);}catch(error){this.lastError=error;throw error;}}
+  private async requestRange(options:RequestInit){
     if(++this.requests>256)throw new Error('Trop de blocs raster pour ce contour.');
     // Workers rejects redirect:'error' before sending the request. Manual mode
     // preserves the host allowlist: a redirect is rejected by the 206 check.
     // Call the native function without the RangeClient as its receiver.
     // Workers' fetch rejects that receiver with Illegal invocation; Node accepts it.
-    const fetcher=this.fetcher,signal=AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])]);
-    let response=await fetcher(this.url,{...options,redirect:'manual',signal});
+    const signal=AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])]);
+    let response=await this.transport({...options,redirect:'manual',signal});
     if(response.status!==206){await response.body?.cancel();throw new Error(`Lecture partielle indisponible (${response.status}).`);}
     if(!response.headers.get('content-range')&&!response.headers.get('content-type')?.toLowerCase().startsWith('multipart/')){
       // If a COG server declines a multi-range response, GeoTIFF falls back
@@ -76,7 +86,7 @@ class RangeClient extends BaseClient {
       const headers=new Headers(response.headers);headers.set('content-range',`bytes ${start}-${end}/${total}`);
       response=new Response(response.body,{status:206,statusText:response.statusText,headers});
     }
-    return new SafeResponse(response,this.budget);
+    return new SafeResponse(response,this.budget,error=>{this.lastError=error;});
   }
 }
 function transformFor(epsg:number){
@@ -91,8 +101,10 @@ function transformFor(epsg:number){
 /** Native pixels only. No overview or RGB values used for the classification. */
 export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:typeof fetch=fetch,signal=AbortSignal.timeout(50000),samples=[0],compact=false,maxPixels=MAX_NATIVE_PIXELS):Promise<RasterWindow>{
   const options={allowFullFile:false,maxRanges:0,blockSize:65536,cacheSize:32};
-  const tiff=await fromCustomClient(new RangeClient(url,fetcher,signal),options,signal);
+  const client=new RangeClient(url,fetcher,signal);
+  let tiff:Awaited<ReturnType<typeof fromCustomClient>>|undefined;
   try{
+    tiff=await fromCustomClient(client,options,signal);
     const image=await tiff.getImage(0),keys=image.getGeoKeys();
     const epsg=keys?.ProjectedCSTypeGeoKey??keys?.GeographicTypeGeoKey;
     if(typeof epsg!=='number')throw new Error('Projection raster absente.');
@@ -142,5 +154,6 @@ export async function readRasterWindow(url:string,shape:ParcelPolygon,fetcher:ty
       }
     }
     return {cells,resolutionM:epsg===4326?Math.abs(res[0])*111320:Math.abs(res[0]),crs:`EPSG:${epsg}`};
-  }finally{await tiff.close();}
+  }catch(error){if((error as Error).message==='Request failed'&&client.lastError)throw new Error('Lecture des pixels impossible : '+((client.lastError as Error).message||'connexion au fournisseur interrompue'));throw error;}
+  finally{await tiff?.close();}
 }

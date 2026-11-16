@@ -13,7 +13,8 @@ export type SatelliteLayer=keyof typeof SATELLITE_LAYERS;
 /** Workers supports manual/follow, but rejects redirect:error before fetching.
  * Reject redirects explicitly so parcel coordinates never reach a new host. */
 export async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typeof fetch,init:RequestInit={}){
- const response=await fetcher(url,{...init,signal:init.signal??AbortSignal.timeout(timeoutMs),redirect:'manual'});
+ const deadline=AbortSignal.timeout(timeoutMs),signal=init.signal?AbortSignal.any([deadline,init.signal]):deadline;
+ const response=await fetcher(url,{...init,signal,redirect:'manual'});
  if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('Redirection du fournisseur satellite refusée.');}
  return response;
 }
