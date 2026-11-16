@@ -1,0 +1,112 @@
+{
+  "commit": "6ec97a77598e08e8f8cf51160eab6239a47c6500",
+  "productionEndpoint": "https://agri.fawitchamie.workers.dev/api/seasonal?satellite=raster",
+  "actualPublicRasterData": true,
+  "directFailureInjected": true,
+  "privateUserParcelTested": false,
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          1.2,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4
+        ]
+      ]
+    ]
+  },
+  "areaHa": 0.6810410020745364,
+  "date": "2026-11-15",
+  "completedLayers": [],
+  "visuals": [],
+  "status": "failed",
+  "error": "Lecture des pixels impossible : Lecture des pixels satellite interrompue : délai du fournisseur dépassé",
+  "isolatedDemoSessionClosed": true,
+  "verifiedAt": "2026-11-16T17:59:49.455Z",
+  "directFailures": 3,
+  "relayRequests": 13,
+  "httpFailures": 3,
+  "relayResponses": [
+    {
+      "status": 206,
+      "range": "bytes 0-65535/179163185",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/169892900",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/163275853",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 103874560-105381887/163275853",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 105381888-106495999/163275853",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 109117440-110231551/169892900",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 115539968-116654079/179163185",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 502,
+      "range": null,
+      "transport": null
+    },
+    {
+      "status": 502,
+      "range": null,
+      "transport": null
+    },
+    {
+      "status": 206,
+      "range": "bytes 109051904-109117439/169892900",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 115474432-115539967/179163185",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 206,
+      "range": "bytes 113901568-115539967/179163185",
+      "transport": "same-origin-range"
+    },
+    {
+      "status": 502,
+      "range": null,
+      "transport": null
+    }
+  ]
+}
