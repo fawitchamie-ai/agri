@@ -75,5 +75,25 @@ indisponible localement) ; intégration 14/14 ; régressions 5/5 ; TypeScript et
 compilation réussis. ESLint ciblé des nouveaux modules réussi. Le test React
 vérifie les trois exemples, sans sauvegarde ni requête satellite automatique.
 
-Les contrôles visuels et l’identité de la version de production sont à consigner
-après publication. Les tests de données ne remplacent pas un contrôle d’affichage.
+## Contrôle sur la version publiée
+
+PR #85 fusionnée ; publication et contrôle de santé réussis dans le workflow
+[43908381186](https://github.com/fawitchamie-ai/agri/actions/runs/43908381186).
+`/api/version` sert le commit `7f4ff513fef00f54d0e97b2c04dd14369259d628`.
+
+Contrôles dans le navigateur Chrome sur le site publié :
+
+- Ouverture des trois exemples depuis « Mes campagnes » ; cartes NDVI présentes.
+- RGB du 19/10/2024 : 1 519 empreintes de pixels réellement affichées dans le
+  cadrage de l’application, distinct du cadrage de la sonde à 2 025 pixels.
+- SCL du 14/10/2024 : 400 empreintes affichées, nuages et cirrus visibles ;
+  aucune valeur NDVI et 0 % de surface analysable sur le contour.
+- Togo 2025, recherche 21–29 octobre : deux dates trouvées ; le chargement retient
+  automatiquement le 21/10/2025 (NDVI affiché 0,560 ; couverture 100 %).
+- Bénin 2024 : 132 cellules affichées ; NDVI 0,743 le 29/10 ; couverture 100 %.
+- Comparaison Togo 19/10–29/10/2024 : deux cartes visibles, écart absolu pondéré
+  −0,028 sur 100 % du support commun ; les couleurs sont étirées séparément.
+
+Preuve d’affichage : `docs/qa/satellite-browser-2026-11-16.jpg`.
+Résumé du navigateur : `docs/qa/satellite-browser-2026-11-16.json`.
+Ces preuves concernent des contours techniques publics, pas des récoltes mesurées.

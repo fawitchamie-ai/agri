@@ -1,0 +1,36 @@
+{
+  "productionCommit": "7f4ff513fef00f54d0e97b2c04dd14369259d628",
+  "testedOn": "2026-11-16",
+  "url": "https://agri.fawitchamie.workers.dev/#seasonal?library=1",
+  "examplesVisible": [
+    "Togo 2024",
+    "Togo 2025",
+    "Bénin 2024"
+  ],
+  "togo2024": {
+    "date": "2024-10-19",
+    "ndviMeanDisplayed": 0.535,
+    "rgbNativePathsDisplayed": 1519,
+    "cloudyDate": "2024-10-14",
+    "cloudyNdvi": null,
+    "cloudyCoverage": 0,
+    "sclNativePathsDisplayed": 400
+  },
+  "automatic2025": {
+    "from": "2025-10-21",
+    "to": "2025-10-29",
+    "catalogDates": 2,
+    "selected": "2025-10-21",
+    "ndviMeanDisplayed": 0.56,
+    "coverage": 1,
+    "errors": []
+  },
+  "benin2024": {
+    "date": "2024-10-29",
+    "ndviMeanDisplayed": 0.743,
+    "cellsDisplayed": 132,
+    "coverage": 1
+  },
+  "comparison": "Écart de NDVI, droite − gauche : -0,028\n100 % de surface commune · Comparaison des mêmes cellules, en valeurs absolues. Les couleurs contrastées sont ajustées séparément pour chaque image.",
+  "notice": "Public technical contours; crop and harvest histories unknown. No private campaigns were modified."
+}
