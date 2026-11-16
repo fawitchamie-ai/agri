@@ -1,0 +1,107 @@
+{
+  "actualPublicRasterData": true,
+  "directFailureInjected": true,
+  "privateUserParcelTested": false,
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          1.2,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4
+        ]
+      ]
+    ]
+  },
+  "areaHa": 0.6810410020745364,
+  "date": "2026-11-15",
+  "itemId": "S2A_T31PBL_20261115T101908_L2A",
+  "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5",
+  "cells": 25,
+  "coverage": 1,
+  "ndviMean": 0.4450165590844608,
+  "directFailures": 3,
+  "relayRequests": 9,
+  "issues": [],
+  "commit": "6ec97a77598e08e8f8cf51160eab6239a47c6500",
+  "productionEndpoint": "https://agri.fawitchamie.workers.dev/api/seasonal?satellite=raster",
+  "status": "ndvi_passed_visuals_interrupted",
+  "completedLayers": [
+    "ndvi"
+  ],
+  "evidenceCapturedAt": "2026-11-16T17:55:28.731717+00:00",
+  "ndviChecks": {
+    "cells": 25,
+    "coverage": 1,
+    "mean": 0.4450165590844608,
+    "matchesDirectBaseline": true
+  },
+  "httpFailures": 0,
+  "requestedRanges": [
+    {
+      "relayStatus": 206,
+      "range": "bytes=0-65535",
+      "elapsedMs": 5990
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=0-65535",
+      "elapsedMs": 6091
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=0-65535",
+      "elapsedMs": 6620
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=1507328-1572863",
+      "elapsedMs": 1000
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=116195328-117768191",
+      "elapsedMs": 2056
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=113901568-115539967",
+      "elapsedMs": 3074
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=1572864-1638399",
+      "elapsedMs": 5658
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=115539968-116654079",
+      "elapsedMs": 7018
+    },
+    {
+      "relayStatus": 206,
+      "range": "bytes=117768192-118882303",
+      "elapsedMs": 7032
+    }
+  ],
+  "subsequentInterruption": {
+    "stage": "rgb",
+    "reason": "Local outbound HTTPS proxy rejected a CONNECT tunnel with HTTP 403. RGB and session cleanup did not finish in this run."
+  }
+}

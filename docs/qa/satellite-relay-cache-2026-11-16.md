@@ -38,3 +38,41 @@ Validation locale du complément : 16 tests ciblés réussis, dont lecture TIFF,
 repli après panne directe et gestionnaire HTTP avec contrôle de session.
 Le rejeu complet sur le déploiement suivant doit confirmer la lecture des trois
 bandes et de l'observation entière avant de conclure sur le relais.
+
+## Résultats sur `6ec97a775`
+
+Le NDVI complet est reproduit via le véritable relais publié : 25 cellules,
+100 % de couverture, moyenne 0,4450165590844608, identique à la lecture directe.
+Les neuf plages HTTP de ce contrôle répondent en 206. Le résultat est conservé
+dans `satellite-relay-production-ndvi-2026-11-16.json`.
+
+Le premier contrôle RGB est interrompu par le proxy réseau de l'environnement
+de test. Un rejeu ciblé retrouve ensuite de véritables délais côté fournisseur
+sur la bande B03 : il reste en échec et est archivé dans
+`satellite-relay-production-visuals-before-resilience-2026-11-16.json`.
+Le cache désactivé seul ne garantit donc pas les autres vues.
+
+## Reprise bornée du même objet public
+
+Le relais demande des octets sans compression HTTP, s'arrête dès que la plage
+annoncée est entièrement reçue et annule le flux sans attendre une fin de
+connexion éventuellement bloquée. Un test de flux contenant tous les octets,
+mais ne produisant jamais EOF, vérifie ce comportement.
+
+Une interruption transitoire peut être reprise une fois sur l'adresse S3
+régionale du même bucket et de la même clé. L'URL est construite seulement après
+la validation des quatre buckets autorisés ; aucune adresse libre n'est acceptée.
+La première tentative dispose de 12 s et le délai total reste limité à 30 s.
+Un refus HTTP 403 ou une redirection ne déclenche aucune reprise. Le relais
+continue à refuser les plages incohérentes et les octets manquants.
+
+La plage B03 `107610112-109117439` du cas en échec est obtenue via les deux styles
+d'adresse AWS : même réponse 206, 1 507 328 octets, même SHA-256
+`d4f58f20230e35be83a05077ef500c055e75d8c05aedf10330e02801dd385614`.
+Documentation officielle des deux adresses du même objet :
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html
+
+Le probe `scripts/verify-satellite-relay-production.mjs` impose le commit attendu,
+un lancement explicite `--live`, une géométrie technique publique et une session
+de démonstration isolée. Il enregistre chaque couche réussie avant de passer à
+la suivante et conserve les échecs HTTP récupérés dans les preuves.
