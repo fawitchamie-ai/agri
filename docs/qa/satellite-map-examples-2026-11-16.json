@@ -1,0 +1,110 @@
+{
+  "actualPublicRasterData": true,
+  "measuredCropYield": false,
+  "cropHistoryKnown": false,
+  "acquiredOn": "2026-11-16",
+  "evidence": [
+    {
+      "example": "togo-2024",
+      "date": "2024-10-14",
+      "itemId": "S2A_T31PCL_20241014T101725_L2A",
+      "cells": 0,
+      "coverage": 0,
+      "mean": null,
+      "min": null,
+      "max": null,
+      "clearFraction": 0,
+      "issues": []
+    },
+    {
+      "example": "togo-2024",
+      "date": "2024-10-19",
+      "itemId": "S2B_T31PCL_20241019T102512_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999991113,
+      "mean": 0.5347916748222277,
+      "min": 0.37157,
+      "max": 0.77008,
+      "clearFraction": 0.9999999999819622,
+      "issues": []
+    },
+    {
+      "example": "togo-2024",
+      "date": "2024-10-29",
+      "itemId": "S2B_T31PCL_20241029T101820_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999991113,
+      "mean": 0.506434431883432,
+      "min": 0.37161,
+      "max": 0.69585,
+      "clearFraction": 0.9999999999819622,
+      "issues": []
+    },
+    {
+      "example": "togo-2025",
+      "date": "2025-10-21",
+      "itemId": "S2A_T31PCL_20251021T102556_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999991113,
+      "mean": 0.5595794689777274,
+      "min": 0.40437,
+      "max": 0.74081,
+      "clearFraction": 0.9999999999819622,
+      "issues": []
+    },
+    {
+      "example": "togo-2025",
+      "date": "2025-10-31",
+      "itemId": "S2A_T31PCL_20251031T102218_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999991113,
+      "mean": 0.5229205145843722,
+      "min": 0.40538,
+      "max": 0.7335,
+      "clearFraction": 0.9999999999819622,
+      "issues": []
+    },
+    {
+      "example": "benin-2024",
+      "date": "2024-10-19",
+      "itemId": "S2B_T31PDL_20241019T102512_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999993342,
+      "mean": 0.7733737571527611,
+      "min": 0.72811,
+      "max": 0.81202,
+      "clearFraction": 1,
+      "issues": []
+    },
+    {
+      "example": "benin-2024",
+      "date": "2024-10-29",
+      "itemId": "S2B_T31PDL_20241029T101820_L2A",
+      "cells": 132,
+      "coverage": 0.9999999999993342,
+      "mean": 0.7429125120636735,
+      "min": 0.68436,
+      "max": 0.78361,
+      "clearFraction": 1,
+      "issues": []
+    }
+  ],
+  "visual": [
+    {
+      "layer": "rgb",
+      "date": "2024-10-19",
+      "itemId": "S2B_T31PCL_20241019T102512_L2A",
+      "pixels": 2025,
+      "colours": 1689,
+      "resolutionM": 10
+    },
+    {
+      "layer": "classification",
+      "date": "2024-10-19",
+      "itemId": "S2B_T31PCL_20241019T102512_L2A",
+      "pixels": 529,
+      "colours": 2,
+      "resolutionM": 20
+    }
+  ]
+}

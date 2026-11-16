@@ -1,0 +1,26 @@
+{
+  "actualPublicSatelliteData": true,
+  "dates": [
+    "2025-10-21",
+    "2025-10-29"
+  ],
+  "reads": [
+    {
+      "date": "2025-10-29",
+      "usable": false,
+      "coverage": 0,
+      "mean": null
+    },
+    {
+      "date": "2025-10-21",
+      "usable": true,
+      "coverage": 0.9999999999999992,
+      "mean": 0.5595794689777274
+    }
+  ],
+  "selected": "2025-10-21",
+  "attempts": 2,
+  "issues": [
+    "2025-10-29 : surface claire insuffisante"
+  ]
+}

@@ -4,6 +4,20 @@ import {fieldMonitoringScope,zoneGrid,type ZoneSeasonRead} from './field-zones.t
 import {satelliteMonitoringScope} from './satellite.ts';
 
 export const dayAfter=(day:string,n:number)=>new Date(Date.parse(day)+n*86400000).toISOString().slice(0,10);
+/** Keep old campaigns on their own season; recent sowing needs a useful look-back. */
+export function fieldImagePeriod(c:SeasonalConfig){
+ const archived=fieldImageArchive(c);
+ if(archived.length)return {from:archived[0].season.startDate,to:archived.at(-1)!.season.startDate};
+ const end=dayAfter(c.sowingDate,Math.max(1,c.stages.reduce((n,s)=>n+s.days,0))-1);
+ const to=c.sowingDate<c.asOfDate&&end<c.asOfDate?end:c.asOfDate;
+ const from=c.sowingDate<=dayAfter(to,-30)?c.sowingDate:dayAfter(to,-90);
+ return {from:[from,dayAfter(to,-240),'2017-01-01'].sort().at(-1)!,to};
+}
+/** Explicit vegetation palette; the contrast view uses the image's numeric range. */
+export function fieldNdviColor(value:number,min:number,max:number){
+ const stops=[[165,0,38],[244,109,67],[254,224,139],[217,239,139],[102,189,99],[0,104,55]],t=max-min<1e-6?.5:Math.max(0,Math.min(1,(value-min)/(max-min))),at=t*(stops.length-1),i=Math.min(stops.length-2,Math.floor(at)),f=at-i;
+ return 'rgb('+stops[i].map((v,k)=>Math.round(v+(stops[i+1][k]-v)*f)).join(',')+')';
+}
 const finite=(n:unknown):n is number=>typeof n==='number'&&Number.isFinite(n);
 /** Seasonal composites must never be presented as a dated acquisition. */
 export function fieldImageArchive(c:SeasonalConfig){
