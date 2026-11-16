@@ -1,0 +1,74 @@
+{
+  "scope": "Local new relay helper, actual public regional S3 bytes, injected client and primary-source failures; not a production endpoint check",
+  "actualPublicRasterData": true,
+  "privateUserParcelTested": false,
+  "visuals": [
+    {
+      "layer": "rgb",
+      "pixels": 81,
+      "distinctColors": 79,
+      "resolutionM": 10,
+      "itemId": "S2A_T31PBL_20261115T101908_L2A"
+    },
+    {
+      "layer": "classification",
+      "pixels": 25,
+      "distinctColors": 2,
+      "resolutionM": 20,
+      "itemId": "S2A_T31PBL_20261115T101908_L2A"
+    }
+  ],
+  "clientFailures": 4,
+  "primaryFailures": 12,
+  "relayCalls": 12,
+  "responses": [
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    },
+    {
+      "status": 206,
+      "endpoint": "regional"
+    }
+  ]
+}

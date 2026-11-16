@@ -1,0 +1,203 @@
+{
+  "commit": "19bfc38c73e961835acf4676c92cdcaaf1e32b33",
+  "productionEndpoint": "https://agri.fawitchamie.workers.dev/api/seasonal?satellite=raster",
+  "actualPublicRasterData": true,
+  "directFailureInjected": true,
+  "privateUserParcelTested": false,
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          1.2,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4
+        ],
+        [
+          1.2007472,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4007472
+        ],
+        [
+          1.2,
+          9.4
+        ]
+      ]
+    ]
+  },
+  "areaHa": 0.6810410020745364,
+  "date": "2026-11-15",
+  "completedLayers": [
+    "ndvi",
+    "rgb",
+    "classification"
+  ],
+  "visuals": [
+    {
+      "layer": "rgb",
+      "date": "2026-11-15",
+      "itemId": "S2A_T31PBL_20261115T101908_L2A",
+      "source": "Earth Search",
+      "pixels": 81,
+      "distinctColors": 79,
+      "resolutionM": 10,
+      "relayRequests": 9
+    },
+    {
+      "layer": "classification",
+      "date": "2026-11-15",
+      "itemId": "S2A_T31PBL_20261115T101908_L2A",
+      "source": "Earth Search",
+      "pixels": 25,
+      "distinctColors": 2,
+      "resolutionM": 20,
+      "relayRequests": 3
+    }
+  ],
+  "status": "passed",
+  "itemId": "S2A_T31PBL_20261115T101908_L2A",
+  "source": "Earth Search · Copernicus Sentinel-2 L2A Collection 1 · NDVI natif, SCL 4/5",
+  "cells": 25,
+  "coverage": 1,
+  "ndviMean": 0.4450165590844608,
+  "issues": [],
+  "isolatedDemoSessionClosed": true,
+  "verifiedAt": "2026-11-16T18:17:42.545Z",
+  "directFailures": 7,
+  "relayRequests": 21,
+  "httpFailures": 0,
+  "relayResponses": [
+    {
+      "status": 206,
+      "range": "bytes 0-65535/184550499",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 1507328-1572863/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 116195328-117768191/184550499",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 113901568-115539967/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 1572864-1638399/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 115539968-116654079/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 117768192-118882303/184550499",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/163275853",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/169892900",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 105381888-106495999/163275853",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 103874560-105381887/163275853",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 113901568-115539967/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 109117440-110231551/169892900",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 107610112-109117439/169892900",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 115539968-116654079/179163185",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 0-65535/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 1507328-1572863/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    },
+    {
+      "status": 206,
+      "range": "bytes 1572864-1638399/2040708",
+      "transport": "same-origin-range",
+      "sourceEndpoint": "bucket"
+    }
+  ]
+}

@@ -76,3 +76,27 @@ Le probe `scripts/verify-satellite-relay-production.mjs` impose le commit attend
 un lancement explicite `--live`, une géométrie technique publique et une session
 de démonstration isolée. Il enregistre chaque couche réussie avant de passer à
 la suivante et conserve les échecs HTTP récupérés dans les preuves.
+
+## Contrôle final du déploiement `19bfc38c73`
+
+Le rejeu complet HTTPS termine avec succès : NDVI, RGB et classification sont
+réellement décodés malgré la panne directe volontairement injectée. Les 21
+requêtes relayées répondent en 206, sans échec HTTP ni problème de lecture.
+La session de démonstration isolée est fermée à la fin.
+
+- NDVI : 25 cellules, couverture 100 %, moyenne 0,4450165590844608, identique au
+  contrôle direct sur le même contour technique de 0,681041 ha.
+- Couleurs naturelles : 81 pixels natifs de 10 m, 79 couleurs distinctes.
+- Classification : 25 pixels natifs de 20 m, deux classes observées.
+- Même acquisition : `S2A_T31PBL_20261115T101908_L2A`, le 15 novembre 2026.
+- Preuve : `satellite-relay-production-final-2026-11-16.json`.
+
+La reprise régionale est vérifiée séparément avec de vrais octets S3 et deux
+pannes injectées : accès client puis adresse source principale. Les 12 plages
+passent alors par l'adresse régionale, avec les mêmes pixels RGB et SCL.
+Preuve : `satellite-resilient-local-2026-11-16.json`. Ce contrôle du helper local
+ne remplace pas celui du véritable endpoint de production ci-dessus.
+
+Le contour privé de la campagne signalée n'a pas été fourni. Ces résultats
+valident le transport et les images d'un contour public, sans confirmer sa
+culture ni une précision agronomique sur la parcelle de l'utilisateur.
