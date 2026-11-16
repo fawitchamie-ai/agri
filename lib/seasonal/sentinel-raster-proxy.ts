@@ -12,7 +12,9 @@ export async function sentinelRasterProxy(request:Request,fetcher:typeof fetch=f
  if(!head&&(!match||!Number.isSafeInteger(Number(match[1]))||!Number.isSafeInteger(Number(match[2]))||Number(match[2])<Number(match[1])||Number(match[2])-Number(match[1])+1>MAX_BYTES))return json('Lecture satellite limitée à une plage de 4 Mo.',400);
  const signal=AbortSignal.any([request.signal,AbortSignal.timeout(30000)]);
  try{
-  const r=await fetcher(asset,{method:head?'HEAD':'GET',headers:head?{}:{range:range!},credentials:'omit',redirect:'manual',signal});
+  // A cold Cloudflare cache may fill the whole 180 MB COG before serving a
+  // range. Fetch the requested bytes at the origin; never warm full rasters.
+  const r=await fetcher(asset,{method:head?'HEAD':'GET',headers:head?{}:{range:range!},cache:'no-store',credentials:'omit',redirect:'manual',signal});
   if(r.status!==(head?200:206)){await r.body?.cancel();return json('Le fournisseur de pixels satellite répond HTTP '+r.status+'.',502);}
   if(head){const size=Number(r.headers.get('content-length'));if(!Number.isSafeInteger(size)||size<1)return json('Taille du raster source inaccessible.',502);return Response.json({size},{headers:{'Cache-Control':'private, max-age=3600'}});}
   const cr=r.headers.get('content-range')?.match(/^bytes (\d+)-(\d+)\/(\d+)$/),length=Number(r.headers.get('content-length')??0);
