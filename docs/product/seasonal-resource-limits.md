@@ -5,6 +5,21 @@ L'erreur Cloudflare 1102 signale une limite CPU ou mémoire. Les journaux
 validation d'entrée et un HTTP 502 peut provenir d'un fournisseur : ces causes
 ne doivent pas être confondues.
 
+## Historique Sentinel-2 du champ
+
+La lecture de l'historique du champ est calculée dans le navigateur, après
+confirmation de l'envoi de l'emprise au catalogue satellite. Celui-ci sélectionne
+les scènes publiques ; le navigateur lit leurs COG par plages d'octets et calcule
+les indices. Le navigateur masque souvent `Content-Range` aux scripts : le lecteur
+récupère alors la taille de l'objet par `HEAD` et reconstitue la plage demandée.
+Cette voie garde le calcul raster hors du budget CPU du Worker. Elle peut prendre
+plusieurs minutes pour cinq saisons selon le réseau ; les saisons reçues restent
+disponibles pendant la campagne et sont conservées après enregistrement.
+
+Ce déplacement concerne seulement les zones historiques. Les lectures de sol,
+météo, terrain et simulation restent sur le serveur et respectent les limites du
+plan Cloudflare actif.
+
 ## Corrections
 
 - `/api/seasonal` est servi directement après vérification Cloudflare Access,

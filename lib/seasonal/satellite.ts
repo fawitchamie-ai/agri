@@ -28,16 +28,28 @@ async function readStacFeatures(response:Response){
  return data.features;
 }
 /** Query the preferred African catalogue, then the public Earth Search mirror. */
-export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands:boolean|'ndvi'=false,harmonized=false){
+export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands:boolean|'ndvi'=false,harmonized=false,completeWindow=false){
  if(!iso(startDate)||!iso(asOf)||startDate>asOf||bounds.length!==4||bounds.some(v=>!Number.isFinite(v)))throw new Error('Recherche STAC Sentinel-2 invalide.');
- const datetime=`${startDate}T00:00:00Z/${asOf}T23:59:59Z`,attempts:[string,()=>Promise<Response>][]=[
-  ['Digital Earth Africa',()=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:harmonized?'s2_l2a_c1':'s2_l2a',bbox:bounds.join(','),datetime,sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
-  ['Earth Search',()=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:[harmonized?'sentinel-2-c1-l2a':'sentinel-2-l2a'],bbox:bounds,datetime,sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
+ const range=(from:string,to:string)=>`${from}T00:00:00Z/${to}T23:59:59Z`,attempts:[string,(from:string,to:string)=>Promise<Response>][]=[
+  ['Digital Earth Africa',(from,to)=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:harmonized?'s2_l2a_c1':'s2_l2a',bbox:bounds.join(','),datetime:range(from,to),sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
+  ['Earth Search',(from,to)=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:[harmonized?'sentinel-2-c1-l2a':'sentinel-2-l2a'],bbox:bounds,datetime:range(from,to),sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
  ];
  const failures:string[]=[];
  for(const [provider,request] of attempts){
   try{
-   const features=await readStacFeatures(await request());
+   const features:SatelliteStacItem[]=[],pending:[string,string][]=[[startDate,asOf]];let requests=0;
+   while(pending.length){
+    if(++requests>15)throw new Error('Catalogue trop dense : réduisez la période.');
+    const [from,to]=pending.shift()!,page=await readStacFeatures(await request(from,to));
+    // A full descending page may omit early acquisitions. Split date windows
+    // rather than follow an arbitrary provider-controlled next URL.
+    if(completeWindow&&page.length===60){
+     if(from===to)throw new Error('Trop de scènes sur une journée : catalogue non certifiable.');
+     const days=Math.round((Date.parse(to)-Date.parse(from))/86400000),mid=new Date(Date.parse(from)+Math.floor(days/2)*86400000).toISOString().slice(0,10),next=new Date(Date.parse(mid)+86400000).toISOString().slice(0,10);
+     pending.unshift([from,mid],[next,to]);continue;
+    }
+    features.push(...page);if(features.length>360)throw new Error('Catalogue complet trop volumineux.');
+   }
    const usable=features.some(item=>{
     const date=item.properties?.datetime?.slice(0,10),assets=item.assets??{},has=(...keys:string[])=>keys.some(key=>typeof assets[key]?.href==='string');
     return !!date&&iso(date)&&date>=startDate&&date<=asOf&&(!requireIndexBands||((requireIndexBands==='ndvi'||has('B02','blue'))&&has('B04','red')&&has('B08','nir','nir_1')&&has('SCL','scl','mask')));

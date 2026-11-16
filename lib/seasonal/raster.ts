@@ -43,17 +43,39 @@ class SafeResponse extends BaseResponse {
   }
 }
 class RangeClient extends BaseClient {
-  private budget={bytes:0};private requests=0;
+  private budget={bytes:0};private requests=0;private totalLength?:Promise<number>;
   constructor(url:string,private fetcher:typeof fetch,private deadline:AbortSignal){super(url);if(!ALLOWED_HOSTS.has(new URL(url).hostname)||new URL(url).protocol!=='https:')throw new Error('Hôte raster non autorisé.');}
+  private fileLength(signal:AbortSignal){
+    return this.totalLength??= (async()=>{
+      // Cross-origin COG responses often permit byte ranges but hide
+      // Content-Range from JavaScript. Content-Length on HEAD is CORS-safelisted.
+      const response=await this.fetcher(this.url,{method:'HEAD',redirect:'manual',signal});
+      const length=Number(response.headers.get('content-length'));
+      if(response.status!==200||!Number.isSafeInteger(length)||length<1)throw new Error('Taille du raster inaccessible pour une lecture partielle sûre.');
+      return length;
+    })();
+  }
   async request(options:RequestInit={}){
     if(++this.requests>256)throw new Error('Trop de blocs raster pour ce contour.');
     // Workers rejects redirect:'error' before sending the request. Manual mode
     // preserves the host allowlist: a redirect is rejected by the 206 check.
     // Call the native function without the RangeClient as its receiver.
     // Workers' fetch rejects that receiver with Illegal invocation; Node accepts it.
-    const fetcher=this.fetcher;
-    const response=await fetcher(this.url,{...options,redirect:'manual',signal:AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])])});
+    const fetcher=this.fetcher,signal=AbortSignal.any([this.deadline,...(options.signal?[options.signal]:[])]);
+    let response=await fetcher(this.url,{...options,redirect:'manual',signal});
     if(response.status!==206){await response.body?.cancel();throw new Error(`Lecture partielle indisponible (${response.status}).`);}
+    if(!response.headers.get('content-range')&&!response.headers.get('content-type')?.toLowerCase().startsWith('multipart/')){
+      // If a COG server declines a multi-range response, GeoTIFF falls back
+      // to the first range and requests the remaining slices individually.
+      const ranges=new Headers(options.headers).get('range')?.match(/^bytes=(\d+)-(\d+)(?:\s*,\s*\d+-\d+)*$/i);
+      if(!ranges)throw new Error('En-tête Content-Range absent pour la plage raster.');
+      const total=await this.fileLength(signal),start=Number(ranges[1]),requestedEnd=Number(ranges[2]);
+      if(start>requestedEnd||start>=total)throw new Error('Plage raster hors des limites du fichier.');
+      const received=Number(response.headers.get('content-length')),
+        end=Number.isSafeInteger(received)&&received>0?Math.min(total-1,start+received-1):requestedEnd;
+      const headers=new Headers(response.headers);headers.set('content-range',`bytes ${start}-${end}/${total}`);
+      response=new Response(response.body,{status:206,statusText:response.statusText,headers});
+    }
     return new SafeResponse(response,this.budget);
   }
 }

@@ -14,3 +14,8 @@ export function fieldZonesFixture(){
   cells:grid.cells.map((cell,index)=>[cell.id,.2+.6*index/(grid.cells.length-1),2]),issues:[]};});
  c.fieldMonitoring={version:FIELD_ZONES_VERSION,scope:fieldMonitoringScope(c),cultivatedContour:true,comparableManagement:true,seasons};return c;
 }
+export function fieldObservationFixture(){
+ const c=fieldZonesFixture(),record=structuredClone(c.fieldMonitoring!.seasons[0]),date=c.asOfDate;
+ record.season={id:'observation-'+date,startDate:date,endDate:date,cropId:'unknown',comparable:false};record.scenes=[{date,itemId:'SYNTHETIC SOFTWARE TEST ACQUISITION',clearFraction:1}];record.cells=record.cells.map(([id,value])=>[id,value,1]);
+ c.fieldMonitoring!.seasons=[];c.fieldMonitoring!.currentObservation=record;return c;
+}

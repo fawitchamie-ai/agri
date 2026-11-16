@@ -44,3 +44,10 @@ test('maize regional context is available through an explicit admin choice in al
   assert.equal(context.usedForPrediction,false,country);
  }
 });
+test('administrative options use unique identities even when a territory has spelling aliases',()=>{
+ for(const country of ['TGO','BEN','BFA','SEN','GHA'] as const){const options=growAfricaRegionalTerritories(country,'maize');assert.equal(new Set(options.map(o=>o.adminLevel+':'+o.regionId)).size,options.length);}
+});
+test('reversible character-encoding artifacts are repaired without guessing a different territory',()=>{
+ const options=growAfricaRegionalTerritories('TGO','maize');assert.ok(options.some(o=>o.name==='Akébou'));assert.ok(options.every(o=>!/[√≈ÃÂ]/.test(o.name)));
+ assert.equal(growAfricaRegionalContext('TGO','maize','Akébou','2026-11-16').status,'context_only');
+});
