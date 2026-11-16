@@ -1,6 +1,7 @@
 import {satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} from '@/lib/seasonal/satellite';
 import {satelliteIndexSeries} from '@/lib/seasonal/satellite-index';
 import {readZoneSeason} from '@/lib/seasonal/field-zones-provider';
+import {sentinelRasterProxy} from '@/lib/seasonal/sentinel-raster-proxy';
 import {parseZoneSeason} from '@/lib/seasonal/field-zones';
 import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
 import {fertilizerEvidence,marginalScenario,nextFertilizerInformation} from '@/lib/seasonal/fertilizer-evidence';
@@ -44,6 +45,7 @@ async function readable(id: string, request: Request) {
 function error(e: unknown) { return e instanceof InputError ? json({ error: e.message }, 400) : failure(e); }
 export async function GET(request: Request) { try {
   const url = new URL(request.url), id = url.searchParams.get('id');
+  if(url.searchParams.get('satellite')==='raster'){await session(request);return sentinelRasterProxy(request);}
   if(url.searchParams.get('satellite')==='image'){await session(request);try{return await satelliteImage(url.searchParams.get('layer') as SatelliteLayer,url.searchParams.get('date')??'',(url.searchParams.get('bbox')??'').split(',').map(Number));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if (id) {
     const { db, row } = await readable(id, request);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fieldImagePeriod,fieldImageSummary,fieldNdviColor} from '../lib/seasonal/field-analysis.ts';
-import {loadUsableFieldImage} from '../lib/seasonal/field-image-loader.ts';
+import {loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
 import {fieldObservationFixture} from './support/field-zones-fixture.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 
@@ -29,4 +29,8 @@ test('NDVI palette has distinct visible endpoints and a stable colour for homoge
  assert.equal(fieldNdviColor(.3,.3,.3),fieldNdviColor(0,-1,1));
  assert.notEqual(fieldNdviColor(.4,.4,.7),fieldNdviColor(.7,.4,.7));
  assert.equal(fieldNdviColor(-2,-1,1),fieldNdviColor(-1,-1,1));
+});
+test('six failed pixel reads never claim that six cloudy images were assessed',async()=>{
+ const c=fieldObservationFixture(),r=await loadUsableFieldImage(c.parcelGeometry,Array.from({length:6},(_,i)=>'2026-11-'+String(i+1).padStart(2,'0')),{signal:new AbortController().signal,reader:async()=>{throw new Error('Lecture des pixels impossible : HTTP 403');},onRead:()=>assert.fail('No fabricated observations')});
+ assert.equal(r.read,null);assert.equal(r.readFailures,6);assert.equal(r.evaluated,0);const message=fieldImageFailureMessage(r);assert.match(message,/lecture des pixels a échoué/);assert.match(message,/n’a pas pu être évaluée/);assert.doesNotMatch(message,/Aucune image suffisamment claire/);
 });

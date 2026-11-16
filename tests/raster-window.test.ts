@@ -57,6 +57,24 @@ test('recovers a CORS-hidden Content-Range from the safelisted HEAD length',asyn
   assert.equal(result.cells[width*height-1].value,(width*height-1)%251);
 });
 
+test('browser can decode actual TIFF bytes through the same-origin relay after a direct fetch failure',async()=>{
+ const bytes=new Uint8Array(writeArrayBuffer(new Uint8Array(4*4).fill(42),{width:4,height:4,BitsPerSample:[8],GeographicTypeGeoKey:4326,ModelPixelScale:[.0001,.0001,0],ModelTiepoint:[0,0,0,0,.0004,0]}));
+ const before=Object.getOwnPropertyDescriptor(globalThis,'window');Object.defineProperty(globalThis,'window',{value:{},configurable:true});let direct=0,relayed=0;
+ const fetcher:typeof fetch=async(input,init)=>{
+  if(String(input).startsWith('https://')){direct++;throw new TypeError('Failed to fetch');}
+  relayed++;assert.equal(init?.credentials,'same-origin');const u=new URL(String(input),'https://agri.test');assert.equal(u.searchParams.get('satellite'),'raster');
+  const range=new Headers(init?.headers).get('range')!.match(/^bytes=(\d+)-(\d+)$/)!,start=Number(range[1]),end=Math.min(Number(range[2]),bytes.length-1);
+  return new Response(bytes.slice(start,end+1),{status:206,headers:{'content-range':`bytes ${start}-${end}/${bytes.length}`}});
+ };
+ try{const r=await readRasterWindow('https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/B04.tif',{type:'Polygon',coordinates:[[[0,0],[.0004,0],[.0004,.0004],[0,.0004],[0,0]]]},fetcher);assert.equal(r.cells.length,16);assert.ok(r.cells.every(c=>c.value===42));assert.equal(direct,1);assert.ok(relayed>0);}
+ finally{if(before)Object.defineProperty(globalThis,'window',before);else Reflect.deleteProperty(globalThis,'window');}
+});
+
+test('GeoTIFF does not hide the actual HTTP failure behind a generic Request failed',async()=>{
+ const fetcher:typeof fetch=async()=>new Response(null,{status:503});
+ await assert.rejects(()=>readRasterWindow('https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/B04.tif',{type:'Polygon',coordinates:[[[0,0],[.0004,0],[.0004,.0004],[0,.0004],[0,0]]]},fetcher),/Lecture des pixels impossible.*503/);
+});
+
 test('Large contour: exact native rectangles avoid per-pixel geometry explosion',async()=>{
   const width=600,height=500;
   const bytes=new Uint8Array(writeArrayBuffer(Uint8Array.from({length:width*height},(_,i)=>i%width<307?40:80),{
