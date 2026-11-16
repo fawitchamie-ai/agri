@@ -3,8 +3,8 @@ import {useEffect,useMemo,useRef,useState} from 'react';
 import type {SeasonalConfig} from '../../lib/seasonal/types';
 import {bbox} from '../../lib/seasonal/land';
 import {zoneGrid,analyzeFieldZones,fieldMonitoringScope,FIELD_ZONES_VERSION,ZONE_COLORS} from '../../lib/seasonal/field-zones';
-import {fieldImageArchive,fieldImageSummary,compareFieldImages,fieldIndexEvolution,fieldWeatherEvolution,fieldEvolutionCsv,dayAfter} from '../../lib/seasonal/field-analysis';
-import {satelliteStacSearch} from '../../lib/seasonal/satellite';
+import {fieldImageArchive,fieldImageSummary,compareFieldImages,fieldIndexEvolution,fieldWeatherEvolution,fieldEvolutionCsv,fieldImagePeriod,dayAfter} from '../../lib/seasonal/field-analysis';
+import type {ZoneSeasonRead} from '../../lib/seasonal/field-zones';
 import FieldAnalysisMap,{ANALYSIS_LAYERS,dateLabel,type AnalysisLayer} from './field-analysis-map';
 import FieldAnalysisChart from './field-analysis-chart';
 import {ProductIcon} from './product-ui';
@@ -17,10 +17,10 @@ function download(body:string){const url=URL.createObjectURL(new Blob([body],{ty
 export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMap,onWeather,onNotes}:{config:SeasonalConfig;onChange:(c:SeasonalConfig)=>void;onHistory:()=>void;onLayers:()=>void;onMap:()=>void;onWeather:()=>void;onNotes:()=>void}){
  const scope=fieldMonitoringScope(c),grid=useMemo(()=>zoneGrid(c.parcelGeometry),[c.parcelGeometry]),history=useMemo(()=>analyzeFieldZones(c),[c]);
  const archive=useMemo(()=>fieldImageArchive(c),[c]),index=useMemo(()=>fieldIndexEvolution(c),[c]);
- const [layer,setLayer]=useState<AnalysisLayer>('ndvi'),[rightLayer,setRightLayer]=useState<AnalysisLayer>('ndvi'),[compare,setCompare]=useState(false),[expanded,setExpanded]=useState(false),[photo,setPhoto]=useState(false),[zoom,setZoom]=useState(1),[cell,setCell]=useState<number|null>(null);
+ const [layer,setLayer]=useState<AnalysisLayer>('contrast'),[rightLayer,setRightLayer]=useState<AnalysisLayer>('ndvi'),[compare,setCompare]=useState(false),[expanded,setExpanded]=useState(false),[photo,setPhoto]=useState(false),[zoom,setZoom]=useState(1),[cell,setCell]=useState<number|null>(null);
  const [selected,setSelected]=useState(''),[rightDate,setRightDate]=useState(''),[catalogDates,setCatalogDates]=useState<string[]>([]),[consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
- const defaultFrom=c.sowingDate<=c.asOfDate?c.sowingDate:dayAfter(c.asOfDate,-90);
- const [from,setFrom]=useState(defaultFrom<dayAfter(c.asOfDate,-240)?dayAfter(c.asOfDate,-240):defaultFrom),[to,setTo]=useState(c.asOfDate),[base,setBase]=useState(''),[panel,setPanel]=useState('maps'),[showLoader,setShowLoader]=useState(false),[manualDate,setManualDate]=useState('');
+ const period=useMemo(()=>fieldImagePeriod(c),[c]);
+ const [from,setFrom]=useState(period.from),[to,setTo]=useState(period.to),[base,setBase]=useState(''),[panel,setPanel]=useState('maps'),[showLoader,setShowLoader]=useState(!archive.length),[manualDate,setManualDate]=useState('');
  const latest=useRef(c),controller=useRef<AbortController|null>(null),container=useRef<HTMLDivElement>(null),loader=useRef<HTMLDivElement>(null);
  useEffect(()=>{latest.current=c;},[c]);useEffect(()=>()=>controller.current?.abort(),[]);
  useEffect(()=>{
@@ -35,32 +35,42 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
  const baseC=base.trim()!==''&&Number.isFinite(Number(base))&&Number(base)>=-20&&Number(base)<=50?Number(base):null;
  const weather=useMemo(()=>fieldWeatherEvolution(c,from,to,baseC),[c,from,to,baseC]),points=index.points.filter(p=>p.date>=from&&p.date<=to),canRead=c.asOfDate===new Date().toISOString().slice(0,10);
  function openLoader(){setShowLoader(true);setPanel('maps');window.requestAnimationFrame(()=>loader.current?.scrollIntoView?.({block:'nearest',behavior:'smooth'}));}
+ function retainRead(r:ZoneSeasonRead,usable:boolean){
+  if(fieldMonitoringScope(latest.current)!==scope)return;
+  const current=latest.current,m=current.fieldMonitoring?.scope===scope?current.fieldMonitoring:undefined,byDate=new Map([...(m?.datedObservations??[]),...(m?.currentObservation?[m.currentObservation]:[]),r].map(v=>[v.season.startDate,v]));
+  const datedObservations=[...byDate.values()].sort((a,b)=>a.season.startDate.localeCompare(b.season.startDate)).slice(-12);
+  const next={...current,fieldMonitoring:{version:FIELD_ZONES_VERSION,scope,cultivatedContour:m?.cultivatedContour??false,comparableManagement:m?.comparableManagement??false,seasons:m?.seasons??[],...m,currentObservation:usable?r:m?.currentObservation,datedObservations,...(m?.prescription?{prescription:{...m.prescription,confirmed:false}}:{})}};
+  latest.current=next;onChange(next);
+ }
  async function acquire(day:string,side='left'){
   if(!consent||busy||!canRead||!day)return;const ctrl=new AbortController();controller.current=ctrl;setBusy(true);setError('');setNotice('');setProgress('Lecture du NDVI · '+dateLabel(day));
   try{const {readZoneSeason}=await import('../../lib/seasonal/field-zones-provider');const r=await readZoneSeason(c.parcelGeometry,{id:'observation-'+day,startDate:day,endDate:day,cropId:'unknown',comparable:false},fetch,undefined,ctrl.signal);
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
-   const current=latest.current,m=current.fieldMonitoring?.scope===scope?current.fieldMonitoring:undefined,byDate=new Map([...(m?.datedObservations??[]),...(m?.currentObservation?[m.currentObservation]:[]),r].map(v=>[v.season.startDate,v]));
-   const datedObservations=[...byDate.values()].sort((a,b)=>a.season.startDate.localeCompare(b.season.startDate)).slice(-12);
    const measured=fieldImageSummary(grid,r),usable=measured.cells>=12&&measured.coverage>=.6;
-   onChange({...current,fieldMonitoring:{version:FIELD_ZONES_VERSION,scope,cultivatedContour:m?.cultivatedContour??false,comparableManagement:m?.comparableManagement??false,seasons:m?.seasons??[],...m,currentObservation:usable?r:m?.currentObservation,datedObservations,...(m?.prescription?{prescription:{...m.prescription,confirmed:false}}:{})}});
+   retainRead(r,usable);
    if(side==='left')setSelected(day);else setRightDate(day);setNotice(usable?'Observation chargée. Enregistrez la campagne pour conserver les cartes.':'Acquisition archivée, mais trop peu de surface analysable. Choisissez une autre date ; les cartes précédentes sont conservées.');
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
  async function findDates(){
   if(!consent||busy||!canRead||!from||!to||from>to)return;const ctrl=new AbortController();controller.current=ctrl;setBusy(true);setError('');setProgress('Recherche des acquisitions du champ…');
   const fetcher:typeof fetch=(input,init={})=>fetch(input,{...init,signal:init.signal?AbortSignal.any([ctrl.signal,init.signal]):ctrl.signal});
-  try{let result;try{result=await satelliteStacSearch(bbox(c.parcelGeometry!),from,to,fetcher,'ndvi',true,true);}catch{const old=await satelliteStacSearch(bbox(c.parcelGeometry!),from,to,fetcher,'ndvi',false,true),features=old.features.filter(i=>i.properties?.['earthsearch:boa_offset_applied']===true||i.properties?.['sentinel:boa_offset_applied']===true);if(!features.length)throw new Error('Aucune acquisition avec radiométrie vérifiable pour cette période.');result={...old,features};}
+  try{const {fieldImageDates,loadUsableFieldImage}=await import('../../lib/seasonal/field-image-loader');
+   const found=await fieldImageDates(c.parcelGeometry,from,to,fetcher);
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
-   const found=[...new Set(result.features.map(v=>v.properties?.datetime?.slice(0,10)).filter((d):d is string=>!!d&&d>=from&&d<=to))].sort();setCatalogDates(found);if(!date&&found.length)setSelected(found.at(-1)!);setNotice(found.length+' dates trouvées. Choisissez une date puis chargez ses pixels.');
+   setCatalogDates(found);
+   const result=await loadUsableFieldImage(c.parcelGeometry,found,{signal:ctrl.signal,fetcher,onRead:retainRead,onProgress:(day,i,total)=>setProgress('Vérification du champ · '+dateLabel(day)+' · '+i+'/'+total)});
+   if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
+   if(result.read){setSelected(result.read.season.startDate);setNotice(found.length+' dates trouvées. Une observation exploitable est chargée. Enregistrez la campagne pour conserver les cartes.');}
+   else setNotice('Aucune image suffisamment claire parmi les '+result.attempts+' dernières acquisitions. Les cartes précédentes sont conservées. Essayez une autre période. '+result.issues.join(' ; '));
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
  function selectDate(day:string,side='left'){if(side==='left')setSelected(day);else{setSelected(date);setRightDate(day);}setCell(null);if(consent&&!archive.some(r=>r.season.startDate===day))void acquire(day,side);}
  const mapProps={config:c,grid,history,allowed:consent,photo,bounds,selected:cell,onSelect:setCell,onHistory,onLoad:openLoader,onTerrain:onMap};
  return <div className={'field-analysis'+(expanded?' fa-expanded':'')} ref={container} tabIndex={expanded?-1:undefined} role={expanded?'dialog':undefined} aria-modal={expanded?true:undefined} aria-label="Analyse visuelle du champ">
-  <div className="fa-topline"><div><span className="product-eyebrow">ÉTAT DU CHAMP</span><h3>{c.name||'Mon champ'}</h3><p>{c.crop} · {fmt(grid.areaM2/10000)} ha · semis {dateLabel(c.sowingDate)}</p></div><div className="fa-top-actions"><button className="btn secondary small" onClick={()=>{setCompare(v=>!v);setPanel('maps');}} aria-pressed={compare}><ProductIcon name="grid" size={16}/>{compare?'Vue simple':'Comparer'}</button><button className="btn secondary small" onClick={()=>setExpanded(v=>!v)}>{expanded?'Fermer le plein écran':'Plein écran'}</button></div></div>
+  <div className="fa-topline"><div><span className="product-eyebrow">ÉTAT DU CHAMP</span><h3>{c.name||'Mon champ'}</h3><p>{c.crop} · {fmt(grid.areaM2/10000)} ha · {c.stages.length?'semis':'période'} {dateLabel(c.sowingDate)}</p></div><div className="fa-top-actions"><button className="btn secondary small" onClick={()=>{setCompare(v=>!v);setPanel('maps');}} aria-pressed={compare}><ProductIcon name="grid" size={16}/>{compare?'Vue simple':'Comparer'}</button><button className="btn secondary small" onClick={()=>setExpanded(v=>!v)}>{expanded?'Fermer le plein écran':'Plein écran'}</button></div></div>
   <nav className="fa-panel-tabs" aria-label="Vues d’analyse"><button aria-pressed={panel==='maps'} onClick={()=>setPanel('maps')}>Cartes du champ</button><button aria-pressed={panel==='evolution'} onClick={()=>setPanel('evolution')}>Évolution et météo</button><button aria-pressed={panel==='report'} onClick={()=>setPanel('report')}>Rapport du champ</button></nav>
   {panel==='maps'&&<>
-   <div className="fa-explorer"><aside className="fa-layers"><span className="fa-section-label">COUCHES DU CHAMP</span>{ANALYSIS_LAYERS.map(l=><button key={l.id} aria-pressed={layer===l.id} onClick={()=>{setLayer(l.id);setCell(null);}}><ProductIcon name={l.icon} size={19}/><span><strong>{l.name}</strong><small>{l.detail}</small></span></button>)}<button className="fa-more-layers" onClick={onLayers}>Nuages et autres vues <ProductIcon name="arrow" size={15}/></button><p className="fa-layer-note">{layer==='contrast'?'Le contraste accentue les différences dans cette image.':'La carte aide à choisir les endroits à vérifier sur le terrain.'}</p></aside>
+   <div className="fa-explorer"><aside className="fa-layers"><span className="fa-section-label">COUCHES DU CHAMP</span>{ANALYSIS_LAYERS.map(l=><button key={l.id} aria-pressed={layer===l.id} onClick={()=>{setLayer(l.id);setCell(null);}}><ProductIcon name={l.icon} size={19}/><span><strong>{l.name}</strong><small>{l.detail}</small></span></button>)}<button className="fa-more-layers" onClick={onLayers}>Autres vues <ProductIcon name="arrow" size={15}/></button><p className="fa-layer-note">{layer==='contrast'?'Le contraste accentue les différences dans cette image.':'La carte aide à choisir les endroits à vérifier sur le terrain.'}</p></aside>
     <div className="fa-map-workspace"><div className="fa-date-toolbar"><div className="fa-date-picker"><button aria-label="Image précédente" disabled={busy||dates.indexOf(date)<=0} onClick={()=>selectDate(dates[dates.indexOf(date)-1])}>‹</button><label><span>Date de l’image</span><select aria-label="Date analysée" value={date} disabled={busy||!dates.length} onChange={e=>selectDate(e.target.value)}>{!dates.length?<option value="">Aucune date chargée</option>:dates.map(d=><option key={d} value={d}>{dateLabel(d)}</option>)}</select></label><button aria-label="Image suivante" disabled={busy||!date||dates.indexOf(date)>=dates.length-1} onClick={()=>selectDate(dates[dates.indexOf(date)+1])}>›</button></div><div className="fa-map-tools"><button aria-label="Réduire la carte" disabled={zoom<=.5} onClick={()=>setZoom(v=>Math.max(.5,v/1.4))}>−</button><button aria-label="Agrandir la carte" disabled={zoom>=4} onClick={()=>setZoom(v=>Math.min(4,v*1.4))}>+</button><button onClick={()=>setZoom(1)}>Recentrer</button></div></div>
      {compare&&<div className="fa-comparison-controls"><strong>Comparer à</strong><label><span>Date de comparaison</span><select aria-label="Date de comparaison" value={second} disabled={busy||!dates.length} onChange={e=>selectDate(e.target.value,'right')}>{!dates.length?<option value="">Aucune date chargée</option>:dates.map(d=><option key={d} value={d}>{dateLabel(d)}</option>)}</select></label><label><span>Couche de comparaison</span><select aria-label="Couche de comparaison" value={rightLayer} onChange={e=>setRightLayer(e.target.value as AnalysisLayer)}>{ANALYSIS_LAYERS.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></label></div>}
      {!!dates.length&&<div className="fa-timeline" aria-label="Dates des acquisitions">{dates.slice(-36).map(d=><button key={d} disabled={busy} aria-pressed={date===d} onClick={()=>selectDate(d)}><time dateTime={d}>{new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</time><small>{archive.some(r=>r.season.startDate===d)?'Archivée':'À charger'}</small></button>)}</div>}
