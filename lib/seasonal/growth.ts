@@ -2,7 +2,7 @@ import {fitHarvestIndex,growthProfileId,type GrowthHarvestSample} from './growth
 import type {SeasonalConfig,WaterPlan,WaterEvent} from './types.ts';
 import {InputError,isoDate,addDays,validateConfig} from './validation.ts';
 import {geometryIdentity} from './provenance.ts';
-import {planWater} from './engine.ts';
+import {planWater,type WaterPlanner} from './engine.ts';
 import {applicationNutrients} from './management.ts';
 import {landBlockReason} from './land.ts';
 
@@ -82,7 +82,7 @@ export type GrowthDay={date:string;stage:string;fapar:number;canopySource:'param
 export type GrowthScenario={id:string;label:string;water?:{irrigationNetMm:number;etaMm:number;etmMm:number};days:GrowthDay[];biomassKgHa:number;yieldDryKgHa:number;yieldKgHa:number;productionKg:number;diagnostics:{waterLimitedDays:number;nutrientLimitedDays:Triple;nutrientYieldCeilingsKgHa:Triple;atNutrientCeiling:boolean;biomassPotentialBeforeNutritionKgHa:number};balance:{suppliedKgHa:Triple;uptakeKgHa:Triple;remainingKgHa:Triple;residualKgHa:Triple}};
 export type GrowthResult={version:typeof GROWTH_VERSION;engineVersion:typeof GROWTH_ENGINE_VERSION;biomassMethod:'rue-global'|'transpiration-normalized';status:'scenario'|'unavailable';validated:false;predictiveInterval95:null;missing:string[];limits:string[];areaM2:number|null;areaBasis:'planned'|'sown';moisturePercent:number|null;phFactor:number|null;calibration?:ReturnType<typeof fitHarvestIndex>;scenarios:GrowthScenario[];factors:{factor:string;role:string}[]};
 function configHasDual(c:SeasonalConfig){return !!c.waterModel;}
-export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):GrowthResult{
+export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan,waterPlanner:WaterPlanner=planWater):GrowthResult{
  const v=c.growth,p=v?.parameters;
  const calibration=v?.history?fitHarvestIndex(v.history,{country:c.country,cropId:c.cropProfile?.id??'',variety:c.variety,profileId:growthProfileId(p!,c.waterModel,c.soilWaterModel),asOfDate:c.asOfDate}):undefined;
  const out:GrowthResult={version:GROWTH_VERSION,engineVersion:GROWTH_ENGINE_VERSION,biomassMethod:p?.biomassModel?'transpiration-normalized':'rue-global',status:'unavailable',validated:false,predictiveInterval95:null,missing:[],areaM2:null,areaBasis:c.yieldEstimation?(c.yieldEstimation.areaBasis??'sown'):'planned',moisturePercent:p?.moisturePercent??null,phFactor:null,scenarios:[],
@@ -128,7 +128,7 @@ export function integratedGrowth(c:SeasonalConfig,events:WaterEvent[],plan:Water
  const definitions=[['rainfed','Sans irrigation ni engrais prévus','rainfed',false],['recorded','Apports réalisés uniquement','recorded',false],['proposed','Eau et engrais prévus','proposed',true],['without-planned-fertilizer','Même eau, sans engrais prévu','proposed',false]] as const;
  for(const [id,label,irrigationMode,includePlanned] of definitions){
  const ev=events.filter(e=>irrigationMode!=='rainfed'||e.kind!=='irrigation');
- const water=planWater(config,ev,{irrigationMode,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
+ const water=waterPlanner(config,ev,{irrigationMode,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
  if(!water.complete||water.status==='blocked'){out.missing.push(...water.missing);continue;}
  const stock=[...v.soilSupply.initialKgHa] as Triple,supplied=[...stock] as Triple,uptake:Triple=[0,0,0];
  const used=products.filter(a=>a.status==='declared'||includePlanned).map(a=>{const n=applicationNutrients(a)!.elementalKgHa;return {date:a.date,mass:[n.N!,n.P!,n.K!],release:a.composition?.kind==='organic'?v.organicRelease.find(r=>r.productId===a.id)!:null};});

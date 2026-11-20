@@ -46,14 +46,19 @@ export function parseInputLedger(input:unknown):InputLedger|undefined {
   const v=input as InputLedger;
   if(!v||v.version!==PROVENANCE_VERSION||!v.scope||typeof v.scope.id!=='string'||!v.values||typeof v.values!=='object'||Array.isArray(v.values)||Object.keys(v.values).length>6000)throw new Error('Provenance des entrées invalide.');
   const statuses=['measured','estimated','forecast','scenario','assumed','missing'],origins=['automatic','manual','default','catalog','legacy'];
+  // A daily ledger repeats acquisition and interval dates across parameters.
+  // Validate each distinct timestamp once within this parse, without retaining
+  // any evidence or validation result across requests.
+  const timestamps=new Map<string,number>();
+  const timestamp=(value:string)=>{if(!timestamps.has(value))timestamps.set(value,Date.parse(value));return timestamps.get(value)!;};
   const scalar=(x:unknown)=>x===null||typeof x==='string'&&x.length<=1200||typeof x==='number'&&Number.isFinite(x)||typeof x==='boolean'||Array.isArray(x)&&x.length<=366&&x.every(n=>typeof n==='number'&&Number.isFinite(n));
   for(const [key,p] of Object.entries(v.values)){
     if(!/^[a-zA-Z0-9_.-]{1,160}$/.test(key)||!p||p.version!==PROVENANCE_VERSION||!statuses.includes(p.status)||!origins.includes(p.origin)||!scalar(p.value)||!scalar(p.rawValue)||typeof p.unit!=='string'||p.unit.length>100||typeof p.rawUnit!=='string'||p.rawUnit.length>100||!p.spatial||!['fresh','stale_authorized','missing'].includes(p.retention))throw new Error('Valeur de provenance invalide.');
     for(const k of ['method','provider','product','productVersion','model','replacementReason','scopeId'] as const)if(p[k]!==null&&(typeof p[k]!=='string'||p[k]!.length>1200))throw new Error('Métadonnée de provenance invalide.');
-    for(const k of ['observedAt','acquiredAt','runAt','validUntil'] as const)if(p[k]!==null&&(typeof p[k]!=='string'||!Number.isFinite(Date.parse(p[k]!))))throw new Error('Date de provenance invalide.');
+    for(const k of ['observedAt','acquiredAt','runAt','validUntil'] as const)if(p[k]!==null&&(typeof p[k]!=='string'||!Number.isFinite(timestamp(p[k]!))))throw new Error('Date de provenance invalide.');
     if(p.scopeId!==v.scope.id)throw new Error('Portée de provenance incohérente.');
     if(p.depthCm!==null&&(!Array.isArray(p.depthCm)||p.depthCm.length!==2||!p.depthCm.every(n=>typeof n==='number'&&Number.isFinite(n))||p.depthCm[0]<0||p.depthCm[1]<=p.depthCm[0]))throw new Error('Profondeur de provenance invalide.');
-    for(const interval of [p.interval,p.referencePeriod])if(interval!==null&&(!interval||!Number.isFinite(Date.parse(interval.from))||!Number.isFinite(Date.parse(interval.to))||interval.to<interval.from))throw new Error('Période de provenance invalide.');
+    for(const interval of [p.interval,p.referencePeriod])if(interval!==null&&(!interval||!Number.isFinite(timestamp(interval.from))||!Number.isFinite(timestamp(interval.to))||interval.to<interval.from))throw new Error('Période de provenance invalide.');
     if(p.spatial.point!==null&&(!Array.isArray(p.spatial.point)||p.spatial.point.length!==2||!p.spatial.point.every(n=>typeof n==='number'&&Number.isFinite(n))||Math.abs(p.spatial.point[0])>180||Math.abs(p.spatial.point[1])>90))throw new Error('Position de provenance invalide.');
     if(p.spatial.resolutionM!==null&&(!Number.isFinite(p.spatial.resolutionM)||p.spatial.resolutionM<=0))throw new Error('Résolution de provenance invalide.');
     for(const s of [p.spatial.cell,p.spatial.crs])if(s!==null&&(typeof s!=='string'||s.length>1200))throw new Error('Cellule ou projection invalide.');
@@ -79,7 +84,7 @@ export function inputInventory(c:SeasonalConfig):{path:string;value:InputValue['
   for(const [path,v] of Object.entries(c.inputs?.values??{}))if(path.startsWith('source.soil.'))add(path,v.value,v.unit);
   return result;
 }
-const sameValue=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
+const sameValue=(a:unknown,b:unknown)=>a===b||JSON.stringify(a)===JSON.stringify(b);
 export function migrateInputs(c:SeasonalConfig):SeasonalConfig {
   const point=c.longitude!==null&&c.latitude!==null?[c.longitude,c.latitude] as [number,number]:null;
   const id=scopeId(c.parcelGeometry,point),previous=c.inputs;

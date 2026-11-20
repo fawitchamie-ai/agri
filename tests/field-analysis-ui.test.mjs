@@ -26,5 +26,14 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
   await act(async()=>button('Cartes du champ').click());await act(async()=>button('Charger des images').click());assert.equal(button('Chercher les dates').disabled,true);assert.equal(calls,0);
   await act(async()=>button('Zones historiques').click());await act(async()=>button('Appliquer les confirmations sans recharger').click());assert.equal(c.fieldMonitoring.datedObservations.length,1,'Updating seasonal settings preserves date archives');assert.ok(c.fieldMonitoring.currentObservation);assert.equal(c.fieldMonitoring.prescription,undefined,'No invalid empty dose draft is saved');
   c.fieldMonitoring.currentObservation.cells=[];await act(async()=>render());await act(async()=>button('Analyse du champ').click());assert.equal(host.querySelector('[aria-label="Date analysée"]').value,date,'The default uses the latest useful image while cloudy dates remain selectable');assert.equal(host.querySelector('[aria-label="Date analysée"]').options.length,2);assert.equal(calls,0);
+  // Date inputs can emit input before their deferred change/blur event. The
+  // typed date must survive a consent render instead of reverting to the map.
+  await act(async()=>button('Charger des images').click());
+  const chosen=dayAfter(c.asOfDate,-7),manual=host.querySelector('[aria-label="Date à charger"]');
+  await act(async()=>{manual.value=chosen;manual.dispatchEvent(new window.Event('input',{bubbles:true}));});
+  const consent=[...host.querySelectorAll('input[type=checkbox]')].find(el=>el.parentElement.textContent.includes('Autoriser le chargement'));
+  await act(async()=>consent.click());
+  assert.equal(host.querySelector('[aria-label="Date à charger"]').value,chosen,'Use the date actually typed, including before blur');
+  assert.equal(button('Charger la date choisie').disabled,false);assert.equal(calls,0);
  }finally{globalThis.fetch=before;await act(async()=>root.unmount());await window.happyDOM.close();}
 });

@@ -1,5 +1,5 @@
 import type {SeasonalConfig,WaterEvent,WaterPlan} from './types.ts';
-import {planWater} from './engine.ts';
+import {planWater,type WaterPlanner} from './engine.ts';
 import {validateConfig} from './validation.ts';
 import {cropById} from './catalog.ts';
 import {SEASONAL_KY,KY_VERSION,FAO_SOURCE,seasonalWaterFactor} from './water-response.ts';
@@ -8,7 +8,7 @@ import {stageWaterFactor,WATER_STAGES_VERSION,WATER_STAGES_SOURCE,type WaterStag
 export type WaterImpact={version:string;method?:'seasonal'|'stage-product';status:'conditional'|'unavailable';ky:number|null;source:string;areaBasis:'planned'|'sown';areaM2:number|null;missing:string[];limits:string[];scenarios:{id:'rainfed'|'recorded'|'proposed';label:string;status:'conditional'|'unavailable';etaMm:number|null;etmMm:number|null;relativeYieldPercent:number|null;deltaPointsVsRainfed:number|null;missing:string[];stageResponse?:WaterStageResult}[]};
 /** No Ym is inferred: this reports only the model's relative water response.
  * No nutrient/pH multiplier and no combination with transferred QUEFTS outputs. */
-export function waterImpact(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan):WaterImpact{
+export function waterImpact(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan,waterPlanner:WaterPlanner=planWater):WaterImpact{
  const ky=SEASONAL_KY[c.cropProfile?.id??'']??null,u=c.yieldEstimation?.units[0];
  const calendar=c.yieldEstimation?.method==='fao-stages'?c.yieldEstimation.responseCalendar:undefined;
  const out:WaterImpact={version:KY_VERSION,status:'unavailable',ky,source:FAO_SOURCE,
@@ -34,7 +34,7 @@ export function waterImpact(c:SeasonalConfig,events:WaterEvent[],plan:WaterPlan)
  if(config.waterCondition!=='drained'){out.missing.push('Le sol de cette unité doit être drainé.');return out;}
  for(const [id,label] of [['rainfed','Sans irrigation ajoutée'],['recorded','Avec les arrosages réalisés'],['proposed','Avec le plan d’arrosage']] as const){
   const ev=events.filter(e=>id!=='rainfed'||e.kind!=='irrigation');
-  const water=planWater(config,ev,{irrigationMode:id,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
+  const water=waterPlanner(config,ev,{irrigationMode:id,unitAreaM2:out.areaM2!,unitGeometry:plan.calculationArea!.geometry});
   const ready=water.complete&&water.status!=='blocked',eta=ready?water.totals.actualEtMm:null,etm=ready?water.totals.demandMm:null;
   const staged=ready&&calendar?stageWaterFactor(c,water.days,calendar):undefined;
   const factor=ready?(staged?staged.factor:seasonalWaterFactor(eta!,etm!,ky!)):null;
