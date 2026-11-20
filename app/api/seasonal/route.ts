@@ -20,7 +20,7 @@ import {dataReadiness} from '@/lib/seasonal/data-readiness';
 import {agronomicCoverage,compareAgronomic,harvestDiagnostic} from '@/lib/seasonal/agronomic';
 import {sampleParcelSoil} from '@/lib/seasonal/agronomic-spatial';
 import {authoritativeLand,startLandJob,stepLandJob,landJobStatus} from '@/lib/seasonal/land-jobs';
-import {planSeason,yieldCsv} from '@/lib/seasonal/yield';
+import {planSeason,createSeasonCalculation,yieldCsv} from '@/lib/seasonal/yield';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
 import { body, database, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
@@ -182,7 +182,7 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
     if (!Object.hasOwn(COUNTRIES, b.country)) throw new InputError('Pays inconnu.');
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
-  if (b.action === 'simulate'){const config=validateConfig(b.config);if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);const plan=planSeason(config,b.events??[],{requireGeometry:true});const responseConfig={...config};delete responseConfig.landAssessment;return json({plan,config:responseConfig,requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
+  if (b.action === 'simulate'){const calculation=createSeasonCalculation(b.config,b.events??[]),{config}=calculation;if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);const plan=calculation.calculate({requireGeometry:true});const responseConfig={...config};delete responseConfig.landAssessment;return json({plan,config:responseConfig,requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
@@ -190,19 +190,22 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
   const old = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
   if (old && !canSee(s,old)) throw new HttpError(404, 'Campagne introuvable.');
   if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
+  const previousConfig=old?decodeCampaignValue(old.config):null,previousEvents=old?decodeCampaignValue(old.events):[];
   if (old && b.action === 'event') {
-    const previous = decodeCampaignValue(old.events).find((e: any) => e.id === b.event?.id);
-    if (previous && (previous.landSelection??'whole')===(decodeCampaignValue(old.config).landSelection??'whole') && ['date','kind','amount','unit','point','status','source','unitId'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
+    const previous = previousEvents.find((e: any) => e.id === b.event?.id);
+    if (previous && (previous.landSelection??'whole')===(previousConfig.landSelection??'whole') && ['date','kind','amount','unit','point','status','source','unitId'].every(key => previous[key] === b.event[key])) return json({ campaign: campaign(old), unchanged: true });
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
-  const config = validateConfig(b.action === 'event' ? decodeCampaignValue(old.config) : b.config);
-  if(old&&b.action==='save')protectFieldTrials(decodeCampaignValue(old.config),config);
-  if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&(decodeCampaignValue(old.config).sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
-  if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
-  if(old&&b.action==='save'&&decodeCampaignValue(old.events).some((e:any)=>['measured','declared'].includes(e.status))&&JSON.stringify(decodeCampaignValue(old.config).parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
-  const recordedProductsCorrected=old&&b.action==='save'?protectRecordedProducts(validateConfig(decodeCampaignValue(old.config)),config):false;
+  const calculation=b.action==='save'?createSeasonCalculation(b.config,old?previousEvents:b.events??[]):null;
+  const config = calculation?.config??validateConfig(previousConfig);
+  if(old&&b.action==='save')protectFieldTrials(previousConfig,config);
+  const hasObservations=previousEvents.some((e:any)=>['measured','declared'].includes(e.status));
+  if(old&&b.action==='save'&&hasObservations&&(previousConfig.sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
+  if(old&&b.action==='save'&&hasObservations&&JSON.stringify(previousConfig.yieldEstimation?.units.map((u:any)=>[u.id,u.geometry,u.sownAreaM2])??null)!==JSON.stringify(config.yieldEstimation?.units.map(u=>[u.id,u.geometry,u.sownAreaM2])??null))throw new InputError('Des observations sont liées à la surface semée précédente. Créez une nouvelle campagne pour modifier cette portée.');
+  if(old&&b.action==='save'&&hasObservations&&JSON.stringify(previousConfig.parcelGeometry??null)!==JSON.stringify(config.parcelGeometry??null))throw new InputError('Cette parcelle contient des observations. Créez une nouvelle campagne pour changer son contour.');
+  const recordedProductsCorrected=old&&b.action==='save'?protectRecordedProducts(validateConfig(previousConfig),config):false;
   if (config.asOfDate > new Date().toISOString().slice(0,10)) throw new InputError('La date du conseil ne peut pas être future. Une date de semis future reste possible avec un scénario.');
-  let events = old ? decodeCampaignValue(old.events) : b.events ?? [];
+  let events = calculation?.events??previousEvents;
   if (b.action === 'event') {
     // Client supplies stable ID but receipt time is server-owned. Past plans stay
     // immutable; a delayed observation is replayed in the newly issued plan.
@@ -217,7 +220,7 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
   events = validateEvents(events, config);
   if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);
   config.fieldTrials=parseFieldTrials(config.fieldTrials,config);
-  const plan = planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
+  const plan = calculation?calculation.calculate({requireGeometry:true}):planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
   const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : recordedProductsCorrected?'Correction d’un apport réalisé : '+config.managementPlan!.recordedCorrection!.reason:'Paramètres et scénario de campagne actualisés.';
   const packed=encodeCampaignSnapshot(config,events,plan);
   if (!old) {

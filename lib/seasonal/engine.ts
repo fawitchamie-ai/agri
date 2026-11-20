@@ -27,15 +27,42 @@ function period(label: string, rows: WaterDay[]): WaterPeriod {
 }
 function periods(rows: WaterDay[], width: number): WaterPeriod[] { const result = []; for (let i = 0; i < rows.length; i += width) result.push(period(`${width === 7 ? 'Semaine' : 'Décade'} ${Math.floor(i / width) + 1}`, rows.slice(i, i + width))); return result; }
 
-export function planWater(input: unknown, inputEvents: unknown = [], options:{requireGeometry?:boolean;irrigationMode?:'rainfed'|'recorded'|'proposed';unitAreaM2?:number;unitGeometry?:NonNullable<WaterPlan['calculationArea']>['geometry']}={}): WaterPlan {
-  const c = validateConfig(input), events = validateEvents(inputEvents, c);
+export type WaterOptions={requireGeometry?:boolean;irrigationMode?:'rainfed'|'recorded'|'proposed';unitAreaM2?:number;unitGeometry?:NonNullable<WaterPlan['calculationArea']>['geometry']};
+export type WaterPlanner=(input:unknown,inputEvents?:unknown,options?:WaterOptions)=>WaterPlan;
+/** One synchronous calculation owns its validation and water-scenario cache.
+ * Nothing is reused across requests, users, edits or later terrain evidence. */
+export function createWaterPlanner(input:unknown,inputEvents:unknown=[]){
+  const config=validateConfig(input),events=validateEvents(inputEvents,config);
+  type Prepared={config:SeasonalConfig;warnings:string[];plans:Map<string,WaterPlan>};
+  const prepared=new WeakMap<object,Prepared>();
+  prepared.set(config,{config,warnings:inputWarnings(config),plans:new Map()});
+  const plan:WaterPlanner=(input,inputEvents=[],options={})=>{
+    let entry=input&&typeof input==='object'?prepared.get(input):undefined;
+    if(!entry){const config=validateConfig(input);entry={config,warnings:inputWarnings(config),plans:new Map()};prepared.set(config,entry);if(input&&typeof input==='object')prepared.set(input,entry);}
+    const c=entry.config,checkedEvents=inputEvents===events&&c===config?events:validateEvents(inputEvents,c);
+    const selected=c.landSelection==='potentialLand',assessment=c.landAssessment;
+    const defaultArea=selected?assessment?.candidateAreaM2??null:c.areaM2;
+    const defaultGeometry=selected?assessment?.fractions.potentialLand.geometry??null:c.parcelGeometry?{type:'MultiPolygon',coordinates:[c.parcelGeometry.coordinates]}:null;
+    const area=options.unitAreaM2??defaultArea,geometry=options.unitAreaM2===undefined?defaultGeometry:options.unitGeometry??defaultGeometry;
+    const key=JSON.stringify([options.irrigationMode??'proposed',!!options.requireGeometry&&!c.parcelGeometry,area,geometry,checkedEvents]);
+    let result=entry.plans.get(key);
+    if(!result){result=calculateWater({...c},checkedEvents,options,entry.warnings);entry.plans.set(key,result);}
+    return result;
+  };
+  return {config,events,plan};
+}
+export function planWater(input:unknown,inputEvents:unknown=[],options:WaterOptions={}):WaterPlan{
+  const calculation=createWaterPlanner(input,inputEvents);
+  return calculation.plan(calculation.config,calculation.events,options);
+}
+function calculateWater(c:SeasonalConfig,events:WaterEvent[],options:WaterOptions,warnings:string[]):WaterPlan{
   const horizon = c.stages.reduce((s, x) => s + x.days, 0), horizonEnd = addDays(c.sowingDate, horizon - 1);
   const eventProvenance=events.flatMap(e=>e.provenance?[e.provenance]:[]);
   const selected=c.landSelection==='potentialLand',a=c.landAssessment;
   const calculationArea:NonNullable<WaterPlan['calculationArea']>={selection:selected?'potentialLand':'whole',areaM2:selected?a?.candidateAreaM2??null:c.areaM2,geometry:selected?a?.fractions.potentialLand.geometry??null:c.parcelGeometry?{type:'MultiPolygon',coordinates:[c.parcelGeometry.coordinates]}:null};
   if(options.unitAreaM2!==undefined){calculationArea.areaM2=options.unitAreaM2;calculationArea.geometry=options.unitGeometry??calculationArea.geometry;}
   const eventScopeWarning=events.some(e=>['measured','declared'].includes(e.status)&&(e.landSelection??'whole')!==(c.landSelection??'whole'))?'Observations liées à une autre surface de calcul : corrigez leur portée avant de les utiliser.':null;
-  const gate=[eventScopeWarning,options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...inputWarnings(c)].filter((x):x is string=>!!x);
+  const gate=[eventScopeWarning,options.requireGeometry&&!c.parcelGeometry?'Contour complet requis pour une simulation de parcelle.':null,landBlockReason(c),...warnings].filter((x):x is string=>!!x);
   if(gate.length)return {calculationArea,engineVersion:ENGINE_VERSION,levelOfEvidence:'simulation_non_validee',status:'blocked',complete:false,horizonEnd,assumptions:[],missing:gate,days:[],weeks:[],decades:[],stages:[],nextWindows:[],intervalDays:null,totals:{demandMm:0,actualEtMm:0,unmetEtMm:0,netMm:0,recordedSourceM3:null,remainingSourceM3:null,sourceM3:null,fieldM3:null,remainingBudgetM3:null},...(eventProvenance.length?{eventProvenance}:{}),inputProvenance:c.inputs,...(c.landAssessment?{land:c.landAssessment}:{})};
   // Keep the drawn area in the input ledger; only volume/nutrient calculations
   // use the explicitly selected mapped terrestrial area.
