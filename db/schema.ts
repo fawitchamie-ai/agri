@@ -8,8 +8,13 @@ export const invitations = sqliteTable('invitations', { id: text('id').primaryKe
 export const scientificForecasts = sqliteTable('scientific_forecasts', { id: text('id').primaryKey(), coopId: text('coop_id').notNull(), importId: text('import_id').notNull(), data: text('data').notNull(), createdAt: text('created_at').notNull() }, t => [index('forecasts_scope').on(t.coopId)]);
 export const seasonalCampaigns = sqliteTable('seasonal_campaigns', {
   id: text('id').primaryKey(), coopId: text('coop_id').notNull(), ownerId: text('owner_id').notNull(), revision: integer('revision').notNull(),
-  config: text('config').notNull(), events: text('events').notNull(), plan: text('plan').notNull(), demo: integer('demo').notNull(), createdAt: text('created_at').notNull(), updatedAt: text('updated_at').notNull(),
-}, t => [index('seasonal_campaign_scope').on(t.coopId,t.ownerId)]);
+  config: text('config').notNull(), events: text('events').notNull(), plan: text('plan').notNull(), demo: integer('demo').notNull(), archivedAt: text('archived_at'), createdAt: text('created_at').notNull(), updatedAt: text('updated_at').notNull(),
+}, t => [index('seasonal_campaign_scope').on(t.coopId,t.ownerId), index('seasonal_campaign_archive').on(t.coopId,t.archivedAt,t.updatedAt)]);
+export const cooperativeProfiles = sqliteTable('cooperative_profiles', {
+  coopId: text('coop_id').primaryKey(), name: text('name').notNull(), country: text('country').notNull(), region: text('region').notNull(),
+  locality: text('locality').notNull(), phone: text('phone').notNull(), email: text('email').notNull(), contactName: text('contact_name').notNull(),
+  createdAt: text('created_at').notNull(), updatedAt: text('updated_at').notNull(),
+});
 export const seasonalRevisions = sqliteTable('seasonal_revisions', {
   campaignId: text('campaign_id').notNull().references(()=>seasonalCampaigns.id), revision: integer('revision').notNull(), actorId: text('actor_id').notNull(),
   config: text('config').notNull(), events: text('events').notNull(), plan: text('plan').notNull(), reason: text('reason').notNull(), createdAt: text('created_at').notNull(),

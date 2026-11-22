@@ -35,7 +35,7 @@ import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
 import { cropById } from '@/lib/seasonal/catalog';
 import { searchPlaces } from '@/lib/seasonal/places';
 
-function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: migrateInputs(decodeCampaignValue(row.config)), events: decodeCampaignValue(row.events), plan: decodeCampaignValue(row.plan), updatedAt: row.updated_at, demo: !!row.demo }; }
+function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: migrateInputs(decodeCampaignValue(row.config)), events: decodeCampaignValue(row.events), plan: decodeCampaignValue(row.plan), updatedAt: row.updated_at, demo: !!row.demo, archivedAt: row.archived_at ?? null }; }
 async function readable(id: string, request: Request) {
   const s = await session(request), db = database();
   const row = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
@@ -72,8 +72,12 @@ export async function GET(request: Request) { try {
     const histories = await db.prepare('SELECT revision,reason,created_at FROM seasonal_revisions WHERE campaign_id=? ORDER BY revision DESC LIMIT 50').bind(id).all<any>();
     return json({ campaign: campaign(row), history: histories.results });
   }
-  const s = await session(request), rows = await database().prepare('SELECT id,coop_id,owner_id,revision,config,demo,updated_at FROM seasonal_campaigns WHERE coop_id=? ORDER BY updated_at DESC LIMIT 100').bind(s.coopId).all<any>();
-  return json({ campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,demo:!!r.demo};}) });
+  const s = await session(request), includeArchived = url.searchParams.get('includeArchived') === '1';
+  const archiveFilter = includeArchived ? '' : 'AND archived_at IS NULL';
+  const ownerFilter = s.role === 'producteur' ? 'AND owner_id=?' : '';
+  const args = s.role === 'producteur' ? [s.coopId, s.userId] : [s.coopId];
+  const rows = await database().prepare(`SELECT id,coop_id,owner_id,revision,config,demo,updated_at,archived_at FROM seasonal_campaigns WHERE coop_id=? ${archiveFilter} ${ownerFilter} ORDER BY updated_at DESC LIMIT 500`).bind(...args).all<any>();
+  return json({ campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,archivedAt:r.archived_at??null,demo:!!r.demo};}), truncated: rows.results.length === 500 });
 } catch (e) { return error(e); } }
 export async function POST(request:Request){
  const traceId=crypto.randomUUID(),start=Date.now();let action='unread';
@@ -183,12 +187,46 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
     return json(await loadForecast(b.latitude, b.longitude, COUNTRIES[b.country as keyof typeof COUNTRIES].timezone));
   }
   if (b.action === 'simulate'){const calculation=createSeasonCalculation(b.config,b.events??[]),{config}=calculation;if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);const plan=calculation.calculate({requireGeometry:true});const responseConfig={...config};delete responseConfig.landAssessment;return json({plan,config:responseConfig,requestId:typeof b.requestId==='string'?b.requestId.slice(0,100):null});}
+  if (b.action === 'manage') {
+    const id = b.id, command = b.command;
+    if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
+    if (!['rename', 'archive', 'restore'].includes(command)) throw new InputError('Action de gestion inconnue.');
+    if (!Number.isInteger(b.expectedRevision) || b.expectedRevision < 1) throw new InputError('Révision attendue invalide.');
+    const old = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
+    if (!old || !canSee(s, old)) throw new HttpError(404, 'Campagne introuvable dans votre espace.');
+    if (old.revision !== b.expectedRevision) throw new HttpError(409, 'Cette campagne a changé. Actualisez la liste avant de continuer.');
+    if (command === 'archive' && old.archived_at) throw new HttpError(409, 'Cette campagne est déjà archivée.');
+    if (command === 'restore' && !old.archived_at) throw new HttpError(409, 'Cette campagne est déjà active.');
+    if (command === 'rename' && old.archived_at) throw new HttpError(409, 'Restaurez la campagne avant de la renommer.');
+
+    const config = migrateInputs(decodeCampaignValue(old.config));
+    if (command === 'rename') {
+      if (typeof b.name !== 'string' || !b.name.trim() || b.name.trim().length > 120) throw new InputError('Le nom doit contenir entre 1 et 120 caractères.');
+      config.name = b.name.trim();
+    }
+    const events = decodeCampaignValue(old.events), plan = decodeCampaignValue(old.plan);
+    const packed = encodeCampaignSnapshot(config, events, plan), revision = old.revision + 1, now = new Date().toISOString();
+    const archivedAt = command === 'archive' ? now : command === 'restore' ? null : old.archived_at;
+    const expectedArchivedAt = old.archived_at ?? '';
+    const reason = command === 'rename' ? 'Nom de campagne modifié.' : command === 'archive' ? 'Campagne archivée ; historique et données conservés.' : 'Campagne restaurée dans les campagnes actives.';
+    const writes = await db.batch([
+      db.prepare(`INSERT INTO seasonal_revisions (campaign_id,revision,actor_id,config,events,plan,reason,created_at)
+        SELECT ?,?,?,?,?,?,?,? WHERE EXISTS (SELECT 1 FROM seasonal_campaigns WHERE id=? AND coop_id=? AND revision=? AND COALESCE(archived_at,'')=?)`)
+        .bind(id, revision, s.userId, packed.config, packed.events, packed.plan, reason, now, id, s.coopId, old.revision, expectedArchivedAt),
+      db.prepare(`UPDATE seasonal_campaigns SET revision=?,config=?,events=?,plan=?,updated_at=?,archived_at=?
+        WHERE id=? AND coop_id=? AND revision=? AND COALESCE(archived_at,'')=?`)
+        .bind(revision, packed.config, packed.events, packed.plan, now, archivedAt, id, s.coopId, old.revision, expectedArchivedAt),
+    ]);
+    if (writes[1].meta.changes !== 1) throw new HttpError(409, 'Une autre personne vient de modifier cette campagne. Actualisez la liste.');
+    return json({ campaign: { id, revision, config, events, plan, updatedAt: now, demo: !!old.demo, archivedAt }, reason });
+  }
   if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
   if (!Number.isInteger(b.expectedRevision) || b.expectedRevision < 0) throw new InputError('Numéro de révision attendu.');
   const old = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
   if (old && !canSee(s,old)) throw new HttpError(404, 'Campagne introuvable.');
+  if (old?.archived_at) throw new HttpError(409, 'Cette campagne est archivée. Restaurez-la depuis « Mes campagnes » avant de la modifier.');
   if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
   const previousConfig=old?decodeCampaignValue(old.config):null,previousEvents=old?decodeCampaignValue(old.events):[];
   if (old && b.action === 'event') {

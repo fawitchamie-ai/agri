@@ -6,9 +6,21 @@ export async function GET(request: Request) { try {
     if (!['responsable', 'admin'].includes(s.role))
         throw new HttpError(403, 'La gestion des accès est réservée au responsable.');
     const db = database();
-    const accounts = await db.prepare('SELECT id,name,role FROM accounts WHERE coop_id=? ORDER BY name').bind(s.coopId).all();
-    const invites = await db.prepare('SELECT id,role,member_id AS memberId,expires_at AS expiresAt,accepted_at AS acceptedAt FROM invitations WHERE coop_id=? ORDER BY expires_at DESC').bind(s.coopId).all();
-    return json({ accounts: accounts.results, invitations: invites.results });
+    const [accounts, members, invites] = await Promise.all([
+      db.prepare('SELECT id,name,role,created_at AS createdAt FROM accounts WHERE coop_id=? ORDER BY name').bind(s.coopId).all<any>(),
+      db.prepare("SELECT owner_id,data FROM business_records WHERE coop_id=? AND kind='member'").bind(s.coopId).all<any>(),
+      db.prepare('SELECT id,role,member_id AS memberId,email,created_by AS createdBy,expires_at AS expiresAt,accepted_at AS acceptedAt FROM invitations WHERE coop_id=? ORDER BY expires_at DESC LIMIT 200').bind(s.coopId).all<any>(),
+    ]);
+    const memberByOwner = new Map<string, { id: string; name: string }>();
+    for (const row of members.results) {
+      const existing = memberByOwner.get(row.owner_id);
+      const data = JSON.parse(row.data);
+      if (!existing || String(data.name).localeCompare(existing.name) < 0) memberByOwner.set(row.owner_id, { id: row.id, name: data.name });
+    }
+    return json({
+      accounts: accounts.results.map((account: any) => ({ ...account, memberId: memberByOwner.get(account.id)?.id ?? null, memberName: memberByOwner.get(account.id)?.name ?? null })),
+      invitations: invites.results,
+    });
 }
 catch (e) {
     return failure(e);
@@ -64,9 +76,13 @@ export async function POST(request: Request) {
             if (b.email && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email) || b.email.length > 200))
                 throw new HttpError(400, 'Adresse électronique invalide.');
             if (b.memberId) {
-                const member = await db.prepare("SELECT id FROM business_records WHERE id=? AND coop_id=? AND kind='member'").bind(b.memberId, s.coopId).first();
+                if (b.role !== 'producteur')
+                    throw new HttpError(400, 'Une fiche membre ne peut être liée qu’à une invitation de producteur.');
+                const member = await db.prepare("SELECT data FROM business_records WHERE id=? AND coop_id=? AND kind='member'").bind(b.memberId, s.coopId).first<any>();
                 if (!member)
                     throw new HttpError(400, 'Membre inconnu dans votre coopérative.');
+                if (JSON.parse(member.data).active === false)
+                    throw new HttpError(400, 'Réactivez cette fiche membre avant de lui attribuer un accès producteur.');
             }
             const code = crypto.randomUUID() + crypto.randomUUID(), id = crypto.randomUUID(), expiresAt = new Date(Date.now() + 7 * 86400000).toISOString();
             await db.prepare('INSERT INTO invitations (id,token_hash,coop_id,role,member_id,email,created_by,expires_at) VALUES (?,?,?,?,?,?,?,?)').bind(id, await digest(code), s.coopId, b.role, b.memberId || null, b.email?.toLowerCase() || null, s.userId, expiresAt).run();

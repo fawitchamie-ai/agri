@@ -1,0 +1,67 @@
+.coop-management{display:grid;gap:20px;color:#26374b}
+.coop-management-heading{display:flex;align-items:center;gap:15px;padding:21px 24px;background:white;border:1px solid #dbe2ea;border-radius:12px}
+.coop-management-mark{display:grid;place-items:center;width:54px;height:54px;flex:none;border-radius:15px 15px 15px 4px;background:#e8eff7;color:#31577f;font-size:22px;font-weight:700}
+.coop-management-title{min-width:0;flex:1}
+.coop-management-title h2{font-size:24px;margin:3px 0;color:#25364b;overflow-wrap:anywhere}
+.coop-management-title p{margin:0;color:#6c7e93;font-size:14px}
+.coop-role-badge,.coop-demo-badge{border:1px solid #d8e1ec;border-radius:999px;padding:6px 11px;background:#f5f8fb;color:#526b89;font-size:13px;white-space:nowrap}
+.coop-demo-badge{background:#fff5e4;border-color:#f2dfbb;color:#7b5e22}
+.coop-management-tabs{display:flex;gap:5px;width:max-content;max-width:100%;overflow-x:auto;padding:4px;border:1px solid #dce3ec;border-radius:9px;background:#edf1f6}
+.coop-management-tabs button{min-height:42px;padding:8px 15px;border:0;border-radius:6px;background:transparent;color:#61748c;font:inherit;font-size:14px;white-space:nowrap;cursor:pointer}
+.coop-management-tabs button[aria-selected=true]{background:white;color:#2c4d75;box-shadow:0 1px 3px #203a5c16;font-weight:700}
+.coop-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.coop-summary-grid article{display:flex;flex-direction:column;min-height:135px;padding:18px 19px;background:white;border:1px solid #dce3ec;border-radius:10px}
+.coop-summary-grid article>span{color:#657992;font-size:14px}
+.coop-summary-grid article>strong{margin:7px 0 2px;color:#294a73;font-size:27px;font-variant-numeric:tabular-nums}
+.coop-summary-grid article>small{color:#78899d;font-size:12px;line-height:1.5}
+.coop-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.coop-overview-grid>.card,.coop-management .card{min-width:0}
+.coop-profile-summary{display:grid;grid-template-columns:minmax(105px,.7fr) 1fr;gap:0 15px;margin:10px 0 0}
+.coop-profile-summary dt,.coop-profile-summary dd{padding:10px 0;border-bottom:1px solid #e8edf2;font-size:14px}
+.coop-profile-summary dt{color:#708198}
+.coop-profile-summary dd{margin:0;color:#344961;font-weight:700;overflow-wrap:anywhere}
+.coop-shortcuts{display:grid;gap:8px}
+.coop-shortcuts button{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border:1px solid #e0e6ee;border-radius:8px;background:#fff;color:#344b67;text-align:left;cursor:pointer}
+.coop-shortcuts button:hover{border-color:#b3c4d8;background:#f8fafc}
+.coop-shortcuts button>span{display:grid;gap:2px}
+.coop-shortcuts button strong{font-size:14px}
+.coop-shortcuts button small{color:#718299;font-size:12px}
+.coop-shortcuts button>b{color:#46668c;font-size:12px;white-space:nowrap}
+.coop-member-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.coop-member-toolbar h3{margin:4px 0;font-size:21px}
+.coop-member-toolbar p{margin:0;color:#6d8096;font-size:14px}
+.coop-member-toolbar>div:last-child{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
+.coop-member-list-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:17px}
+.coop-member-list-heading>.field{margin:0;min-width:min(100%,350px)}
+.coop-member-scope{display:flex;gap:4px;padding:4px;border:1px solid #dde4ec;border-radius:8px;background:#f1f4f8}
+.coop-member-scope button{min-height:38px;padding:7px 12px;border:0;border-radius:5px;background:transparent;color:#60748c;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.coop-member-scope button[aria-selected=true]{background:white;color:#35577e;box-shadow:0 1px 3px #203a5c16;font-weight:700}
+.coop-management .data-table td,.coop-management .data-table th{font-size:14px;vertical-align:middle}
+.coop-management .data-table td small{font-size:12px;color:#71829a}
+.coop-table-subline{display:block;margin-top:3px}
+.coop-state-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:#e7f1e9;color:#3e6748;font-size:12px;font-weight:700;white-space:nowrap}
+.coop-state-pill.inactive{background:#eef1f5;color:#69778a}
+.coop-row-actions{display:flex;flex-wrap:wrap;gap:7px}
+.coop-management .coop-row-actions .btn,.coop-management .btn.small{min-height:35px;padding:7px 10px;font-size:12px}
+.coop-empty{display:grid;justify-items:center;gap:6px;padding:35px 20px;text-align:center;border:1px dashed #ccd7e3;border-radius:9px;background:#f8fafc;color:#405770}
+.coop-empty strong{font-size:16px}
+.coop-empty p{max-width:480px;margin:0;color:#70829a;font-size:14px}
+.coop-capacity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.coop-capacity-grid>.coop-empty{grid-column:1/-1}
+.coop-capacity-title{display:flex;align-items:center;gap:12px}
+.coop-capacity-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:9px;background:#ebf1f7;color:#46678c;font-size:20px}
+.coop-capacity-title h3{margin:0;color:#2a3d55;font-size:17px}
+.coop-capacity-title p{margin:3px 0 0;color:#7a8ba0;font-size:12px}
+.coop-capacity-values{display:grid;grid-template-columns:1fr auto;gap:9px 12px;margin:19px 0;padding-top:15px;border-top:1px solid #e6ebf1}
+.coop-capacity-values dt{color:#718198;font-size:13px}
+.coop-capacity-values dd{margin:0;color:#314b68;font-size:14px;font-weight:700}
+.coop-access-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;align-items:start}
+.coop-team-card{grid-column:1/-1}
+.coop-invite-code{display:flex;align-items:end;gap:9px;margin-top:15px;padding:14px;background:#f2f6fb;border:1px solid #dce5ef;border-radius:9px}
+.coop-invite-code .field{flex:1;margin:0}
+.coop-invite-code input{font-family:ui-monospace,monospace;letter-spacing:.3px}
+.coop-invitation-heading{margin:24px 0 11px;color:#364d69;font-size:15px}
+.coop-management .field>span{font-size:14px}
+.coop-management .notice{font-size:14px}
+@media(max-width:1050px){.coop-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.coop-capacity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.coop-management{gap:14px}.coop-management-heading{align-items:flex-start;flex-wrap:wrap;padding:16px}.coop-management-mark{width:44px;height:44px;font-size:19px}.coop-management-title{width:calc(100% - 60px)}.coop-management-title h2{font-size:21px}.coop-role-badge,.coop-demo-badge{font-size:12px}.coop-management-tabs{width:100%;justify-content:flex-start}.coop-management-tabs button{padding:8px 12px;font-size:13px}.coop-summary-grid{gap:8px}.coop-summary-grid article{min-height:118px;padding:13px}.coop-summary-grid article>span{font-size:12px}.coop-summary-grid article>strong{font-size:23px}.coop-summary-grid article>small{font-size:11px}.coop-overview-grid,.coop-access-grid{grid-template-columns:1fr}.coop-team-card{grid-column:auto}.coop-profile-summary{grid-template-columns:95px 1fr;gap:0 10px}.coop-profile-summary dt,.coop-profile-summary dd{font-size:13px}.coop-member-toolbar{align-items:flex-start;flex-direction:column}.coop-member-toolbar>div:last-child{width:100%;justify-content:stretch}.coop-member-toolbar>div:last-child .btn{flex:1}.coop-member-list-heading{align-items:stretch;flex-direction:column}.coop-member-list-heading>.field{min-width:0}.coop-member-scope button{flex:1}.coop-capacity-grid{grid-template-columns:1fr}.coop-invite-code{align-items:stretch;flex-direction:column}.coop-management .data-table td,.coop-management .data-table th{font-size:13px;padding:11px}.coop-row-actions{min-width:140px}}

@@ -116,5 +116,5 @@ export type WaterPlan = {
     recordedSourceM3: number | null; remainingSourceM3: number | null; sourceM3: number | null;
     fieldM3: number | null; remainingBudgetM3: number | null };
 };
-export type Campaign = { id: string; revision: number; config: SeasonalConfig; events: WaterEvent[]; plan: WaterPlan; updatedAt: string; demo: boolean };
-export type CampaignSummary = { id: string; name: string; country: keyof typeof COUNTRIES; crop: string; revision: number; updatedAt?: string; territory?:string; sowingDate?:string; areaM2?:number|null; geometry?:import('./parcel.ts').ParcelPolygon|null };
+export type Campaign = { id: string; revision: number; config: SeasonalConfig; events: WaterEvent[]; plan: WaterPlan; updatedAt: string; demo: boolean; archivedAt?:string|null };
+export type CampaignSummary = { id: string; name: string; country: keyof typeof COUNTRIES; crop: string; revision: number; updatedAt?: string; territory?:string; sowingDate?:string; areaM2?:number|null; geometry?:import('./parcel.ts').ParcelPolygon|null; archivedAt?:string|null };

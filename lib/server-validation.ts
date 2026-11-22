@@ -17,6 +17,12 @@ export function validateRecord(kind: RecordKind, input: unknown) {
     if (kind === 'member') {
         data.name = text(d, 'name', true, 120);
         data.locality = text(d, 'locality', true, 160);
+        data.phone = text(d, 'phone', false, 32);
+        data.email = text(d, 'email', false, 200).toLowerCase();
+        data.memberNumber = text(d, 'memberNumber', false, 40);
+        data.active = d.active !== false;
+        if (data.phone && !/^\+?[0-9 ()-]{7,32}$/.test(data.phone)) throw new Error('Numéro de téléphone invalide.');
+        if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) throw new Error('Adresse électronique invalide.');
         return { data, warnings };
     }
     if (kind === 'capacity') {
