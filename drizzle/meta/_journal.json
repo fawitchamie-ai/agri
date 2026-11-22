@@ -29,6 +29,20 @@
       "when": 1793288856416,
       "tag": "0003_seasonal_campaigns",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795179117000,
+      "tag": "0004_land_jobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1795372504113,
+      "tag": "0005_campaign_cooperative_management",
+      "breakpoints": true
     }
   ]
 }

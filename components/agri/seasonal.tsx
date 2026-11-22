@@ -23,6 +23,7 @@ import {automaticCampaign} from '../../lib/seasonal/automatic';
 import {CAMPAIGN_FILE_MAX_BYTES,parseCampaignFile} from '../../lib/seasonal/campaign-file';
 import {rebaseManagementPlan,rebasePlannedEvents} from '../../lib/seasonal/management';
 import { seasonalCapabilities } from '../../lib/seasonal/capabilities';
+import CampaignLibrary from './campaign-library';
 
 const fmt = (v: number | null | undefined, digits = 1) => v === null || v === undefined ? 'Indisponible' : new Intl.NumberFormat('fr-FR', { maximumFractionDigits: digits }).format(v);
 const nullable = (s: string) => s.trim() === '' ? null : Number(s);
@@ -46,6 +47,9 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   const [draftId,setDraftId]=useState(newId);
   const [active,setActive] = useState<{ id:string; revision:number }|null>(null);
   const [list,setList] = useState<CampaignSummary[]>([]);
+  const [listLoading,setListLoading] = useState(false);
+  const [listError,setListError] = useState('');
+  const [listTruncated,setListTruncated] = useState(false);
   const [history,setHistory] = useState<{revision:number;reason:string;created_at:string}[]>([]);
   const [tab,setTab] = useState('simulation');
   const previousTab=useRef(tab);
@@ -82,6 +86,17 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   const terrainIdentity=JSON.stringify(config.parcelGeometry??null);
   const terrainKey=JSON.stringify([scope,simulationRetry,terrainIdentity]);
   const preparedTerrain=useRef('');
+  async function refreshCampaigns() {
+    if (!workspace) { setList([]); setListError(''); setListTruncated(false); return; }
+    setListLoading(true); setListError('');
+    try {
+      const result = await api('/api/seasonal?includeArchived=1');
+      const campaigns = result.campaigns ?? [];
+      setList(campaigns); setListTruncated(result.truncated === true);
+      onCampaignsLoaded?.(campaigns.filter((c:CampaignSummary) => !c.archivedAt));
+    } catch(e) { setListError((e as Error).message); }
+    finally { setListLoading(false); }
+  }
   useEffect(()=>{
     if(loadedScope!==scope||!config.parcelGeometry||parcelDraft||satelliteExample)return;
     preparedTerrain.current='';setSimulationError('');setPlanStale(true);
@@ -116,7 +131,7 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   useEffect(()=>{
     simulationSequence.current++;setLandProgress(null);setLoadedScope(scope);setDraftId(newId());setActive(null);setEvents([]);setPlan(null);setNutrientResult(null);setConfig(emptyCampaign());setDirty(true);setHistory([]);setKeepDraft(false);setList([]);onCampaignsLoaded?.(null);setError('');setNotice('');
     try { setQueue(JSON.parse(localStorage.getItem(queueKey)||'[]')); } catch { setQueue([]); }
-    if(workspace) api('/api/seasonal').then(r=>{const campaigns=r.campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);}).catch(e=>setError(e.message));
+    if(workspace) void refreshCampaigns();
   },[scope]); // changing account never exposes the previous account's draft
   useEffect(()=>{ if(keepDraft&&loadedScope===scope) { try { localStorage.setItem(draftKey,JSON.stringify({config,events,active})); } catch { setError('Brouillon non conservé : stockage de cet appareil indisponible. Exportez votre campagne.'); } } },[config,events,active,keepDraft,draftKey,loadedScope,scope]);
   function edit(next: SeasonalConfig) { if(satelliteExample&&next.stages.length)setSatelliteExample('');const updated=next.inputs&&next.inputs!==config.inputs?migrateInputs(next):reconcileInputs(config,next);const withoutIrrigation=(c:SeasonalConfig)=>JSON.stringify({...c,managementPlan:c.managementPlan?{...c.managementPlan,irrigation:null}:c.managementPlan});const irrigationOnly=JSON.stringify(config.managementPlan?.irrigation)!==JSON.stringify(updated.managementPlan?.irrigation)&&withoutIrrigation(config)===withoutIrrigation(updated);simulationDebounce.current=irrigationOnly?1000:350;simulationSequence.current++;setNutrientResult(null);setConfig(updated);setDirty(true);setPlanStale(true); }
@@ -165,7 +180,41 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   const handledCampaignOpen=useRef(0);
   useEffect(()=>{if(campaignOpenRequest>handledCampaignOpen.current&&campaignOpenId){handledCampaignOpen.current=campaignOpenRequest;void open(campaignOpenId);}},[campaignOpenRequest,campaignOpenId]);
   function compute() { setError('');if(parcelDraft){setError('Confirmez le contour de la parcelle avant de simuler.');setTab('carte');return;}setTab('plan');edit({...config}); }
-  async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);onCampaignSelected?.(r.campaign.id);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');const campaigns=(await api('/api/seasonal')).campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
+  async function save() {if(parcelDraft){setError('Confirmez le contour de la parcelle avant de l’enregistrer.');setTab('carte');return;}setBusy(true);setError('');try {const id=active?.id||draftId;const r=await api('/api/seasonal',{action:'save',id,expectedRevision:active?.revision||0,config,events:active?undefined:events});adopt(r.campaign);onCampaignSelected?.(r.campaign.id);setHistory([]);setNotice('Campagne et plan enregistrés. Les révisions antérieures sont conservées.');await refreshCampaigns();}catch(e){setError((e as Error).message);}finally{setBusy(false);} }
+  async function manageCampaign(campaign:CampaignSummary,command:'rename'|'archive'|'restore',name?:string):Promise<boolean>{
+    setBusy(true);setError('');
+    try{
+      const result=await api('/api/seasonal',{action:'manage',command,id:campaign.id,expectedRevision:campaign.revision,...(name?{name}:{})});
+      if(active?.id===campaign.id){
+        if(command==='rename'){
+          setActive(current=>current?.id===campaign.id?{...current,revision:result.campaign.revision}:current);
+          setConfig(current=>({...current,name:result.campaign.config.name}));
+        }
+        if(command==='archive'){
+          setActive(null);setDraftId(newId());setDirty(true);
+          setNotice('La version enregistrée est archivée. Les paramètres encore ouverts restent dans un brouillon séparé.');
+        }
+      }
+      await refreshCampaigns();
+      if(command==='rename')setNotice('Campagne renommée. La révision précédente reste consultable.');
+      if(command==='restore')setNotice('Campagne restaurée dans la liste active.');
+      return true;
+    }catch(e){setError((e as Error).message);return false;}
+    finally{setBusy(false);}
+  }
+  async function duplicateCampaign(id:string){
+    if(dirty&&config.parcelGeometry&&!window.confirm('Créer une campagne à partir de ces réglages remplacera le brouillon actuellement ouvert. Continuer ?'))return;
+    setBusy(true);setError('');
+    try{
+      const source=await api('/api/seasonal?id='+encodeURIComponent(id));
+      const previous=migrateInputs(source.campaign.config);
+      const name=`${previous.name||'Campagne'} — nouvelle`;
+      const next:SeasonalConfig={...previous,name,sowingDate:today(),asOfDate:today(),weather:[],fallback:null,fieldMonitoring:undefined,satelliteMonitoring:undefined,canopyNowcast:undefined,agronomic:undefined,managementPlan:undefined,sowingPlan:undefined,yieldEstimation:undefined,yieldScenario:'recorded',fertilizerScenario:undefined,fieldTrials:undefined,soilAnalyses:[],nutritionReference:undefined,landAssessment:undefined,inputs:undefined,inputPolicy:{allowAssumptions:false,allowStale:false}};
+      simulationSequence.current++;setSatelliteExample('');setConfig(next);setEvents([]);setPlan(null);setPlanStale(true);setActive(null);setDraftId(newId());setHistory([]);setDirty(true);setStartAtYield(false);setLibraryOpen(false);setTab('carte');setSimulationError('');setSimulationRetry(value=>value+1);
+      setNotice('Nouveau brouillon créé à partir du contour et des réglages. Les interventions réalisées, les observations et la météo précédente n’ont pas été copiées. Vérifiez la date et actualisez les données avant l’enregistrement.');
+    }catch(e){setError((e as Error).message);}
+    finally{setBusy(false);}
+  }
   async function openDemoSession(): Promise<boolean> {setBusy(true);setError('');try {await api('/api/demo',{role:'responsable',coopId:'demo-a'});const result=await api('/api/seasonal');const campaigns=result.campaigns??[];setList(campaigns);onCampaignsLoaded?.(campaigns);setDemoSessionReady(true);setSimulationError('');setSimulationRetry(value=>value+1);setNotice('Espace de démonstration ouvert. Votre contour et vos paramètres sont conservés.');return true;}catch(e){setError((e as Error).message);return false;}finally{setBusy(false);} }
   function persistQueue(next: QueueItem[]) { localStorage.setItem(queueKey,JSON.stringify(next));setQueue(next); }
   async function recordEvent(e:WaterEvent) {
@@ -251,13 +300,13 @@ export default function Seasonal({ workspace, science, campaignsRequest=0, initi
   return <div className="seasonal-tool is-campaign-workspace">
     <header className="farmer-app-bar no-print"><ProductBrand onClick={onHome}/><div className="farmer-app-location"><span>MA CAMPAGNE</span><strong>{libraryOpen?'Mes campagnes':config.parcelGeometry?config.name||'Mon champ':tab==='carte'?'Choisir mon champ':'Nouvelle campagne'}</strong></div><button className="farmer-header-menu" aria-label="Ouvrir les autres outils" aria-expanded={menuOpen} onClick={onMenu}><ProductIcon name="menu" size={19}/><span>Autres outils</span></button><button className="farmer-header-campaigns" onClick={()=>{setLibraryOpen(!libraryOpen);setTab('simulation');}} aria-expanded={libraryOpen}><ProductIcon name="file" size={18}/><span>Mes campagnes</span>{list.length>0&&<b>{list.length}</b>}</button>{config.parcelGeometry&&(workspace||demoSessionReady)&&<button className="farmer-header-save" disabled={busy||parcelDraft} onClick={save}><ProductIcon name="save" size={18}/><span>{busy?'Enregistrement…':'Enregistrer'}</span></button>}<button className="farmer-header-new" onClick={startNew}><ProductIcon name="plus" size={18}/><span>Nouveau champ</span></button></header>
     {tab!=='simulation'&&<button className="simulation-back" onClick={()=>{setLibraryOpen(false);setTab('simulation');}}><ProductIcon name="back" size={16}/> Revenir à la simulation</button>}
-    {libraryOpen&&<section className="simulation-library" id="simulation-library" aria-label="Simulations enregistrées">{list.length?<div className="campaign-grid">{list.map(c=><button className="campaign-card" key={c.id} onClick={()=>open(c.id)}><span><ProductIcon name="leaf"/><small>{COUNTRIES[c.country]?.name}</small></span><strong>{c.name}</strong><HelpParagraph>{c.crop} · révision {c.revision}</HelpParagraph><em>Reprendre la simulation <ProductIcon name="arrow" size={16}/></em></button>)}</div>:<div className="library-empty"><ProductIcon name="file" size={30}/><h2>Vos campagnes apparaîtront ici.</h2><HelpParagraph>Créez votre première simulation, puis enregistrez-la dans votre espace.</HelpParagraph><button className="btn primary" onClick={startNew}>Créer une simulation <ProductIcon name="plus" size={16}/></button></div>}<section className="satellite-examples"><h2>Voir des cartes avec de vraies images</h2><p>Contours techniques publics. Culture et récolte non confirmées.</p><div className="campaign-grid">{SATELLITE_EXAMPLES.map(e=><button className="campaign-card" key={e.id} disabled={busy} onClick={()=>loadSatelliteExample(e.id)}><span><ProductIcon name="satellite"/><small>Sentinel-2 · exemple satellite</small></span><strong>{e.name}</strong><em>Voir les cartes NDVI <ProductIcon name="arrow" size={16}/></em></button>)}</div></section><div className="library-tools"><button className="qs-text-button" onClick={restoreDraft}>Restaurer mon brouillon local</button><button className="qs-text-button" onClick={()=>{setLibraryOpen(false);setTab('fichiers');}}>Importer une campagne →</button></div></section>}
+    {libraryOpen&&<section className="simulation-library" id="simulation-library" aria-label="Gestion des campagnes"><CampaignLibrary campaigns={list} loading={listLoading} error={listError} truncated={listTruncated} busy={busy} onOpen={id=>void open(id)} onDuplicate={duplicateCampaign} onNew={startNew} onManage={manageCampaign} onRetry={()=>void refreshCampaigns()} onImport={()=>{setLibraryOpen(false);setTab('fichiers');}} onRestoreDraft={restoreDraft}/><section className="satellite-examples"><h2>Voir des cartes avec de vraies images</h2><p>Contours techniques publics. Culture et récolte non confirmées.</p><div className="campaign-grid">{SATELLITE_EXAMPLES.map(e=><button className="campaign-card" key={e.id} disabled={busy} onClick={()=>loadSatelliteExample(e.id)}><span><ProductIcon name="satellite"/><small>Sentinel-2 · exemple satellite</small></span><strong>{e.name}</strong><em>Voir les cartes NDVI <ProductIcon name="arrow" size={16}/></em></button>)}</div></section></section>}
     <div hidden={tab!=='simulation'||libraryOpen}>{loadedScope===scope&&<QuickSimulation key={scope+':'+(active?.id??draftId)} config={config} plan={plan} stale={planStale} initialSection={satelliteExample?'images':startAtYield?'yield':initialSection==='map'?undefined:initialSection} initialMonitoringView={satelliteExample?'satellite':initialMonitoringView} landProgress={landProgress?.assessment?.scopeId===config.inputs?.scope.id||landProgress?.status!=='complete'?landProgress:null} calculationError={simulationError} onRetry={()=>setSimulationRetry(n=>n+1)} onChange={edit} onMap={()=>{setStartAtYield(false);setTab('carte');}} onAdvanced={setTab} onSave={save} canSave={(!!workspace||demoSessionReady)&&!busy} canOpenDemo={!workspace&&!demoSessionReady} onOpenDemo={openDemoSession} demoBusy={busy} events={events} paused={isMapping}/>}</div>
     {tab!=='simulation'&&simulationError&&<div className="notice warning" role="alert"><strong>{tab==='carte'?'Analyse du terrain indisponible.':'Calcul interrompu.'}</strong> {simulationError}{plan&&planStale&&<> Le dernier calcul réussi est conservé, mais correspond aux paramètres précédents.</>} <button className="btn secondary small" onClick={()=>setSimulationRetry(n=>n+1)}>Relancer le calcul</button></div>}
     {error&&<div className="notice warning" role="alert">{error}</div>}
     {notice&&<div className="notice info" role="status">{notice}</div>}
     {queue.length>0&&<div className="notice warning no-print"><div><strong>{queue.length} saisie(s) en attente sur cet appareil</strong><HelpParagraph>Les conflits de révision interrompent la synchronisation pour préserver les corrections faites ailleurs.</HelpParagraph><button className="btn secondary" disabled={busy} onClick={synchronize}>Synchroniser</button>{active&&queue.some(q=>q.campaignId===active.id&&q.expectedRevision!==active.revision)&&<button className="btn secondary" onClick={()=>{persistQueue(queue.map(q=>q.campaignId===active.id?{...q,expectedRevision:active.revision}:q));setNotice('Saisies en attente reprises sur la révision affichée. Vérifiez leurs quantités avant de synchroniser.');}}>Reprendre les saisies sur cette révision après examen</button>}<button className="btn secondary" onClick={()=>download('observations-en-attente.json',JSON.stringify(queue,null,2),'application/json')}>Exporter les saisies en attente</button></div></div>}
-    {!libraryOpen&&tab==='simulation'&&!config.parcelGeometry&&list.length>0&&<section className="recent-campaigns"><div className="overview-card-header"><h3>Ou reprendre une campagne</h3><button onClick={()=>setLibraryOpen(true)}>Tout voir <ProductIcon name="arrow" size={15}/></button></div><div className="campaign-grid">{list.slice(0,3).map(c=><button className="campaign-card" key={c.id} onClick={()=>open(c.id)}><span><ProductIcon name="leaf"/><small>{COUNTRIES[c.country]?.name}</small></span><strong>{c.name}</strong><HelpParagraph>{c.crop}</HelpParagraph><em>Reprendre <ProductIcon name="arrow" size={16}/></em></button>)}</div></section>}
+    {!libraryOpen&&tab==='simulation'&&!config.parcelGeometry&&list.some(c=>!c.archivedAt)&&<section className="recent-campaigns"><div className="overview-card-header"><h3>Ou reprendre une campagne</h3><button onClick={()=>{setLibraryOpen(true);void refreshCampaigns();}}>Tout voir <ProductIcon name="arrow" size={15}/></button></div><div className="campaign-grid">{list.filter(c=>!c.archivedAt).slice(0,3).map(c=><button className="campaign-card" key={c.id} onClick={()=>open(c.id)}><span><ProductIcon name="leaf"/><small>{COUNTRIES[c.country]?.name}</small></span><strong>{c.name}</strong><HelpParagraph>{c.crop}</HelpParagraph><em>Reprendre <ProductIcon name="arrow" size={16}/></em></button>)}</div></section>}
     {tab!=='simulation'&&tab!=='carte'&&<div className="qs-secondary-nav no-print" role="tablist" aria-label="Réglages et suivi">{Object.entries(advancedLabels).map(([id,label])=><button key={id} id={'seasonal-tab-'+id} role="tab" aria-selected={tab===id} aria-controls={'seasonal-panel-'+id} onClick={()=>setTab(id)}>{label}</button>)}</div>}
     <div hidden={tab!=='carte'} role="tabpanel" id="seasonal-panel-carte" aria-label="Mon champ sur la carte" tabIndex={-1}><ParcelExplorer key={'map-'+(active?.id??draftId)} config={config} plan={planStale?null:plan} locked={events.some(e=>['measured','declared'].includes(e.status))} canSearch={!!workspace||demoSessionReady} simple onParcel={defineParcel} onPrepare={prepareParcel} onScenario={exploreScenario} onCalendar={()=>setTab('simulation')} onName={name=>change('name',name)} onDirty={setParcelDraft} onLandSelection={value=>change('landSelection',value)} onWaterCondition={value=>change('waterCondition',value)}/></div>
     {tab!=='simulation'&&tab!=='carte'&&config.parcelGeometry&&<div className="field-parcel-summary"><span><MapIcon name="draw"/>{config.name||'Mon champ'} <b>{fmt(config.areaM2! /10000,3)} ha</b> · {COUNTRIES[config.country].name}</span><button onClick={()=>setTab('carte')}>Revoir ma parcelle <MapIcon name="arrow" size={15}/></button></div>}

@@ -6,6 +6,7 @@ export type RecordKind='member'|'simulation'|'collection'|'harvest'|'capacity';
 export type BusinessRecord={id:string;kind:RecordKind;coopId:string;ownerId:string;data:Record<string,any>;createdAt:string;updatedAt:string;history?:any[]};
 export type Session={userId:string;name:string;role:Role;coopId:string;demo:boolean};
 export type Bootstrap={session:Session;records:BusinessRecord[]};
+export type CooperativeProfile={coopId:string;name:string;country:string;region:string;locality:string;phone:string;email:string;contactName:string;createdAt?:string;updatedAt?:string;configured?:boolean};
 // GET /api/workspace -> Bootstrap. POST {kind,data,id?} -> {record}; all writes same-origin JSON, server validates.
 // GET /api/science -> Science, immutable bundled results plus accepted versioned imports.
 // POST /api/import {csv,confirm:false} -> {rows,errors,duplicates,token?}; confirm:true repeats CSV and imports valid whole batch.

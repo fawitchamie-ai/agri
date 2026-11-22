@@ -33,6 +33,8 @@ export async function POST(request: Request) {
             throw new HttpError(400, e instanceof Error ? e.message : 'Données invalides.');
         }
         const { data, warnings } = validated;
+        if (['member', 'capacity'].includes(kind) && !['responsable', 'admin'].includes(s.role))
+            throw new HttpError(403, 'La gestion des membres et des moyens est réservée au responsable.');
         let memberOwnerId: string | undefined;
         const old = b.id ? await db.prepare('SELECT * FROM business_records WHERE id=? AND coop_id=?').bind(b.id, s.coopId).first<any>() : null;
         if (b.id && !old)
@@ -129,6 +131,8 @@ export async function DELETE(request: Request) { try {
     const db = database(), old = await db.prepare('SELECT * FROM business_records WHERE id=? AND coop_id=?').bind(b.id, s.coopId).first<any>();
     if (!old)
         throw new HttpError(404, 'Enregistrement introuvable.');
+    if (['member', 'capacity'].includes(old.kind) && !['responsable', 'admin'].includes(s.role))
+        throw new HttpError(403, 'La gestion des membres et des moyens est réservée au responsable.');
     if (old.kind === 'harvest') {
         const linked = await db.prepare("SELECT data FROM business_records WHERE coop_id=? AND kind='collection'").bind(s.coopId).all<any>();
         if (linked.results.some(r => JSON.parse(r.data).harvestId === b.id))
