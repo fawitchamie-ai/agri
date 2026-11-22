@@ -108,7 +108,8 @@ export default function CampaignLibrary({ campaigns, loading, error, truncated, 
 
     {error && <div className="notice warning" role="alert"><div><strong>La liste ne peut pas être actualisée.</strong><HelpParagraph>{error}</HelpParagraph><button className="btn secondary small" onClick={onRetry} disabled={busy}>Réessayer</button></div></div>}
     {loading ? <div className="campaign-library-empty" role="status">Chargement de vos campagnes…</div>
-      : visible.length ? <div className="campaign-library-grid">{visible.map(campaign => <article className={'campaign-record'+(campaign.archivedAt ? ' is-archived' : '')} key={campaign.id}>
+      : visible.length ? <div className="campaign-library-grid">{visible.map(campaign => (
+        <article className={'campaign-record'+(campaign.archivedAt ? ' is-archived' : '')} key={campaign.id}>
         <div className="campaign-record-topline"><span className="campaign-record-country">{COUNTRIES[campaign.country]?.name || campaign.country}</span><span className={'campaign-record-state'+(campaign.archivedAt ? ' archived' : '')}>{campaign.archivedAt ? 'Archivée' : 'Active'}</span></div>
         {editingId === campaign.id ? <form className="campaign-rename-form" onSubmit={e => { e.preventDefault(); void rename(campaign); }}>
           <label className="field"><span>Nouveau nom</span><input autoFocus value={draftName} maxLength={120} onChange={e => setDraftName(e.target.value)} required/></label>
@@ -130,7 +131,8 @@ export default function CampaignLibrary({ campaigns, loading, error, truncated, 
             <button className="btn secondary small" onClick={() => void toggleArchive(campaign)} disabled={busy}>{campaign.archivedAt ? 'Restaurer' : 'Archiver'}</button>
           </div>
         </>
-      </article>)}</div>
+        </article>
+      ))}</div>
       : <div className="campaign-library-empty"><strong>{scope === 'archived' ? 'Aucune campagne archivée.' : campaigns.length ? 'Aucune campagne ne correspond à ces filtres.' : 'Votre espace campagne est prêt.'}</strong><HelpParagraph>{scope === 'archived' ? 'Les campagnes archivées resteront disponibles ici et peuvent être restaurées.' : campaigns.length ? 'Modifiez la recherche ou les filtres, ou effacez-les pour revoir toutes les campagnes.' : 'Créez une campagne depuis un contour de champ, puis enregistrez-la pour la retrouver ici.'}</HelpParagraph>{!campaigns.length && <button className="btn primary" onClick={onNew}>Créer ma première campagne</button>}</div>}
     {truncated && <p className="campaign-library-limit">La liste présente les 500 campagnes les plus récentes de cet espace.</p>}
     <div className="campaign-library-utilities"><button className="qs-text-button" onClick={onRestoreDraft}>Restaurer le brouillon de cet appareil</button></div>
