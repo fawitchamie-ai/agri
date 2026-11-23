@@ -39,6 +39,13 @@ export function fieldImageSummary(grid:ReturnType<typeof zoneGrid>,read?:ZoneSea
  const quantile=(p:number)=>{let area=0;for(const v of ordered){area+=v.area;if(area>=areaM2*p)return v.value;}return null;};
  return {values,cells:cells.length,areaM2,coverage:Math.min(1,areaM2/grid.areaM2),mean:areaM2?cells.reduce((s,c)=>s+values.get(c.id)!*c.areaM2,0)/areaM2:null,minimum:ordered[0]?.value??null,maximum:ordered.at(-1)?.value??null,median:quantile(.5),p10:quantile(.1),p90:quantile(.9)};
 }
+export const FIELD_IMAGE_CLEAR_TARGET=.8;
+/** Require both native clear surface and qualified summary cells. A 60% grid
+ * support cannot be presented as an 80% clear observation. */
+export function meetsFieldImageTarget(grid:ReturnType<typeof zoneGrid>,read:ZoneSeasonRead,target=FIELD_IMAGE_CLEAR_TARGET){
+ const s=fieldImageSummary(grid,read);
+ return s.cells>=12&&s.coverage>=target-1e-8&&read.scenes.length===1&&read.scenes[0].clearFraction>=target-1e-8;
+}
 /** Change in absolute NDVI on identical support; never compare stretched colours. */
 export function compareFieldImages(grid:ReturnType<typeof zoneGrid>,a?:ZoneSeasonRead,b?:ZoneSeasonRead){
  const left=fieldImageSummary(grid,a).values,right=fieldImageSummary(grid,b).values,cells=grid.cells.filter(c=>left.has(c.id)&&right.has(c.id)),area=cells.reduce((s,c)=>s+c.areaM2,0),coverage=Math.min(1,area/grid.areaM2);
