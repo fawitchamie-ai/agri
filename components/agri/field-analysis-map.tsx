@@ -29,7 +29,8 @@ export default function FieldAnalysisMap({config:c,grid,history,read,date,layer,
  const data=useMemo(()=>fieldImageSummary(grid,read),[grid,read]),byId=new Map(history.cells.map(v=>[v.id,v]));
  const path=(coordinates:number[][][][])=>coordinates.map(p=>p.map(r=>'M'+r.map(v=>framePoint(v,bounds).join(',')).join('L')+'Z').join(' ')).join(' ');
  const outline=path([c.parcelGeometry!.coordinates]),land=c.landAssessment&&geometryIdentity(c.landAssessment.geometry)===geometryIdentity(c.parcelGeometry)?c.landAssessment:undefined;
- const activeRange=nativeRange?.date===date?nativeRange:null;\n const min=layer==='contrast'?(activeRange?.minimum??-1):-1,max=layer==='contrast'?(activeRange?.maximum??1):1;
+ const activeRange=nativeRange?.date===date?nativeRange:null;
+ const min=layer==='contrast'?(activeRange?.minimum??-1):-1,max=layer==='contrast'?(activeRange?.maximum??1):1;
  const raster=layer==='ndvi'||layer==='contrast'||layer==='rgb'||layer==='classification'||layer==='photo',empty=layer==='history'?history.status==='insufficient':layer==='terrain'?!land:!raster&&!data.cells;
  const scale=imageScale(bounds),cell=grid.cells.find(v=>v.id===selected),value=selected===null?null:data.values.get(selected)??null;
  useEffect(()=>{setError('');setNativeRange(null);setLoading(allowed&&(layer==='photo'||(layer==='ndvi'||layer==='contrast'||layer==='rgb'||layer==='classification')&&!!date));},[layer,allowed,date,bounds.join(',')]);
