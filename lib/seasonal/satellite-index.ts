@@ -4,6 +4,7 @@ import {readRasterWindow} from './raster.ts';
 import {SATELLITE_INDEX_VERSION,satelliteStacSearch,type SatelliteIndexObservation,type SatelliteStacItem} from './satellite.ts';
 
 import {sentinelAssetUrl} from './sentinel-assets.ts';
+import {bestSentinelScene} from './sentinel-scene.ts';
 export {sentinelAssetUrl} from './sentinel-assets.ts';
 const SATELLITE_READ_MAX_PIXELS=50_000,MAX_INDEX_SCENES=6;
 const isoDay=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
@@ -60,15 +61,16 @@ export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:s
  const selected=sampledDates(catalog.features,maxScenes).filter(([date,item])=>date>=startDate&&date<=asOf&&item.assets);
  if(!selected.length)throw new Error(`Aucune scène Sentinel-2 exploitable pendant ce cycle (${catalog.provider}).`);
  const signal=AbortSignal.timeout(150_000),observations:SatelliteIndexObservation[]=[],issues:string[]=[];
- for(const [date,item] of selected){
+ for(const [date,candidate] of selected){
   try{
+  const candidates=catalog.features.filter(i=>i.properties?.datetime?.slice(0,10)===date&&(i.assets?.B02?.href||i.assets?.blue?.href));
+  const {item,scl}=await bestSentinelScene(candidates.length?candidates:[candidate],shape,fetcher,signal,reader,SATELLITE_READ_MAX_PIXELS);
   const assets=item.assets!,asset=(...names:string[])=>{for(const name of names)if(assets[name]?.href)return assets[name];throw new Error(`Bande Sentinel-2 absente (${names.join('/')}).`);};
-  const blueAsset=asset('B02','blue'),redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1'),sclAsset=asset('SCL','scl','mask');
-  const [blue,red,nir,scl]=await Promise.all([
+  const blueAsset=asset('B02','blue'),redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1');
+  const [blue,red,nir]=await Promise.all([
    reader(sentinelAssetUrl(blueAsset.href),shape,fetcher,signal,[0],false,SATELLITE_READ_MAX_PIXELS),
    reader(sentinelAssetUrl(redAsset.href),shape,fetcher,signal,[0],false,SATELLITE_READ_MAX_PIXELS),
    reader(sentinelAssetUrl(nirAsset.href),shape,fetcher,signal,[0],false,SATELLITE_READ_MAX_PIXELS),
-   reader(sentinelAssetUrl(sclAsset.href),shape,fetcher,signal,[0],false,SATELLITE_READ_MAX_PIXELS),
   ]);
   const redCells=new Map(red.cells.map(c=>[centerKey(pixelCenter(c)),c])),nirCells=new Map(nir.cells.map(c=>[centerKey(pixelCenter(c)),c]));
   const sclBuckets=new Map<string,RasterCell[]>();for(const cell of scl.cells){const p=pixelCenter(cell),key=`${Math.floor(p[0]/.00005)}:${Math.floor(p[1]/.00005)}`;sclBuckets.set(key,[...(sclBuckets.get(key)??[]),cell]);}

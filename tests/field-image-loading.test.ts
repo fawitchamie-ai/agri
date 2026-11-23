@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fieldImagePeriod,fieldImageSummary,fieldNdviColor} from '../lib/seasonal/field-analysis.ts';
-import {loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
+import {loadUsableFieldImage,fieldImageFailureMessage,MAX_FIELD_IMAGE_ATTEMPTS} from '../lib/seasonal/field-image-loader.ts';
 import {fieldObservationFixture} from './support/field-zones-fixture.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 
@@ -19,11 +19,28 @@ test('automatic loading measures each parcel, skips cloudy or failed acquisition
  assert.deepEqual(visited,['2024-10-29','2024-10-19','2024-10-09']);assert.equal(result.read?.season.startDate,'2024-10-09');
  assert.deepEqual(retained,[{date:'2024-10-19',usable:false},{date:'2024-10-09',usable:true}]);assert.equal(result.issues.length,2);
 });
-test('no clear acquisition produces no fake image and the fallback is bounded to six dates',async()=>{
+test('a cloudy run is searched beyond six dates without fabricating a clear image',async()=>{
  const c=fieldObservationFixture(),cloudy=structuredClone(c.fieldMonitoring!.currentObservation!);cloudy.cells=[];cloudy.scenes[0].clearFraction=0;let calls=0;
  const r=await loadUsableFieldImage(c.parcelGeometry,Array.from({length:10},(_,i)=>'2024-10-'+String(i+1).padStart(2,'0')),{signal:new AbortController().signal,reader:async()=>{calls++;return cloudy;},onRead:()=>{}});
- assert.equal(calls,6);assert.equal(r.read,null);assert.equal(r.attempts,6);assert.equal(fieldImageSummary(zoneGrid(c.parcelGeometry),cloudy).mean,null);
+ assert.equal(calls,10);assert.equal(r.read,null);assert.equal(r.attempts,10);assert.equal(fieldImageSummary(zoneGrid(c.parcelGeometry),cloudy).mean,null);
  const ctrl=new AbortController();ctrl.abort();await assert.rejects(()=>loadUsableFieldImage(c.parcelGeometry,['2024-10-19'],{signal:ctrl.signal,onRead:()=>assert.fail('No result after cancellation')}),{name:'AbortError'});
+});
+test('the seventh date recovers a field above 80%, while a 70% recent image does not stop the search',async()=>{
+ const c=fieldObservationFixture(),clear=c.fieldMonitoring!.currentObservation!,visited:string[]=[],retained:boolean[]=[];
+ const days=Array.from({length:8},(_,i)=>'2024-10-'+String(i+1).padStart(2,'0'));
+ const r=await loadUsableFieldImage(c.parcelGeometry,days,{signal:new AbortController().signal,reader:async(_g,s)=>{
+  const day=(s as {startDate:string}).startDate,r=structuredClone(clear);visited.push(day);r.season.startDate=r.season.endDate=r.scenes[0].date=day;
+  if(day!=='2024-10-02'){r.cells=[];r.scenes[0].clearFraction=0;}
+  if(day==='2024-10-08'){r.cells=clear.cells;r.scenes[0].clearFraction=.7;}
+  return r;
+ },onRead:(_r,usable)=>retained.push(usable)});
+ assert.equal(visited.length,7);assert.equal(r.read?.season.startDate,'2024-10-02');assert.equal(r.targetCoverage,.8);assert.deepEqual(retained,[false,false,false,false,false,false,true]);
+});
+test('long searches remain bounded and disclose unexamined older dates',async()=>{
+ const c=fieldObservationFixture(),cloudy=structuredClone(c.fieldMonitoring!.currentObservation!);cloudy.cells=[];cloudy.scenes[0].clearFraction=0;
+ const days=Array.from({length:MAX_FIELD_IMAGE_ATTEMPTS+2},(_,i)=>new Date(Date.parse('2024-01-01')+i*86400000).toISOString().slice(0,10));
+ const r=await loadUsableFieldImage(c.parcelGeometry,days,{signal:new AbortController().signal,reader:async()=>cloudy,onRead:()=>{}});
+ assert.equal(r.attempts,MAX_FIELD_IMAGE_ATTEMPTS);assert.equal(r.remainingDates,2);assert.match(fieldImageFailureMessage(r),/2 dates plus anciennes/);
 });
 test('NDVI palette has distinct visible endpoints and a stable colour for homogeneous fields',()=>{
  assert.equal(fieldNdviColor(.3,.3,.3),fieldNdviColor(0,-1,1));

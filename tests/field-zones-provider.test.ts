@@ -43,7 +43,7 @@ test('caps each Cloudflare request at three scenes even when the field stays clo
  const fetcher=(async()=>Response.json({features})) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>{reads++;return {resolutionM:20,crs:'EPSG:4326',cells:g.cells.map((p,i)=>({id:String(i),geometry:{type:'Polygon' as const,coordinates:p.geometry.coordinates[0]},value:url.endsWith('/scl.tif')?9:url.endsWith('/red.tif')?3000:7000}))};};
  const r=await readZoneSeason(c.parcelGeometry,season,fetcher,reader);
- assert.equal(r.scenes.length,3);assert.equal(reads,9);assert.equal(r.cells.length,0);
+ assert.equal(r.scenes.length,3);assert.equal(reads,3,'Opaque scenes only download their masks');assert.equal(r.cells.length,0);assert.ok(r.scenes.every(s=>s.mask!.cloud>.99));
 });
 test('one fallback restores two-date coverage without reading a fourth acquisition',async()=>{
  const c=fieldZonesFixture(),g=zoneGrid(c.parcelGeometry),season=c.fieldMonitoring!.seasons[0].season;let reads=0;
@@ -52,7 +52,7 @@ test('one fallback restores two-date coverage without reading a fourth acquisiti
  const fetcher=(async()=>Response.json({features})) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>{reads++;const date=dates.find(d=>url.includes(d));return {resolutionM:20,crs:'EPSG:4326',cells:g.cells.map((p,i)=>({id:String(i),geometry:{type:'Polygon' as const,coordinates:p.geometry.coordinates[0]},value:url.endsWith('/scl.tif')?date===dates[2]?9:4:url.endsWith('/red.tif')?3000:7000}))};};
  const r=await readZoneSeason(c.parcelGeometry,season,fetcher,reader);
- assert.equal(r.scenes.length,3);assert.equal(reads,9);assert.equal(r.cells.length,g.cells.length);assert.ok(r.cells.every(v=>v[2]===2));
+ assert.equal(r.scenes.length,3);assert.equal(reads,7);assert.equal(r.cells.length,g.cells.length);assert.ok(r.cells.every(v=>v[2]===2));
 });
 test('clips a native pixel across two interior cells without counting its full area twice',async()=>{
  const south=9.4,dy=20/111320,cos=Math.cos((south+dy/2)*Math.PI/180),west=1.2,dx=20/(111320*cos),geometry:ParcelPolygon={type:'Polygon',coordinates:[[[west,south],[west+2*dx,south],[west+2*dx,south+dy],[west,south+dy],[west,south]]]},season={id:'cross-boundary',startDate:'2022-06-01',endDate:'2022-07-01',cropId:'maize',comparable:true};

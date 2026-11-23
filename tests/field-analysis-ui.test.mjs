@@ -14,7 +14,7 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
  const render=()=>root.render(React.createElement(compiled.exports.default,{config:c,onChange:next=>{c=next;render();},onMap:()=>{},onWeather:()=>{}}));
  const button=(t,prefix=false)=>[...host.querySelectorAll('button')].find(b=>prefix?b.textContent.trim().startsWith(t):b.textContent.trim()===t);
  try{
-  await act(async()=>render());assert.equal(calls,0);assert.match(host.textContent,/NDVI moyen \(grille\)/);assert.match(host.textContent,/100 %/);
+  await act(async()=>render());assert.equal(calls,0);assert.match(host.textContent,/NDVI moyen \(grille\)/);assert.match(host.textContent,/100 %/);assert.match(host.textContent,/100 % exploitable/);assert.match(host.textContent,/L’image satellite datée montre aussi les nuages/);
   await act(async()=>button('NDVI contrasté',true).click());assert.match(host.textContent,/Échelle adaptée à cette image/);
   const cell=host.querySelector('path[role=button]');await act(async()=>cell.focus());assert.match(host.textContent,/Cellule 0/);
   await act(async()=>cell.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true})));assert.match(host.textContent,/Cellule 1/);

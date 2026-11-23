@@ -3,6 +3,7 @@ import {intersection,union} from './geometry-ops.ts';
 import {parcelMetrics,validateParcel,type ParcelPolygon,type Position} from './parcel.ts';
 import {geometryIdentity} from './provenance.ts';
 import type {SeasonalConfig} from './types.ts';
+import type {SentinelMaskCoverage} from './sentinel-scene.ts';
 
 export const FIELD_ZONES_VERSION='field-zones-1' as const;
 export const FIELD_ZONES_VALIDATION_VERSION='field-zones-temporal-3' as const;
@@ -12,7 +13,7 @@ export const ZONE_COLORS={low:'#90b8df',medium:'#497da9',high:'#173d63',variable
 export type ZoneClass=keyof typeof ZONE_NAMES;
 export type ZoneSeason={id:string;startDate:string;endDate:string;cropId:string;comparable:boolean};
 export type ZoneSeasonRead={version:typeof FIELD_ZONES_VERSION;geometryId:string;season:ZoneSeason;retrievedOn:string;source:string;
-  gridM:number;scenes:{date:string;itemId:string;clearFraction:number}[];
+  gridM:number;scenes:{date:string;itemId:string;clearFraction:number;mask?:SentinelMaskCoverage}[];
   cells:[number,number,number][];issues:string[]}; // grid index, NDVI median, independent clear dates
 export type ZoneDoseInput={kind:'seeds'|'fertilizer'|'treatment';product:string;unit:'seeds/ha'|'kg/ha'|'L/ha';
   reference:string;baseline:number;rates:Partial<Record<ZoneClass,number>>;confirmed:boolean;mapScope?:string};
@@ -114,7 +115,13 @@ export function parseFieldMonitoring(value:unknown,c:SeasonalConfig):FieldMonito
   if(r.retrievedOn<season.endDate)throw new Error('Date de récupération antérieure à la fin des observations.');
   const scenes=r.scenes.map(o=>{
    if(!o||!validDay(o.date)||o.date<season.startDate||o.date>season.endDate||typeof o.itemId!=='string'||o.itemId.length>200||!Number.isFinite(o.clearFraction)||o.clearFraction<0||o.clearFraction>1)throw new Error('Scène historique invalide.');
-   return {date:o.date,itemId:o.itemId,clearFraction:o.clearFraction};
+   let mask:SentinelMaskCoverage|undefined;
+   if(o.mask!==undefined){
+    const keys=['clear','cloud','shadow','water','uncertain','noData','other'] as const;
+    if(!o.mask||keys.some(k=>typeof o.mask![k]!=='number'||!Number.isFinite(o.mask![k])||o.mask![k]<0||o.mask![k]>1)||Math.abs(keys.reduce((n,k)=>n+o.mask![k],0)-1)>.001)throw new Error('Couverture du masque satellite invalide.');
+    mask=Object.fromEntries(keys.map(k=>[k,o.mask![k]])) as SentinelMaskCoverage;
+   }
+   return {date:o.date,itemId:o.itemId,clearFraction:o.clearFraction,...(mask?{mask}:{})};
   });
   if(new Set(scenes.map(o=>o.date)).size!==scenes.length)throw new Error('Dates de scènes historiques dupliquées.');
   const cells=r.cells.map(v=>{if(!Array.isArray(v)||v.length!==3||!Number.isInteger(v[0])||v[0]<0||v[0]>=3000||!Number.isFinite(v[1])||v[1]<-1||v[1]>1||!Number.isInteger(v[2])||v[2]<1||v[2]>scenes.length)throw new Error('Pixel historique invalide.');return [v[0],v[1],v[2]] as [number,number,number];});

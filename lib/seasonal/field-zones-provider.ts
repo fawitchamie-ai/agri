@@ -7,6 +7,7 @@ import {satelliteStacSearch,type SatelliteStacItem} from './satellite.ts';
 import {sentinelAssetUrl,reflectanceTransform,pixelCenter} from './satellite-index.ts';
 import {containsPoint} from './parcel.ts';
 import {zoneGrid,parseZoneSeason,middle,FIELD_ZONES_VERSION,type ZoneSeasonRead} from './field-zones.ts';
+import {bestSentinelScene} from './sentinel-scene.ts';
 
 const pointKey=(p:Position)=>p.map(n=>n.toFixed(7)).join(':');
 const SCL_BUCKET_DEGREES=.0002;
@@ -55,7 +56,9 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
   catalog={...legacy,features};radiometry='COG harmonisé · offset déjà appliqué selon les métadonnées';
  }
  const byDate=new Map<string,SatelliteStacItem>();
+ const dateItems=new Map<string,SatelliteStacItem[]>();
  for(const item of catalog.features){const date=item.properties?.datetime?.slice(0,10);if(!date||date<season.startDate||date>season.endDate)continue;
+  dateItems.set(date,[...(dateItems.get(date)??[]),item]);
   const old=byDate.get(date),cloud=item.properties?.['eo:cloud_cover']??100,oldCloud=old?.properties?.['eo:cloud_cover']??100;
   if(!old||cloud<oldCloud)byDate.set(date,item);
  }
@@ -93,16 +96,19 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
  }
  const scenes:ZoneSeasonRead['scenes']=[],issues:string[]=[];
  const acquisitions=[...selected,...extra];
- for(const [attempt,[date,item]] of acquisitions.entries()){
+ for(const [attempt,[date,candidate]] of acquisitions.entries()){
   if(attempt>=2){const twice=grid.cells.filter(c=>(perCell.get(c.id)?.length??0)>=2).reduce((n,c)=>n+c.areaM2,0);if(twice/grid.areaM2>=.6)break;}
   onSceneProgress?.({date,attempt:attempt+1,maxAttempts:acquisitions.length});
   try{
+  const {item,scl,mask}=await bestSentinelScene(dateItems.get(date)??[candidate],grid.shape,scopedFetcher,signal,reader);
+  // An opaque acquisition still has an RGB image. Retain its measured mask
+  // and date without downloading two unusable reflectance bands.
+  if(mask.clear===0){scenes.push({date,itemId:(item.id??date).slice(0,200),clearFraction:0,mask});continue;}
   const assets=item.assets??{},asset=(...keys:string[])=>{const a=keys.map(k=>assets[k]).find(a=>a?.href);if(!a)throw new Error('Bande absente');return a;};
-  const redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1'),sclAsset=asset('SCL','scl','mask');
-  const [red,nir,scl]=await Promise.all([
+  const redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1');
+  const [red,nir]=await Promise.all([
    reader(sentinelAssetUrl(redAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
    reader(sentinelAssetUrl(nirAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
-   reader(sentinelAssetUrl(sclAsset.href),grid.shape,scopedFetcher,signal,[0],false,25000),
   ]);
   if(red.resolutionM>grid.gridM||nir.resolutionM>grid.gridM||scl.resolutionM>grid.gridM)throw new Error('Résolution source plus grossière que la grille : analyse suspendue.');
   const nirCells=new Map(nir.cells.map(c=>[pointKey(pixelCenter(c)),c]));
@@ -132,7 +138,7 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
    }
   }
   const clearFraction=Math.min(1,clearAreaTotal/grid.areaM2);
-  scenes.push({date,itemId:(item.id??date).slice(0,200),clearFraction});
+  scenes.push({date,itemId:(item.id??date).slice(0,200),clearFraction,mask});
   for(const [id,list] of values){const area=list.reduce((n,v)=>n+v.area,0);if(area/grid.cells[id].areaM2<.6)continue;
    const sorted=list.sort((a,b)=>a.ndvi-b.ndvi);let cumulative=0,value=sorted.at(-1)!.ndvi;
    for(const v of sorted){cumulative+=v.area;if(cumulative>=area/2){value=v.ndvi;break;}}
