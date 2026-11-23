@@ -39,13 +39,13 @@ function pixelAreaInsideRectangle(rasterPixel:Position[],bounds:{left:number;rig
 }
 /** One season per read: two stratified dates, up to two cloud fallbacks.
  * Never consumes harvests, inferred crop labels or future interpolation. */
-export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,requestSignal?:AbortSignal,onSceneProgress?:(progress:{date:string;attempt:number;maxAttempts:number})=>void):Promise<ZoneSeasonRead>{
+export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,requestSignal?:AbortSignal,onSceneProgress?:(progress:{date:string;attempt:number;maxAttempts:number})=>void,options?:{catalog?:{provider:string;features:SatelliteStacItem[]};minimumClearFraction?:number}):Promise<ZoneSeasonRead>{
  const grid=zoneGrid(geometry),today=new Date().toISOString().slice(0,10),season=parseZoneSeason(rawSeason,today);
  if(grid.areaM2>1_000_000)throw new Error('Découpez le champ en secteurs de 100 ha maximum pour l’historique satellite.');
  const deadline=AbortSignal.timeout(160000),signal=requestSignal?AbortSignal.any([deadline,requestSignal]):deadline;
  const scopedFetcher:typeof fetch=(input,init={})=>fetcher(input,{...init,signal:init.signal?AbortSignal.any([signal,init.signal]):signal});
- let catalog:Awaited<ReturnType<typeof satelliteStacSearch>>,radiometry='Collection 1';
- try{catalog=await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,scopedFetcher,'ndvi',true,true);}
+ let catalog:Awaited<ReturnType<typeof satelliteStacSearch>>,radiometry=options?.catalog?'radiométrie vérifiée · C1 ou COG harmonisé':'Collection 1';
+ try{catalog=options?.catalog??await satelliteStacSearch(bbox(grid.shape),season.startDate,season.endDate,scopedFetcher,'ndvi',true,true);}
  catch{
   // C1 backfill is not complete everywhere. Accept a legacy COG only when
   // its provider explicitly certifies that the BOA offset was already applied.
@@ -103,7 +103,7 @@ export async function readZoneSeason(geometry:unknown,rawSeason:unknown,fetcher:
   const {item,scl,mask}=await bestSentinelScene(dateItems.get(date)??[candidate],grid.shape,scopedFetcher,signal,reader);
   // An opaque acquisition still has an RGB image. Retain its measured mask
   // and date without downloading two unusable reflectance bands.
-  if(mask.clear===0){scenes.push({date,itemId:(item.id??date).slice(0,200),clearFraction:0,mask});continue;}
+  if(mask.clear===0||mask.clear+1e-8<(options?.minimumClearFraction??0)){scenes.push({date,itemId:(item.id??date).slice(0,200),clearFraction:mask.clear,mask});continue;}
   const assets=item.assets??{},asset=(...keys:string[])=>{const a=keys.map(k=>assets[k]).find(a=>a?.href);if(!a)throw new Error('Bande absente');return a;};
   const redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1');
   const [red,nir]=await Promise.all([

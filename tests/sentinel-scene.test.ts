@@ -31,6 +31,13 @@ test('an unreadable overlapping tile falls back to a readable acquisition',async
  const r=await bestSentinelScene(features,shape,fetcher,new AbortController().signal,fail);
  assert.equal(r.item.id,'parcel-clear');assert.equal(r.errors.length,1);
 });
+test('every distinct overlapping capture is checked, including the fifth candidate',async()=>{
+ const candidates=Array.from({length:5},(_,i)=>({...features[0],id:'capture-'+i,assets:Object.fromEntries(Object.entries(features[0].assets).map(([b,a])=>[b,{...a,href:a.href.replace('regional-clear','capture-'+i)}]))}));
+ const seen:string[]=[];
+ const read:typeof readRasterWindow=async url=>{seen.push(url);return {resolutionM:20,crs:'EPSG:4326',cells:[{id:'p',geometry:shape,value:url.includes('capture-4')?4:9}]};};
+ const result=await bestSentinelScene(candidates,shape,fetcher,new AbortController().signal,read);
+ assert.equal(seen.length,5);assert.equal(result.item.id,'capture-4');assert.ok(result.mask.clear>.999);
+});
 test('holes and uncovered footprint are measured without promoting water or uncertain pixels',()=>{
  const hole:ParcelPolygon={type:'Polygon',coordinates:[shape.coordinates[0],[[1.0002,8.0002],[1.0004,8.0002],[1.0004,8.0004],[1.0002,8.0004],[1.0002,8.0002]]]};
  const empty=sentinelMaskCoverage(hole,[]);assert.equal(empty.noData,1);assert.equal(empty.clear,0);

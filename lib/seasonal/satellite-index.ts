@@ -1,12 +1,13 @@
 import {bbox,type RasterCell} from './land.ts';
 import {containsPoint,parcelMetrics,validateParcel,type ParcelPolygon,type Position} from './parcel.ts';
 import {readRasterWindow} from './raster.ts';
-import {SATELLITE_INDEX_VERSION,satelliteStacSearch,type SatelliteIndexObservation,type SatelliteStacItem} from './satellite.ts';
+import {SATELLITE_INDEX_VERSION,type SatelliteIndexObservation,type SatelliteStacItem} from './satellite.ts';
 
 import {sentinelAssetUrl} from './sentinel-assets.ts';
 import {bestSentinelScene} from './sentinel-scene.ts';
+import {verifiedImageCatalog} from './sentinel-catalog.ts';
 export {sentinelAssetUrl} from './sentinel-assets.ts';
-const SATELLITE_READ_MAX_PIXELS=50_000,MAX_INDEX_SCENES=6;
+const SATELLITE_READ_MAX_PIXELS=50_000,MAX_INDEX_SCENES=241;
 const isoDay=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
 type StacAsset=NonNullable<SatelliteStacItem['assets']>[string];
 type StacIndexItem=SatelliteStacItem;
@@ -52,19 +53,25 @@ function sampledDates(features:StacIndexItem[],limit=MAX_INDEX_SCENES){
  return Array.from({length:limit},(_,i)=>sorted[Math.round(i*(sorted.length-1)/(limit-1))]);
 }
 /** Parcel medians from native Sentinel-2 pixels. These indices are monitoring features, not tonnes/ha. */
-export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:string,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,maxScenes=MAX_INDEX_SCENES){
+export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:string,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,maxScenes=MAX_INDEX_SCENES,options?:{signal?:AbortSignal;onProgress?:(date:string,attempt:number,total:number)=>void;onObservation?:(observation:SatelliteIndexObservation,source:string)=>void}){
  const shape=validateParcel(input),area=parcelMetrics(shape).areaM2,today=new Date().toISOString().slice(0,10);
- if(!Number.isInteger(maxScenes)||maxScenes<1||maxScenes>60)throw new Error('Nombre de scènes Sentinel-2 invalide (1 à 60).');
+ if(!Number.isInteger(maxScenes)||maxScenes<1||maxScenes>241)throw new Error('Nombre de scènes Sentinel-2 invalide (1 à 241).');
  if(!isoDay(startDate)||!isoDay(asOf)||asOf>today||startDate>asOf||(Date.parse(asOf)-Date.parse(startDate))/86400000>240)throw new Error('Période satellite invalide : une campagne doit tenir dans les 240 derniers jours.');
  if(area>5_000_000)throw new Error('Contour supérieur à 500 ha : découpez-le en secteurs pour l’analyse Sentinel-2.');
- const catalog=await satelliteStacSearch(bbox(shape),startDate,asOf,fetcher,true,true);
- const selected=sampledDates(catalog.features,maxScenes).filter(([date,item])=>date>=startDate&&date<=asOf&&item.assets);
+ const baseFetch=fetcher;fetcher=options?.signal?((input,init={})=>baseFetch(input,{...init,signal:init.signal?AbortSignal.any([options.signal!,init.signal]):options.signal})) as typeof fetch:fetcher;
+ const catalog=await verifiedImageCatalog(bbox(shape),startDate,asOf,fetcher);
+ const selected=sampledDates([...catalog.features,...catalog.dates.map(date=>({properties:{datetime:date+'T00:00:00Z'}}))],maxScenes).filter(([date])=>date>=startDate&&date<=asOf);
  if(!selected.length)throw new Error(`Aucune scène Sentinel-2 exploitable pendant ce cycle (${catalog.provider}).`);
- const signal=AbortSignal.timeout(150_000),observations:SatelliteIndexObservation[]=[],issues:string[]=[];
- for(const [date,candidate] of selected){
+ const observations:SatelliteIndexObservation[]=[],issues:string[]=[...catalog.warnings];
+ const source=`${catalog.provider} STAC · Sentinel-2 L2A à radiométrie vérifiée · bandes natives B02/B04/B08 · masque SCL 4/5`;
+ for(const [attempt,[date,candidate]] of selected.entries()){
+  options?.signal?.throwIfAborted();options?.onProgress?.(date,attempt+1,selected.length);
+  const deadline=AbortSignal.timeout(160000),signal=options?.signal?AbortSignal.any([deadline,options.signal]):deadline;
   try{
+  if(!candidate.assets){issues.push(date+' : acquisition répertoriée, bandes publiques à radiométrie vérifiable indisponibles.');continue;}
   const candidates=catalog.features.filter(i=>i.properties?.datetime?.slice(0,10)===date&&(i.assets?.B02?.href||i.assets?.blue?.href));
-  const {item,scl}=await bestSentinelScene(candidates.length?candidates:[candidate],shape,fetcher,signal,reader,SATELLITE_READ_MAX_PIXELS);
+  const {item,scl,mask}=await bestSentinelScene(candidates.length?candidates:[candidate],shape,fetcher,signal,reader,SATELLITE_READ_MAX_PIXELS);
+  if(mask.clear<.8-1e-8){issues.push(date+' : couverture de sol clair inférieure à 80 %.');continue;}
   const assets=item.assets!,asset=(...names:string[])=>{for(const name of names)if(assets[name]?.href)return assets[name];throw new Error(`Bande Sentinel-2 absente (${names.join('/')}).`);};
   const blueAsset=asset('B02','blue'),redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1');
   const [blue,red,nir]=await Promise.all([
@@ -83,12 +90,13 @@ export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:s
    const indices=vegetationIndices(blueValue,redValue,nirValue,transforms);if(indices.ndvi!==null&&indices.evi!==null){ndviValues.push(indices.ndvi);eviValues.push(indices.evi);}
   }
   const validPixels=Math.min(ndviValues.length,eviValues.length),clearFraction=parcelPixels?validPixels/parcelPixels:0;
+  if(validPixels<10||clearFraction<.8-1e-8){issues.push(date+' : pixels NDVI/EVI insuffisants pour 80 % de couverture.');continue;}
   const quality:SatelliteIndexObservation['quality']=validPixels<10?'too-few-pixels':clearFraction<.2?'low-coverage':'usable';
   const cloud=item.properties?.['eo:cloud_cover'],sceneCloudPercent=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;
-  observations.push({date,availableOn:today,itemId:(item.id??date).slice(0,200),ndviMedian:validPixels>=10?median(ndviValues):null,eviMedian:validPixels>=10?median(eviValues):null,validPixels,parcelPixels,clearFraction,sceneCloudPercent,quality});
-  }catch{issues.push(date);}
+  const observation={date,availableOn:today,itemId:(item.id??date).slice(0,200),ndviMedian:median(ndviValues),eviMedian:median(eviValues),validPixels,parcelPixels,clearFraction,sceneCloudPercent,quality};
+  observations.push(observation);options?.onObservation?.(observation,source);
+  }catch(error){options?.signal?.throwIfAborted();issues.push(date+' : '+(error as Error).message);}
  }
- if(!observations.length)throw new Error('Aucune des scènes Sentinel-2 sélectionnées n’a pu être lue. Actualisez les dates et réessayez.');
- return {version:SATELLITE_INDEX_VERSION,source:`${catalog.provider} STAC · Sentinel-2 L2A Collection 1 · bandes natives B02/B04/B08 · masque SCL 4/5`,retrievedOn:today,observations,
-  issues,coverageNote:'Médiane spatiale des pixels du contour, après exclusion des classes SCL nuage, ombre, eau et sans donnée. La couverture nuageuse de scène reste un indicateur régional. NDVI/EVI suivent la végétation et ne constituent pas un rendement en t/ha.'};
+ return {version:SATELLITE_INDEX_VERSION,source,retrievedOn:today,observations,
+  issues,coverageNote:selected.length+' dates examinées sur '+catalog.dates.length+' dates répertoriées. Médianes des pixels du contour sur les acquisitions atteignant 80 % de couverture claire. NDVI/EVI suivent la végétation et ne constituent pas un rendement en t/ha.'};
 }

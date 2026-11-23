@@ -20,7 +20,7 @@ test('dated archives roundtrip and exclude foreign outlines, future availability
  m.currentObservation={...r,geometryId:'foreign'};assert.equal(fieldImageArchive(c).length,0);
  m.currentObservation=r;m.datedObservations=[r,r];assert.throws(()=>parseFieldMonitoring(m,c),/uniques/);
  m.datedObservations=[{...r,season:{...r.season,endDate:dayAfter(r.season.startDate,1)}}];assert.equal(fieldImageArchive(c).length,1);assert.throws(()=>parseFieldMonitoring(m,c));
- m.datedObservations=Array(13).fill(r);assert.throws(()=>parseFieldMonitoring(m,c),/Douze/);
+ m.datedObservations=Array(49).fill(r);assert.throws(()=>parseFieldMonitoring(m,c),/48/);
 });
 
 test('past weather charts preserve missing days and exclude forecasts/scenarios; heat accumulation requires an explicit base',()=>{

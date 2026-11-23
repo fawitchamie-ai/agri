@@ -14,7 +14,7 @@ test('parcel geometry is sent to satellite catalogues only after an explicit req
   previous.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{value,configurable:true,writable:true});
  }
  const today=new Date().toISOString().slice(0,10),yesterday=new Date(Date.parse(today)-86400000).toISOString().slice(0,10);
- globalThis.fetch=async(input,init)=>{calls.push({url:String(input),body:JSON.parse(String(init?.body??'{}'))});return Response.json({version:'sentinel-parcel-indices-1',source:'Earth Search STAC / Sentinel-2 L2A',retrievedOn:today,observations:[],coverageNote:'',issues:[]});};
+ globalThis.fetch=async(input,init)=>{calls.push({url:String(input),body:JSON.parse(String(init?.body??'{}'))});return Response.json({features:[]});};
  const config={country:'Togo',crop:'Maïs',cropProfile:{id:'maize'},sowingDate:yesterday,asOfDate:today,parcelGeometry:{type:'Polygon',coordinates:[[[1,9],[1.005,9],[1.005,9.004],[1,9.004],[1,9]]]},stages:[{days:90}]};
  const {createRoot}=await import('react-dom/client'),host=window.document.createElement('div');window.document.body.append(host);const root=createRoot(host);
  try{
@@ -23,7 +23,7 @@ test('parcel geometry is sent to satellite catalogues only after an explicit req
   assert.match(host.textContent,/Digital Earth Africa|Earth Search/);
   const button=[...host.querySelectorAll('button')].find(el=>el.textContent==='Récupérer les observations du champ');assert.ok(button);
   await act(async()=>{button.click();await new Promise(resolve=>setTimeout(resolve,0));});
-  assert.equal(calls.length,1);assert.equal(calls[0].url,'/api/seasonal');assert.equal(calls[0].body.action,'satellite-index-series');assert.deepEqual(calls[0].body.geometry,config.parcelGeometry);assert.equal(changes.length,1);
+  assert.equal(calls.length,5);assert.ok(calls.every(c=>!c.url.startsWith('/api/seasonal')),'Bulk raster decoding runs in the browser');assert.deepEqual(calls.find(c=>c.url.includes('earth-search')).body.bbox,[1,9,1.005,9.004]);assert.equal(changes.length,0,'An empty catalogue produces no invented observations');
  }finally{
   await act(async()=>root.unmount());globalThis.fetch=fetchBefore;for(const [key,descriptor] of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];await window.happyDOM.close();
  }

@@ -18,39 +18,71 @@ export async function satelliteFetch(url:string|URL,timeoutMs:number,fetcher:typ
  if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('Redirection du fournisseur satellite refusée.');}
  return response;
 }
-export type SatelliteStacItem={id?:string;properties?:{datetime?:string;'eo:cloud_cover'?:number;'earthsearch:boa_offset_applied'?:boolean;'sentinel:boa_offset_applied'?:boolean};assets?:Record<string,{href?:string;['raster:bands']?:{scale?:number;offset?:number}[]}>};
+export type SatelliteStacItem={id?:string;collection?:string;properties?:{datetime?:string;updated?:string;'eo:cloud_cover'?:number;'earthsearch:boa_offset_applied'?:boolean;'sentinel:boa_offset_applied'?:boolean};assets?:Record<string,{href?:string;['raster:bands']?:{scale?:number;offset?:number}[]}>};
 const STAC_MAX_BYTES=4_000_000;
-async function readStacFeatures(response:Response){
+type StacNext={rel?:string;href?:string;method?:string;body?:Record<string,unknown>};
+async function readStacPage(response:Response){
  if(!response.ok){await response.body?.cancel();throw new Error(`Catalogue STAC ${response.status}.`);}
  const contentLength=Number(response.headers.get('content-length')??0);if(contentLength>STAC_MAX_BYTES){await response.body?.cancel();throw new Error('Catalogue Sentinel-2 trop volumineux.');}
  const text=await response.text();if(text.length>STAC_MAX_BYTES)throw new Error('Catalogue Sentinel-2 trop volumineux.');
- let data:{features?:SatelliteStacItem[]};try{data=JSON.parse(text);}catch{throw new Error('Réponse STAC Sentinel-2 illisible.');}
- if(!Array.isArray(data.features)||data.features.length>60)throw new Error('Catalogue STAC Sentinel-2 invalide.');
- return data.features;
+ let data:{features?:SatelliteStacItem[];links?:StacNext[];numberMatched?:number;context?:{matched?:number}};try{data=JSON.parse(text);}catch{throw new Error('Réponse STAC Sentinel-2 illisible.');}
+ if(!Array.isArray(data.features)||data.features.length>200)throw new Error('Catalogue STAC Sentinel-2 invalide.');
+ return {features:data.features,next:data.links?.find(l=>l.rel==='next'),matched:data.numberMatched??data.context?.matched};
+}
+export type SentinelCatalogProvider='deafrica'|'earth'|'copernicus';
+/** Exhaust the provider cursor, including short pages with a next link. Only
+ * pagination tokens on the exact original search endpoint can be followed. */
+export async function searchSentinelCatalog(provider:SentinelCatalogProvider,bounds:number[],startDate:string,asOf:string,harmonized:boolean,fetcher:typeof fetch=fetch,completeWindow=true){
+ if(!iso(startDate)||!iso(asOf)||startDate>asOf||bounds.length!==4||bounds.some(v=>!Number.isFinite(v))||bounds[0]>=bounds[2]||bounds[1]>=bounds[3])throw new Error('Recherche STAC Sentinel-2 invalide.');
+ const endpoint=provider==='earth'?'https://earth-search.aws.element84.com/v1/search':provider==='copernicus'?'https://stac.dataspace.copernicus.eu/v1/search':'https://explorer.digitalearth.africa/stac/search';
+ const collection=provider==='earth'?(harmonized?'sentinel-2-c1-l2a':'sentinel-2-l2a'):provider==='copernicus'?'sentinel-2-l2a':harmonized?'s2_l2a_c1':'s2_l2a';
+ const features:SatelliteStacItem[]=[],pending:[string,string][]=[[startDate,asOf]];let requests=0;
+ const send=async(from:string,to:string,token?:{key:string;value:string})=>{
+  if(++requests>128)throw new Error('Catalogue trop dense : réduisez la période. Aucun résultat partiel déclaré complet.');
+  const datetime=`${from}T00:00:00Z/${to}T23:59:59Z`;
+  if(provider==='earth')return readStacPage(await satelliteFetch(endpoint,25000,fetcher,{method:'POST',credentials:'omit',headers:{'content-type':'application/json'},body:JSON.stringify({collections:[collection],bbox:bounds,datetime,sortby:[{field:'properties.datetime',direction:'desc'}],limit:60,...(token?{[token.key]:token.value}:{})})}));
+  const u=new URL(endpoint);u.search=new URLSearchParams({collections:collection,bbox:bounds.join(','),datetime,sortby:'-datetime',limit:'60',...(token?{[token.key]:token.value}:{})}).toString();
+  return readStacPage(await satelliteFetch(u,25000,fetcher,{credentials:'omit'}));
+ };
+ const cursor=(next:StacNext)=>{
+  let u:URL;try{u=new URL(next.href??'');}catch{return null;}
+  const original=new URL(endpoint);
+  if(u.origin!==original.origin||u.pathname!==original.pathname||u.username||u.password||u.hash)return null;
+  if(next.method&&next.method!==(provider==='earth'?'POST':'GET'))return null;
+  for(const key of ['next','token','page']){const value=provider==='earth'?next.body?.[key]:u.searchParams.get(key);if((typeof value==='string'||typeof value==='number')&&String(value).length>0&&String(value).length<10000)return {key,value:String(value)};}
+  return null;
+ };
+ while(pending.length){
+  const [from,to]=pending.shift()!;let page=await send(from,to);
+  // A provider without a safe cursor is split by date, never followed off-host.
+  if(completeWindow&&(page.next&&!cursor(page.next)||!page.next&&(page.features.length>=60||(page.matched??0)>page.features.length))){
+   if(from===to)throw new Error('Pagination Sentinel-2 non certifiable sur cette journée.');
+   const days=Math.round((Date.parse(to)-Date.parse(from))/86400000),mid=new Date(Date.parse(from)+Math.floor(days/2)*86400000).toISOString().slice(0,10),next=new Date(Date.parse(mid)+86400000).toISOString().slice(0,10);
+   pending.unshift([from,mid],[next,to]);continue;
+  }
+  const expected=page.matched,seen=new Set<string>();let count=0;
+  while(true){
+   features.push(...page.features);count+=page.features.length;
+   if(features.length>4096)throw new Error('Catalogue trop volumineux : réduisez la période. Aucun résultat partiel déclaré complet.');
+   if(!completeWindow||!page.next)break;
+   const next=cursor(page.next);if(!next)throw new Error('Pagination Sentinel-2 non certifiable.');
+   const key=next.key+':'+next.value;if(seen.has(key))throw new Error('Pagination Sentinel-2 répétée : catalogue incomplet.');seen.add(key);
+   page=await send(from,to,next);
+  }
+  if(completeWindow&&typeof expected==='number'&&count<expected)throw new Error('Pagination Sentinel-2 incomplète.');
+ }
+ const unique=new Map<string,SatelliteStacItem>();
+ for(const item of features){const date=item.properties?.datetime?.slice(0,10);if(date&&iso(date)&&date>=startDate&&date<=asOf)unique.set((item.id??item.properties?.datetime??date)+':'+(item.assets?.B04?.href??item.assets?.red?.href??''),item);}
+ return [...unique.values()];
 }
 /** Query the preferred African catalogue, then the public Earth Search mirror. */
 export async function satelliteStacSearch(bounds:number[],startDate:string,asOf:string,fetcher:typeof fetch=fetch,requireIndexBands:boolean|'ndvi'=false,harmonized=false,completeWindow=false){
  if(!iso(startDate)||!iso(asOf)||startDate>asOf||bounds.length!==4||bounds.some(v=>!Number.isFinite(v)))throw new Error('Recherche STAC Sentinel-2 invalide.');
- const range=(from:string,to:string)=>`${from}T00:00:00Z/${to}T23:59:59Z`,attempts:[string,(from:string,to:string)=>Promise<Response>][]=[
-  ['Digital Earth Africa',(from,to)=>{const u=new URL('https://explorer.digitalearth.africa/stac/search');u.search=new URLSearchParams({collections:harmonized?'s2_l2a_c1':'s2_l2a',bbox:bounds.join(','),datetime:range(from,to),sortby:'-datetime',limit:'60'}).toString();return satelliteFetch(u,25000,fetcher);}],
-  ['Earth Search',(from,to)=>satelliteFetch('https://earth-search.aws.element84.com/v1/search',25000,fetcher,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({collections:[harmonized?'sentinel-2-c1-l2a':'sentinel-2-l2a'],bbox:bounds,datetime:range(from,to),sortby:[{field:'properties.datetime',direction:'desc'}],limit:60})})],
- ];
+ const attempts:[string,SentinelCatalogProvider][]=[['Digital Earth Africa','deafrica'],['Earth Search','earth']];
  const failures:string[]=[];
- for(const [provider,request] of attempts){
+ for(const [provider,id] of attempts){
   try{
-   const features:SatelliteStacItem[]=[],pending:[string,string][]=[[startDate,asOf]];let requests=0;
-   while(pending.length){
-    if(++requests>15)throw new Error('Catalogue trop dense : réduisez la période.');
-    const [from,to]=pending.shift()!,page=await readStacFeatures(await request(from,to));
-    // A full descending page may omit early acquisitions. Split date windows
-    // rather than follow an arbitrary provider-controlled next URL.
-    if(completeWindow&&page.length===60){
-     if(from===to)throw new Error('Trop de scènes sur une journée : catalogue non certifiable.');
-     const days=Math.round((Date.parse(to)-Date.parse(from))/86400000),mid=new Date(Date.parse(from)+Math.floor(days/2)*86400000).toISOString().slice(0,10),next=new Date(Date.parse(mid)+86400000).toISOString().slice(0,10);
-     pending.unshift([from,mid],[next,to]);continue;
-    }
-    features.push(...page);if(features.length>360)throw new Error('Catalogue complet trop volumineux.');
-   }
+   const features=await searchSentinelCatalog(id,bounds,startDate,asOf,harmonized,fetcher,completeWindow);
    const usable=features.some(item=>{
     const date=item.properties?.datetime?.slice(0,10),assets=item.assets??{},has=(...keys:string[])=>keys.some(key=>typeof assets[key]?.href==='string');
     return !!date&&iso(date)&&date>=startDate&&date<=asOf&&(!requireIndexBands||((requireIndexBands==='ndvi'||has('B02','blue'))&&has('B04','red')&&has('B08','nir','nir_1')&&has('SCL','scl','mask')));
