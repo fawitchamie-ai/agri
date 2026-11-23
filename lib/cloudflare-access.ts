@@ -58,6 +58,12 @@ export function sanitizedRequest(request:Request):Request {
   headers.delete('cf-access-jwt-assertion');
   return new Request(request,{headers});
 }
+export function clearStaleDemoCookie(response:Response,request:Request,identity:AccessIdentity|null):Response {
+  if(!identity||!request.headers.get('cookie')?.split(';').some(part=>part.trim().startsWith('agri_demo=')))return response;
+  const headers=new Headers(response.headers);
+  headers.append('Set-Cookie','agri_demo=; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=0');
+  return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+}
 function denied(message:string,status:number){return new Response(message,{status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
 function publicDemoRequest(request:Request):boolean {
   const url=new URL(request.url),method=request.method.toUpperCase();

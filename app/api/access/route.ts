@@ -7,7 +7,9 @@ export async function GET(request: Request) { try {
         throw new HttpError(403, 'La gestion des accès est réservée au responsable.');
     const db = database();
     const [accounts, members, invites] = await Promise.all([
-      db.prepare('SELECT id,name,role,created_at AS createdAt FROM accounts WHERE coop_id=? ORDER BY name').bind(s.coopId).all<any>(),
+      db.prepare(`SELECT account.id,account.name,membership.role,account.created_at AS createdAt
+        FROM account_cooperatives membership JOIN accounts account ON account.id=membership.account_id
+        WHERE membership.coop_id=? ORDER BY account.name`).bind(s.coopId).all<any>(),
       db.prepare("SELECT owner_id,data FROM business_records WHERE coop_id=? AND kind='member'").bind(s.coopId).all<any>(),
       db.prepare('SELECT id,role,member_id AS memberId,email,created_by AS createdBy,expires_at AS expiresAt,accepted_at AS acceptedAt FROM invitations WHERE coop_id=? ORDER BY expires_at DESC LIMIT 200').bind(s.coopId).all<any>(),
     ]);
@@ -41,13 +43,11 @@ export async function POST(request: Request) {
                 throw new HttpError(400, 'Une invitation de démonstration ne permet pas d’affecter un compte réel.');
             if (invite.email && invite.email !== user.email.toLowerCase())
                 throw new HttpError(403, 'Cette invitation est destinée à une autre adresse.');
-            const account = await db.prepare('SELECT * FROM accounts WHERE id=?').bind(user.userId).first<any>();
-            if (account && account.coop_id !== invite.coop_id) {
-                const owned = await db.prepare('SELECT COUNT(*) AS total FROM business_records WHERE coop_id=? AND owner_id=?').bind(account.coop_id, user.userId).first<any>();
-                if (owned?.total > 0 && b.confirmMove !== true)
-                    return json({ error: 'Vous possédez des données dans votre coopérative actuelle. Elles y seront conservées et ne seront plus accessibles avec votre nouvelle affectation. Confirmez explicitement le changement.', requiresConfirmation: true }, 409);
-            }
             const now = new Date().toISOString(), guard = 'EXISTS (SELECT 1 FROM invitations WHERE id=? AND accepted_by=? AND accepted_at=?)', guardArgs = [invite.id, user.userId, now], statements = [db.prepare('UPDATE invitations SET accepted_by=?,accepted_at=? WHERE id=? AND accepted_at IS NULL').bind(user.userId, now, invite.id), db.prepare(`INSERT INTO accounts (id,name,role,coop_id,created_at) SELECT ?,?,?,?,? WHERE ${guard} ON CONFLICT(id) DO UPDATE SET name=excluded.name,role=excluded.role,coop_id=excluded.coop_id`).bind(user.userId, user.displayName, invite.role, invite.coop_id, now, ...guardArgs)];
+            statements.push(db.prepare(`INSERT INTO account_cooperatives (account_id,coop_id,role,created_at)
+                SELECT ?,?,?,? WHERE ${guard}
+                ON CONFLICT(account_id,coop_id) DO UPDATE SET role=excluded.role`)
+                .bind(user.userId, invite.coop_id, invite.role, now, ...guardArgs));
             if (invite.role === 'producteur') {
                 if (invite.member_id) {
                     statements.push(db.prepare(`UPDATE business_records SET owner_id=?,updated_at=? WHERE id=? AND coop_id=? AND kind='member' AND ${guard}`).bind(user.userId, now, invite.member_id, invite.coop_id, ...guardArgs));

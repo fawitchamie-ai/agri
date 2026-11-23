@@ -21,7 +21,9 @@ Une configuration absente répond 503; un jeton absent ou invalide répond 401. 
 - `ADMIN_EMAILS` : liste des emails autorisés comme administrateurs techniques, séparés par une virgule. Les emails doivent provenir des claims signés. Ne pas autoriser tous les emails dans cette variable.
 - `ADMIN_USER_IDS` : alternative explicite par identifiant `cf:<sub>`.
 
-Un utilisateur authentifié sans rôle existant reçoit son espace personnel responsable, isolé des autres. Les invitations métier n’élargissent pas la politique Access : la personne invitée doit d’abord être autorisée dans Access. Ne pas configurer de politique Access `Bypass` sur les routes métier.
+Un utilisateur authentifié sans rôle existant reçoit son espace personnel responsable, isolé des autres. Le compte applicatif reste identifié par le `sub` signé, et les rattachements à plusieurs coopératives sont conservés dans `account_cooperatives`. L’espace actif ne représente que le contexte de travail courant : le sélecteur permet de revenir aux autres espaces sans déplacer ni supprimer leurs campagnes, récoltes ou réglages. Accepter une invitation ajoute l’espace reçu au compte et l’ouvre; les rôles restent propres à chaque coopérative. Les invitations métier n’élargissent pas la politique Access : la personne invitée doit d’abord être autorisée dans Access. Ne pas configurer de politique Access `Bypass` sur les routes métier.
+
+Les vraies connexions restent gérées par Cloudflare Access; l’application ne conserve pas de mot de passe. Un ancien cookie de démonstration ne peut pas masquer une identité Access valide : il est expiré dès qu’une requête authentifiée revient, et une identité réelle ne peut pas ouvrir un espace de démonstration.
 
 ## Démonstration locale
 
