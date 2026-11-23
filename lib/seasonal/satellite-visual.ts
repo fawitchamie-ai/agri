@@ -28,6 +28,7 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
  if(layer==='ndvi'){
   const bands=[asset('B04','red'),asset('B08','nir','nir_1'),asset('SCL','scl','mask')];
   const [red,nir,scl]=await Promise.all(bands.map(a=>reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000)));
+  if(Math.abs(red.resolutionM-10)>1||Math.abs(nir.resolutionM-10)>1)throw new Error('Résolution Sentinel-2 incompatible : les bandes B04/B08 doivent être à 10 m.');
   const nirBy=new Map(nir.cells.map(c=>[key(c),c.value])),rt=reflectanceTransform(bands[0],item),nt=reflectanceTransform(bands[1],item),buckets=new Map<string,typeof scl.cells>();
   for(const cell of scl.cells){const p=pixelCenter(cell),k=p.map(v=>Math.floor(v/.00005)).join(':');buckets.set(k,[...(buckets.get(k)??[]),cell]);}
   const pixels=red.cells.flatMap(c=>{
