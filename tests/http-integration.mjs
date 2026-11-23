@@ -23,7 +23,7 @@ await check('Origine étrangère: mutation refusée',async()=>{const response=aw
 if(harness)await check('Persistance après fermeture et réouverture SQLite',async()=>{harness.restartDatabase();const workspace=await request('/api/workspace');assert.ok(workspace.records.some(x=>x.id===harvest.id));});
 if(harness){
  const identity=(id,email)=>({userId:id,email,displayName:id,fullName:null});
- await check('Comptes réels: invitation ciblée, changement confirmé et propriété producteur',async()=>{
+ await check('Comptes réels: invitation ciblée, espaces liés et propriété producteur',async()=>{
   await request('/api/demo','DELETE',{});harness.setIdentity(identity('qa-real-owner','owner@example.test'));
   const owner=await request('/api/workspace');assert.equal(owner.session.role,'responsable');assert.equal(owner.session.demo,false);
   const ownedMember=(await request('/api/workspace','POST',{kind:'member',data:{name:'Producteur test réel isolé',locality:'Localité test'}},201)).record;
@@ -31,15 +31,19 @@ if(harness){
   const invitation=await request('/api/access','POST',{action:'create',role:'producteur',memberId:ownedMember.id,email:'producer@example.test'},201);
   harness.setIdentity(identity('qa-wrong','wrong@example.test'));await request('/api/access','POST',{action:'accept',code:invitation.code},403);
   harness.setIdentity(identity('qa-real-producer','producer@example.test'));await request('/api/workspace');
-  await request('/api/workspace','POST',{kind:'member',data:{name:'Ancien membre test',locality:'Test'}},201);
-  const warning=await request('/api/access','POST',{action:'accept',code:invitation.code},409);assert.equal(warning.requiresConfirmation,true);
-  await request('/api/access','POST',{action:'accept',code:invitation.code,confirmMove:true});
-  const joined=await request('/api/workspace');assert.equal(joined.session.role,'producteur');assert.equal(joined.session.coopId,owner.session.coopId);assert.ok(joined.records.some(x=>x.id===ownedMember.id));assert.ok(joined.records.some(x=>x.id===ownedHarvest.id));
+  const oldCoop=(await request('/api/workspace','POST',{kind:'member',data:{name:'Ancien membre test',locality:'Test'}},201)).record.coopId;
+  const formerMember=(await request('/api/workspace')).records.find(x=>x.kind==='member'&&x.data.name==='Ancien membre test');assert.ok(formerMember);
+  await request('/api/access','POST',{action:'accept',code:invitation.code});
+  const joined=await request('/api/workspace');assert.equal(joined.session.role,'producteur');assert.equal(joined.session.coopId,owner.session.coopId);assert.ok(joined.records.some(x=>x.id===ownedMember.id));assert.ok(joined.records.some(x=>x.id===ownedHarvest.id));assert.equal(joined.session.cooperatives.length,2);assert.ok(joined.session.cooperatives.some(x=>x.coopId===oldCoop));
+  await request('/api/session','POST',{action:'switch',coopId:oldCoop});const restoredPersonal=await request('/api/workspace');assert.ok(restoredPersonal.records.some(x=>x.id===formerMember.id),'Les données de l’espace personnel restent accessibles après l’invitation.');
+  await request('/api/session','POST',{action:'switch',coopId:owner.session.coopId});
+  harness.setIdentity(identity('qa-real-owner','owner@example.test'));const accessList=await request('/api/access');assert.ok(accessList.accounts.some(x=>x.id==='qa-real-producer'&&x.role==='producteur'));
+  harness.setIdentity(identity('qa-real-producer','producer@example.test'));
   await request('/api/access','POST',{action:'accept',code:invitation.code},404);
   await request('/api/access','POST',{action:'create',role:'agent'},403);
   await request('/api/workspace','POST',{kind:'harvest',data:{...harvestData(),memberId:ownedMember.id,status:'valide'}},403);
   harness.setIdentity(identity('qa-outsider','outsider@example.test'));const outsider=await request('/api/workspace');assert.notEqual(outsider.session.coopId,owner.session.coopId);assert.ok(!outsider.records.some(x=>x.id===ownedHarvest.id));await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
-  await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
+  harness.setIdentity(null);await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
  });
  await check('Concurrence: double confirmation import et collecte sans doublons',async()=>{
   await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});

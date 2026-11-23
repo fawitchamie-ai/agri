@@ -17,7 +17,17 @@ export async function GET(request: Request) { try {
     }
     const records = visible.map(r => ({ ...record(r), history: histories.get(r.id) || [] }));
     const { rootId: _, ...publicSession } = s;
-    return json({ session: publicSession, records });
+    const cooperatives = s.demo
+      ? [{ coopId: s.coopId, name: `${s.coopId.includes('demo-b') ? 'Coopérative B' : 'Coopérative A'} · démonstration`, role: s.role }]
+      : (await db.prepare(`SELECT access.coop_id AS coopId,access.role,profile.name
+          FROM account_cooperatives access LEFT JOIN cooperative_profiles profile ON profile.coop_id=access.coop_id
+          WHERE access.account_id=? ORDER BY access.created_at,access.coop_id`).bind(s.userId).all<any>()).results
+        .map((entry:any) => ({
+          coopId: entry.coopId,
+          name: entry.name || (entry.coopId === `real-${s.userId}` ? 'Mon espace personnel' : 'Ma coopérative'),
+          role: s.role === 'admin' ? 'admin' : entry.role,
+        }));
+    return json({ session: { ...publicSession, cooperatives }, records });
 }
 catch (e) {
     return failure(e);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPair,exportJWK,SignJWT,createLocalJWKSet} from 'jose';
-import {accessConfiguration,authorizeAccessRequest,currentAccessIdentity,identityFromClaims,runWithAccessIdentity,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
+import {accessConfiguration,authorizeAccessRequest,clearStaleDemoCookie,currentAccessIdentity,identityFromClaims,runWithAccessIdentity,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
 
 const env={CF_ACCESS_TEAM_DOMAIN:'https://agri-test.cloudflareaccess.com',CF_ACCESS_AUD:'application-audience-test'};
 const configuration=accessConfiguration(env);
@@ -36,6 +36,16 @@ test('Access: les en-têtes identité visiteurs ne remplacent jamais un JWT',asy
  const clean=sanitizedRequest(forged);for(const name of ['oai-authenticated-user-id','oai-authenticated-user-email','x-agri-user-id','x-agri-role'])assert.equal(clean.headers.get(name),null);
  const auth=await authorizeAccessRequest(request('/',await token(),{'oai-authenticated-user-id':'admin','x-agri-role':'admin'}),env,resolver);
  assert(!(auth instanceof Response));assert.equal(auth.identity?.userId,'cf:person-01');assert.equal(auth.request.headers.get('x-agri-role'),null);
+});
+
+test('Access: un vrai compte efface un ancien cookie de démonstration sans toucher au contenu',async()=>{
+ const signed=await token(),auth=await authorizeAccessRequest(request('/api/workspace',signed,{'cookie':'agri_demo=stale-token'}),env,resolver);
+ assert(!(auth instanceof Response));
+ const response=clearStaleDemoCookie(Response.json({ok:true}),auth.request,auth.identity);
+ assert.deepEqual(await response.json(),{ok:true});
+ assert.match(response.headers.get('set-cookie')||'',/agri_demo=; Path=\/; HttpOnly; SameSite=Strict; Secure; Max-Age=0/);
+ const anonymous=clearStaleDemoCookie(new Response('demo'),request('/api/workspace',undefined,{'cookie':'agri_demo=still-demo'}),null);
+ assert.equal(anonymous.headers.get('set-cookie'),null);assert.equal(await anonymous.text(),'demo');
 });
 
 test('Access: configuration manquante refuse par défaut, domaine des clés HTTPS contrôlé',async()=>{

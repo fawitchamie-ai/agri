@@ -4,7 +4,8 @@ export type Observation={id:string;crop:string;year:number;territory:string;leve
 export type Science={meta:{notebook:string;sha256:string;sourceDescription:string;limitations:string[];generatedAt:string;[key:string]:unknown};forecasts:Forecast[];observations:Observation[]};
 export type RecordKind='member'|'simulation'|'collection'|'harvest'|'capacity';
 export type BusinessRecord={id:string;kind:RecordKind;coopId:string;ownerId:string;data:Record<string,any>;createdAt:string;updatedAt:string;history?:any[]};
-export type Session={userId:string;name:string;role:Role;coopId:string;demo:boolean};
+export type CooperativeAccess={coopId:string;name:string;role:Role};
+export type Session={userId:string;name:string;role:Role;coopId:string;demo:boolean;cooperatives?:CooperativeAccess[]};
 export type Bootstrap={session:Session;records:BusinessRecord[]};
 export type CooperativeProfile={coopId:string;name:string;country:string;region:string;locality:string;phone:string;email:string;contactName:string;createdAt?:string;updatedAt?:string;configured?:boolean};
 // GET /api/workspace -> Bootstrap. POST {kind,data,id?} -> {record}; all writes same-origin JSON, server validates.

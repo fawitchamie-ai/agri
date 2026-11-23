@@ -177,14 +177,9 @@ export default function CooperativeWorkspace({ workspace, records, onRefresh }: 
   async function acceptInvitation() {
     if (!inviteCode.trim()) return;
     setBusy(true); setError('');
-    const post = (confirmMove = false) => request('/api/access', { action: 'accept', code: inviteCode.trim(), ...(confirmMove ? { confirmMove: true } : {}) });
     try {
-      try { await post(); }
-      catch (e) {
-        if ((e as Error).message.includes('Confirmez explicitement') && window.confirm('Votre ancien espace contient des données. Elles y resteront conservées et ne seront plus accessibles depuis cette nouvelle coopérative. Continuer ?')) await post(true);
-        else throw e;
-      }
-      setInviteCode(''); await onRefresh(); flash('Invitation acceptée. La coopérative est maintenant votre espace actif.');
+      await request('/api/access', { action: 'accept', code: inviteCode.trim() });
+      setInviteCode(''); await onRefresh(); flash('Invitation acceptée. La coopérative a été ajoutée à vos espaces. Vos campagnes précédentes restent disponibles dans « Espace actif ».');
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }

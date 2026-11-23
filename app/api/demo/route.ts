@@ -1,8 +1,11 @@
 import { body, database, digest, failure, HttpError, json } from '@/lib/server-db';
 import { cookieToken } from '@/lib/server-auth';
+import { getChatGPTUser } from '@/app/chatgpt-auth';
 import type { Role } from '@/lib/contracts';
 export async function POST(request: Request) {
     try {
+        if (await getChatGPTUser())
+            throw new HttpError(409, 'Vous êtes connecté avec un compte réel. Fermez cette session avant d’ouvrir une démonstration.');
         const b = await body(request);
         if (!['admin', 'responsable', 'agent', 'producteur'].includes(b.role))
             throw new HttpError(400, 'Rôle inconnu.');

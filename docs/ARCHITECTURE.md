@@ -11,7 +11,7 @@ Le système est un monolithe modulaire TypeScript : vues React, routes serveur c
 - `app/page.tsx`, `components/agri/`, `app/globals.css` : interface française responsive.
 
 ## Portée des données
-Les imports sont versionnés; les simulations conservent une référence et les hypothèses utilisées. Les données scientifiques ne sont pas remplacées par les récoltes communautaires. Les quatre catégories de collecte ne sont jamais additionnées dans un « total récolte ». Les identités, coopératives et droits sont vérifiés côté serveur. Les environnements fictifs sont séparés des espaces réels.
+Les imports sont versionnés; les simulations conservent une référence et les hypothèses utilisées. Les données scientifiques ne sont pas remplacées par les récoltes communautaires. Les quatre catégories de collecte ne sont jamais additionnées dans un « total récolte ». Les identités, coopératives et droits sont vérifiés côté serveur. Un compte réel peut être membre de plusieurs coopératives; son espace actif ne déplace pas ses données. Les campagnes restent rattachées à leur coopérative et les brouillons locaux sont séparés par compte et espace. Les environnements fictifs sont séparés des espaces réels.
 
 ## Calculs
 Production simulée t = rendement t/ha × superficie ha. Production kg = tonnes ×1000. Sacs équivalents = kg/poids du sac en kg. Rendement observé t/ha = quantité normalisée t/superficie récoltée ha. Rendement agrégé = somme des productions compatibles / somme des superficies compatibles. Les valeurs manquantes ne sont pas transformées en zéro.

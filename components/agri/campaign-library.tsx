@@ -9,6 +9,7 @@ type Props = {
   campaigns: CampaignSummary[];
   loading: boolean;
   error: string;
+  accountHint?: string;
   truncated?: boolean;
   busy: boolean;
   onOpen: (id: string) => void;
@@ -34,7 +35,7 @@ const updatedDate = (value?: string) => {
   return Number.isNaN(parsed.valueOf()) ? 'Mise à jour non renseignée' : `Modifiée le ${parsed.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 };
 
-export default function CampaignLibrary({ campaigns, loading, error, truncated, busy, onOpen, onDuplicate, onNew, onManage, onRetry, onImport, onRestoreDraft }: Props) {
+export default function CampaignLibrary({ campaigns, loading, error, accountHint, truncated, busy, onOpen, onDuplicate, onNew, onManage, onRetry, onImport, onRestoreDraft }: Props) {
   const [scope, setScope] = useState<'active' | 'archived'>('active');
   const [query, setQuery] = useState('');
   const [crop, setCrop] = useState('');
@@ -92,7 +93,7 @@ export default function CampaignLibrary({ campaigns, loading, error, truncated, 
     ? <div className="campaign-library-empty" role="status">Chargement de vos campagnes…</div>
     : visible.length
       ? <div className="campaign-library-grid">{visible.map(renderCampaignCard)}</div>
-      : <div className="campaign-library-empty"><strong>{scope === 'archived' ? 'Aucune campagne archivée.' : campaigns.length ? 'Aucune campagne ne correspond à ces filtres.' : 'Votre espace campagne est prêt.'}</strong><HelpParagraph>{scope === 'archived' ? 'Les campagnes archivées resteront disponibles ici et peuvent être restaurées.' : campaigns.length ? 'Modifiez la recherche ou les filtres, ou effacez-les pour revoir toutes les campagnes.' : 'Créez une campagne depuis un contour de champ, puis enregistrez-la pour la retrouver ici.'}</HelpParagraph>{!campaigns.length && <button className="btn primary" onClick={onNew}>Créer ma première campagne</button>}</div>;
+      : <div className="campaign-library-empty"><strong>{scope === 'archived' ? 'Aucune campagne archivée.' : campaigns.length ? 'Aucune campagne ne correspond à ces filtres.' : 'Votre espace campagne est prêt.'}</strong><HelpParagraph>{scope === 'archived' ? 'Les campagnes archivées resteront disponibles ici et peuvent être restaurées.' : campaigns.length ? 'Modifiez la recherche ou les filtres, ou effacez-les pour revoir toutes les campagnes.' : 'Créez une campagne depuis un contour de champ, puis enregistrez-la pour la retrouver ici.'}</HelpParagraph>{!campaigns.length && accountHint && <HelpParagraph className="campaign-account-hint">{accountHint}</HelpParagraph>}{!campaigns.length && <button className="btn primary" onClick={onNew}>Créer ma première campagne</button>}</div>;
 
   async function rename(campaign: CampaignSummary) {
     const name = draftName.trim();
