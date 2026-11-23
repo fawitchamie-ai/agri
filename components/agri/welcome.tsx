@@ -5,13 +5,13 @@ import FieldOverviewMap from './field-overview-map';
 import {COUNTRIES,type CampaignSummary} from '../../lib/seasonal/types';
 import './welcome.css';
 
-type WelcomeProps={campaigns:CampaignSummary[];selectedCampaignId:string;onSelectCampaign:(id:string)=>void;campaignsLoaded:boolean;campaignsError?:string;onRetry?:()=>void;onStart:()=>void;onCampaigns:()=>void;onReferences:()=>void;onOpenCampaign:(id:string,section:'images'|'map')=>void};
+type WelcomeProps={campaigns:CampaignSummary[];selectedCampaignId:string;onSelectCampaign:(id:string)=>void;campaignsLoaded:boolean;campaignsError?:string;onRetry?:()=>void;onOpenDemo?:()=>void;demoBusy?:boolean;onStart:()=>void;onCampaigns:()=>void;onReferences:()=>void;onOpenCampaign:(id:string,section:'images'|'map')=>void};
 const crops:Record<string,string>={Maize:'Maïs',Rice:'Riz',Sorghum:'Sorgho',Millet:'Mil',Cassava:'Manioc',Yam:'Igname',Beans:'Haricot',Groundnuts:'Arachide',Cowpea:'Niébé',Soybean:'Soja'};
 const dateLabel=(value?:string)=>value?new Date(value).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'Date non renseignée';
 const hasGeometry=(campaign?:CampaignSummary)=>!!campaign?.geometry?.coordinates?.[0]&&campaign.geometry.coordinates[0].length>=4;
 const areaLabel=(area?:number|null)=>area&&area>0?`${new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(area/10000)} ha`:null;
 
-export default function Welcome({campaigns,selectedCampaignId,onSelectCampaign,campaignsLoaded,campaignsError='',onRetry=()=>{},onStart,onCampaigns,onReferences,onOpenCampaign}:WelcomeProps){
+export default function Welcome({campaigns,selectedCampaignId,onSelectCampaign,campaignsLoaded,campaignsError='',onRetry=()=>{},onOpenDemo=()=>{},demoBusy=false,onStart,onCampaigns,onReferences,onOpenCampaign}:WelcomeProps){
  const [query,setQuery]=useState(''),[mobileView,setMobileView]=useState<'fields'|'map'>('fields');
  const filtered=useMemo(()=>campaigns.filter(c=>`${c.name} ${c.crop} ${COUNTRIES[c.country]?.name||''} ${c.territory||''}`.toLocaleLowerCase('fr').includes(query.trim().toLocaleLowerCase('fr'))),[campaigns,query]);
  const activeId=filtered.some(c=>c.id===selectedCampaignId)?selectedCampaignId:(filtered[0]?.id||'');
@@ -37,7 +37,7 @@ export default function Welcome({campaigns,selectedCampaignId,onSelectCampaign,c
       <span className={'home-field-status'+(hasGeometry(c)?' located':'')} title={hasGeometry(c)?'Contour enregistré':'Contour à renseigner'}><i/></span>
      </button>;})}
      {!campaignsLoaded&&!campaignsError&&<div className="home-fields-skeleton" aria-label="Chargement des parcelles"><i/><i/><i/></div>}
-     {campaignsError&&<section className="home-empty-field"><span className="home-empty-symbol"><ProductIcon name="refresh" size={20}/></span><div className="home-empty-copy"><h3>{/connectez-vous|démonstration/i.test(campaignsError)?'Connectez-vous pour voir vos champs':'Vos champs n’ont pas pu être chargés'}</h3><p>{campaignsError}</p></div><button className="home-primary-action" onClick={onRetry}>Réessayer <ProductIcon name="arrow" size={16}/></button></section>}
+     {campaignsError&&(()=>{const publicVisitor=/connectez-vous|démonstration/i.test(campaignsError);return <section className="home-empty-field"><span className="home-empty-symbol"><ProductIcon name={publicVisitor?'leaf':'refresh'} size={20}/></span><div className="home-empty-copy"><h3>{publicVisitor?'Bienvenue sur AgriPrévision':'Vos champs n’ont pas pu être chargés'}</h3><p>{publicVisitor?'Connectez-vous par e-mail via Cloudflare Access pour ouvrir votre espace personnel. À la première connexion autorisée, votre compte et son espace sont créés automatiquement. Vous pouvez aussi explorer la démonstration sans compte.':campaignsError}</p></div><div className="home-empty-actions">{publicVisitor?<><a className="home-primary-action home-login-action" href="/api/auth/login?returnTo=%2F">Se connecter par e-mail <ProductIcon name="arrow" size={16}/></a><button className="home-secondary-action" disabled={demoBusy} onClick={onOpenDemo}>{demoBusy?'Ouverture…':'Explorer la démo'}</button></>:<button className="home-secondary-action" disabled={demoBusy} onClick={onRetry}>Réessayer</button>}</div></section>})()}
      {campaignsLoaded&&campaigns.length===0&&<section className="home-empty-field"><span className="home-empty-symbol"><ProductIcon name="map" size={20}/></span><div className="home-empty-copy"><h3>Aucun champ enregistré</h3><p>Tracez le contour d’une parcelle pour commencer son suivi.</p></div><button className="home-primary-action" onClick={onStart}>Tracer une parcelle <ProductIcon name="arrow" size={16}/></button></section>}
      {campaignsLoaded&&campaigns.length>0&&filtered.length===0&&<p className="home-no-results">Aucun champ ne correspond à « {query} ».</p>}
     </div>

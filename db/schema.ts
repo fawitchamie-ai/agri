@@ -1,5 +1,9 @@
 import { sqliteTable, text, integer, real, primaryKey, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 export const accounts = sqliteTable('accounts', { id: text('id').primaryKey(), name: text('name').notNull(), role: text('role').notNull(), coopId: text('coop_id').notNull(), createdAt: text('created_at').notNull() });
+export const accountCooperatives = sqliteTable('account_cooperatives', {
+  accountId: text('account_id').notNull().references(()=>accounts.id, {onDelete:'cascade'}),
+  coopId: text('coop_id').notNull(), role: text('role').notNull(), createdAt: text('created_at').notNull(),
+}, t => [primaryKey({columns:[t.accountId,t.coopId]}), index('account_cooperatives_coop').on(t.coopId,t.accountId)]);
 export const demoSessions = sqliteTable('demo_sessions', { token: text('token').primaryKey(), rootId: text('root_id').notNull(), userId: text('user_id').notNull(), name: text('name').notNull(), role: text('role').notNull(), coopId: text('coop_id').notNull(), expiresAt: text('expires_at').notNull() });
 export const records = sqliteTable('business_records', { id: text('id').primaryKey(), kind: text('kind').notNull(), coopId: text('coop_id').notNull(), ownerId: text('owner_id').notNull(), data: text('data').notNull(), createdAt: text('created_at').notNull(), updatedAt: text('updated_at').notNull() }, t => [index('records_scope').on(t.coopId, t.kind)]);
 export const changes = sqliteTable('record_changes', { id: text('id').primaryKey(), recordId: text('record_id').notNull(), coopId: text('coop_id').notNull(), actorId: text('actor_id').notNull(), data: text('data').notNull(), createdAt: text('created_at').notNull() }, t => [index('changes_record').on(t.recordId)]);

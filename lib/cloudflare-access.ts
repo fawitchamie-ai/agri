@@ -29,6 +29,20 @@ export function accessConfiguration(env:AccessEnvironment):AccessConfiguration {
     throw new Error('Cloudflare Access doit être configuré avec son domaine HTTPS et son audience.');
   return {issuer,audience};
 }
+export function safeAccessReturnPath(value:string|null):string {
+  if(!value||!value.startsWith('/')||value.startsWith('//')||value.includes('\\')||/[\u0000-\u001f]/.test(value))return '/';
+  try{
+    const url=new URL(value,'https://agri.invalid');
+    return url.origin==='https://agri.invalid'?url.pathname+url.search:'/';
+  }catch{return '/';}
+}
+export function generateAccessLoginURL(redirectURL:string|URL,config:AccessConfiguration):string {
+  const destination=typeof redirectURL==='string'?new URL(redirectURL):redirectURL;
+  if(destination.protocol!=='https:'||destination.username||destination.password)throw new Error('La destination de connexion doit être une URL HTTPS valide.');
+  const loginURL=new URL(`/cdn-cgi/access/login/${destination.hostname}`,config.issuer);
+  loginURL.search=new URLSearchParams({kid:config.audience,redirect_url:destination.pathname+destination.search}).toString();
+  return loginURL.toString();
+}
 function remoteKeys(issuer:string) {
   let keys=keySets.get(issuer);
   if(!keys){keys=createRemoteJWKSet(new URL(issuer+'/cdn-cgi/access/certs'));keySets.set(issuer,keys);}
@@ -58,7 +72,22 @@ export function sanitizedRequest(request:Request):Request {
   headers.delete('cf-access-jwt-assertion');
   return new Request(request,{headers});
 }
+export function clearStaleDemoCookie(response:Response,request:Request,identity:AccessIdentity|null):Response {
+  if(!identity||!request.headers.get('cookie')?.split(';').some(part=>part.trim().startsWith('agri_demo=')))return response;
+  const headers=new Headers(response.headers);
+  headers.append('Set-Cookie','agri_demo=; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=0');
+  return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
+}
 function denied(message:string,status:number){return new Response(message,{status,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});}
+function accessTokenFromCookie(request:Request):string {
+  for(const part of request.headers.get('cookie')?.split(';')??[]){
+    const separator=part.indexOf('=');
+    if(separator<0||part.slice(0,separator).trim()!=='CF_Authorization')continue;
+    const token=part.slice(separator+1).trim();
+    return token.length<=16_384?token:'';
+  }
+  return '';
+}
 function publicDemoRequest(request:Request):boolean {
   const url=new URL(request.url),method=request.method.toUpperCase();
   if(method==='GET'||method==='HEAD'){
@@ -73,9 +102,11 @@ export async function authorizeAccessRequest(request:Request,env:AccessEnvironme
   const url=new URL(request.url),clean=sanitizedRequest(request);
   // Version metadata contains no identity, database state or user input.
   if(request.method==='GET'&&url.pathname==='/api/version')return {request:clean,identity:null};
+  // Let visitors initiate the Access login flow while keeping business APIs protected.
+  if(request.method==='GET'&&url.pathname==='/api/auth/login')return {request:clean,identity:null};
   if(env.AUTH_DEMO_ONLY==='true'&&(localHosts.has(url.hostname)||(import.meta.env?.DEV===true&&url.hostname==='terminal.local'))&&localPaths.has(url.pathname))
     return {request:clean,identity:null};
-  const token=request.headers.get('cf-access-jwt-assertion');
+  const token=request.headers.get('cf-access-jwt-assertion')||accessTokenFromCookie(request);
   if(!token&&env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))return {request:clean,identity:null};
   let config:AccessConfiguration;
   try{config=accessConfiguration(env);}catch{return denied('Authentification Cloudflare Access non configurée.',503);}
@@ -86,5 +117,8 @@ export async function authorizeAccessRequest(request:Request,env:AccessEnvironme
     if(!identity&&!(request.method==='GET'&&url.pathname==='/api/health'))
       return denied('Une identité utilisateur Cloudflare Access est requise.',403);
     return {request:clean,identity};
-  }catch{return denied('Connexion Cloudflare Access invalide ou expirée.',401);}
+  }catch{
+    if(env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))return {request:clean,identity:null};
+    return denied('Connexion Cloudflare Access invalide ou expirée.',401);
+  }
 }

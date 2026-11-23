@@ -9,6 +9,12 @@ let cookie='';const results=[];
 async function request(path,method='GET',data,expected=200){const response=await fetchRoute(new URL(path,base),{method,headers:{...(cookie?{cookie}:{}),...(data?{'Content-Type':'application/json',Origin:new URL(base).origin}:{})},...(data?{body:JSON.stringify(data)}:{})});const setCookie=response.headers.getSetCookie?.()[0];if(setCookie)cookie=setCookie.split(';')[0];const text=await response.text();let result;try{result=JSON.parse(text);}catch{result=text;}assert.equal(response.status,expected,`${method} ${path}: ${text.slice(0,300)}`);return result;}
 async function check(name,fn){const start=performance.now();await fn();results.push({name,status:'PASS',ms:+(performance.now()-start).toFixed(2)});}
 let member,harvest,collection,simulation,forecast,coopA,cookieA,managerHarvest;
+if(harness)await check('Connexion e-mail: redirection Access limitée au domaine de l’application',async()=>{
+ const response=await fetchRoute(new URL('https://agri.test/api/auth/login?returnTo=%2Fseasonal%3Fsection%3Dmap'),{method:'GET'});
+ assert.equal(response.status,302);const login=new URL(response.headers.get('location'));
+ assert.equal(login.origin,'https://agri-test.cloudflareaccess.com');assert.equal(login.pathname,'/cdn-cgi/access/login/agri.test');
+ assert.equal(login.searchParams.get('kid'),'a'.repeat(64));assert.equal(login.searchParams.get('redirect_url'),'/seasonal?section=map');
+});
 await check('Anonyme: accès aux données privées refusé',async()=>{await request('/api/workspace','GET',undefined,401);});
 await check('Démonstration: ouverture et prévisions traçables',async()=>{await request('/api/demo','POST',{role:'responsable',coopId:'demo-a'});const workspace=await request('/api/workspace');coopA=workspace.session.coopId;member=workspace.records.find(x=>x.kind==='member');assert.ok(member);const science=await request('/api/science');assert.equal(science.forecasts.length,1092);forecast=science.forecasts.find(x=>x.crop==='Maize'&&x.year===2026);assert.ok(forecast);});
 await check('Simulation: persistance et instantané source immuable',async()=>{const r=await request('/api/workspace','POST',{kind:'simulation',data:{crop:forecast.crop,year:forecast.year,territory:forecast.territory,area:2,yield:forecast.yield,forecastId:forecast.id,scenarioLow:forecast.yield*.8,scenarioHigh:forecast.yield*1.2,bagWeight:50}},201);simulation=r.record;assert.equal(simulation.data.productionT,forecast.yield*2);assert.equal(simulation.data.forecastSnapshot.id,forecast.id);const reload=await request('/api/workspace');assert.ok(reload.records.some(x=>x.id===simulation.id));});
@@ -23,7 +29,7 @@ await check('Origine étrangère: mutation refusée',async()=>{const response=aw
 if(harness)await check('Persistance après fermeture et réouverture SQLite',async()=>{harness.restartDatabase();const workspace=await request('/api/workspace');assert.ok(workspace.records.some(x=>x.id===harvest.id));});
 if(harness){
  const identity=(id,email)=>({userId:id,email,displayName:id,fullName:null});
- await check('Comptes réels: invitation ciblée, changement confirmé et propriété producteur',async()=>{
+ await check('Comptes réels: invitation ciblée, espaces liés et propriété producteur',async()=>{
   await request('/api/demo','DELETE',{});harness.setIdentity(identity('qa-real-owner','owner@example.test'));
   const owner=await request('/api/workspace');assert.equal(owner.session.role,'responsable');assert.equal(owner.session.demo,false);
   const ownedMember=(await request('/api/workspace','POST',{kind:'member',data:{name:'Producteur test réel isolé',locality:'Localité test'}},201)).record;
@@ -31,15 +37,19 @@ if(harness){
   const invitation=await request('/api/access','POST',{action:'create',role:'producteur',memberId:ownedMember.id,email:'producer@example.test'},201);
   harness.setIdentity(identity('qa-wrong','wrong@example.test'));await request('/api/access','POST',{action:'accept',code:invitation.code},403);
   harness.setIdentity(identity('qa-real-producer','producer@example.test'));await request('/api/workspace');
-  await request('/api/workspace','POST',{kind:'member',data:{name:'Ancien membre test',locality:'Test'}},201);
-  const warning=await request('/api/access','POST',{action:'accept',code:invitation.code},409);assert.equal(warning.requiresConfirmation,true);
-  await request('/api/access','POST',{action:'accept',code:invitation.code,confirmMove:true});
-  const joined=await request('/api/workspace');assert.equal(joined.session.role,'producteur');assert.equal(joined.session.coopId,owner.session.coopId);assert.ok(joined.records.some(x=>x.id===ownedMember.id));assert.ok(joined.records.some(x=>x.id===ownedHarvest.id));
+  const oldCoop=(await request('/api/workspace','POST',{kind:'member',data:{name:'Ancien membre test',locality:'Test'}},201)).record.coopId;
+  const formerMember=(await request('/api/workspace')).records.find(x=>x.kind==='member'&&x.data.name==='Ancien membre test');assert.ok(formerMember);
+  await request('/api/access','POST',{action:'accept',code:invitation.code});
+  const joined=await request('/api/workspace');assert.equal(joined.session.role,'producteur');assert.equal(joined.session.coopId,owner.session.coopId);assert.ok(joined.records.some(x=>x.id===ownedMember.id));assert.ok(joined.records.some(x=>x.id===ownedHarvest.id));assert.equal(joined.session.cooperatives.length,2);assert.ok(joined.session.cooperatives.some(x=>x.coopId===oldCoop));
+  await request('/api/session','POST',{action:'switch',coopId:oldCoop});const restoredPersonal=await request('/api/workspace');assert.ok(restoredPersonal.records.some(x=>x.id===formerMember.id),'Les données de l’espace personnel restent accessibles après l’invitation.');
+  await request('/api/session','POST',{action:'switch',coopId:owner.session.coopId});
+  harness.setIdentity(identity('qa-real-owner','owner@example.test'));const accessList=await request('/api/access');assert.ok(accessList.accounts.some(x=>x.id==='qa-real-producer'&&x.role==='producteur'));
+  harness.setIdentity(identity('qa-real-producer','producer@example.test'));
   await request('/api/access','POST',{action:'accept',code:invitation.code},404);
   await request('/api/access','POST',{action:'create',role:'agent'},403);
   await request('/api/workspace','POST',{kind:'harvest',data:{...harvestData(),memberId:ownedMember.id,status:'valide'}},403);
   harness.setIdentity(identity('qa-outsider','outsider@example.test'));const outsider=await request('/api/workspace');assert.notEqual(outsider.session.coopId,owner.session.coopId);assert.ok(!outsider.records.some(x=>x.id===ownedHarvest.id));await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
-  await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
+  harness.setIdentity(null);await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});await request('/api/workspace','POST',{id:ownedHarvest.id,kind:'harvest',data:{...harvestData(),memberId:ownedMember.id}},404);
  });
  await check('Concurrence: double confirmation import et collecte sans doublons',async()=>{
   await request('/api/demo','POST',{role:'admin',coopId:'demo-a'});

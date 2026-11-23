@@ -60,6 +60,9 @@
 .product-sidebar-bottom small,.product-profile small{color:#9bb4c0!important}
 .product-profile strong{color:#fff!important}
 .product-profile>span{background:#ffffff1d!important;color:#fff!important}
+.product-workspace-switcher>span{color:#b9cbdc!important}
+.product-workspace-switcher select{border-color:#ffffff2b!important;background:#102f50!important;color:#f3f8fb!important}
+.product-account-logout{color:#b9cbdc!important}
 .product-topbar{
   background:#fff!important;
   border-bottom:1px solid var(--cropin-line)!important;

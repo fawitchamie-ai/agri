@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPair,exportJWK,SignJWT,createLocalJWKSet} from 'jose';
-import {accessConfiguration,authorizeAccessRequest,currentAccessIdentity,identityFromClaims,runWithAccessIdentity,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
+import {accessConfiguration,authorizeAccessRequest,clearStaleDemoCookie,currentAccessIdentity,generateAccessLoginURL,identityFromClaims,runWithAccessIdentity,safeAccessReturnPath,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
 
 const env={CF_ACCESS_TEAM_DOMAIN:'https://agri-test.cloudflareaccess.com',CF_ACCESS_AUD:'application-audience-test'};
 const configuration=accessConfiguration(env);
@@ -22,6 +22,14 @@ test('Access: jeton RS256 signé produit identité humaine cf:sub et email norma
  assert.equal(auth.request.headers.get('cf-access-jwt-assertion'),null);
 });
 
+test('Access: une session Cloudflare signée par cookie fonctionne aussi sur le site public',async()=>{
+ const signed=await token();
+ const auth=await authorizeAccessRequest(request('/api/workspace',undefined,{'cookie':`CF_Authorization=${signed}`}),{...env,AUTH_PUBLIC_DEMO:'true'},resolver);
+ assert(!(auth instanceof Response));assert.equal(auth.identity?.userId,'cf:person-01');
+ const invalid=await authorizeAccessRequest(request('/api/workspace',undefined,{'cookie':'CF_Authorization=not-a-jwt'}),{...env,AUTH_PUBLIC_DEMO:'true'},resolver);
+ assert(!(invalid instanceof Response));assert.equal(invalid.identity,null);
+});
+
 test('Access: signature altérée, audience, émetteur et expiration incorrects refusés',async()=>{
  const signed=await token();const parts=signed.split('.');const changed=parts[2][0]==='a'?'b':'a';parts[2]=changed+parts[2].slice(1);
  for(const invalid of [parts.join('.'),await token({aud:'autre-application'}),await token({iss:'https://attacker.cloudflareaccess.com'}),await token({exp:Math.floor(Date.now()/1000)-60}),await token({iat:Math.floor(Date.now()/1000)+3600}),await token({exp:undefined})]){
@@ -38,11 +46,40 @@ test('Access: les en-têtes identité visiteurs ne remplacent jamais un JWT',asy
  assert(!(auth instanceof Response));assert.equal(auth.identity?.userId,'cf:person-01');assert.equal(auth.request.headers.get('x-agri-role'),null);
 });
 
+test('Access: un vrai compte efface un ancien cookie de démonstration sans toucher au contenu',async()=>{
+ const signed=await token(),auth=await authorizeAccessRequest(request('/api/workspace',signed,{'cookie':'agri_demo=stale-token'}),env,resolver);
+ assert(!(auth instanceof Response));
+ const response=clearStaleDemoCookie(Response.json({ok:true}),auth.request,auth.identity);
+ assert.deepEqual(await response.json(),{ok:true});
+ assert.match(response.headers.get('set-cookie')||'',/agri_demo=; Path=\/; HttpOnly; SameSite=Strict; Secure; Max-Age=0/);
+ const anonymous=clearStaleDemoCookie(new Response('demo'),request('/api/workspace',undefined,{'cookie':'agri_demo=still-demo'}),null);
+ assert.equal(anonymous.headers.get('set-cookie'),null);assert.equal(await anonymous.text(),'demo');
+});
+
 test('Access: configuration manquante refuse par défaut, domaine des clés HTTPS contrôlé',async()=>{
  const result=await authorizeAccessRequest(request(),{},resolver);assert(result instanceof Response);assert.equal(result.status,503);
  for(const issuer of ['http://agri-test.cloudflareaccess.com','https://attacker.test','https://agri-test.cloudflareaccess.com/extra','https://agri-test.cloudflareaccess.com@attacker.test'])
   assert.throws(()=>accessConfiguration({...env,CF_ACCESS_TEAM_DOMAIN:issuer}));
  assert.throws(()=>accessConfiguration({...env,CF_ACCESS_AUD:''}));
+});
+
+test('Access: le lien de connexion vise l’application et ne permet pas de redirection externe',async()=>{
+ assert.equal(safeAccessReturnPath('/#seasonal?library=1'),'/');
+ assert.equal(safeAccessReturnPath('/api/workspace?tab=fields'),'/api/workspace?tab=fields');
+ for(const path of ['https://attacker.test/','//attacker.test/','\\\\attacker.test/','/\\\\attacker.test/'])assert.equal(safeAccessReturnPath(path),'/');
+ const login=new URL(generateAccessLoginURL('https://agri.example.test/campaigns?open=1',configuration));
+ assert.equal(login.origin,'https://agri-test.cloudflareaccess.com');
+ assert.equal(login.pathname,'/cdn-cgi/access/login/agri.example.test');
+ assert.equal(login.searchParams.get('kid'),configuration.audience);
+ assert.equal(login.searchParams.get('redirect_url'),'/campaigns?open=1');
+ assert.throws(()=>generateAccessLoginURL('http://agri.example.test/',configuration));
+});
+
+test('Access: le point d’entrée de connexion est accessible sans JWT, les autres méthodes restent protégées',async()=>{
+ const login=await authorizeAccessRequest(request('/api/auth/login'),env,resolver);
+ assert(!(login instanceof Response));assert.equal(login.identity,null);
+ const post=await authorizeAccessRequest(new Request('https://agri.example.test/api/auth/login',{method:'POST'}),env,resolver);
+ assert(post instanceof Response);assert.equal(post.status,401);
 });
 
 test('Access: démonstration anonyme strictement locale et identité toujours absente',async()=>{
