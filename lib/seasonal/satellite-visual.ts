@@ -11,7 +11,7 @@ const key=(cell:Parameters<typeof pixelCenter>[0])=>pixelCenter(cell).map(v=>v.t
 export const reflectanceChannel=(value:number)=>Math.round(255*Math.pow(Math.max(0,Math.min(1,value/.3)),1/2.2));
 export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb'|'classification'|'ndvi'|'contrast',fetcher:typeof fetch=fetch,requestSignal?:AbortSignal,reader:typeof readRasterWindow=readRasterWindow){
  const deadline=AbortSignal.timeout(160000),signal=requestSignal?AbortSignal.any([deadline,requestSignal]):deadline;
- satelliteMapUrl(layer,date,bounds);
+ satelliteMapUrl(layer==='contrast'?'ndvi':layer,date,bounds);
  const [w,s,e,n]=bounds,shape:ParcelPolygon={type:'Polygon',coordinates:[[[w,s],[e,s],[e,n],[w,n],[w,s]]]};
  const scoped:typeof fetch=(input,init={})=>fetcher(input,{...init,signal:init.signal?AbortSignal.any([signal,init.signal]):signal});
  const catalog=await verifiedImageCatalog(bounds,date,date,scoped);
