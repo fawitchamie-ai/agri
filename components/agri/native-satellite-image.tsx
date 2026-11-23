@@ -15,7 +15,7 @@ export default function NativeSatelliteImage({date,layer,bounds,onLoad,onError}:
  // Bounds, date and layer cancel any earlier scene before it can paint.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[requestKey]);
- return image?<svg className="parcel-raster-image" viewBox="0 0 640 400" role="img" aria-label={(layer==='rgb'?'Couleurs naturelles':layer==='ndvi'?'NDVI':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
-  {image.pixels.map((p,i)=><path key={i} d={'M'+p.geometry.coordinates[0].map(v=>framePoint(v,bounds).join(',')).join('L')+'Z'} fill={p.color} stroke={p.color} strokeWidth=".15"/>)}
+ return image?<svg className="parcel-raster-image" viewBox="0 0 640 400" role="img" aria-label={layer==='ndvi'?`NDVI Sentinel-2 · pixels natifs à ${Math.round(image.resolutionM)} m · ${date}`:(layer==='rgb'?'Couleurs naturelles':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
+  {image.pixels.map((p,i)=>{const label=layer==='ndvi'&&p.value!==null?`NDVI ${p.value.toFixed(3)} · pixel source ${Math.round(image.resolutionM)} m`:undefined;return <path key={i} d={'M'+p.geometry.coordinates[0].map(v=>framePoint(v,bounds).join(',')).join('L')+'Z'} fill={p.color} stroke={p.color} strokeWidth=".15" aria-label={label}>{label&&<title>{label}</title>}</path>;})}
  </svg>:null;
 }
