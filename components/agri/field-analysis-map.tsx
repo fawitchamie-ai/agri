@@ -24,12 +24,12 @@ export const ANALYSIS_LAYERS=[
 const fmt=(n:number|null|undefined,d=2)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
 export const dateLabel=(d:string)=>d?new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'Date à choisir';
 
-export default function FieldAnalysisMap({config:c,grid,history,read,date,layer,allowed,photo,bounds,selected,onSelect,onHistory,onLoad,onTerrain}:{config:SeasonalConfig;grid:ReturnType<typeof zoneGrid>;history:ReturnType<typeof analyzeFieldZones>;read?:ZoneSeasonRead;date:string;layer:AnalysisLayer;allowed:boolean;photo:boolean;bounds:number[];selected:number|null;onSelect:(id:number)=>void;onHistory:()=>void;onLoad:()=>void;onTerrain:()=>void}){
+export default function FieldAnalysisMap({config:c,grid,history,read,date,layer,allowed,photo,bounds,selected,onSelect,onHistory,onLoad,onTerrain}:{config:SeasonalConfig;grid:ReturnType<typeof zoneGrid>;history:ReturnType<typeof analyzeFieldZones>;read?:ZoneSeasonRead;date:string;layer:AnalysisLayer;allowed:boolean;nativeDates:string[];photo:boolean;bounds:number[];selected:number|null;onSelect:(id:number)=>void;onHistory:()=>void;onLoad:()=>void;onTerrain:()=>void}){
  const key=useId().replaceAll(':',''),[error,setError]=useState(''),[loading,setLoading]=useState(false),[nativeRange,setNativeRange]=useState<{date:string;minimum:number;maximum:number}|null>(null);
  const data=useMemo(()=>fieldImageSummary(grid,read),[grid,read]),byId=new Map(history.cells.map(v=>[v.id,v]));
  const path=(coordinates:number[][][][])=>coordinates.map(p=>p.map(r=>'M'+r.map(v=>framePoint(v,bounds).join(',')).join('L')+'Z').join(' ')).join(' ');
  const outline=path([c.parcelGeometry!.coordinates]),land=c.landAssessment&&geometryIdentity(c.landAssessment.geometry)===geometryIdentity(c.parcelGeometry)?c.landAssessment:undefined;
- const nativeIndex=allowed&&(layer==='ndvi'||layer==='contrast');
+ const nativeIndex=allowed&&nativeDates.includes(date)&&(layer==='ndvi'||layer==='contrast');
  const activeRange=nativeRange?.date===date?nativeRange:null;
  const min=layer==='contrast'?(nativeIndex?(activeRange?.minimum??-1):(data.minimum??-1)):-1,max=layer==='contrast'?(nativeIndex?(activeRange?.maximum??1):(data.maximum??1)):1;
  const raster=nativeIndex||layer==='rgb'||layer==='classification'||layer==='photo',empty=layer==='history'?history.status==='insufficient':layer==='terrain'?!land:!raster&&!data.cells;
