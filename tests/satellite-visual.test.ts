@@ -39,9 +39,10 @@ test('dated NDVI and contrast use aligned native 10 m B04/B08 pixels',async()=>{
  assert.deepEqual(ndvi.valueRange,[-1,1]);
  assert.ok(Math.abs(ndvi.pixels[0].value-expected[0])<1e-9);
  assert.ok(Math.abs(ndvi.pixels[1].value-expected[1])<1e-9);
- const minimum=Math.min(...expected),maximum=Math.max(...expected);
- assert.ok(Math.abs(contrast.valueRange[0]-minimum)<1e-9);
- assert.ok(Math.abs(contrast.valueRange[1]-maximum)<1e-9);
+ const minimum=Math.min(...expected),maximum=Math.max(...expected),range=contrast.valueRange;
+ assert.ok(range);
+ assert.ok(Math.abs(range[0]-minimum)<1e-9);
+ assert.ok(Math.abs(range[1]-maximum)<1e-9);
  assert.equal(contrast.pixels[0].color,fieldNdviColor(expected[0],minimum,maximum));
  assert.equal(contrast.pixels[1].color,fieldNdviColor(expected[1],minimum,maximum));
  const coarseReader:typeof readRasterWindow=async url=>({...await reader(url),resolutionM:url.includes('/B04.tif')?20:10});
