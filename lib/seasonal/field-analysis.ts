@@ -6,6 +6,8 @@ import {satelliteMonitoringScope} from './satellite.ts';
 export const dayAfter=(day:string,n:number)=>new Date(Date.parse(day)+n*86400000).toISOString().slice(0,10);
 /** Keep old campaigns on their own season; recent sowing needs a useful look-back. */
 export function fieldImagePeriod(c:SeasonalConfig){
+ const search=c.fieldMonitoring?.scope===fieldMonitoringScope(c)?c.fieldMonitoring.imagerySearch:undefined;
+ if(search&&search.retrievedOn<=c.asOfDate)return {from:search.from,to:search.to};
  const archived=fieldImageArchive(c);
  if(archived.length&&!c.stages.length)return {from:archived[0].season.startDate,to:archived.at(-1)!.season.startDate};
  const end=dayAfter(c.sowingDate,Math.max(1,c.stages.reduce((n,s)=>n+s.days,0))-1);
@@ -46,6 +48,16 @@ export function meetsFieldImageTarget(grid:ReturnType<typeof zoneGrid>,read:Zone
  const s=fieldImageSummary(grid,read);
  return s.cells>=12&&s.coverage>=target-1e-8&&read.scenes.length===1&&read.scenes[0].clearFraction>=target-1e-8;
 }
+/** The main picker contains only qualified dates. Compact verified calendar
+ * entries keep older dates visible even when their detailed grid is not cached. */
+export function fieldImageChoices(c:SeasonalConfig){
+ if(!c.parcelGeometry)return [];
+ const grid=zoneGrid(c.parcelGeometry),choices=new Map<string,{date:string;itemId:string;clearFraction:number}>();
+ const search=c.fieldMonitoring?.scope===fieldMonitoringScope(c)?c.fieldMonitoring.imagerySearch:undefined;
+ if(search&&search.retrievedOn<=c.asOfDate)for(const e of search.entries)if(e.status==='usable'&&e.itemId&&e.clearFraction!==undefined&&e.clearFraction>=.8-1e-8&&e.gridCoverage!==undefined&&e.gridCoverage>=.8-1e-8&&(e.cells??0)>=12&&e.date<=c.asOfDate)choices.set(e.date,{date:e.date,itemId:e.itemId,clearFraction:e.clearFraction});
+ for(const r of fieldImageArchive(c))if(meetsFieldImageTarget(grid,r))choices.set(r.season.startDate,{date:r.season.startDate,itemId:r.scenes[0].itemId,clearFraction:r.scenes[0].clearFraction});
+ return [...choices.values()].sort((a,b)=>a.date.localeCompare(b.date));
+}
 /** Change in absolute NDVI on identical support; never compare stretched colours. */
 export function compareFieldImages(grid:ReturnType<typeof zoneGrid>,a?:ZoneSeasonRead,b?:ZoneSeasonRead){
  const left=fieldImageSummary(grid,a).values,right=fieldImageSummary(grid,b).values,cells=grid.cells.filter(c=>left.has(c.id)&&right.has(c.id)),area=cells.reduce((s,c)=>s+c.areaM2,0),coverage=Math.min(1,area/grid.areaM2);
@@ -53,6 +65,11 @@ export function compareFieldImages(grid:ReturnType<typeof zoneGrid>,a?:ZoneSeaso
 }
 export function fieldIndexEvolution(c:SeasonalConfig){
  const m=c.satelliteMonitoring;
+ const verified=c.fieldMonitoring?.scope===fieldMonitoringScope(c)?c.fieldMonitoring.imagerySearch:undefined;
+ if(verified&&verified.retrievedOn<=c.asOfDate){
+  const native=m?.scope===satelliteMonitoringScope(c)&&m.retrievedOn<=c.asOfDate?m.observations:[];
+  return {method:'Moyennes des médianes de cellules, pondérées par leur surface',ndviLabel:'NDVI moyen (grille)',points:verified.entries.filter(e=>e.date<=c.asOfDate).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>({date:e.date,ndvi:e.status==='usable'?e.ndviMean??null:null,evi:native.find(o=>o.date===e.date&&o.availableOn<=c.asOfDate&&o.clearFraction>=.8&&o.quality==='usable')?.eviMedian??null,coverage:e.gridCoverage??0}))};
+ }
  if(m?.scope===satelliteMonitoringScope(c)&&m.retrievedOn<=c.asOfDate&&m.observations.length){
   return {method:'Médianes des pixels Sentinel-2',ndviLabel:'NDVI médian',points:m.observations.filter(o=>o.date<=c.asOfDate&&o.availableOn<=c.asOfDate).sort((a,b)=>a.date.localeCompare(b.date)).map(o=>({date:o.date,ndvi:o.quality==='usable'?o.ndviMedian:null,evi:o.quality==='usable'?o.eviMedian:null,coverage:o.clearFraction}))};
  }

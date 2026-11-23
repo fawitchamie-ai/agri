@@ -48,8 +48,8 @@ test('cloud and shadow classes do not become clear vegetation measurements',asyn
  const assets=Object.fromEntries(['B02','B04','B08','SCL'].map(name=>[name,{href:`s3://deafrica-sentinel-2/sentinel-s2-l2a-cogs/34/K/AB/2026/1/scene/${name}.tif`} ]));
  const fetcher=(async()=>Response.json({features:[{id:'scene-cloudy',properties:{datetime:`${today}T10:12:00Z`},assets}]}) as Response) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>({cells:url.endsWith('/SCL.tif')?[cell('cloud',[[1,8],[1.002,8],[1.002,8.002],[1,8.002]],8)]:blueRedNir(2000),resolutionM:10,crs:'EPSG:6933'} as RasterWindow);
- const result=await satelliteIndexSeries(shape,today,today,fetcher,reader),observation=result.observations[0];
- assert.equal(observation.validPixels,0);assert.equal(observation.clearFraction,0);assert.equal(observation.quality,'too-few-pixels');assert.equal(observation.ndviMedian,null);assert.equal(observation.eviMedian,null);
+ const result=await satelliteIndexSeries(shape,today,today,fetcher,reader);
+ assert.equal(result.observations.length,0,'Opaque dates are excluded from the qualified series');assert.match(result.issues[0],/80 %/);
 });
 
 test('a blocked Digital Earth Africa catalogue falls back to Earth Search assets',async()=>{
@@ -63,5 +63,18 @@ test('a blocked Digital Earth Africa catalogue falls back to Earth Search assets
  }) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>({cells:url.endsWith('/SCL.tif')?[cell('scl',[[1,8],[1.002,8],[1.002,8.002],[1,8.002]],4)]:blueRedNir(url.endsWith('/B02.tif')?1000:url.endsWith('/B04.tif')?2000:6000),resolutionM:10,crs:'EPSG:6933'} as RasterWindow);
  const result=await satelliteIndexSeries(shape,today,today,fetcher,reader,1);
- assert.equal(calls,2);assert.ok(result.source.startsWith('Earth Search STAC'));assert.equal(result.observations[0].itemId,'earth-search-scene');assert.equal(result.observations[0].quality,'usable');
+ assert.equal(calls,5);assert.ok(result.source.startsWith('Earth Search C1'));assert.equal(result.observations[0].itemId,'earth-search-scene');assert.equal(result.observations[0].quality,'usable');
+});
+
+test('client index collection examines more than six dates and reports cancellable progress',async()=>{
+ const days=Array.from({length:8},(_,i)=>new Date(Date.parse(today)-(8-i)*86400000).toISOString().slice(0,10));
+ const assets=Object.fromEntries(['B02','B04','B08','SCL'].map(name=>[name,{href:`https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/sentinel-2-c1-l2a/test/${name}.tif`}]));
+ const fetcher:typeof fetch=async()=>Response.json({features:days.map(date=>({id:'S2_'+date,properties:{datetime:date+'T10:00:00Z'},assets}))});
+ const reader:typeof readRasterWindow=async url=>({cells:url.endsWith('SCL.tif')?[cell('scl',shape.coordinates[0].slice(0,-1),4)]:blueRedNir(url.endsWith('B02.tif')?1000:url.endsWith('B04.tif')?2000:6000),resolutionM:10,crs:'EPSG:6933'});
+ const progress:string[]=[];
+ const result=await satelliteIndexSeries(shape,days[0],today,fetcher,reader,undefined,{onProgress:date=>progress.push(date)});
+ assert.equal(result.observations.length,8);assert.deepEqual(progress,days);
+ const ctrl=new AbortController(),partial:string[]=[];
+ await assert.rejects(()=>satelliteIndexSeries(shape,days[0],today,fetcher,reader,undefined,{signal:ctrl.signal,onObservation:o=>{partial.push(o.date);ctrl.abort();}}),{name:'AbortError'});
+ assert.equal(partial.length,1,'A complete observation can be retained before cancellation');
 });

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fieldImagePeriod,fieldImageSummary,fieldNdviColor} from '../lib/seasonal/field-analysis.ts';
-import {loadUsableFieldImage,fieldImageFailureMessage,MAX_FIELD_IMAGE_ATTEMPTS} from '../lib/seasonal/field-image-loader.ts';
+import {loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
 import {fieldObservationFixture} from './support/field-zones-fixture.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 
@@ -34,13 +34,13 @@ test('the seventh date recovers a field above 80%, while a 70% recent image does
   if(day==='2024-10-08'){r.cells=clear.cells;r.scenes[0].clearFraction=.7;}
   return r;
  },onRead:(_r,usable)=>retained.push(usable)});
- assert.equal(visited.length,7);assert.equal(r.read?.season.startDate,'2024-10-02');assert.equal(r.targetCoverage,.8);assert.deepEqual(retained,[false,false,false,false,false,false,true]);
+ assert.equal(visited.length,8);assert.equal(r.read?.season.startDate,'2024-10-02');assert.equal(r.targetCoverage,.8);assert.deepEqual(retained,[false,false,false,false,false,false,true,false]);
 });
-test('long searches remain bounded and disclose unexamined older dates',async()=>{
+test('every date is inspected beyond the former 36-date limit',async()=>{
  const c=fieldObservationFixture(),cloudy=structuredClone(c.fieldMonitoring!.currentObservation!);cloudy.cells=[];cloudy.scenes[0].clearFraction=0;
- const days=Array.from({length:MAX_FIELD_IMAGE_ATTEMPTS+2},(_,i)=>new Date(Date.parse('2024-01-01')+i*86400000).toISOString().slice(0,10));
+ const days=Array.from({length:40},(_,i)=>new Date(Date.parse('2024-01-01')+i*86400000).toISOString().slice(0,10));
  const r=await loadUsableFieldImage(c.parcelGeometry,days,{signal:new AbortController().signal,reader:async()=>cloudy,onRead:()=>{}});
- assert.equal(r.attempts,MAX_FIELD_IMAGE_ATTEMPTS);assert.equal(r.remainingDates,2);assert.match(fieldImageFailureMessage(r),/2 dates plus anciennes/);
+ assert.equal(r.attempts,40);assert.equal(r.remainingDates,0);assert.equal(r.checks.length,40);
 });
 test('NDVI palette has distinct visible endpoints and a stable colour for homogeneous fields',()=>{
  assert.equal(fieldNdviColor(.3,.3,.3),fieldNdviColor(0,-1,1));

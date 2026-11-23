@@ -29,18 +29,25 @@ export async function bestSentinelScene(items:SatelliteStacItem[],shape:ParcelPo
  const candidates=items.filter(i=>{
   const a=i.assets??{},has=(...keys:string[])=>keys.some(k=>a[k]?.href);
   return has('SCL','scl','mask')&&has('B04','red')&&has('B08','nir','nir_1');
- })
-  .sort((a,b)=>(a.properties?.['eo:cloud_cover']??100)-(b.properties?.['eo:cloud_cover']??100)||String(a.id).localeCompare(String(b.id))).slice(0,4);
+ });
+ // Mirrors and C1/legacy variants of one acquisition are fallback transports,
+ // not independent observations. Inspect every distinct capture, without the
+ // former four-item cut-off, preferring C1 when that capture has both versions.
+ const groups=new Map<string,SatelliteStacItem[]>();
+ for(const item of candidates){const key=item.id??(item.assets?.B04?.href??item.assets?.red?.href??'');groups.set(key,[...(groups.get(key)??[]),item]);}
  let best:{item:SatelliteStacItem;scl:Awaited<ReturnType<typeof readRasterWindow>>;mask:SentinelMaskCoverage}|undefined;
  const errors:string[]=[];
- for(const item of candidates){
+ for(const variants of groups.values()){
+ variants.sort((a,b)=>Number((b.assets?.B04?.href??b.assets?.red?.href??'').includes('/sentinel-2-c1-l2a/'))-Number((a.assets?.B04?.href??a.assets?.red?.href??'').includes('/sentinel-2-c1-l2a/')));
+ for(const item of variants){
   signal.throwIfAborted();
   try{
    const a=item.assets!.SCL??item.assets!.scl??item.assets!.mask;
    const scl=await reader(sentinelAssetUrl(a.href),shape,fetcher,signal,[0],false,maxPixels),mask=sentinelMaskCoverage(shape,scl.cells);
    if(!best||mask.clear>best.mask.clear+1e-8||Math.abs(mask.clear-best.mask.clear)<1e-8&&mask.noData<best.mask.noData-1e-8)best={item,scl,mask};
-   if(mask.clear>=1-1e-8)break;
+   break;
   }catch(error){signal.throwIfAborted();errors.push((error as Error).message);}
+ }
  }
  if(!best)throw new Error('Lecture du masque satellite impossible. '+errors.join(' ; '));
  return {...best,errors};

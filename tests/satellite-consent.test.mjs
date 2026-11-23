@@ -23,9 +23,9 @@ test('imagery requires consent for each geometry; HD skips observation metadata 
   await click('Charger les images de cette parcelle');assert.equal(calls.length,0,'Undated HD does not request the catalogue or scene geometry');
   const tiles=[...host.querySelectorAll('.basemap-mosaic img')];assert.ok(tiles.length>0&&tiles.length<=30);
   assert.ok(tiles.every(t=>t.src.startsWith('https://services.arcgisonline.com/')&&t.src.includes('/tile/')&&!t.src.includes('/export')),'HD uses existing public image tiles instead of the failing export endpoint');
-  await click('Vigueur');assert.equal(calls.length,4);assert.ok(calls.some(u=>u.startsWith('https://explorer.digitalearth.africa/')));assert.ok(calls.some(u=>u.startsWith('https://earth-search.aws.element84.com/')));assert.ok(calls.every(u=>!u.includes('ows.digitalearth.africa')&&!u.startsWith('/api/seasonal')),'Native daily imagery uses verified catalogues without the WMS or Worker fallback');
-  await act(async()=>root.render(render(.01)));assert.equal(calls.length,4,'A new geometry never inherits consent, including during the first effects pass');assert.equal(host.querySelectorAll('img').length,0);
-  await click('Vigueur');assert.ok(host.textContent.includes('Charger les images de cette parcelle'));assert.equal(calls.length,4);
+  await click('Vigueur');assert.equal(calls.length,0,'Unqualified daily dates do not trigger raster downloads');assert.match(host.textContent,/Chercher les images exploitables/);
+  await act(async()=>root.render(render(.01)));assert.equal(calls.length,0,'A new geometry never inherits consent, including during the first effects pass');assert.equal(host.querySelectorAll('img').length,0);
+  await click('Vigueur');assert.ok(host.textContent.includes('Charger les images de cette parcelle'));assert.equal(calls.length,0);
  }finally{
   await act(async()=>root.unmount());globalThis.fetch=fetchBefore;for(const [key,descriptor] of previous)if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];await window.happyDOM.close();
  }

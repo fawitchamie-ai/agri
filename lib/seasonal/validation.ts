@@ -151,7 +151,7 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
     if(m.version!=='sentinel-parcel-indices-1'||typeof m.scope!=='string'||!m.scope||m.scope.length>300000)throw new InputError('Suivi Sentinel-2 : version ou portée invalide.');
     const retrievedOn=isoDate(m.retrievedOn,'Date de récupération des images');
     if(retrievedOn>new Date().toISOString().slice(0,10))throw new InputError('Date de récupération Sentinel-2 future invalide.');
-    const observations=array(m.observations,'Observations Sentinel-2',120).map(raw=>{
+    const observations=array(m.observations,'Observations Sentinel-2',241).map(raw=>{
       const o=obj(raw),date=isoDate(o.date,'Date de l’image'),availableOn=isoDate(o.availableOn,'Disponibilité de l’image');
       if(date<sowingDate||date>end||availableOn<date||availableOn>retrievedOn)throw new InputError('Image Sentinel-2 hors cycle ou disponible après la date de récupération.');
       const validPixels=number(o.validPixels,'Pixels clairs',0,50_000),parcelPixels=number(o.parcelPixels,'Pixels du contour',0,50_000),clearFraction=number(o.clearFraction,'Couverture claire',0,1);

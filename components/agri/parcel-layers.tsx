@@ -3,7 +3,7 @@ import { HelpParagraph } from './help-dialog';
 import {useEffect,useId,useMemo,useRef,useState} from 'react';
 import SatelliteMosaic from './satellite-mosaic';
 import NativeSatelliteImage from './native-satellite-image';
-import {fieldImageArchive,fieldImagePeriod} from '../../lib/seasonal/field-analysis';
+import {fieldImageChoices} from '../../lib/seasonal/field-analysis';
 import BasemapMosaic from './basemap-mosaic';
 import {seasonalRequest} from '../../lib/seasonal/request';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
@@ -18,33 +18,32 @@ const titles:[('terrain'|SatelliteLayer),string][]=[['terrain','Terre / eau'],['
 const layerDescriptions:Record<'terrain'|SatelliteLayer,string>={terrain:'Comparez les classes de terrain disponibles à l’intérieur du contour dessiné.',rgb:'Situez votre parcelle sur une photo de repérage ou une observation datée.',ndvi:'Observez un indice de végétation ; il ne détermine pas la cause d’une variation.',anomaly:'Comparez la végétation à une référence historique, sans conclure à un stress précis.',classification:'Repérez les classes observées, notamment les nuages, leurs ombres et l’eau.',clear:'Consultez les observations claires disponibles pour la période.'};
 type Catalog=Awaited<ReturnType<typeof satelliteCatalog>>;
 type Coverage={key:string;percent:number|null};
-export default function ParcelLayers({config:c,assessment,onMap}:{config:SeasonalConfig;assessment?:LandAssessment;onMap:()=>void}){
+export default function ParcelLayers({config:c,assessment,onMap,onImages}:{config:SeasonalConfig;assessment?:LandAssessment;onMap:()=>void;onImages?:()=>void}){
  const [layer,setLayer]=useState<'terrain'|SatelliteLayer>('terrain'),[allowedFor,setAllowedFor]=useState(''),[catalog,setCatalog]=useState<Catalog|null>(null),[date,setDate]=useState(''),[error,setError]=useState(''),[loading,setLoading]=useState(false),[imageState,setImageState]=useState('');
  const [rgbSource,setRgbSource]=useState<'hd'|'dated'>('hd'),[wide,setWide]=useState(false),[retry,setRetry]=useState(0),[baseError,setBaseError]=useState(''),[opacity,setOpacity]=useState(85),[photo,setPhoto]=useState(true);
  const [scenes,setScenes]=useState<Awaited<ReturnType<typeof satelliteScenes>>|null>(null),[sceneWarning,setSceneWarning]=useState(''),[received,setReceived]=useState(''),[coverage,setCoverage]=useState<Coverage|null>(null);
- const [nativeDates,setNativeDates]=useState<string[]>([]),nativeDaily=layer==='rgb'||layer==='ndvi'||layer==='classification',period=useMemo(()=>fieldImagePeriod(c),[c]);
+ const qualified=useMemo(()=>fieldImageChoices(c),[c]),nativeDates=qualified.map(v=>v.date),nativeDaily=layer==='rgb'||layer==='ndvi'||layer==='classification';
  const search=useRef<{done:boolean;tried:string[];best:{date:string;percent:number}|null}>({done:false,tried:[],best:null});
  const id=useId().replace(/:/g,''),identity=geometryIdentity(c.parcelGeometry),shape=c.parcelGeometry;
  const allowed=allowedFor===identity,basemap=layer==='rgb'&&rgbSource==='hd';
  const observations=layer!=='terrain'&&!basemap;
  const land=assessment&&geometryIdentity(assessment.geometry)===identity?assessment:undefined;
- useEffect(()=>{setAllowedFor('');setCatalog(null);setScenes(null);setNativeDates([]);setSceneWarning('');setError('');setBaseError('');setImageState('');setLayer('terrain');setCoverage(null);},[identity]);
+ useEffect(()=>{setAllowedFor('');setCatalog(null);setScenes(null);setSceneWarning('');setError('');setBaseError('');setImageState('');setLayer('terrain');setCoverage(null);},[identity]);
  useEffect(()=>{
   if(!allowed||!shape||!observations){setLoading(false);return;}
   const ctrl=new AbortController();setLoading(true);setError('');setSceneWarning('');
   if(nativeDaily){
-   const scoped:typeof fetch=(input,init={})=>fetch(input,{...init,signal:init.signal?AbortSignal.any([ctrl.signal,init.signal]):ctrl.signal});
-   import('../../lib/seasonal/field-image-loader').then(m=>m.fieldImageDates(shape,period.from,period.to,scoped)).then(d=>{if(!ctrl.signal.aborted)setNativeDates(d);}).catch(e=>{if(!ctrl.signal.aborted)setError('Recherche d’acquisitions indisponible : '+(e as Error).message);}).finally(()=>{if(!ctrl.signal.aborted)setLoading(false);});
+   setLoading(false);
    return()=>ctrl.abort();
   }
   const catalogTask=satelliteCatalog(c.asOfDate).catch(reason=>{if(ctrl.signal.aborted)throw reason;return seasonalRequest<Catalog>({action:'satellite-catalog',asOfDate:c.asOfDate},ctrl.signal).catch(()=>{throw reason;});});
   const scenesTask=satelliteScenes(shape,c.asOfDate).catch(reason=>{if(ctrl.signal.aborted)throw reason;return seasonalRequest<Awaited<ReturnType<typeof satelliteScenes>>>({action:'satellite-scenes',geometry:shape,asOfDate:c.asOfDate},ctrl.signal).catch(()=>{throw reason;});});
   Promise.allSettled([catalogTask,scenesTask]).then(([a,b])=>{if(ctrl.signal.aborted)return;if(a.status==='fulfilled')setCatalog(a.value);else setError('Catalogue d’images indisponible. Le fond photo reste accessible dans Satellite.');if(b.status==='fulfilled')setScenes(b.value);else setSceneWarning('Dates régionales : couverture du champ à vérifier.');}).finally(()=>{if(!ctrl.signal.aborted)setLoading(false);});
   return()=>ctrl.abort();
- },[allowed,c.asOfDate,identity,observations,retry,nativeDaily,period.from,period.to]);
+ },[allowed,c.asOfDate,identity,observations,retry,nativeDaily]);
  useEffect(()=>{search.current={done:false,tried:[],best:null};setCoverage(null);},[identity,layer,c.asOfDate,wide,retry,rgbSource]);
  const daily=layer!=='terrain'&&SATELLITE_LAYERS[layer].period==='day';
- const published=layer==='terrain'?[]:nativeDaily?[...new Set([...nativeDates,...fieldImageArchive(c).map(r=>r.season.startDate)])].sort().reverse():catalog?.layers[layer]?.dates??[];
+ const published=layer==='terrain'?[]:nativeDaily?[...nativeDates].sort().reverse():catalog?.layers[layer]?.dates??[];
  const matched=daily&&scenes?published.filter(d=>scenes.dates.some(s=>s.date===d)):[];
  const dates=matched.length?matched:published;
  const ranked=daily?[...dates].sort((a,b)=>{const score=(d:string)=>scenes?.dates.find(s=>s.date===d)?.sceneCloudMax??101;return score(a)-score(b)||b.localeCompare(a);}):dates;
@@ -99,11 +98,11 @@ export default function ParcelLayers({config:c,assessment,onMap}:{config:Seasona
      {layer==='terrain'?(land?Object.entries(land.fractions).map(([cls,v])=><g key={cls}>{v.geometry.coordinates.map((r,i)=><path key={i} d={path(r)} fill={cls==='unknown'?'url(#'+id+'unknown)':LAND_COLORS[cls as keyof typeof LAND_COLORS]} fillRule="evenodd"/>)}</g>):<path d={outline} fill={'url(#'+id+'unknown)'} fillRule="evenodd"/>):null}
     </svg>
     {shape&&allowed&&layer!=='terrain'&&(basemap||photo)&&<BasemapMosaic key={'base:'+bounds.join(',')+':'+retry} bounds={bounds} onLoad={()=>{setBaseError('');if(basemap){setReceived(src);setImageState('Fond photo chargé par tuiles. Date de prise de vue et résolution effective non documentées.');}}} onError={()=>{setBaseError('Fond photo indisponible depuis ce réseau. Les observations datées restent séparées.');if(basemap)setReceived(src);}}/>}
-    {src&&!basemap&&<><div className="imagery-nodata-pattern" aria-hidden="true"/><div className="imagery-index-layer" style={{opacity:displayedCoverage!==null&&displayedCoverage<20?0:opacity/100}}>{layer==='rgb'||layer==='ndvi'||layer==='classification'?<NativeSatelliteImage key={src} layer={layer} date={selected} bounds={bounds} itemId={fieldImageArchive(c).find(r=>r.season.startDate===selected)?.scenes[0]?.itemId} onLoad={image=>{setReceived(src);setError('');if(image.maskReason)setCoverage({key:src,percent:0});setImageState(image.maskReason??'Pixels natifs Sentinel-2 chargés pour cette date. Les nuages restent visibles en RGB et classification ; ils sont exclus du NDVI.');}} onError={message=>{setReceived(src);setError('Observation indisponible : '+message);}}/>:<SatelliteMosaic key={src} layer={layer as SatelliteLayer} date={selected} bounds={bounds} onLoad={inspectImage} onError={()=>{setReceived(src);setError('Observation indisponible à cette date. Choisissez une autre date ou la photo de repérage.');}}/>}</div></>}
+    {src&&!basemap&&<><div className="imagery-nodata-pattern" aria-hidden="true"/><div className="imagery-index-layer" style={{opacity:displayedCoverage!==null&&displayedCoverage<20?0:opacity/100}}>{layer==='rgb'||layer==='ndvi'||layer==='classification'?<NativeSatelliteImage key={src} layer={layer} date={selected} bounds={bounds} itemId={qualified.find(r=>r.date===selected)?.itemId} onLoad={image=>{setReceived(src);setError('');if(image.maskReason)setCoverage({key:src,percent:0});setImageState(image.maskReason??'Pixels natifs Sentinel-2 chargés pour cette date. Les nuages restent visibles en RGB et classification ; ils sont exclus du NDVI.');}} onError={message=>{setReceived(src);setError('Observation indisponible : '+message);}}/>:<SatelliteMosaic key={src} layer={layer as SatelliteLayer} date={selected} bounds={bounds} onLoad={inspectImage} onError={()=>{setReceived(src);setError('Observation indisponible à cette date. Choisissez une autre date ou la photo de repérage.');}}/>}</div></>}
     <svg className="parcel-raster-outline" viewBox="0 0 640 400" aria-hidden="true"><path d={outline} fill="none" stroke="#fff" strokeWidth="4"/><path d={outline} fill="none" stroke="#14364f" strokeWidth="1.4"/><path d={'M22 374h'+scale.pixels+'m-'+scale.pixels+' -4v8m'+scale.pixels+' -8v8'} stroke="#fff" strokeWidth="4" fill="none"/><path d={'M22 374h'+scale.pixels} stroke="#15364a" strokeWidth="1.5"/><text x="22" y="361" fill="#fff" stroke="#17364b" paintOrder="stroke" strokeWidth="3" fontSize="10">≈ {scale.meters>=1000?fmt(scale.meters/1000)+' km':scale.meters+' m'}</text><text x="602" y="27" fill="#fff" stroke="#163a51" paintOrder="stroke" strokeWidth="3" fontSize="13">N ↑</text></svg>
     {layer!=='terrain'&&(loading&&!basemap||src&&received!==src)&&<span className="satellite-loading" role="status">{search.current.tried.length?'Recherche d’une observation mieux renseignée…':'Chargement de l’image…'}</span>}
     {!basemap&&displayedCoverage!==null&&displayedCoverage<20&&<div className="imagery-empty"><strong>Couverture insuffisante sur le champ</strong><HelpParagraph>{displayedCoverage} % du contour comporte des pixels affichés à cette date.</HelpParagraph><button className="btn secondary" onClick={showPhoto}>Voir la photo de repérage</button></div>}
-    {observations&&allowed&&!loading&&!selected&&<div className="imagery-empty"><strong>Observation datée indisponible</strong><HelpParagraph>Aucune date exploitable dans la réponse reçue. Le fond photo sert uniquement au repérage.</HelpParagraph><button className="btn secondary" onClick={showPhoto}>Ouvrir la photo de repérage</button></div>}
+    {observations&&allowed&&!loading&&!selected&&<div className="imagery-empty"><strong>Aucune image qualifiée chargée</strong><HelpParagraph>Recherchez les acquisitions couvrant au moins 80 % du champ. Le calendrier vérifié est partagé avec l’analyse du champ.</HelpParagraph><button className="btn secondary" onClick={onImages??onMap}>Chercher les images exploitables</button></div>}
    </div>
    {layer==='terrain'?<>
     <div className="parcel-class-legend">{Object.entries(LAND_NAMES).map(([cls,name])=>{const v=land?.fractions[cls as keyof typeof LAND_NAMES];return <span key={cls}><i style={{background:LAND_COLORS[cls as keyof typeof LAND_COLORS]}}/>{name}{v?' · '+fmt(v.fraction*100)+' %':''}</span>;})}</div>

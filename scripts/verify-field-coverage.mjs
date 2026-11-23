@@ -2,7 +2,8 @@
 // or campaign into the report or the production database.
 // node --use-env-proxy --experimental-transform-types scripts/verify-field-coverage.mjs --live GEOMETRY.json FROM TO REPORT.json EXPECTED_COMMIT
 import {readFile,writeFile} from 'node:fs/promises';
-import {fieldImageDates,loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
+import {verifiedImageCatalog,loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
+import {bbox} from '../lib/seasonal/land.ts';
 import {readZoneSeason} from '../lib/seasonal/field-zones-provider.ts';
 import {fieldImageSummary} from '../lib/seasonal/field-analysis.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
@@ -28,13 +29,14 @@ try{
   return fetch(input,init);
  };
  globalThis.window={};
- const dates=await fieldImageDates(shape,from,to,fetcher);
- const result=await loadUsableFieldImage(shape,dates,{signal:AbortSignal.timeout(900000),fetcher,
+ const catalog=await verifiedImageCatalog(bbox(shape),from,to,fetcher),dates=catalog.dates;
+ Object.assign(report,{period:{from,to},officialVerified:catalog.officialVerified,officialScenes:catalog.officialScenes,sources:catalog.sources,warnings:catalog.warnings});
+ const result=await loadUsableFieldImage(shape,dates,{signal:AbortSignal.timeout(900000),fetcher,catalog,
   reader:(...args)=>readZoneSeason(...args),
   onProgress:(date,attempt,total)=>console.log(JSON.stringify({date,attempt,total})),
   onRead:r=>{const s=fieldImageSummary(grid,r);report.observations.push({date:r.season.startDate,scenes:r.scenes,gridCoverage:s.coverage,cells:s.cells,mean:s.mean,issues:r.issues});},
  });
- report.attempts=result.attempts;report.targetCoverage=result.targetCoverage;report.dates=dates.length;
+ report.attempts=result.attempts;report.targetCoverage=result.targetCoverage;report.dates=dates.length;report.checks=result.checks;report.usableDates=result.usableCount;report.readFailures=result.readFailures;report.unavailable=result.unavailable;
  if(!result.read)throw new Error(fieldImageFailureMessage(result));
  const selected=result.read,day=selected.season.startDate,itemId=selected.scenes[0].itemId;report.selectedDate=day;
  report.visuals=[];
