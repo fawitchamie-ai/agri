@@ -9,9 +9,9 @@ export const SCL_PALETTE:Record<number,string>={0:'#00000000',1:'#ff0000',2:'#2f
 const key=(cell:Parameters<typeof pixelCenter>[0])=>pixelCenter(cell).map(v=>v.toFixed(7)).join(':');
 /** Display stretch only: fixed 0–0.3 reflectance, gamma 2.2. Never an NDVI calculation. */
 export const reflectanceChannel=(value:number)=>Math.round(255*Math.pow(Math.max(0,Math.min(1,value/.3)),1/2.2));
-export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb'|'classification'|'ndvi',fetcher:typeof fetch=fetch,requestSignal?:AbortSignal,reader:typeof readRasterWindow=readRasterWindow){
+export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb'|'classification'|'ndvi'|'contrast',fetcher:typeof fetch=fetch,requestSignal?:AbortSignal,reader:typeof readRasterWindow=readRasterWindow){
  const deadline=AbortSignal.timeout(160000),signal=requestSignal?AbortSignal.any([deadline,requestSignal]):deadline;
- satelliteMapUrl(layer,date,bounds);
+ satelliteMapUrl(layer==='contrast'?'ndvi':layer,date,bounds);
  const [w,s,e,n]=bounds,shape:ParcelPolygon={type:'Polygon',coordinates:[[[w,s],[e,s],[e,n],[w,n],[w,s]]]};
  const scoped:typeof fetch=(input,init={})=>fetcher(input,{...init,signal:init.signal?AbortSignal.any([signal,init.signal]):signal});
  const catalog=await verifiedImageCatalog(bounds,date,date,scoped);
@@ -23,22 +23,26 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
   const a=asset('SCL','scl','mask'),r=await reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000);
   const pixels=r.cells.filter(c=>c.value!==null&&c.value!==0).map(c=>({geometry:c.geometry,color:SCL_PALETTE[c.value!]??'#888888',value:c.value}));
   if(!pixels.length)throw new Error('Acquisition sans pixels de classification sur cette emprise.');
-  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:r.resolutionM};
+  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:r.resolutionM,valueRange:null};
  }
- if(layer==='ndvi'){
+ if(layer==='ndvi'||layer==='contrast'){
   const bands=[asset('B04','red'),asset('B08','nir','nir_1'),asset('SCL','scl','mask')];
   const [red,nir,scl]=await Promise.all(bands.map(a=>reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000)));
+  if(Math.abs(red.resolutionM-10)>1||Math.abs(nir.resolutionM-10)>1)throw new Error('Résolution Sentinel-2 incompatible : les bandes B04/B08 doivent être à 10 m.');
   const nirBy=new Map(nir.cells.map(c=>[key(c),c.value])),rt=reflectanceTransform(bands[0],item),nt=reflectanceTransform(bands[1],item),buckets=new Map<string,typeof scl.cells>();
   for(const cell of scl.cells){const p=pixelCenter(cell),k=p.map(v=>Math.floor(v/.00005)).join(':');buckets.set(k,[...(buckets.get(k)??[]),cell]);}
-  const pixels=red.cells.flatMap(c=>{
+  const values=red.cells.flatMap(c=>{
    const cls=sclAt(scl.cells,buckets,pixelCenter(c)),nr=nirBy.get(key(c));
    if((cls!==4&&cls!==5)||c.value==null||nr==null||c.value<=0||nr<=0)return [];
    const r=(c.value*rt.scale+rt.offset)/rt.light,n=(nr*nt.scale+nt.offset)/nt.light;
    if(r<0||n<0||r+n<=0)return [];const value=(n-r)/(n+r);
-   return value>=-1&&value<=1?[{geometry:c.geometry,color:fieldNdviColor(value,-1,1),value}]:[];
+   return value>=-1&&value<=1?[{geometry:c.geometry,value}]:[];
   });
-  if(!pixels.length)throw new Error('Aucun pixel NDVI clair sur cette emprise. Choisissez une autre date.');
-  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM};
+  if(!values.length)throw new Error('Aucun pixel NDVI clair sur cette emprise. Choisissez une autre date.');
+  const minimum=layer==='contrast'?values.reduce((v,p)=>Math.min(v,p.value),Infinity):-1;
+  const maximum=layer==='contrast'?values.reduce((v,p)=>Math.max(v,p.value),-Infinity):1;
+  const pixels=values.map(p=>({...p,color:fieldNdviColor(p.value,minimum,maximum)}));
+  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:[minimum,maximum] as [number,number]};
  }
  const bands=[asset('B04','red'),asset('B03','green'),asset('B02','blue')];
  const [red,green,blue]=await Promise.all(bands.map(a=>reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000)));
@@ -50,5 +54,5 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
   return [{geometry:c.geometry,color:`rgb(${rgb.join(',')})`,value:null}];
  });
  if(!pixels.length)throw new Error('Acquisition sans pixels RGB sur cette emprise.');
- return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM};
+ return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:null};
 }

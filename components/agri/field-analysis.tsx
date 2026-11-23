@@ -18,7 +18,7 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
  const scope=fieldMonitoringScope(c),grid=useMemo(()=>zoneGrid(c.parcelGeometry),[c.parcelGeometry]),history=useMemo(()=>analyzeFieldZones(c),[c]);
  const archive=useMemo(()=>fieldImageArchive(c),[c]),index=useMemo(()=>fieldIndexEvolution(c),[c]);
  const [layer,setLayer]=useState<AnalysisLayer>('contrast'),[rightLayer,setRightLayer]=useState<AnalysisLayer>('ndvi'),[compare,setCompare]=useState(false),[expanded,setExpanded]=useState(false),[photo,setPhoto]=useState(false),[zoom,setZoom]=useState(1),[cell,setCell]=useState<number|null>(null);
- const [selected,setSelected]=useState(''),[rightDate,setRightDate]=useState(''),[catalogDates,setCatalogDates]=useState<string[]>([]),[consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ const [selected,setSelected]=useState(''),[rightDate,setRightDate]=useState(''),[catalogDates,setCatalogDates]=useState<string[]>([]),[nativeDates,setNativeDates]=useState<string[]>([]),[consent,setConsent]=useState(false),[busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const period=useMemo(()=>fieldImagePeriod(c),[c]);
  const [from,setFrom]=useState(period.from),[to,setTo]=useState(period.to),[base,setBase]=useState(''),[panel,setPanel]=useState('maps'),[showLoader,setShowLoader]=useState(!archive.length),[manualDate,setManualDate]=useState('');
  const latest=useRef(c),controller=useRef<AbortController|null>(null),container=useRef<HTMLDivElement>(null),loader=useRef<HTMLDivElement>(null);
@@ -47,7 +47,7 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
   try{const {readZoneSeason}=await import('../../lib/seasonal/field-zones-provider');const r=await readZoneSeason(c.parcelGeometry,{id:'observation-'+day,startDate:day,endDate:day,cropId:'unknown',comparable:false},fetch,undefined,ctrl.signal);
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
    const measured=fieldImageSummary(grid,r),usable=measured.cells>=12&&measured.coverage>=.6;
-   retainRead(r,usable);
+   retainRead(r,usable);setNativeDates(ds=>ds.includes(day)?ds:[...ds,day]);
    if(side==='left')setSelected(day);else setRightDate(day);setNotice(usable?'Observation chargée. Enregistrez la campagne pour conserver les cartes.':'Acquisition archivée, mais trop peu de surface analysable. Choisissez une autre date ; les cartes précédentes sont conservées.');
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
@@ -60,12 +60,12 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
    setCatalogDates(found);
    const result=await loadUsableFieldImage(c.parcelGeometry,found,{signal:ctrl.signal,fetcher,onRead:retainRead,onProgress:(day,i,total)=>setProgress('Vérification du champ · '+dateLabel(day)+' · '+i+'/'+total)});
    if(ctrl.signal.aborted||fieldMonitoringScope(latest.current)!==scope)return;
-   if(result.read){setSelected(result.read.season.startDate);setNotice(found.length+' dates trouvées. Une observation exploitable est chargée. Enregistrez la campagne pour conserver les cartes.');}
+   if(result.read){setNativeDates(ds=>ds.includes(result.read!.season.startDate)?ds:[...ds,result.read!.season.startDate]);setSelected(result.read.season.startDate);setNotice(found.length+' dates trouvées. Une observation exploitable est chargée. Enregistrez la campagne pour conserver les cartes.');}
    else if(result.readFailures)setError(fieldImageFailureMessage(result));else setNotice(fieldImageFailureMessage(result));
   }catch(e){if(!ctrl.signal.aborted)setError((e as Error).message);}finally{setBusy(false);setProgress('');}
  }
- function selectDate(day:string,side='left'){if(side==='left')setSelected(day);else{setSelected(date);setRightDate(day);}setCell(null);if(consent&&!archive.some(r=>r.season.startDate===day))void acquire(day,side);}
- const mapProps={config:c,grid,history,allowed:consent,photo,bounds,selected:cell,onSelect:setCell,onHistory,onLoad:openLoader,onTerrain:onMap};
+ function selectDate(day:string,side='left'){if(side==='left')setSelected(day);else{setSelected(date);setRightDate(day);}setCell(null);if(consent&&archive.some(r=>r.season.startDate===day))setNativeDates(ds=>ds.includes(day)?ds:[...ds,day]);if(consent&&!archive.some(r=>r.season.startDate===day))void acquire(day,side);}
+ const mapProps={config:c,grid,history,allowed:consent,nativeDates,photo,bounds,selected:cell,onSelect:setCell,onHistory,onLoad:openLoader,onTerrain:onMap};
  return <div className={'field-analysis'+(expanded?' fa-expanded':'')} ref={container} tabIndex={expanded?-1:undefined} role={expanded?'dialog':undefined} aria-modal={expanded?true:undefined} aria-label="Analyse visuelle du champ">
   <div className="fa-topline"><div><span className="product-eyebrow">ÉTAT DU CHAMP</span><h3>{c.name||'Mon champ'}</h3><p>{c.crop} · {fmt(grid.areaM2/10000)} ha · {c.stages.length?'semis':'période'} {dateLabel(c.sowingDate)}</p></div><div className="fa-top-actions"><button className="btn secondary small" onClick={()=>{setCompare(v=>!v);setPanel('maps');}} aria-pressed={compare}><ProductIcon name="grid" size={16}/>{compare?'Vue simple':'Comparer'}</button><button className="btn secondary small" onClick={()=>setExpanded(v=>!v)}>{expanded?'Fermer le plein écran':'Plein écran'}</button></div></div>
   <nav className="fa-panel-tabs" aria-label="Vues d’analyse"><button aria-pressed={panel==='maps'} onClick={()=>setPanel('maps')}>Cartes du champ</button><button aria-pressed={panel==='evolution'} onClick={()=>setPanel('evolution')}>Évolution et météo</button><button aria-pressed={panel==='report'} onClick={()=>setPanel('report')}>Rapport du champ</button></nav>
@@ -75,7 +75,7 @@ export default function FieldAnalysis({config:c,onChange,onHistory,onLayers,onMa
      {compare&&<div className="fa-comparison-controls"><strong>Comparer à</strong><label><span>Date de comparaison</span><select aria-label="Date de comparaison" value={second} disabled={busy||!dates.length} onChange={e=>selectDate(e.target.value,'right')}>{!dates.length?<option value="">Aucune date chargée</option>:dates.map(d=><option key={d} value={d}>{dateLabel(d)}</option>)}</select></label><label><span>Couche de comparaison</span><select aria-label="Couche de comparaison" value={rightLayer} onChange={e=>setRightLayer(e.target.value as AnalysisLayer)}>{ANALYSIS_LAYERS.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></label></div>}
      {!!dates.length&&<div className="fa-timeline" aria-label="Dates des acquisitions">{dates.slice(-36).map(d=><button key={d} disabled={busy} aria-pressed={date===d} onClick={()=>selectDate(d)}><time dateTime={d}>{new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</time><small>{archive.some(r=>r.season.startDate===d)?'Archivée':'À charger'}</small></button>)}</div>}
      <div className={'fa-maps'+(compare?' fa-split':'')}><FieldAnalysisMap {...mapProps} layer={layer} read={read} date={date}/>{compare&&<FieldAnalysisMap {...mapProps} layer={rightLayer} read={right} date={second}/>}</div>
-     <div className="fa-map-footer"><label><input type="checkbox" checked={photo} disabled={!consent} onChange={e=>setPhoto(e.target.checked)}/> Fond photo de repérage</label><span>Grille NDVI : {grid.gridM} m · {archive.length}/12 dates conservées</span><button className="qs-text-button" onClick={openLoader}>Charger des images</button></div>
+     <div className="fa-map-footer"><label><input type="checkbox" checked={photo} disabled={!consent} onChange={e=>setPhoto(e.target.checked)}/> Fond photo de repérage</label><span>Grille de synthèse NDVI : {grid.gridM} m · {archive.length}/12 dates conservées</span><button className="qs-text-button" onClick={openLoader}>Charger des images</button></div>
     </div>
    </div>
    {compare&&<p className="fa-comparison-result"><strong>Écart de NDVI, droite − gauche : {fmt(difference.delta,3)}</strong><span>{fmt(difference.coverage*100,1)} % de surface commune · {difference.delta===null?'Deux observations sur au moins 60 % du contour et 12 cellules sont nécessaires.':'Comparaison des mêmes cellules, en valeurs absolues.'} Les couleurs contrastées sont ajustées séparément pour chaque image.</span></p>}

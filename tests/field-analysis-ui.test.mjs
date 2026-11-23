@@ -12,10 +12,10 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
  c.weather=[{date:c.asOfDate,rainMm:12,temperatureMeanC:25,et0Mm:null,status:'observed',source:'Synthetic software test',availableAt:c.asOfDate+'T00:00:00Z'}];
  const before=globalThis.fetch;globalThis.fetch=async()=>{calls++;throw new Error('No automatic external requests permitted');};
  const render=()=>root.render(React.createElement(compiled.exports.default,{config:c,onChange:next=>{c=next;render();},onMap:()=>{},onWeather:()=>{}}));
- const button=t=>[...host.querySelectorAll('button')].find(b=>b.textContent.trim()===t);
+ const button=(t,prefix=false)=>[...host.querySelectorAll('button')].find(b=>prefix?b.textContent.trim().startsWith(t):b.textContent.trim()===t);
  try{
   await act(async()=>render());assert.equal(calls,0);assert.match(host.textContent,/NDVI moyen \(grille\)/);assert.match(host.textContent,/100 %/);
-  await act(async()=>button('NDVI contrastéDifférences dans le champ').click());assert.match(host.textContent,/Échelle adaptée à cette image/);
+  await act(async()=>button('NDVI contrasté',true).click());assert.match(host.textContent,/Échelle adaptée à cette image/);
   const cell=host.querySelector('path[role=button]');await act(async()=>cell.focus());assert.match(host.textContent,/Cellule 0/);
   await act(async()=>cell.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true})));assert.match(host.textContent,/Cellule 1/);
   await act(async()=>button('Comparer').click());assert.equal(host.querySelectorAll('.fa-map').length,2);assert.match(host.textContent,/Écart de NDVI, droite − gauche : [-−]?0,05/);
