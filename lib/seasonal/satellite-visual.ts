@@ -25,10 +25,11 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
   const r=scl;
   const pixels=r.cells.filter(c=>c.value!==null&&c.value!==0).map(c=>({geometry:c.geometry,color:SCL_PALETTE[c.value!]??'#888888',value:c.value}));
   if(!pixels.length)throw new Error('Acquisition sans pixels de classification sur cette emprise.');
-  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:r.resolutionM,valueRange:null,mask};
+  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:r.resolutionM,valueRange:null,mask,maskReason:null as string|null};
  }
  if(layer==='ndvi'||layer==='contrast'){
-  if(mask.clear===0)throw new Error('Aucun pixel NDVI clair sur cette emprise. '+Math.round(mask.cloud*100)+' % de nuages/cirrus, '+Math.round(mask.shadow*100)+' % d’ombres, '+Math.round(mask.noData*100)+' % sans donnée. L’image en couleurs reste visible ; choisissez une autre date pour le NDVI.');
+  if(mask.clear===0)return {date,itemId:item.id,source:catalog.provider,pixels:[] as {geometry:ParcelPolygon;color:string;value:number}[],resolutionM:10,valueRange:null,mask,
+   maskReason:'Acquisition chargée : aucun pixel de sol clair pour le NDVI. '+Math.round(mask.cloud*100)+' % de nuages/cirrus, '+Math.round(mask.shadow*100)+' % d’ombres, '+Math.round(mask.noData*100)+' % sans donnée. Consultez l’image datée ou choisissez une autre date.'};
   const bands=[asset('B04','red'),asset('B08','nir','nir_1')];
   const [red,nir]=await Promise.all(bands.map(a=>reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000)));
   if(Math.abs(red.resolutionM-10)>1||Math.abs(nir.resolutionM-10)>1)throw new Error('Résolution Sentinel-2 incompatible : les bandes B04/B08 doivent être à 10 m.');
@@ -45,7 +46,7 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
   const minimum=layer==='contrast'?values.reduce((v,p)=>Math.min(v,p.value),Infinity):-1;
   const maximum=layer==='contrast'?values.reduce((v,p)=>Math.max(v,p.value),-Infinity):1;
   const pixels=values.map(p=>({...p,color:fieldNdviColor(p.value,minimum,maximum)}));
-  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:[minimum,maximum] as [number,number],mask};
+  return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:[minimum,maximum] as [number,number],mask,maskReason:null as string|null};
  }
  const bands=[asset('B04','red'),asset('B03','green'),asset('B02','blue')];
  const [red,green,blue]=await Promise.all(bands.map(a=>reader(sentinelAssetUrl(a.href),shape,scoped,signal,[0],false,100000)));
@@ -57,5 +58,5 @@ export async function readSatelliteVisual(bounds:number[],date:string,layer:'rgb
   return [{geometry:c.geometry,color:`rgb(${rgb.join(',')})`,value:null}];
  });
  if(!pixels.length)throw new Error('Acquisition sans pixels RGB sur cette emprise.');
- return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:null,mask};
+ return {date,itemId:item.id,source:catalog.provider,pixels,resolutionM:red.resolutionM,valueRange:null,mask,maskReason:null as string|null};
 }

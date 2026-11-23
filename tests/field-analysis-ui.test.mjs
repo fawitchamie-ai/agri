@@ -26,6 +26,11 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
   await act(async()=>button('Cartes du champ').click());await act(async()=>button('Charger des images').click());assert.equal(button('Chercher les dates').disabled,true);assert.equal(calls,0);
   await act(async()=>button('Zones historiques').click());await act(async()=>button('Appliquer les confirmations sans recharger').click());assert.equal(c.fieldMonitoring.datedObservations.length,1,'Updating seasonal settings preserves date archives');assert.ok(c.fieldMonitoring.currentObservation);assert.equal(c.fieldMonitoring.prescription,undefined,'No invalid empty dose draft is saved');
   c.fieldMonitoring.currentObservation.cells=[];await act(async()=>render());await act(async()=>button('Analyse du champ').click());assert.equal(host.querySelector('[aria-label="Date analysée"]').value,date,'The default uses the latest useful image while cloudy dates remain selectable');assert.equal(host.querySelector('[aria-label="Date analysée"]').options.length,2);assert.equal(calls,0);
+  c.fieldMonitoring.currentObservation.scenes[0].clearFraction=0;c.fieldMonitoring.currentObservation.scenes[0].mask={clear:0,cloud:1,shadow:0,water:0,uncertain:0,noData:0,other:0};await act(async()=>render());
+  const cloudyDate=host.querySelector('[aria-label="Date analysée"]');await act(async()=>{cloudyDate.value=c.asOfDate;cloudyDate.dispatchEvent(new window.Event('change',{bubbles:true}));});
+  assert.match(host.textContent,/Acquisition chargée · sol masqué/);assert.match(host.textContent,/Nuages et cirrus : 100 %/);assert.doesNotMatch(host.textContent,/Image Sentinel-2 indisponible/);assert.equal(calls,0);
+  await act(async()=>button('Voir l’image datée').click());assert.match(host.textContent,/Charger les images du champ/);assert.equal(calls,0,'Cloudy-date shortcuts preserve the consent gate');
+  await act(async()=>button('NDVI contrasté',true).click());
   // Date inputs can emit input before their deferred change/blur event. The
   // typed date must survive a consent render instead of reverting to the map.
   await act(async()=>button('Charger des images').click());

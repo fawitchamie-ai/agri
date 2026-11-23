@@ -22,7 +22,8 @@ test('RGB, classification and NDVI use the chosen acquisition, including an expl
  }
  const cloudy=await readSatelliteVisual([1,8,1.001,8.001],day,'rgb',fetcher,undefined,reader,'regional-clear');
  assert.equal(cloudy.itemId,'regional-clear');assert.ok(cloudy.mask.cloud>.999);assert.ok(cloudy.pixels.length,'An RGB image can exist entirely above clouds');
- await assert.rejects(()=>readSatelliteVisual([1,8,1.001,8.001],day,'ndvi',fetcher,undefined,reader,'regional-clear'),/100 % de nuages/);
+ const masked=await readSatelliteVisual([1,8,1.001,8.001],day,'ndvi',fetcher,undefined,reader,'regional-clear');
+ assert.equal(masked.itemId,'regional-clear');assert.deepEqual(masked.pixels,[]);assert.match(masked.maskReason!,/100 % de nuages/);assert.equal(masked.valueRange,null);
  await assert.rejects(()=>readSatelliteVisual([1,8,1.001,8.001],day,'rgb',fetcher,undefined,reader,'missing'),/Aucune acquisition/);
 });
 test('an unreadable overlapping tile falls back to a readable acquisition',async()=>{

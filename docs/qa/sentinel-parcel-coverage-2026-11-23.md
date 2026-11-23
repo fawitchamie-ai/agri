@@ -78,3 +78,34 @@ campagne en production. Le rapport exclut la géométrie privée.
 
 Référence des classes SCL :
 https://sentiwiki.copernicus.eu/web/s2-processing
+
+## Complément : chargement des 8 au 18 novembre
+
+Contrôle en production sur `daa6b58fa077ea5a1cdea8ee3eefd14d3ac31dbc` :
+le script de contrôle sélectionne le 29 octobre après sept acquisitions et
+charge RGB, SCL, NDVI et NDVI contrasté (10/20/10/10 m). Session isolée fermée.
+
+Les quatre acquisitions de novembre ont ensuite été ouvertes individuellement :
+
+| Date | Acquisition | RGB dans l’emprise du contour | Surface NDVI claire |
+| --- | --- | ---: | ---: |
+| 8 novembre | S2B_T31NDH_20261108T101936_L2A | 255 pixels | 0 % |
+| 13 novembre | S2C_T31NCH_20261113T102642_L2A | 255 pixels | 0 % |
+| 15 novembre | S2A_T31NCH_20261115T102900_L2A | 255 pixels | 0 % |
+| 18 novembre | S2B_T31NDH_20261118T102434_L2A | 255 pixels | 0 % |
+
+Le navigateur confirme l’affichage des quatre images datées. Le défaut
+reproduit dans l’interface est un message d’erreur « Image Sentinel-2
+indisponible » lorsque le NDVI n’a aucun pixel clair. La lecture du masque
+avait pourtant réussi : il s’agit d’une acquisition opaque, pas d’une panne.
+
+Le complément remplace cet échec apparent par un état « Acquisition chargée ·
+sol masqué », permet d’ouvrir directement les couleurs naturelles et le masque,
+et empêche un indicateur de chargement persistant lorsqu’aucun raster NDVI
+n’est demandé. Dans l’autre vue Images & indices, le résultat vide du NDVI
+est également un état mesuré, sans exception ni faux pixel. Les vraies pannes
+de transport continuent de produire une erreur et une option de rechargement.
+
+Un cas de contrôle a été créé dans une démonstration isolée pour vérifier le
+parcours après rechargement de l’application. Il porte un semis explicitement
+indicatif ; il ne confirme ni la culture ni la conduite réelle de ce champ.
