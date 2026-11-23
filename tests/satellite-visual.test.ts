@@ -45,6 +45,6 @@ test('dated NDVI and contrast use aligned native 10 m B04/B08 pixels',async()=>{
  assert.ok(Math.abs(range[1]-maximum)<1e-9);
  assert.equal(contrast.pixels[0].color,fieldNdviColor(expected[0],minimum,maximum));
  assert.equal(contrast.pixels[1].color,fieldNdviColor(expected[1],minimum,maximum));
- const coarseReader:typeof readRasterWindow=async url=>({...await reader(url),resolutionM:url.includes('/B04.tif')?20:10});
+ const coarseReader:typeof readRasterWindow=async(url,shape)=>({...await reader(url,shape),resolutionM:url.includes('/B04.tif')?20:10});
  await assert.rejects(()=>readSatelliteVisual([1.2,9.4,1.2001,9.4001],'2024-10-19','contrast',fetcher,new AbortController().signal,coarseReader),/doivent être à 10 m/);
 });
