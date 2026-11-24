@@ -1,20 +1,23 @@
 'use client';
 import {useEffect,useId,useRef,useState} from 'react';
 import {framePoint} from '../../lib/seasonal/imagery-display';
-import {geometryIdentity} from '../../lib/seasonal/provenance';
 import type {ParcelPolygon} from '../../lib/seasonal/parcel';
 import type {readSatelliteVisual} from '../../lib/seasonal/satellite-visual';
+import {cacheNativeSatelliteImage,getCachedNativeSatelliteImage,nativeSatelliteImageCacheKey} from '../../lib/seasonal/native-image-cache';
+export {cacheNativeSatelliteImage,getCachedNativeSatelliteImage,hasCachedNativeSatelliteImage,nativeSatelliteImageCacheKey} from '../../lib/seasonal/native-image-cache';
 
 type NativeLayer='rgb'|'classification'|'ndvi'|'contrast';
 type NativeImage=Awaited<ReturnType<typeof readSatelliteVisual>>;
 export default function NativeSatelliteImage({date,layer,bounds,geometry,itemId,onLoad,onError}:{date:string;layer:'rgb'|'classification'|'ndvi'|'contrast';bounds:number[];geometry:ParcelPolygon;itemId?:string;onLoad:(image:Awaited<ReturnType<typeof readSatelliteVisual>>)=>void;onError:(message:string)=>void}){
- const [loaded,setImage]=useState<{key:string;image:Awaited<ReturnType<typeof readSatelliteVisual>>}|null>(null),callbacks=useRef({onLoad,onError});
+ const request={layer,date,bounds,geometry,itemId},requestKey=nativeSatelliteImageCacheKey(request);
+ const [loaded,setImage]=useState<{key:string;image:Awaited<ReturnType<typeof readSatelliteVisual>>}|null>(()=>{const cached=getCachedNativeSatelliteImage(request);return cached?{key:requestKey,image:cached}:null;}),callbacks=useRef({onLoad,onError});
  useEffect(()=>{callbacks.current={onLoad,onError};},[onLoad,onError]);
- const requestKey=layer+':'+date+':'+bounds.join(',')+':'+(itemId??'')+':'+geometryIdentity(geometry);
  const image=loaded?.key===requestKey?loaded.image:null;
  useEffect(()=>{
+  const cached=getCachedNativeSatelliteImage(request);
+  if(cached){setImage({key:requestKey,image:cached});callbacks.current.onLoad(cached);return;}
   const ctrl=new AbortController();let alive=true;
-  import('../../lib/seasonal/satellite-visual').then(m=>m.readSatelliteVisual(bounds,date,layer,fetch,ctrl.signal,undefined,itemId,geometry)).then(r=>{if(alive){setImage({key:requestKey,image:r});callbacks.current.onLoad(r);}}).catch(e=>{if(alive)callbacks.current.onError((e as Error).message);});
+  import('../../lib/seasonal/satellite-visual').then(m=>m.readSatelliteVisual(bounds,date,layer,fetch,ctrl.signal,undefined,itemId,geometry)).then(r=>{if(alive){cacheNativeSatelliteImage(request,r);setImage({key:requestKey,image:r});callbacks.current.onLoad(r);}}).catch(e=>{if(alive)callbacks.current.onError((e as Error).message);});
   return()=>{alive=false;ctrl.abort();};
  // Bounds, date and layer cancel any earlier scene before it can paint.
  // eslint-disable-next-line react-hooks/exhaustive-deps

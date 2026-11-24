@@ -7,6 +7,7 @@ import {fieldImageSummary,fieldNdviColor} from '../../lib/seasonal/field-analysi
 import {framePoint,imageScale} from '../../lib/seasonal/imagery-display';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
 import {LAND_COLORS,LAND_NAMES} from '../../lib/seasonal/land-display';
+import {getCachedNativeSatelliteImage} from '../../lib/seasonal/native-image-cache';
 import BasemapMosaic from './basemap-mosaic';
 import NativeSatelliteImage from './native-satellite-image';
 import {ProductIcon} from './product-ui';
@@ -32,16 +33,21 @@ export default function FieldAnalysisMap({config:c,grid,history,read,date,itemId
  const index=layer==='ndvi'||layer==='contrast',maskedIndex=index&&!!read&&read.scenes[0]?.clearFraction===0;
  // The 20 m summary is used for statistics, never as a replacement NDVI map.
  const nativeIndex=allowed&&!maskedIndex&&!!date&&index;
+ const rasterItemId=itemId??read?.scenes[0]?.itemId;
+ const datedRaster=nativeIndex||layer==='rgb'||layer==='classification';
+ const cachedRaster=allowed&&datedRaster&&!!date?getCachedNativeSatelliteImage({layer,date,bounds,geometry:grid.shape,itemId:rasterItemId}):undefined;
+ const cachedRasterAvailable=!!cachedRaster;
  const activeRange=nativeRange?.date===date?nativeRange:null;
- const min=layer==='contrast'?(activeRange?.minimum??-1):-1,max=layer==='contrast'?(activeRange?.maximum??1):1;
+ const contrastRange=activeRange??(layer==='contrast'&&cachedRaster?.valueRange?{date,minimum:cachedRaster.valueRange[0],maximum:cachedRaster.valueRange[1]}:null);
+ const min=layer==='contrast'?(contrastRange?.minimum??-1):-1,max=layer==='contrast'?(contrastRange?.maximum??1):1;
  const raster=index||layer==='rgb'||layer==='classification'||layer==='photo',empty=layer==='history'?history.status==='insufficient':layer==='terrain'?!land:!raster&&!data.cells;
  const scale=imageScale(bounds);
- useEffect(()=>{setError('');setNativeRange(null);setLoading(allowed&&!maskedIndex&&(layer==='photo'||(nativeIndex||layer==='rgb'||layer==='classification')&&!!date));},[layer,allowed,date,bounds.join(','),maskedIndex,nativeIndex]);
+ useEffect(()=>{setError('');setNativeRange(null);setLoading(allowed&&!maskedIndex&&(layer==='photo'||datedRaster&&!!date&&!cachedRasterAvailable));},[layer,allowed,date,bounds.join(','),maskedIndex,nativeIndex,datedRaster,cachedRasterAvailable]);
  return <figure className="fa-map" aria-label={ANALYSIS_LAYERS.find(v=>v.id===layer)!.name+' du champ'}>
   <div className="fa-map-surface">
    <svg viewBox="0 0 640 400" aria-hidden="true"><defs><pattern id={key+'grid'} width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0v32" fill="none" stroke="#6b8eaa" strokeOpacity=".1"/></pattern><pattern id={key+'missing'} width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#e6edf3"/><path d="M0 9 9 0" stroke="#aebfce" strokeWidth="1"/></pattern></defs><rect width="640" height="400" fill="#edf3f7"/><rect width="640" height="400" fill={'url(#'+key+'grid)'}/></svg>
    {allowed&&(photo||layer==='photo')&&<BasemapMosaic key={'base:'+bounds.join(',')} bounds={bounds} onLoad={()=>{if(layer==='photo')setLoading(false);}} onError={()=>{if(layer==='photo')setLoading(false);setError('Photo de repérage indisponible.');}}/>}
-   {allowed&&(nativeIndex||layer==='rgb'||layer==='classification')&&date&&<div className="fa-dated-raster"><NativeSatelliteImage key={layer+':'+date+':'+bounds.join(',')} layer={layer} date={date} bounds={bounds} geometry={grid.shape} itemId={itemId??read?.scenes[0]?.itemId} onLoad={image=>{setLoading(false);if(layer==='contrast'&&image.valueRange)setNativeRange({date,minimum:image.valueRange[0],maximum:image.valueRange[1]});}} onError={message=>{setLoading(false);setError('Image Sentinel-2 indisponible : '+message);}}/></div>}
+   {allowed&&(nativeIndex||layer==='rgb'||layer==='classification')&&date&&<div className="fa-dated-raster"><NativeSatelliteImage key={layer+':'+date+':'+bounds.join(',')} layer={layer} date={date} bounds={bounds} geometry={grid.shape} itemId={rasterItemId} onLoad={image=>{setLoading(false);if(layer==='contrast'&&image.valueRange)setNativeRange({date,minimum:image.valueRange[0],maximum:image.valueRange[1]});}} onError={message=>{setLoading(false);setError('Image Sentinel-2 indisponible : '+message);}}/></div>}
    <svg className="fa-map-values" viewBox="0 0 640 400" aria-label="Cellules et contour du champ">
     {!raster&&layer!=='terrain'&&grid.cells.map(v=>{
      const ndvi=data.values.get(v.id),zone=byId.get(v.id)?.zone??'unknown';
