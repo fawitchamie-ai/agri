@@ -36,7 +36,7 @@ test('the detailed campaign view shows modeled biomass and cover by stage with t
  assert.match(html,/aucune validation locale ni plage prédictive/);
  assert.match(html,/Méthode de rendement/);
  assert.match(html,/Maïs grain · croissance RUE–NPK indicative/);
- assert.match(html,/daily-growth-process-1\\.5\\.0 · maize-rue-indicative-1/);
+ assert.match(html,/daily-growth-process-1\.5\.0 · maize-rue-indicative-1/);
  assert.match(html,/Simulation indicative active ; paramètres non calibrés localement/);
  assert.doesNotMatch(html,/Aucune méthode active/);
 });
