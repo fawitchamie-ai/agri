@@ -27,7 +27,10 @@ export default function NativeSatelliteImage({date,layer,bounds,geometry,itemId,
 export function NativeSatellitePixels({image,date,layer,bounds,geometry}:{image:NativeImage;date:string;layer:NativeLayer;bounds:number[];geometry:ParcelPolygon}){
  const clipId='sentinel-field-'+useId().replace(/[^a-zA-Z0-9_-]/g,''),index=layer==='ndvi'||layer==='contrast';
  const outline=geometry.coordinates.map(r=>'M'+r.map(v=>framePoint(v,bounds).join(',')).join('L')+'Z').join(' ');
- return <svg className="parcel-raster-image" viewBox="0 0 640 400" role="img" data-resolution-m={image.resolutionM} aria-label={index?`${layer==='contrast'?'NDVI contrasté':'NDVI'} Sentinel-2 · pixels natifs à ${Math.round(image.resolutionM)} m · ${date}`:(layer==='rgb'?'Couleurs naturelles':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
+ // The shared raster class has an opaque no-data checkerboard. NDVI must keep
+ // its full SVG viewport transparent so the basemap remains visible outside
+ // the clipped field (and in holes); clipping the pixel group cannot clip CSS.
+ return <svg className="parcel-raster-image" style={index?{background:'transparent'}:undefined} viewBox="0 0 640 400" role="img" data-resolution-m={image.resolutionM} aria-label={index?`${layer==='contrast'?'NDVI contrasté':'NDVI'} Sentinel-2 · pixels natifs à ${Math.round(image.resolutionM)} m · ${date}`:(layer==='rgb'?'Couleurs naturelles':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
   {index&&<defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><path d={outline} clipRule="evenodd" fillRule="evenodd"/></clipPath></defs>}
   <g clipPath={index?'url(#'+clipId+')':undefined}>
   {image.pixels.map((p,i)=>{const label=(layer==='ndvi'||layer==='contrast')&&p.value!==null?`NDVI ${p.value.toFixed(3)} · pixel source ${Math.round(image.resolutionM)} m`:undefined;return <path key={i} d={'M'+p.geometry.coordinates[0].map(v=>framePoint(v,bounds).join(',')).join('L')+'Z'} fill={p.color} stroke={p.color} strokeWidth=".15" aria-label={label}>{label&&<title>{label}</title>}</path>;})}

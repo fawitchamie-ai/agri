@@ -39,6 +39,10 @@ autre colonne et ne constitue plus un second seuil caché pour ouvrir une image.
 Le masque des nuages, ombres, eau et pixels invalides reste appliqué. Les parties
 sans mesure ne sont pas remplies. Les cartes NDVI et NDVI contrasté conservent
 les pixels natifs à 10 m et la découpe exacte au contour, y compris ses trous.
+Le fond du SVG NDVI est transparent : le damier hérité des autres rasters ne
+recouvre plus la mosaïque Esri lorsque « Fond photo de repérage » est activé.
+Les pixels d'indice restent découpés ; le fond photo demeure un repère de date
+inconnue et ne devient pas une acquisition Sentinel-2 datée.
 
 Le catalogue est toujours parcouru sur toutes les dates annoncées. Les anciens
 rejets disposant déjà de mesures NDVI suffisantes sont requalifiés. Ceux où seules
