@@ -10,7 +10,7 @@ export function automaticCampaign(c:SeasonalConfig,cropId=c.cropProfile?.id??'ma
  system:{...c.system,name:'Arrosage simulé',source:'Hypothèses modifiables : efficacité 75 %, transport sans perte ; disponibilité non vérifiée',applicationEfficiency:c.system.applicationEfficiency??.75,transportEfficiency:c.system.transportEfficiency??1},fallback:null};
  // A newly supplied default must replace its old null evidence, while keeping
  // the explicit scenario gate. Never relabel failed automatic acquisitions.
- const prepared=migrateInputs(next);
+ const prepared=migrateInputs({...next,automaticYield:c.automaticYield??{version:'automatic-yield-input-1',enabled:true}});
  const defaults:[string,number|null,string][]=[...prepared.soil.layers.map((l,i)=>[`soil.layers.${i}.initialTheta`,l.initialTheta,'m³/m³'] as [string,number|null,string]),['system.applicationEfficiency',prepared.system.applicationEfficiency,'fraction'],['system.transportEfficiency',prepared.system.transportEfficiency,'fraction']];
  for(const [path,value,unit] of defaults){
   const old=prepared.inputs!.values[path];

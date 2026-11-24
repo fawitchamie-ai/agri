@@ -92,12 +92,13 @@ async function weatherJson(url:URL,fetcher:typeof fetch){
  if(dates.some(date=>typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date)||new Set(dates).size!==dates.length)throw new Error('Calendrier météo invalide');
  const from=url.searchParams.get('start_date'),to=url.searchParams.get('end_date');
  if(from&&to&&dates.some(date=>date<from||date>to))throw new Error('Historique météo hors période demandée');
- return {...d.daily,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};
+ const radiationValid=d.daily_units?.shortwave_radiation_sum==='MJ/m²'&&Array.isArray(d.daily.shortwave_radiation_sum)&&d.daily.shortwave_radiation_sum.length===dates.length;
+ return {...d.daily,shortwave_radiation_sum:radiationValid?d.daily.shortwave_radiation_sum:undefined,_metadata:{latitude:d.latitude,longitude:d.longitude,timezone:d.timezone}};
 }
 async function acquireEnvironment(latitude:number,longitude:number,country:Country,start:string,days:number,fetcher:typeof fetch=fetch,now=new Date().toISOString(),soilPoint?:Position|null):Promise<Environment>{
  if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>85||Math.abs(longitude)>180||!Object.hasOwn(COUNTRIES,country))throw new InputError('Localisation invalide.');
  isoDate(start,'Date du semis');if(!Number.isInteger(days)||days<1||days>366)throw new InputError('Cycle invalide.');
- const year=Number(now.slice(0,4)),common={latitude:String(latitude),longitude:String(longitude),timezone:COUNTRIES[country].timezone,daily:'precipitation_sum,et0_fao_evapotranspiration,temperature_2m_mean'};
+ const year=Number(now.slice(0,4)),common={latitude:String(latitude),longitude:String(longitude),timezone:COUNTRIES[country].timezone,daily:'precipitation_sum,et0_fao_evapotranspiration,temperature_2m_mean,shortwave_radiation_sum'};
  const forecastUrl=new URL('https://api.open-meteo.com/v1/forecast');forecastUrl.search=new URLSearchParams({...common,forecast_days:'16',past_days:'92'}).toString();
  const historyUrl=new URL('https://archive-api.open-meteo.com/v1/archive');historyUrl.search=new URLSearchParams({...common,start_date:`${year-3}-01-01`,end_date:`${year-1}-12-31`}).toString();
  const [soil,forecast,history]=await Promise.allSettled([soilPoint===null?Promise.resolve({ph:null,organicC:null,organicCarbonDensity:null,organicCarbonStock:null,totalN:null,cec:null,bulkDensity:null,coarseFragments:null,sand:null,silt:null,clay:null,waterContent10kPa:null,source:'Aucun point terrestre cartographié disponible',depth:'5–15 cm',resolutionM:250,retrievedAt:now} as SoilEstimate):loadSoil(soilPoint?.[1]??latitude,soilPoint?.[0]??longitude,fetcher,now),weatherJson(forecastUrl,fetcher),weatherJson(historyUrl,fetcher)]);
@@ -111,23 +112,28 @@ async function acquireEnvironment(latitude:number,longitude:number,country:Count
  const recent=new Map<string,number>();if(forecast.status==='fulfilled')forecast.value.time.forEach((d:string,i:number)=>recent.set(d,i));
  // Index the historical calendar once, rather than scanning three years for every value/day.
  const calendar=new Map<string,number[]>();if(history.status==='fulfilled')history.value.time.forEach((d:string,j:number)=>{const key=d.slice(5);const indices=calendar.get(key)??[];indices.push(j);calendar.set(key,indices);});
+ const properties=[['rainMm','precipitation_sum','mm',0,2000],['et0Mm','et0_fao_evapotranspiration','mm',0,30],['temperatureMeanC','temperature_2m_mean','°C',-60,60],['radiationMj','shortwave_radiation_sum','MJ/m²/j',0,40]] as const;
+ let missingRadiation=0;
  for(let i=0;i<days;i++){
   const date=addDays(start,i),idx=recent.get(date),f=forecast.status==='fulfilled'?forecast.value:null;
-  const historicalIndices=calendar.get(date.slice(5)==='02-29'?'02-28':date.slice(5))??[];
-  let rain:number|null=null,et:number|null=null,temp:number|null=null,status:'forecast'|'estimated'|'scenario'='scenario',source=`Open-Meteo / Best Match — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
-  if(idx!==undefined&&f){rain=finite(f.precipitation_sum[idx],0,2000);et=finite(f.et0_fao_evapotranspiration[idx],0,30);temp=finite(f.temperature_2m_mean[idx],-60,60);status=date<now.slice(0,10)?'estimated':'forecast';source=date<now.slice(0,10)?'Open-Meteo — historique récent de modèles, pas mesure au champ':'Open-Meteo — prévision de modèles, pas mesure au champ';}
-  if((rain===null||et===null)&&history.status==='fulfilled'){
-   const h=history.value,indices=historicalIndices;
-   const mean=(key:string,min:number,max:number)=>{const values=indices.map(j=>finite(h[key]?.[j],min,max)).filter((x):x is number=>x!==null);return values.length===3?values.reduce((a,b)=>a+b,0)/values.length:null;};
-   rain=mean('precipitation_sum',0,2000);et=mean('et0_fao_evapotranspiration',0,30);temp=mean('temperature_2m_mean',-60,60);status='scenario';source=`Open-Meteo / Best Match — moyenne du même jour sur ${year-3}–${year-1} ; scénario historique, pas prévision saisonnière`;
+  const historicalIndices=calendar.get(date.slice(5)==='02-29'?'02-28':date.slice(5))??[],h=history.status==='fulfilled'?history.value:null;
+  const values:Record<string,number|null>={},provenance:Record<string,InputValue>={},rowSources=new Set<string>();let historic=false;
+  const nearStatus=date<now.slice(0,10)?'estimated' as const:'forecast' as const;
+  for(const [key,property,unit,min,max] of properties){
+   const direct=idx!==undefined&&f?finite(f[property]?.[idx],min,max):null;
+   const raw=historicalIndices.map(j=>finite(h?.[property]?.[j],min,max)),useHistory=direct===null&&raw.length===3&&raw.every(v=>v!==null);
+   const value=direct!==null?direct:useHistory?(raw as number[]).reduce((a,b)=>a+b,0)/3:null;
+   const status=value===null?'missing':useHistory?'scenario':nearStatus,meta=useHistory?h?._metadata:f?._metadata;
+   values[key]=value;if(useHistory)historic=true;
+   if(value!==null)rowSources.add(useHistory?`Open-Meteo — moyenne du même jour sur ${year-3}–${year-1}, scénario historique`:`Open-Meteo — ${nearStatus==='estimated'?'historique récent de modèles':'prévision de modèles'}, pas une mesure au champ`);
+   provenance[key]=valueEvidence(value,unit,scopeId(null,[longitude,latitude]),{rawValue:useHistory?raw:value,rawUnit:property==='shortwave_radiation_sum'?'MJ/m²':unit,origin:'automatic',status,provider:'Open-Meteo',product:useHistory?'Historical Weather API':'Forecast API',productVersion:null,method:useHistory?'Moyenne du même jour sur trois années, scénario historique':property==='et0_fao_evapotranspiration'?'ET0 FAO':property==='shortwave_radiation_sum'?'Somme quotidienne du rayonnement solaire global':'Sortie de modèle',interval:{from:date,to:date},referencePeriod:useHistory?{from:`${year-3}-01-01`,to:`${year-1}-12-31`}:null,acquiredAt:now,observedAt:null,model:null,runAt:null,spatial:{point:meta&&Number.isFinite(meta.longitude)&&Number.isFinite(meta.latitude)?[meta.longitude,meta.latitude]:null,cell:meta?`returned:${meta.longitude},${meta.latitude}`:null,resolutionM:null,crs:'EPSG:4326'},replacementReason:'Best Match : modèle, run et résolution effective non exposés par cette réponse ; pas une mesure de terrain.'});
   }
-  const meta=status!=='scenario'?f?._metadata:history.status==='fulfilled'?history.value._metadata:null;
-  const props=[['rainMm',rain,'precipitation_sum','mm'],['et0Mm',et,'et0_fao_evapotranspiration','mm'],['temperatureMeanC',temp,'temperature_2m_mean','°C']] as const;
-  const provenance:Record<string,InputValue>={};
-  for(const [key,val,property,unit] of props)provenance[key]=valueEvidence(val,unit,scopeId(null,[longitude,latitude]),{rawValue:status==='scenario'&&history.status==='fulfilled'?historicalIndices.map(j=>history.value[property]?.[j]).filter((v:unknown)=>typeof v==='number'&&Number.isFinite(v)):val,rawUnit:unit,origin:'automatic',status:val===null?'missing':status==='scenario'?'scenario':date<now.slice(0,10)?'estimated':'forecast',provider:'Open-Meteo',product:status==='scenario'?'Historical Weather API':'Forecast API',productVersion:null,method:status==='scenario'?'Moyenne du même jour sur trois années, scénario historique':property==='et0_fao_evapotranspiration'?'ET0 FAO':'Sortie de modèle',interval:{from:date,to:date},referencePeriod:status==='scenario'?{from:`${year-3}-01-01`,to:`${year-1}-12-31`}:null,acquiredAt:now,observedAt:null,model:null,runAt:null,spatial:{point:meta&&Number.isFinite(meta.longitude)&&Number.isFinite(meta.latitude)?[meta.longitude,meta.latitude]:null,cell:meta?`returned:${meta.longitude},${meta.latitude}`:null,resolutionM:null,crs:'EPSG:4326'},replacementReason:'Best Match : modèle, run et résolution effective non exposés par cette réponse ; pas une mesure de terrain.'});
-  if(rain!==null||et!==null)weather.push({date,rainMm:rain,et0Mm:et,temperatureMeanC:temp,status,source,availableAt:now,provenance});
-  if(temp!==null)temperatures.push({date,value:temp,status});
+  const status=historic?'scenario' as const:nearStatus,source=[...rowSources].join(' ; ')||'Open-Meteo — données indisponibles';
+  if(values.radiationMj===null)missingRadiation++;
+  if(Object.values(values).some(v=>v!==null))weather.push({date,rainMm:values.rainMm,et0Mm:values.et0Mm,temperatureMeanC:values.temperatureMeanC,radiationMj:values.radiationMj,status,source,availableAt:now,provenance});
+  if(values.temperatureMeanC!==null)temperatures.push({date,value:values.temperatureMeanC,status:provenance.temperatureMeanC.status==='scenario'?'scenario':nearStatus});
  }
+ if(missingRadiation)warnings.push('Rayonnement solaire quotidien indisponible sur '+missingRadiation+' jours : la simulation de croissance reste incomplète.');
  return {soil:s,weather,temperatures,warnings,retrievedAt:now,historicalYears:`${year-3}–${year-1}`};
 }
 
@@ -138,7 +144,7 @@ export async function loadEnvironment(latitude:number,longitude:number,country:C
  const cached=fetcher===fetch?environmentCache.get(key):undefined;
  if(!refresh&&cached&&cached.until>Date.now())return {...structuredClone(cached.value),scope:{id:scopeId(geometry,[longitude,latitude]),geometry:geometry??null},context:JSON.stringify([geometry??null,country,start,days])};
  const value=await acquireEnvironment(latitude,longitude,country,start,days,fetcher,now,soilPoint);
- if(fetcher===fetch&&value.weather.length===days&&value.soil.ph!==null&&value.soil.hydraulicLayers){
+ if(fetcher===fetch&&value.weather.length===days&&value.weather.every(w=>w.radiationMj!=null)&&value.soil.ph!==null&&value.soil.hydraulicLayers){
   if(environmentCache.size>=24)environmentCache.delete(environmentCache.keys().next().value!);
   environmentCache.set(key,{until:Date.now()+3600000,value});
  }

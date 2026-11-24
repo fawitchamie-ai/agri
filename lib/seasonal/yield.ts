@@ -1,4 +1,5 @@
 import {integratedGrowth} from './growth.ts';
+import {prepareAutomaticGrowth} from './automatic-yield.ts';
 import {canopyNowcast} from './canopy-nowcast.ts';
 import {waterImpact} from './water-impact.ts';
 import {SEASONAL_KY,KY_VERSION,seasonalWaterFactor} from './water-response.ts';
@@ -125,7 +126,7 @@ export function estimateYield(c:SeasonalConfig,events:WaterEvent[],plan:WaterPla
  out.coverage={processedM2:multiArea(joined),requestedM2:multiArea(domain!.coordinates),complete:true};
  if(y.areaBasis==='planned')out.limits.unshift('Simulation avant semis sur la surface que l’utilisateur prévoit de cultiver. C’est une hypothèse de scénario, pas une observation de semis ou de récolte ; les rendements sont exprimés par hectare prévu.');
  if(y.method==='declared-scenario'){out.missing.push('Le mode de multiplication simple a été retiré. Les anciennes références restent archivées ; utilisez la comparaison des effets de l’eau ou des engrais.');return out;}
- if(y.method==='automatic'){out.missing.push('Estimation automatique indisponible : le moteur de rendement parcellaire et ses paramètres locaux ne sont pas raccordés. Aucun rendement à saisir pour poursuivre le plan de culture.');return out;}
+ if(y.method==='automatic'){if(!c.automaticYield?.enabled)out.missing.push('Estimation automatique indisponible : activez la simulation indicative ou configurez un profil de croissance.');return out;}
  const modes=[['rainfed','Pluvial, sans irrigation ajoutée'],['recorded','Apports réalisés uniquement'],['proposed','Apports réalisés et irrigation future proposée']] as const;
  for(const [id,label] of modes){
   const scenario:YieldScenario={id,label,status:'unavailable',missing:[],totals:null,units:[]};
@@ -202,6 +203,17 @@ function attachSalinity(plan:WaterPlan,c:SeasonalConfig,events:WaterEvent[],wate
  if(c.canopyNowcast)plan.canopyNowcast=canopyNowcast(c,plan);
  plan.waterImpact=waterImpact(c,events,plan,waterPlanner);
  if(c.growth)plan.growth=integratedGrowth(c,events,plan,waterPlanner);
+ else{
+  const automatic=prepareAutomaticGrowth(c);
+  if(automatic){
+   plan.automaticYield=automatic.report;
+   if(!automatic.report.missing.length&&automatic.report.profile){
+    plan.growth=integratedGrowth(automatic.config,events,plan,waterPlanner);
+    automatic.report.status=plan.growth.status==='scenario'?'ready':'blocked';
+    automatic.report.missing=[...plan.growth.missing];
+   }
+  }
+ }
  if(c.fertilizerScenario)plan.fertilizerScenario=fertilizerScenario(c,plan);
  if(c.yieldEstimation||c.managementPlan)plan.response=interventionOutcome(c,plan);
  plan.sowingPlan=estimateSowing(c);

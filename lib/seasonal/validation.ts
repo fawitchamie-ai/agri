@@ -192,6 +192,12 @@ export function validateConfig(input: unknown, options:{allowUnparametrisedCycle
     validated.waterModel={version:'fao56-dual-1',source:str(m.source,'Source du double coefficient',1200),availableOn,totalEvaporableMm,readilyEvaporableMm,initialDepletionMm:number(m.initialDepletionMm,'Déficit évaporant initial',0,totalEvaporableMm),wettedFraction:number(m.wettedFraction,'Fraction mouillée',.001,1),kcMax,stages:dualStages,...(observedCover?{observedCover}:{}),...(transpiration?{transpiration}:{}),...(canopyDynamics?{canopyDynamics}:{})};
   }
   validated.growth=parseGrowth(c.growth,validated);
+  if(c.automaticYield!==undefined){
+    const a=obj(c.automaticYield);if(a.version!=='automatic-yield-input-1'||typeof a.enabled!=='boolean')throw new InputError('Activation du rendement automatique invalide.');
+    let soilSupply:NonNullable<SeasonalConfig['automaticYield']>['soilSupply'];
+    if(a.soilSupply!==undefined){const s=obj(a.soilSupply),initial=array(s.initialKgHa,'Stocks N/P/K accessibles',3),release=array(s.releaseKgHaDay,'Libérations N/P/K',3);if(initial.length!==3||release.length!==3)throw new InputError('Trois valeurs N/P/K sont requises.');soilSupply={initialKgHa:initial.map(v=>number(v,'Stock N/P/K',0,10000)) as [number,number,number],releaseKgHaDay:release.map(v=>number(v,'Libération N/P/K',0,100)) as [number,number,number],source:str(s.source,'Source des fournitures nutritives',1200)};}
+    validated.automaticYield={version:'automatic-yield-input-1',enabled:a.enabled,...(soilSupply?{soilSupply}:{})};
+  }
   return migrateInputs(validated);
 }
 export function validateEvents(input: unknown, c: SeasonalConfig): WaterEvent[] {

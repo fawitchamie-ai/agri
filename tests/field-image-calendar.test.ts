@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fieldObservationFixture} from './support/field-zones-fixture.ts';
 import {parseFieldMonitoring,type FieldImageSearch} from '../lib/seasonal/field-zones.ts';
-import {fieldImageChoices,fieldIndexEvolution,dayAfter} from '../lib/seasonal/field-analysis.ts';
+import {fieldImageChoices,fieldIndexEvolution,dayAfter,currentFieldImageSearch,meetsFieldImageTarget} from '../lib/seasonal/field-analysis.ts';
+import {zoneGrid} from '../lib/seasonal/field-zones.ts';
 import {loadUsableFieldImage} from '../lib/seasonal/field-image-loader.ts';
 test('all qualified dates survive serialization even when their detailed grids are no longer cached',()=>{
  const c=fieldObservationFixture(),older=dayAfter(c.asOfDate,-40);
@@ -14,8 +15,26 @@ test('all qualified dates survive serialization even when their detailed grids a
 });
 test('a forged qualified date below the target or a completed calendar with pending entries is rejected',()=>{
  const c=fieldObservationFixture(),m=c.fieldMonitoring!;
- m.imagerySearch={from:c.asOfDate,to:c.asOfDate,retrievedOn:c.asOfDate,complete:true,officialVerified:true,sources:[],warnings:[],entries:[{date:c.asOfDate,status:'usable',itemId:'x',clearFraction:.7,gridCoverage:1,cells:50}]};
- assert.throws(()=>parseFieldMonitoring(m,c),/80 %/);m.imagerySearch.entries[0]={date:c.asOfDate,status:'pending'};assert.throws(()=>parseFieldMonitoring(m,c),/incomplet/);
+ m.imagerySearch={from:c.asOfDate,to:c.asOfDate,retrievedOn:c.asOfDate,complete:true,officialVerified:true,sources:[],warnings:[],entries:[{date:c.asOfDate,status:'usable',itemId:'x',clearFraction:.19,gridCoverage:1,cells:50}]};
+ assert.throws(()=>parseFieldMonitoring(m,c),/20 %/);m.imagerySearch.entries[0]={date:c.asOfDate,status:'pending'};assert.throws(()=>parseFieldMonitoring(m,c),/incomplet/);
+});
+test('native coverage at 20% is accepted without a hidden summary-grid threshold',()=>{
+ const c=fieldObservationFixture(),r=structuredClone(c.fieldMonitoring!.currentObservation!),grid=zoneGrid(c.parcelGeometry);r.cells=[];
+ for(const fraction of [.19,.2,.6,.813]){r.scenes[0].clearFraction=fraction;assert.equal(meetsFieldImageTarget(grid,r),fraction>=.2);}
+});
+test('old exclusions are requalified from real measurements or marked for a fresh NDVI read',()=>{
+ const c=fieldObservationFixture(),d=dayAfter(c.asOfDate,-2),q:FieldImageSearch={from:d,to:c.asOfDate,retrievedOn:c.asOfDate,minimumCoverage:.8,complete:true,officialVerified:true,sources:[],warnings:[],entries:[{date:d,status:'insufficient',itemId:'measured',clearFraction:.813,gridCoverage:.5,cells:20,ndviMean:.4},{date:c.asOfDate,status:'insufficient',itemId:'mask-only',clearFraction:.4,gridCoverage:0,cells:0}]};
+ const next=currentFieldImageSearch(q);assert.equal(next.entries[0].status,'usable');assert.equal(next.entries[1].status,'pending');assert.equal(next.complete,false);assert.equal(q.entries[0].status,'insufficient','Saved historical evidence is not mutated');
+ c.fieldMonitoring!.imagerySearch=q;assert.ok(fieldImageChoices(c).some(x=>x.date===d));
+});
+test('an exclusion cached with the old policy is read again even if the acquisition has not changed',async()=>{
+ const c=fieldObservationFixture(),read=structuredClone(c.fieldMonitoring!.currentObservation!),date=read.season.startDate,item={id:'S2_policy_test',properties:{datetime:date+'T10:00:00Z',updated:'unchanged'}};
+ const oldInput=JSON.stringify([item.id,item.properties.updated,undefined]);
+ // The prior fingerprint had no minimum-coverage policy prefix.
+ const oldHash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(oldInput)))).map(v=>v.toString(16).padStart(2,'0')).join('');
+ let calls=0;read.scenes[0].clearFraction=.2;
+ const result=await loadUsableFieldImage(c.parcelGeometry,[date],{signal:new AbortController().signal,catalog:{provider:'test',features:[item],dates:[date],officialVerified:true,officialScenes:1,sources:[],warnings:[]},previousSearch:{from:date,to:date,retrievedOn:new Date().toISOString().slice(0,10),minimumCoverage:.8,complete:true,officialVerified:true,sources:[],warnings:[],entries:[{date,status:'insufficient',fingerprint:oldHash,clearFraction:.2}]},reader:async()=>{calls++;return read;},onRead:()=>{}});
+ assert.equal(calls,1);assert.equal(result.usableCount,1);assert.notEqual(result.checks[0].fingerprint,oldHash);
 });
 test('an exhaustive scan keeps multiple clear dates after the first success',async()=>{
  const c=fieldObservationFixture(),r=c.fieldMonitoring!.currentObservation!,days=['2024-10-04','2024-10-14','2024-10-29'],seen:string[]=[];

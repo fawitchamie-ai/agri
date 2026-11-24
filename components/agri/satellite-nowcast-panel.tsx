@@ -1,4 +1,5 @@
 'use client';
+import {MINIMUM_FIELD_IMAGE_COVERAGE} from '../../lib/seasonal/sentinel-quality';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {HelpParagraph} from './help-dialog';
 import {SATELLITE_INDEX_VERSION,satelliteMonitoringScope} from '../../lib/seasonal/satellite';
@@ -19,7 +20,7 @@ export default function SatelliteNowcastPanel({config:c,onChange}:{config:Season
  const refresh=useCallback(async()=>{
   if(!canFetch){setError(c.sowingDate>today?'Les observations Sentinel‑2 commencent après le semis.':c.asOfDate!==today?'Actualisez la date d’analyse de la campagne avant de récupérer de nouvelles images.':'Ce cycle est hors de la fenêtre Sentinel‑2 de 240 jours.');return;}
   const ctrl=new AbortController();controller.current=ctrl;setLoading(true);setError('');setWarning('');
-  const byDate=new Map((current?stored!.observations:[]).filter(o=>o.quality==='usable'&&o.clearFraction>=.8).map(o=>[o.date,o]));
+  const byDate=new Map((current?stored!.observations:[]).filter(o=>o.quality==='usable'&&o.clearFraction>=MINIMUM_FIELD_IMAGE_COVERAGE).map(o=>[o.date,o]));
   try{
    const {satelliteIndexSeries}=await import('../../lib/seasonal/satellite-index');const result=await satelliteIndexSeries(c.parcelGeometry!,requestStart,requestEnd,fetch,undefined,undefined,{signal:ctrl.signal,onProgress:(date,i,n)=>setProgress(date+' · '+i+'/'+n),onObservation:(o,source)=>{if(ctrl.signal.aborted||satelliteMonitoringScope(latest.current)!==scope)return;byDate.set(o.date,o);const next={...latest.current,satelliteMonitoring:{version:SATELLITE_INDEX_VERSION,scope,source,retrievedOn:today,observations:[...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date))}};latest.current=next;onChange(next);}});
    if(ctrl.signal.aborted||satelliteMonitoringScope(latest.current)!==scope)return;
@@ -30,7 +31,7 @@ export default function SatelliteNowcastPanel({config:c,onChange}:{config:Season
   finally{setLoading(false);setProgress('');}
  },[canFetch,c,onChange,requestEnd,requestStart,scope,stored,today,current]);
  if(!c.parcelGeometry)return null;
- const observations=current?(stored?.observations??[]).filter(o=>o.quality==='usable'&&o.clearFraction>=.8):[];
+ const observations=current?(stored?.observations??[]).filter(o=>o.quality==='usable'&&o.clearFraction>=MINIMUM_FIELD_IMAGE_COVERAGE):[];
  const chartObservations=observations.filter(o=>o.quality==='usable'&&o.date<=c.asOfDate&&o.availableOn<=c.asOfDate&&o.ndviMedian!==null&&o.eviMedian!==null);
  const chartX=(index:number)=>chartObservations.length<2?280:40+(Date.parse(chartObservations[index].date)-Date.parse(chartObservations[0].date))/(Date.parse(chartObservations.at(-1)!.date)-Date.parse(chartObservations[0].date))*480;
  const chartY=(value:number)=>95-value*66;
@@ -39,7 +40,7 @@ export default function SatelliteNowcastPanel({config:c,onChange}:{config:Season
  return <section className="qs-card" aria-label="Suivi satellite automatique de la parcelle"><details open={!!observations.length}>
   <summary>Suivi satellite automatique · NDVI / EVI</summary>
   <HelpParagraph>Les images sont cherchées à partir du contour de la parcelle : aucune préfecture n’est à choisir. Le service calcule les médianes des pixels Sentinel‑2 à l’intérieur du champ et écarte les nuages, leurs ombres, l’eau et les pixels sans donnée.</HelpParagraph>
-  <HelpParagraph>Toutes les dates du cycle sont examinées dans le navigateur à partir des catalogues Copernicus, Digital Earth Africa et Earth Search. Les acquisitions atteignant 80 % de couverture claire alimentent les courbes et le tableau. Les identifiants du compte ne sont pas transmis à ces fournisseurs.</HelpParagraph>
+  <HelpParagraph>Toutes les dates du cycle sont examinées dans le navigateur à partir des catalogues Copernicus, Digital Earth Africa et Earth Search. Les acquisitions atteignant 20 % de couverture claire alimentent les courbes et le tableau. Les identifiants du compte ne sont pas transmis à ces fournisseurs.</HelpParagraph>
   <HelpParagraph>NDVI et EVI décrivent l’évolution de la végétation après le semis. Ils aident à suivre la vigueur et à constituer des observations pour calibrer le nowcast. Ils ne sont pas encore convertis en tonnes par hectare et ne modifient pas le rendement affiché : cette conversion doit être testée sur des parcelles récoltées indépendantes.</HelpParagraph>
   <button className="btn secondary" type="button" disabled={loading||!canFetch} onClick={refresh}>{loading?'Lecture des scènes Sentinel‑2…':observations.length?'Actualiser les observations du champ':'Récupérer les observations du champ'}</button>
   {loading&&<HelpParagraph role="status">{progress} <button className="qs-text-button" onClick={()=>controller.current?.abort()}>Annuler la lecture</button></HelpParagraph>}

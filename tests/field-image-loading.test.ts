@@ -25,7 +25,7 @@ test('a cloudy run is searched beyond six dates without fabricating a clear imag
  assert.equal(calls,10);assert.equal(r.read,null);assert.equal(r.attempts,10);assert.equal(fieldImageSummary(zoneGrid(c.parcelGeometry),cloudy).mean,null);
  const ctrl=new AbortController();ctrl.abort();await assert.rejects(()=>loadUsableFieldImage(c.parcelGeometry,['2024-10-19'],{signal:ctrl.signal,onRead:()=>assert.fail('No result after cancellation')}),{name:'AbortError'});
 });
-test('the seventh date recovers a field above 80%, while a 70% recent image does not stop the search',async()=>{
+test('a 70% recent image is retained and the search still checks every older date',async()=>{
  const c=fieldObservationFixture(),clear=c.fieldMonitoring!.currentObservation!,visited:string[]=[],retained:boolean[]=[];
  const days=Array.from({length:8},(_,i)=>'2024-10-'+String(i+1).padStart(2,'0'));
  const r=await loadUsableFieldImage(c.parcelGeometry,days,{signal:new AbortController().signal,reader:async(_g,s)=>{
@@ -34,7 +34,7 @@ test('the seventh date recovers a field above 80%, while a 70% recent image does
   if(day==='2024-10-08'){r.cells=clear.cells;r.scenes[0].clearFraction=.7;}
   return r;
  },onRead:(_r,usable)=>retained.push(usable)});
- assert.equal(visited.length,8);assert.equal(r.read?.season.startDate,'2024-10-02');assert.equal(r.targetCoverage,.8);assert.deepEqual(retained,[false,false,false,false,false,false,true,false]);
+ assert.equal(visited.length,8);assert.equal(r.read?.season.startDate,'2024-10-08');assert.equal(r.targetCoverage,.2);assert.deepEqual(retained,[true,false,false,false,false,false,true,false]);
 });
 test('every date is inspected beyond the former 36-date limit',async()=>{
  const c=fieldObservationFixture(),cloudy=structuredClone(c.fieldMonitoring!.currentObservation!);cloudy.cells=[];cloudy.scenes[0].clearFraction=0;

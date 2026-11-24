@@ -1,4 +1,5 @@
 import {bbox,multiArea} from './land.ts';
+import {MINIMUM_FIELD_IMAGE_COVERAGE} from './sentinel-quality.ts';
 import {intersection,union} from './geometry-ops.ts';
 import {parcelMetrics,validateParcel,type ParcelPolygon,type Position} from './parcel.ts';
 import {geometryIdentity} from './provenance.ts';
@@ -19,7 +20,7 @@ export type ZoneDoseInput={kind:'seeds'|'fertilizer'|'treatment';product:string;
   reference:string;baseline:number;rates:Partial<Record<ZoneClass,number>>;confirmed:boolean;mapScope?:string};
 export const MAX_CACHED_FIELD_IMAGES=48;
 export type FieldImageCheck={date:string;status:'pending'|'usable'|'insufficient'|'error'|'unavailable';fingerprint?:string;itemId?:string;clearFraction?:number;gridCoverage?:number;cells?:number;ndviMean?:number|null;reason?:string};
-export type FieldImageSearch={from:string;to:string;retrievedOn:string;complete:boolean;officialVerified:boolean;sources:string[];warnings:string[];entries:FieldImageCheck[]};
+export type FieldImageSearch={from:string;to:string;retrievedOn:string;minimumCoverage?:number;complete:boolean;officialVerified:boolean;sources:string[];warnings:string[];entries:FieldImageCheck[]};
 export type FieldMonitoring={version:typeof FIELD_ZONES_VERSION;scope:string;cultivatedContour:boolean;comparableManagement:boolean;
   seasons:ZoneSeasonRead[];prescription?:ZoneDoseInput;currentObservation?:ZoneSeasonRead;datedObservations?:ZoneSeasonRead[];imagerySearch?:FieldImageSearch};
 export type ZoneGridCell={id:number;geometry:{type:'MultiPolygon';coordinates:Position[][][]};areaM2:number;center:Position};
@@ -154,12 +155,13 @@ export function parseFieldMonitoring(value:unknown,c:SeasonalConfig):FieldMonito
   if(!q||!validDay(q.from)||!validDay(q.to)||q.from>q.to||q.from<'2017-01-01'||q.to>today||!validDay(q.retrievedOn)||q.retrievedOn<q.to||q.retrievedOn>today||typeof q.complete!=='boolean'||typeof q.officialVerified!=='boolean'||!Array.isArray(q.sources)||q.sources.length>5||q.sources.some(s=>typeof s!=='string'||s.length>100)||!Array.isArray(q.warnings)||q.warnings.length>10||q.warnings.some(s=>typeof s!=='string'||s.length>1000)||!Array.isArray(q.entries)||q.entries.length>367)throw new Error('Calendrier satellite vérifié invalide.');
   const entries=q.entries.map(e=>{
    if(!e||!validDay(e.date)||e.date<q.from||e.date>q.to||!['pending','usable','insufficient','error','unavailable'].includes(e.status)||e.itemId!==undefined&&(typeof e.itemId!=='string'||e.itemId.length>200)||e.reason!==undefined&&(typeof e.reason!=='string'||e.reason.length>1000)||[e.clearFraction,e.gridCoverage].some(v=>v!==undefined&&(!Number.isFinite(v)||v<0||v>1))||e.cells!==undefined&&(!Number.isInteger(e.cells)||e.cells<0||e.cells>3000)||e.ndviMean!==undefined&&e.ndviMean!==null&&(!Number.isFinite(e.ndviMean)||e.ndviMean<-1||e.ndviMean>1))throw new Error('Qualification de date satellite invalide.');
-   if(e.status==='usable'&&(!e.itemId||e.clearFraction===undefined||e.clearFraction<.8-1e-8||e.gridCoverage===undefined||e.gridCoverage<.8-1e-8||e.cells===undefined||e.cells<12))throw new Error('Une date exploitable exige 80 % de couverture mesurée et 12 cellules.');
+   if(e.status==='usable'&&(!e.itemId||e.clearFraction===undefined||e.clearFraction<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8))throw new Error('Une date exploitable exige au moins 20 % de surface NDVI native mesurée.');
    if(e.fingerprint!==undefined&&(typeof e.fingerprint!=='string'||!/^[0-9a-f]{64}$/.test(e.fingerprint)))throw new Error('Empreinte du catalogue satellite invalide.');
    return {date:e.date,status:e.status,...(e.fingerprint?{fingerprint:e.fingerprint}:{}),...(e.itemId?{itemId:e.itemId}:{}),...(e.clearFraction!==undefined?{clearFraction:e.clearFraction}:{}),...(e.gridCoverage!==undefined?{gridCoverage:e.gridCoverage}:{}),...(e.cells!==undefined?{cells:e.cells}:{}),...(e.ndviMean!==undefined?{ndviMean:e.ndviMean}:{}),...(e.reason?{reason:e.reason}:{})};
   });
   if(new Set(entries.map(e=>e.date)).size!==entries.length||q.complete&&entries.some(e=>e.status==='pending'))throw new Error('Calendrier satellite dupliqué ou incomplet.');
-  imagerySearch={from:q.from,to:q.to,retrievedOn:q.retrievedOn,complete:q.complete,officialVerified:q.officialVerified,sources:[...q.sources],warnings:[...q.warnings],entries};
+  if(q.minimumCoverage!==undefined&&(!Number.isFinite(q.minimumCoverage)||q.minimumCoverage<0||q.minimumCoverage>1))throw new Error('Seuil du calendrier satellite invalide.');
+  imagerySearch={from:q.from,to:q.to,retrievedOn:q.retrievedOn,...(q.minimumCoverage!==undefined?{minimumCoverage:q.minimumCoverage}:{}),complete:q.complete,officialVerified:q.officialVerified,sources:[...q.sources],warnings:[...q.warnings],entries};
  }
  void c;return {version:FIELD_ZONES_VERSION,scope:m.scope,cultivatedContour:m.cultivatedContour,comparableManagement:m.comparableManagement,seasons,...(prescription?{prescription}:{}),...(currentObservation?{currentObservation}:{}),...(datedObservations?{datedObservations}:{}),...(imagerySearch?{imagerySearch}:{})};
 }

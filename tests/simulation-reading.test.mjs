@@ -86,8 +86,9 @@ test('the first campaign guides the user from country to parcel and results',()=
 });
 test('blocked and stale simulations display the action needed without showing a new water percentage',()=>{
  const c=fixture();c.inputPolicy={allowAssumptions:false,allowStale:false};
- const blocked=render(c);assert.match(blocked,/Pourquoi ce résultat manque|Vérifier les hypothèses d’eau/);assert.doesNotMatch(blocked,/besoins couverts si le plan est réalisé|\d+ %/);
- const stale=render(declareScenario(c),true);assert.match(stale,/Calcul en cours/);assert.doesNotMatch(stale,/besoins couverts si le plan est réalisé|\d+ %/);
+ const harvest=html=>{const d=new Window();d.document.body.innerHTML=html;const text=d.document.querySelector('#farmer-harvest-card')?.textContent??'';void d.happyDOM.close();return text;};
+ const blocked=render(c);assert.match(blocked,/Pourquoi ce résultat manque|Vérifier les hypothèses d’eau/);assert.doesNotMatch(harvest(blocked),/besoins couverts si le plan est réalisé|\d+ %/);
+ const stale=render(declareScenario(c),true);assert.match(stale,/Calcul en cours/);assert.doesNotMatch(harvest(stale),/besoins couverts si le plan est réalisé|\d+ %/);
 });
 test('overview displays the opted-in fertilizer range and hides it during recalculation',()=>{
  const c=declareScenario(fixture());c.asOfDate='2026-11-02';
