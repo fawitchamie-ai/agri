@@ -29,3 +29,16 @@ test('native NDVI layers clip all source pixels to the field and its holes with 
   assert.equal(svgs[2].style.background,'','RGB retains its own no-data background policy');
  }finally{await window.happyDOM.close();}
 });
+
+test('a loaded NDVI image is reused after the date view remounts and zoom does not invalidate it',async()=>{
+ const result=await build({entryPoints:['components/agri/native-satellite-image.tsx'],bundle:true,platform:'node',format:'cjs',write:false,jsx:'automatic',packages:'external'}),mod={exports:{}};
+ new Function('module','exports','require',result.outputFiles[0].text)(mod,mod.exports,require);
+ const geometry={type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]]},pixel={type:'Polygon',coordinates:[[[0,0],[.1,0],[.1,.1],[0,.1],[0,0]]]},request={layer:'ndvi',date:'2026-11-23',bounds:[-.5,-.5,1.5,1.5],geometry,itemId:'sentinel-2026-11-23'};
+ const image={date:request.date,itemId:request.itemId,source:'synthetic test scene',resolutionM:10,pixels:[{geometry:pixel,value:.5,color:'#00ff00'}],valueRange:[-1,1],mask:{clear:1,cloud:0,shadow:0,noData:0,water:0,uncertain:0},maskReason:null};
+ assert.equal(mod.exports.cacheNativeSatelliteImage(request,image),true);
+ assert.ok(mod.exports.hasCachedNativeSatelliteImage(request));
+ assert.equal(mod.exports.nativeSatelliteImageCacheKey(request),mod.exports.nativeSatelliteImageCacheKey({...request,bounds:[-.2,-.2,1.2,1.2]}),'Field NDVI pixels do not depend on the map zoom rectangle');
+ const html=renderToStaticMarkup(React.createElement(mod.exports.default,{...request,onLoad:()=>{},onError:()=>{}}));
+ assert.match(html,/data-resolution-m="10"/,'a newly mounted date view renders the already loaded 10 m image from memory');
+ assert.match(html,/NDVI Sentinel-2 · pixels natifs à 10 m · 2026-11-23/);
+});
