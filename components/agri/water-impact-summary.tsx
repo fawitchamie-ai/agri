@@ -16,7 +16,7 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
   <header className="water-impact-heading">
    <span className="water-impact-eyebrow">INDICATEUR HYDRIQUE · PAS UN RENDEMENT</span>
    <h3 id="water-impact-title">Couverture et score hydriques</h3>
-   <p>Ce panneau affiche un score d’eau relatif, pas une variation de rendement en t/ha. Pour lire les écarts de rendement utilisés par la simulation principale, consultez le tableau « Qu’est-ce qui fait varier ce rendement ? » ci-dessus.</p>
+   <p>Ce panneau affiche un score d’eau relatif, pas une variation de rendement en t/ha. Aucun rendement à saisir : ce score ne demande pas de valeur de récolte. Pour comprendre l’effet simulé de l’eau et des engrais sur le rendement en tonnes, consultez le tableau « Qu’est-ce qui fait varier ce rendement ? » ci-dessus.</p>
   </header>
 
   <div className="water-impact-reading">
