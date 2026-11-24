@@ -4,6 +4,9 @@ const fmt=(n:number|null,d=1)=>n===null?'—':n.toLocaleString('fr-FR',{maximumF
 const score=(n:number|null)=>n===null?'—':`${fmt(n)} / 100`;
 const difference=(n:number|null)=>n===null?'—':`${n>0?'+':''}${fmt(n)} pts`;
 const waterCoverage=(eta:number|null,etm:number|null)=>eta===null||etm===null||etm<=0?'—':`${fmt(eta/etm*100,2)} %`;
+const reason=(s:NonNullable<WaterPlan['waterImpact']>['scenarios'][number],method:string|undefined)=>method==='seasonal'&&s.etaMm!==null&&s.etmMm!==null&&s.etmMm>0&&s.etaMm/s.etmMm<.5
+ ?`Comparaison non calculable : ${waterCoverage(s.etaMm,s.etmMm)} des besoins couverts, sous le seuil de 50 % de cette approximation. Ce n’est pas un effet nul.`
+ :s.missing.join(' ');
 
 export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;stale:boolean}){
  const impact=stale?undefined:plan?.waterImpact;
@@ -11,9 +14,9 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
 
  return <section className="water-impact-panel" aria-labelledby="water-impact-title">
   <header className="water-impact-heading">
-   <span className="water-impact-eyebrow">EFFET DE L’EAU SUR LE RENDEMENT</span>
-   <h3 id="water-impact-title">Que change l’arrosage ?</h3>
-   <p>Comparez les scénarios sans arrosage ajouté, avec les apports réalisés et avec le plan proposé, pour un même sol et une même météo. Aucun rendement à saisir.</p>
+   <span className="water-impact-eyebrow">INDICATEUR HYDRIQUE · PAS UN RENDEMENT</span>
+   <h3 id="water-impact-title">Couverture et score hydriques</h3>
+   <p>Ce panneau affiche un score d’eau relatif, pas une variation de rendement en t/ha. Aucun rendement à saisir : ce score ne demande pas de valeur de récolte. Pour comprendre l’effet simulé de l’eau et des engrais sur le rendement en tonnes, consultez le tableau « Qu’est-ce qui fait varier ce rendement ? » ci-dessus.</p>
   </header>
 
   <div className="water-impact-reading">
@@ -21,8 +24,8 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
     <strong>100</strong>
     <span>référence sans déficit d’eau</span>
    </div>
-   <p><strong>Ce score n’est pas un rendement en tonnes.</strong><br/>
-    Un score de 80 signifie que le modèle estime 80 % de la référence hydrique. Le taux d’eau ci-dessous montre l’ET réelle rapportée au besoin saisonnier (ETa/ETm).</p>
+   <p><strong>Un score de 80 signifie 80 % de la référence hydrique du modèle.</strong><br/>
+    Le taux ci-dessous rapporte l’évapotranspiration réelle au besoin saisonnier (ETa/ETm). Aucun de ces nombres n’est un rendement en tonnes.</p>
   </div>
 
   {stale?<p className="water-impact-status" role="status">Recalcul de l’effet hydrique…</p>
@@ -38,16 +41,16 @@ export default function WaterImpactSummary({plan,stale}:{plan:WaterPlan|null;sta
       <div className="water-comparison-rows">{impact.scenarios.map(s=><div className="water-comparison-row" key={s.id}>
        <div className="water-comparison-label"><strong>{s.label}</strong><span>{s.relativeYieldPercent===null?'Non calculable':`${fmt(s.relativeYieldPercent)} / 100`}</span></div>
        <div className="water-comparison-track" aria-hidden="true">{s.relativeYieldPercent!==null&&<span className={`water-comparison-bar water-comparison-${s.id}`} style={{width:`${Math.max(0,Math.min(100,s.relativeYieldPercent))}%`}}/>}</div>
-       {s.relativeYieldPercent===null&&s.missing.length>0&&<small>{s.missing.join(' ')}</small>}
+       {s.relativeYieldPercent===null&&s.missing.length>0&&<small>{reason(s,impact.method)}</small>}
       </div>)}</div>
       <p>Ces scores comparent uniquement l’effet simulé de l’eau, pour la même météo et le même sol. Ils ne représentent pas des tonnes récoltées.</p>
      </figure>
      <p className="water-impact-caption">L’écart est calculé par rapport au scénario sans irrigation ajoutée.</p>
      <div className="water-impact-table-wrap">
       <table className="data-table water-impact-table">
-       <thead><tr><th>Situation</th><th>Besoins en eau couverts</th><th>Score hydrique</th><th>Écart vs sans irrigation</th></tr></thead>
+       <thead><tr><th>Situation</th><th>Besoins en eau couverts</th><th>Score hydrique</th><th>Écart du score vs pluvial</th></tr></thead>
        <tbody>{impact.scenarios.map(s=><tr key={s.id} className={s.id==='rainfed'?'water-impact-reference-row':undefined}>
-        <td><strong>{s.label}</strong>{s.missing.length>0&&<span className="water-impact-row-note">{s.missing.join(' ')}</span>}</td>
+        <td><strong>{s.label}</strong>{s.missing.length>0&&<span className="water-impact-row-note">{reason(s,impact.method)}</span>}</td>
         <td>{waterCoverage(s.etaMm,s.etmMm)}</td>
         <td><span className="water-impact-score">{score(s.relativeYieldPercent)}</span></td>
         <td>{difference(s.deltaPointsVsRainfed)}</td>

@@ -16,6 +16,20 @@
 .yield-overview-scenario select{max-width:100%;min-height:44px;background:#fff;border:1px solid #adc2db;border-radius:8px;padding:8px 34px 8px 12px;color:#173451}
 .yield-overview-scenario>span{color:#526b86;font-size:13px}
 .yield-overview-caution{margin:16px 0;color:#3a536e;font-size:14px;line-height:1.6}
+.yield-effects{margin:24px 0 30px;padding:22px;border:1px solid #bfd5eb;border-radius:15px;background:#f6faff;color:#193c5f}
+.yield-effects-heading>span{color:#42658e;font-size:11px;font-weight:800;letter-spacing:.1em}
+.yield-effects-heading h3{margin:6px 0 7px;color:#14375c;font-size:22px;line-height:1.3}
+.yield-effects-heading p,.yield-effects-intro{margin:0;color:#385671;font-size:14px;line-height:1.6}
+.yield-effects-intro{margin:14px 0}
+.yield-effects-table{min-width:760px;background:#fff}
+.yield-effects-table th,.yield-effects-table td{vertical-align:top;line-height:1.5}
+.yield-effects-table tbody th{min-width:150px;text-align:left;color:#193c5f}
+.yield-effects-table tbody td:last-child{min-width:145px;color:#153e68;font-variant-numeric:tabular-nums}
+.yield-effects-row-note{display:block;margin-top:5px;color:#59718a;font-size:12px;font-weight:400;line-height:1.45}
+.yield-effects-method{margin-top:15px;border-top:1px solid #d6e3f0;padding-top:12px;color:#385671}
+.yield-effects-method>summary{min-height:42px;display:flex;align-items:center;color:#245486;font-weight:700;cursor:pointer}
+.yield-effects-method ul{margin:7px 0 0;padding-left:20px}
+.yield-effects-method li{margin:7px 0;font-size:13px;line-height:1.55}
 .yield-overview-explain{margin-bottom:26px;color:#285c94}
 .yield-overview-explain summary,.yield-overview-missing summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .yield-overview-empty{display:flex;align-items:flex-start;gap:18px;border:1px solid #d7e5f3;background:#f4f8fd;border-radius:16px;padding:24px;margin-bottom:28px}
@@ -25,7 +39,7 @@
 .yield-overview-action{margin-top:15px;border:0;border-radius:8px;background:#175fa8;color:white;font:inherit;font-weight:700;padding:12px 16px;min-height:44px;cursor:pointer}
 .yield-overview-action span{padding-left:8px}.yield-overview-missing{font-size:14px;color:#244f7a}.yield-overview-missing ul{padding-left:20px}.yield-overview-missing li{line-height:1.55}
 .yield-overview-regional-choice{display:grid;grid-template-columns:minmax(180px,.5fr) minmax(220px,1fr);gap:8px 14px;align-items:center;padding:16px;margin:0 0 16px;border:1px solid #c9dced;border-radius:12px;background:#f3f8fe;color:#173b60;font-weight:700}.yield-overview-regional-choice select{min-height:44px;padding:8px 36px 8px 12px;border:1px solid #adc2db;border-radius:8px;background:#fff;color:#173451;font:inherit}.yield-overview-regional-choice>span{grid-column:1/-1;color:#526b86;font-size:13px;font-weight:400;line-height:1.5}
-@media(max-width:650px){.yield-overview-heading{display:block}.yield-overview-status{display:inline-block;margin-top:14px}.yield-overview-hero{grid-template-columns:1fr}.yield-overview-secondary{border-left:0;border-top:1px solid #ffffff32}.yield-overview-main,.yield-overview-secondary{padding:24px}.yield-overview-scenario{display:grid}.yield-overview-scenario select{width:100%}.yield-overview-empty{padding:18px;gap:12px}.yield-overview-empty-icon{width:38px;height:38px;font-size:20px}}
+@media(max-width:650px){.yield-overview-heading{display:block}.yield-overview-status{display:inline-block;margin-top:14px}.yield-overview-hero{grid-template-columns:1fr}.yield-overview-secondary{border-left:0;border-top:1px solid #ffffff32}.yield-overview-main,.yield-overview-secondary{padding:24px}.yield-overview-scenario{display:grid}.yield-overview-scenario select{width:100%}.yield-overview-empty{padding:18px;gap:12px}.yield-overview-empty-icon{width:38px;height:38px;font-size:20px}.yield-effects{padding:17px}.yield-effects-heading h3{font-size:20px}}
 .yield-growth-preview{border:1px solid #bcd5ee;border-radius:15px;background:#f4f9ff;padding:22px;margin:20px 0 28px}
 .yield-growth-preview>div:first-child>span{font-size:11px;letter-spacing:.1em;font-weight:700;color:#355f8d}.yield-growth-preview h3{font-size:20px;color:#153a60;margin:8px 0}.yield-growth-preview p{color:#3c5874;line-height:1.55;font-size:14px}.yield-growth-values{display:flex;gap:36px;flex-wrap:wrap}.yield-growth-values p{margin:4px 0 12px}.yield-growth-values strong{font-size:27px;color:#153a60}.yield-growth-values span{display:block;font-size:12px;color:#506a85}.yield-growth-preview button{border:0;background:none;padding:10px 0;min-height:44px;color:#165da4;font:inherit;font-weight:700;cursor:pointer;text-align:left}
 
