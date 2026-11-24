@@ -1,3 +1,4 @@
+import {MINIMUM_FIELD_IMAGE_COVERAGE} from './sentinel-quality.ts';
 import {bbox,type RasterCell} from './land.ts';
 import {containsPoint,parcelMetrics,validateParcel,type ParcelPolygon,type Position} from './parcel.ts';
 import {readRasterWindow} from './raster.ts';
@@ -71,7 +72,7 @@ export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:s
   if(!candidate.assets){issues.push(date+' : acquisition répertoriée, bandes publiques à radiométrie vérifiable indisponibles.');continue;}
   const candidates=catalog.features.filter(i=>i.properties?.datetime?.slice(0,10)===date&&(i.assets?.B02?.href||i.assets?.blue?.href));
   const {item,scl,mask}=await bestSentinelScene(candidates.length?candidates:[candidate],shape,fetcher,signal,reader,SATELLITE_READ_MAX_PIXELS);
-  if(mask.clear<.8-1e-8){issues.push(date+' : couverture de sol clair inférieure à 80 %.');continue;}
+  if(mask.clear<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8){issues.push(date+' : couverture de sol clair inférieure à 20 %.');continue;}
   const assets=item.assets!,asset=(...names:string[])=>{for(const name of names)if(assets[name]?.href)return assets[name];throw new Error(`Bande Sentinel-2 absente (${names.join('/')}).`);};
   const blueAsset=asset('B02','blue'),redAsset=asset('B04','red'),nirAsset=asset('B08','nir','nir_1');
   const [blue,red,nir]=await Promise.all([
@@ -90,13 +91,13 @@ export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:s
    const indices=vegetationIndices(blueValue,redValue,nirValue,transforms);if(indices.ndvi!==null&&indices.evi!==null){ndviValues.push(indices.ndvi);eviValues.push(indices.evi);}
   }
   const validPixels=Math.min(ndviValues.length,eviValues.length),clearFraction=parcelPixels?validPixels/parcelPixels:0;
-  if(validPixels<10||clearFraction<.8-1e-8){issues.push(date+' : pixels NDVI/EVI insuffisants pour 80 % de couverture.');continue;}
-  const quality:SatelliteIndexObservation['quality']=validPixels<10?'too-few-pixels':clearFraction<.2?'low-coverage':'usable';
+  if(validPixels<10||clearFraction<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8){issues.push(date+' : pixels NDVI/EVI insuffisants pour 20 % de couverture.');continue;}
+  const quality:SatelliteIndexObservation['quality']=validPixels<10?'too-few-pixels':clearFraction<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8?'low-coverage':'usable';
   const cloud=item.properties?.['eo:cloud_cover'],sceneCloudPercent=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;
   const observation={date,availableOn:today,itemId:(item.id??date).slice(0,200),ndviMedian:median(ndviValues),eviMedian:median(eviValues),validPixels,parcelPixels,clearFraction,sceneCloudPercent,quality};
   observations.push(observation);options?.onObservation?.(observation,source);
   }catch(error){options?.signal?.throwIfAborted();issues.push(date+' : '+(error as Error).message);}
  }
  return {version:SATELLITE_INDEX_VERSION,source,retrievedOn:today,observations,
-  issues,coverageNote:selected.length+' dates examinées sur '+catalog.dates.length+' dates répertoriées. Médianes des pixels du contour sur les acquisitions atteignant 80 % de couverture claire. NDVI/EVI suivent la végétation et ne constituent pas un rendement en t/ha.'};
+  issues,coverageNote:selected.length+' dates examinées sur '+catalog.dates.length+' dates répertoriées. Médianes des pixels du contour sur les acquisitions atteignant 20 % de couverture claire. NDVI/EVI suivent la végétation et ne constituent pas un rendement en t/ha.'};
 }

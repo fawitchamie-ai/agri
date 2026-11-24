@@ -49,7 +49,7 @@ test('cloud and shadow classes do not become clear vegetation measurements',asyn
  const fetcher=(async()=>Response.json({features:[{id:'scene-cloudy',properties:{datetime:`${today}T10:12:00Z`},assets}]}) as Response) as typeof fetch;
  const reader:typeof readRasterWindow=async(url)=>({cells:url.endsWith('/SCL.tif')?[cell('cloud',[[1,8],[1.002,8],[1.002,8.002],[1,8.002]],8)]:blueRedNir(2000),resolutionM:10,crs:'EPSG:6933'} as RasterWindow);
  const result=await satelliteIndexSeries(shape,today,today,fetcher,reader);
- assert.equal(result.observations.length,0,'Opaque dates are excluded from the qualified series');assert.match(result.issues[0],/80 %/);
+ assert.equal(result.observations.length,0,'Opaque dates are excluded from the qualified series');assert.match(result.issues[0],/20 %/);
 });
 
 test('a blocked Digital Earth Africa catalogue falls back to Earth Search assets',async()=>{

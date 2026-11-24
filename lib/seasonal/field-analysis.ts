@@ -1,6 +1,7 @@
 import type {SeasonalConfig,WeatherDay} from './types.ts';
 import {geometryIdentity} from './provenance.ts';
-import {fieldMonitoringScope,zoneGrid,type ZoneSeasonRead} from './field-zones.ts';
+import {fieldMonitoringScope,zoneGrid,type ZoneSeasonRead,type FieldImageSearch} from './field-zones.ts';
+import {MINIMUM_FIELD_IMAGE_COVERAGE} from './sentinel-quality.ts';
 import {satelliteMonitoringScope} from './satellite.ts';
 
 export const dayAfter=(day:string,n:number)=>new Date(Date.parse(day)+n*86400000).toISOString().slice(0,10);
@@ -41,12 +42,23 @@ export function fieldImageSummary(grid:ReturnType<typeof zoneGrid>,read?:ZoneSea
  const quantile=(p:number)=>{let area=0;for(const v of ordered){area+=v.area;if(area>=areaM2*p)return v.value;}return null;};
  return {values,cells:cells.length,areaM2,coverage:Math.min(1,areaM2/grid.areaM2),mean:areaM2?cells.reduce((s,c)=>s+values.get(c.id)!*c.areaM2,0)/areaM2:null,minimum:ordered[0]?.value??null,maximum:ordered.at(-1)?.value??null,median:quantile(.5),p10:quantile(.1),p90:quantile(.9)};
 }
-export const FIELD_IMAGE_CLEAR_TARGET=.8;
-/** Require both native clear surface and qualified summary cells. A 60% grid
- * support cannot be presented as an 80% clear observation. */
+export const FIELD_IMAGE_CLEAR_TARGET=MINIMUM_FIELD_IMAGE_COVERAGE;
+/** Date availability is measured on native NDVI surface. Statistical summary
+ * cells remain a separate support and cannot hide a usable native image. */
 export function meetsFieldImageTarget(grid:ReturnType<typeof zoneGrid>,read:ZoneSeasonRead,target=FIELD_IMAGE_CLEAR_TARGET){
- const s=fieldImageSummary(grid,read);
- return s.cells>=12&&s.coverage>=target-1e-8&&read.scenes.length===1&&read.scenes[0].clearFraction>=target-1e-8;
+ void grid;return read.scenes.length===1&&read.scenes[0].clearFraction>=target-1e-8;
+}
+/** Old 80% exclusions with measured NDVI can be qualified immediately. A date
+ * whose reflectance bands were skipped needs a fresh read, not an invented NDVI. */
+export function currentFieldImageSearch(q:FieldImageSearch):FieldImageSearch{
+ if(q.minimumCoverage===FIELD_IMAGE_CLEAR_TARGET)return q;
+ const entries=q.entries.map(e=>{
+  if(e.status!=='insufficient'||e.clearFraction===undefined)return e;
+  if(e.clearFraction<FIELD_IMAGE_CLEAR_TARGET-1e-8)return {...e,reason:'Surface NDVI native exploitable '+Math.round(e.clearFraction*100)+' % ; minimum 20 %.'};
+  if((e.cells??0)>0&&e.itemId)return {...e,status:'usable' as const,reason:undefined};
+  return {...e,status:'pending' as const,reason:'Nouveau seuil de 20 % : lecture des bandes NDVI à reprendre.'};
+ });
+ return {...q,entries,complete:q.complete&&!entries.some(e=>e.status==='pending')};
 }
 /** The main picker contains only qualified dates. Compact verified calendar
  * entries keep older dates visible even when their detailed grid is not cached. */
@@ -54,7 +66,7 @@ export function fieldImageChoices(c:SeasonalConfig){
  if(!c.parcelGeometry)return [];
  const grid=zoneGrid(c.parcelGeometry),choices=new Map<string,{date:string;itemId:string;clearFraction:number}>();
  const search=c.fieldMonitoring?.scope===fieldMonitoringScope(c)?c.fieldMonitoring.imagerySearch:undefined;
- if(search&&search.retrievedOn<=c.asOfDate)for(const e of search.entries)if(e.status==='usable'&&e.itemId&&e.clearFraction!==undefined&&e.clearFraction>=.8-1e-8&&e.gridCoverage!==undefined&&e.gridCoverage>=.8-1e-8&&(e.cells??0)>=12&&e.date<=c.asOfDate)choices.set(e.date,{date:e.date,itemId:e.itemId,clearFraction:e.clearFraction});
+ if(search&&search.retrievedOn<=c.asOfDate)for(const e of currentFieldImageSearch(search).entries)if(e.status==='usable'&&e.itemId&&e.clearFraction!==undefined&&e.clearFraction>=FIELD_IMAGE_CLEAR_TARGET-1e-8&&e.date<=c.asOfDate)choices.set(e.date,{date:e.date,itemId:e.itemId,clearFraction:e.clearFraction});
  for(const r of fieldImageArchive(c))if(meetsFieldImageTarget(grid,r))choices.set(r.season.startDate,{date:r.season.startDate,itemId:r.scenes[0].itemId,clearFraction:r.scenes[0].clearFraction});
  return [...choices.values()].sort((a,b)=>a.date.localeCompare(b.date));
 }
@@ -68,7 +80,7 @@ export function fieldIndexEvolution(c:SeasonalConfig){
  const verified=c.fieldMonitoring?.scope===fieldMonitoringScope(c)?c.fieldMonitoring.imagerySearch:undefined;
  if(verified&&verified.retrievedOn<=c.asOfDate){
   const native=m?.scope===satelliteMonitoringScope(c)&&m.retrievedOn<=c.asOfDate?m.observations:[];
-  return {method:'Moyennes des médianes de cellules, pondérées par leur surface',ndviLabel:'NDVI moyen (grille)',points:verified.entries.filter(e=>e.date<=c.asOfDate).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>({date:e.date,ndvi:e.status==='usable'?e.ndviMean??null:null,evi:native.find(o=>o.date===e.date&&o.availableOn<=c.asOfDate&&o.clearFraction>=.8&&o.quality==='usable')?.eviMedian??null,coverage:e.gridCoverage??0}))};
+  return {method:'Moyennes des médianes de cellules, pondérées par leur surface',ndviLabel:'NDVI moyen (grille)',points:currentFieldImageSearch(verified).entries.filter(e=>e.date<=c.asOfDate).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>({date:e.date,ndvi:e.status==='usable'?e.ndviMean??null:null,evi:native.find(o=>o.date===e.date&&o.availableOn<=c.asOfDate&&o.clearFraction>=FIELD_IMAGE_CLEAR_TARGET&&o.quality==='usable')?.eviMedian??null,coverage:e.gridCoverage??0}))};
  }
  if(m?.scope===satelliteMonitoringScope(c)&&m.retrievedOn<=c.asOfDate&&m.observations.length){
   return {method:'Médianes des pixels Sentinel-2',ndviLabel:'NDVI médian',points:m.observations.filter(o=>o.date<=c.asOfDate&&o.availableOn<=c.asOfDate).sort((a,b)=>a.date.localeCompare(b.date)).map(o=>({date:o.date,ndvi:o.quality==='usable'?o.ndviMedian:null,evi:o.quality==='usable'?o.eviMedian:null,coverage:o.clearFraction}))};

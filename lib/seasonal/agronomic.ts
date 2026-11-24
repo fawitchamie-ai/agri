@@ -18,7 +18,7 @@ const paths:Record<string,RegExp>={
  'Capacité au champ':/^soil\.layers.*thetaFC$/,'Flétrissement':/^soil\.layers.*thetaWP$/,'Humidité initiale':/^soil\.layers.*initialTheta$/,'Infiltration':/^soil\.infiltrationMmDay$/,'Enracinement':/^stages.*root/,'Stades':/^stages.*days$/,'Pluie journalière':/^weather.*rainMm$/,'ET0':/^weather.*et0Mm$/,'Température moyenne':/^weather.*temperatureMeanC$/,'Température minimale':/^weather.*temperatureMinC$/,'Température maximale':/^weather.*temperatureMaxC$/,'Humidité relative':/^weather.*humidityPercent$/,'Vent':/^weather.*wind2mMs$/,'Rayonnement':/^weather.*radiationMj$/,'Débit':/^system.sourceFlowM3h$/,'Quota':/^system.sourceBudgetM3$/,'Efficacité':/^system.*Efficiency$/,'Semis':/^sowingDate$/,'Espèce':/^crop$/,'Variété':/^variety$/};
 const chemistry:Record<string,string>={'pH':'pH','Carbone organique':'organicC','Matière organique':'organicMatter','Azote total':'totalN','Azote minéral':'mineralN','Phosphore assimilable':'availableP','Potassium échangeable':'exchangeableK','CEC':'CEC','Salinité':'EC'};
 function modelRole(parameter:string,c:SeasonalConfig):string{
- const growth=!!c.growth,crop=c.cropProfile?.id??'';
+ const crop=c.cropProfile?.id??'',growth=!!c.growth||!!c.automaticYield?.enabled&&crop==='maize';
  const direct:Record<string,string>={
   'Contour':'Utilisé pour borner la parcelle, les surfaces terrestres et les calculs spatiaux.',
   'Surface prévue à semer':'Utilisée avant semis comme surface de production du scénario.',

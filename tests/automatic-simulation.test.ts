@@ -42,7 +42,7 @@ test('Acquisition automatique : conversions, six horizons, prévision puis scén
 test('Sources inaccessibles : valeurs inconnues et météo manquante, aucun zéro inventé',async()=>{
  const bad:typeof fetch=async()=>{throw new Error('Offline');};
  const e=await loadEnvironment(9.5,1.2,'TGO','2026-10-30',2,bad,now);
- assert.equal(e.soil.ph,null);assert.equal(e.soil.hydraulicLayers,undefined);assert.deepEqual(e.weather,[]);assert.equal(e.warnings.length,3);
+ assert.equal(e.soil.ph,null);assert.equal(e.soil.hydraulicLayers,undefined);assert.deepEqual(e.weather,[]);assert.equal(e.warnings.length,4);assert.ok(e.warnings.some(w=>/Rayonnement/.test(w)));
  await assert.rejects(()=>loadEnvironment(NaN,1.2,'TGO','2026-10-30',2,bad,now),/Localisation/);
  await assert.rejects(()=>loadEnvironment(9.5,1.2,'TGO','2026-10-30',400,bad,now),/Cycle/);
 });

@@ -29,6 +29,7 @@ export type WaterEvent = {
   source: string; recordedAt: string;
 };
 export type SeasonalConfig = {
+  automaticYield?:import('./automatic-yield.ts').AutomaticYieldInput;
   fieldMonitoring?:import('./field-zones.ts').FieldMonitoring;
   /** Explicit structural sensitivity experiment; not an accepted forecast profile. */
   soilWaterModel?:{version:'profile-recharge-1';usage:'diagnostic';acceptedHypothesis:true;source:string;availableOn:string};
@@ -92,6 +93,7 @@ export type WaterPeriod = {
   netMm: number; requiredNetMm: number; unservedNetMm: number; fieldM3: number | null; sourceM3: number | null; unmetEtMm: number;
 };
 export type WaterPlan = {
+  automaticYield?:import('./automatic-yield.ts').AutomaticYieldReport;
   soilWaterMethod?:'root-zone-bucket'|'layered-recharge-diagnostic';
   canopyNowcast?:import('./canopy-nowcast.ts').CanopyNowcastResult;
   growth?: import('./growth.ts').GrowthResult;

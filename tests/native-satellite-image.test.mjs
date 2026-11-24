@@ -17,6 +17,7 @@ test('native NDVI layers clip all source pixels to the field and its holes with 
   const svgs=[...window.document.querySelectorAll('svg')],ids=[];
   for(const svg of svgs.slice(0,2)){
    assert.equal(svg.getAttribute('data-resolution-m'),'10');assert.match(svg.getAttribute('aria-label'),/10 m/);
+   assert.equal(svg.style.background,'transparent','The shared opaque raster checkerboard must not cover the Esri basemap outside the clipped NDVI pixels');
    const mask=svg.querySelector('clipPath'),path=mask.querySelector('path'),group=svg.querySelector('g');ids.push(mask.id);
    assert.equal(mask.getAttribute('clipPathUnits'),'userSpaceOnUse');assert.equal(path.getAttribute('clip-rule'),'evenodd');assert.equal(path.getAttribute('fill-rule'),'evenodd');
    assert.equal((path.getAttribute('d').match(/M/g)??[]).length,2,'Both the concave outer contour and inner hole are included');
@@ -25,5 +26,6 @@ test('native NDVI layers clip all source pixels to the field and its holes with 
   }
   assert.equal(new Set(ids).size,2,'Comparison views cannot borrow each other’s clip mask');
   assert.equal(svgs[2].querySelector('clipPath'),null,'RGB keeps its surrounding geographic context');
+  assert.equal(svgs[2].style.background,'','RGB retains its own no-data background policy');
  }finally{await window.happyDOM.close();}
 });
