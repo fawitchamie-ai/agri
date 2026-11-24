@@ -37,6 +37,13 @@ export default function AgronomistBrief({config,plan,events,stale,loading}:{conf
  const growth=plan?.growth??null;
  const growthScenarioId=config.yieldScenario??(config.managementPlan?.irrigation.mode==='manual'?'proposed':'recorded');
  const growthScenario=growth?.scenarios.find(scenario=>scenario.id===growthScenarioId)??growth?.scenarios[0];
+ const hasGrowthYield=!stale&&!loading&&growth?.status==='scenario'&&!!growthScenario;
+ const automaticYieldActive=hasGrowthYield&&plan?.automaticYield?.status==='ready';
+ const automaticYieldBlocked=!stale&&!loading&&plan?.automaticYield?.status==='blocked';
+ const canopyYieldActive=!stale&&!loading&&plan?.canopyNowcast?.status==='experimental_nowcast'&&plan.canopyNowcast.yieldKgHa!==null;
+ const yieldMethodLabel=automaticYieldActive?plan!.automaticYield!.profileLabel:hasGrowthYield?'Profil de croissance configuré':automaticYieldBlocked?(plan?.automaticYield?.profileLabel??'Profil automatique'):method??(canopyYieldActive?'Nowcast de rendement expérimental':'Aucune méthode active');
+ const yieldMethodVersion=automaticYieldActive?`${growth!.engineVersion} · ${plan!.automaticYield!.profileId}`:hasGrowthYield?growth!.engineVersion:automaticYieldBlocked?plan!.automaticYield!.version+(plan!.automaticYield!.profileId?' · '+plan!.automaticYield!.profileId:''):method?(plan?.yieldEstimation?.version??'version non documentée'):canopyYieldActive?(plan?.canopyNowcast?.version??'version non documentée'):'sans version';
+ const yieldMethodQualification=automaticYieldActive?'Simulation indicative active ; paramètres non calibrés localement, résultat non validé comme prévision.':hasGrowthYield?'Scénario exploratoire actif ; validation locale et précision prédictive non établies.':automaticYieldBlocked?`Profil non exécuté : ${plan!.automaticYield!.missing[0]??'conditions ou données manquantes.'}`:canopyYieldActive?'Nowcast expérimental après observation du couvert ; sa validité prédictive n’est pas établie.':method?'Méthode configurée ; consulter les hypothèses et limites ci-dessous.':'Aucun calcul de rendement disponible pour cette campagne.';
  const growthByStage=new Map<string,{name:string;from:string;to:string;biomassKgHa:number;cover:number|null;coverSource:string|null}>();
  for(const row of growthScenario?.days??[]){
   const stage=growthByStage.get(row.stage)??{name:row.stage,from:row.date,to:row.date,biomassKgHa:row.biomassKgHa,cover:null,coverSource:null};
@@ -114,7 +121,7 @@ export default function AgronomistBrief({config,plan,events,stale,loading}:{conf
    </section>
    <section className="advisor-analysis-card advisor-method-card">
     <div className="advisor-card-heading"><div><span className="advisor-kicker">MÉTHODES ET LIMITES</span><h3>Portée des résultats</h3></div></div>
-    <dl><dt>Moteur hydrique</dt><dd>{plan?.engineVersion??'Pas de calcul disponible'}</dd><dt>Méthode de rendement</dt><dd>{method??'Aucune méthode active'} · {plan?.yieldEstimation?.version??'sans version'}</dd><dt>Couvert et biomasse</dt><dd>{config.growth?`${plan?.growth?.version??'simulation de croissance'} · expérimentale`:'Non simulés dans cette campagne'}</dd><dt>État du calcul</dt><dd>{plan?.status??'En attente'} · {plan?.complete?'complet':'incomplet ou à vérifier'}</dd></dl>
+    <dl><dt>Moteur hydrique</dt><dd>{plan?.engineVersion??'Pas de calcul disponible'}</dd><dt>Méthode de rendement</dt><dd>{yieldMethodLabel} · {yieldMethodVersion}</dd><dt>Qualification</dt><dd>{yieldMethodQualification}</dd><dt>Couvert et biomasse</dt><dd>{config.growth?`${plan?.growth?.version??'simulation de croissance'} · expérimentale`:'Non simulés dans cette campagne'}</dd><dt>État du calcul</dt><dd>{plan?.status??'En attente'} · {plan?.complete?'complet':'incomplet ou à vérifier'}</dd></dl>
     {plan?.missing?.length?<><strong className="advisor-missing-title">Données ou conditions manquantes</strong><ul className="advisor-missing-list">{plan.missing.map(item=><li key={item}>{item}</li>)}</ul></>:<HelpParagraph>Aucune donnée manquante signalée par le bilan d’eau. Cela ne constitue pas une validation agronomique locale.</HelpParagraph>}
     <details><summary>Hypothèses et limites signalées par le moteur</summary><ul>{plan?.assumptions.map(item=><li key={item}>{item}</li>)}{plan?.yieldEstimation?.limits.map(item=><li key={item}>{item}</li>)}</ul></details>
    </section>
