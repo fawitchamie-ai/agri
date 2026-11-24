@@ -18,7 +18,7 @@ function fixture(){
   {stage:'Levée',date:'2026-06-02',biomassKgHa:1000,canopyCoverFraction:.25,canopyCoverSource:'profile'},
   {stage:'Floraison',date:'2026-07-02',biomassKgHa:4500,canopyCoverFraction:.7,canopyCoverSource:'simulated'},
  ],diagnostics:{waterLimitedDays:3,nutrientLimitedDays:[1,0,2]}};
- const plan={days:[],stages:[],totals:{demandMm:200,actualEtMm:160,unmetEtMm:40,rainRetainedMm:300,runoffMm:10,drainageMm:20,netMm:80},calculationArea:{areaM2:10000},engineVersion:'water-test-v1',status:'complete',complete:true,missing:[],assumptions:[],yieldEstimation:{method:'scenario-test',version:'yield-test-v1',limits:[]},growth:{engineVersion:'growth-test-v1',status:'scenario',scenarios:[scenario]}};
+ const plan={days:[],stages:[],totals:{demandMm:200,actualEtMm:160,unmetEtMm:40,rainRetainedMm:300,runoffMm:10,drainageMm:20,netMm:80},calculationArea:{areaM2:10000},engineVersion:'water-test-v1',status:'complete',complete:true,missing:[],assumptions:[],yieldEstimation:{method:'scenario-test',version:'yield-test-v1',limits:[]},automaticYield:{version:'automatic-indicative-yield-1',status:'ready',validated:false,profileId:'maize-rue-indicative-1',profileLabel:'Maïs grain · croissance RUE–NPK indicative',missing:[],assumptions:[],weather:{}},growth:{engineVersion:'daily-growth-process-1.5.0',status:'scenario',scenarios:[scenario]}};
  return {config,plan};
 }
 
@@ -34,6 +34,11 @@ test('the detailed campaign view shows modeled biomass and cover by stage with t
  assert.match(html,/profil/);
  assert.match(html,/simulé/);
  assert.match(html,/aucune validation locale ni plage prédictive/);
+ assert.match(html,/Méthode de rendement/);
+ assert.match(html,/Maïs grain · croissance RUE–NPK indicative/);
+ assert.match(html,/daily-growth-process-1\.5\.0 · maize-rue-indicative-1/);
+ assert.match(html,/Simulation indicative active ; paramètres non calibrés localement/);
+ assert.doesNotMatch(html,/Aucune méthode active/);
 });
 
 test('the detailed campaign view leaves biomass and cover blank when the model provides no growth output',()=>{
@@ -42,4 +47,15 @@ test('the detailed campaign view leaves biomass and cover blank when the model p
  assert.match(html,/Biomasse et couvert non simulés/);
  assert.match(html,/Aucune valeur n’est déduite du rendement/);
  assert.doesNotMatch(html,/Biomasse aérienne sèche finale/);
+ assert.match(html,/Aucune méthode active/);
+});
+
+test('the detailed campaign view identifies a blocked automatic profile without claiming it ran',()=>{
+ const {config,plan}=fixture();
+ plan.automaticYield={...plan.automaticYield,status:'blocked',missing:['Rayonnement solaire manquant.']};
+ plan.growth={...plan.growth,status:'unavailable',missing:[],scenarios:[]};
+ const html=renderToStaticMarkup(React.createElement(AgronomistBrief,{config,plan,events:[],stale:false,loading:false}));
+ assert.match(html,/Maïs grain · croissance RUE–NPK indicative/);
+ assert.match(html,/Profil non exécuté : Rayonnement solaire manquant/);
+ assert.doesNotMatch(html,/Simulation indicative active/);
 });
