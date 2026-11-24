@@ -25,6 +25,8 @@ export function mergeEnvironment(input:SeasonalConfig,e:Environment):SeasonalCon
  if(e.scope && c.parcelGeometry && (e.scope.id!==id || geometryIdentity(e.scope.geometry)!==geometryIdentity(c.parcelGeometry)))return c;
  if(e.context&&e.context!==environmentContext(c))return c;
  const s=e.soil,date=e.retrievedAt.slice(0,10),values={...c.inputs!.values};
+ const cycleEndDate=new Date(Date.parse(c.sowingDate)+(c.stages.reduce((sum,stage)=>sum+stage.days,0)-1)*86400000).toISOString().slice(0,10),moisturePrefix='source.soil.historicalMoisture.';
+ for(const path of Object.keys(values))if(path.startsWith(moisturePrefix)){const observedDate=path.slice(moisturePrefix.length,moisturePrefix.length+10);if(observedDate<c.sowingDate||observedDate>cycleEndDate)delete values[path];}
  for(const [key,v] of Object.entries(s.provenance??{}))values[`source.soil.${key}`]=v.value===null?missingEvidence(values[`source.soil.${key}`],v.unit,id,v.replacementReason??'Source absente',!!c.inputPolicy?.allowStale):{...v,scopeId:id};
  const specs=[['pH',s.ph,'pH','water','ph'],['organicC',s.organicC,'g/kg','SoilGrids','organicC'],['totalN',s.totalN,'g/kg','SoilGrids','totalN'],['CEC',s.cec,'cmol(+)/kg','SoilGrids','cec']] as const;
  const manual=(c.soilAnalyses??[]).flatMap((a,i)=>{

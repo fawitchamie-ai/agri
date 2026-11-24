@@ -8,7 +8,7 @@ import {exampleCampaign} from '../lib/seasonal/example.ts';
 import {planSeason} from '../lib/seasonal/yield.ts';
 import {assessLandGeometry} from '../lib/seasonal/land.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
-import {declareScenario, geometryIdentity, migrateInputs} from '../lib/seasonal/provenance.ts';
+import {declareScenario, geometryIdentity, migrateInputs, valueEvidence} from '../lib/seasonal/provenance.ts';
 import {canopyFixture} from './support/canopy-fixture.ts';
 
 const window = new Window({url:'https://agri.test', settings:{enableJavaScriptEvaluation:false}});
@@ -219,6 +219,20 @@ test('the results heading receives focus when returning from parcel selection in
   assert.ok(m.host.querySelector('#farmer-harvest-card'));
   assert.equal(m.host.querySelector('#field-tab-yield'),null,'technical tabs remain closed by default');
   assert.equal(m.host.ownerDocument.activeElement?.id,'farmer-harvest-card','focus lands on the result after parcel setup');
+ }finally{await m.close();}
+});
+
+test('saved historical soil moisture stays visible when the campaign is reopened without a live environment object',async()=>{
+ const c=fixture(),scope=c.inputs.scope.id,date='2026-11-01';
+ for(const [top,bottom,value] of [[0,7,.18],[7,28,.2],[28,100,.24],[100,255,.29]]){
+  const path=`source.soil.historicalMoisture.${date}.${top}-${bottom}cm`;
+  c.inputs.values[path]=valueEvidence(value,'m³/m³',scope,{origin:'automatic',status:'estimated',provider:'Open-Meteo',product:'Historical Weather API · ERA5-Land soil moisture',interval:{from:date,to:date},depthCm:[top,bottom],acquiredAt:'2026-11-24T09:00:00Z',model:'ERA5-Land',spatial:{point:[1,8],cell:'Synthetic test cell',resolutionM:11000,crs:'EPSG:4326'}});
+ }
+ const m=await mount(React.createElement(QuickSimulation,{config:c,plan:planSeason(c),stale:false,events:[],paused:true,initialSection:'settings',onChange:()=>{},onMap:()=>{},onAdvanced:()=>{},onSave:()=>{},canSave:false}));
+ try{
+  const sources=[...m.host.querySelectorAll('summary')].find(summary=>summary.textContent.includes('Sources et limites de cette simulation'));assert.ok(sources);await act(async()=>sources.click());
+  assert.match(m.host.textContent,/Humidité historique estimée du sol · 1 jour · enregistrée dans la campagne/);
+  assert.match(m.host.textContent,/0,180/);assert.match(m.host.textContent,/0,290/);
  }finally{await m.close();}
 });
 
