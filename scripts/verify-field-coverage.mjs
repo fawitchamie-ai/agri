@@ -4,6 +4,8 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {verifiedImageCatalog,loadUsableFieldImage,fieldImageFailureMessage} from '../lib/seasonal/field-image-loader.ts';
 import {bbox} from '../lib/seasonal/land.ts';
+import {intersection} from '../lib/seasonal/geometry-ops.ts';
+import {multiArea} from '../lib/seasonal/land.ts';
 import {readZoneSeason} from '../lib/seasonal/field-zones-provider.ts';
 import {fieldImageSummary} from '../lib/seasonal/field-analysis.ts';
 import {zoneGrid} from '../lib/seasonal/field-zones.ts';
@@ -41,9 +43,11 @@ try{
  const selected=result.read,day=selected.season.startDate,itemId=selected.scenes[0].itemId;report.selectedDate=day;
  report.visuals=[];
  for(const layer of ['rgb','classification','ndvi','contrast']){
-  const image=await readSatelliteVisual(grid.bounds,day,layer,fetcher,undefined,undefined,itemId);
+  const image=await readSatelliteVisual(grid.bounds,day,layer,fetcher,undefined,undefined,itemId,shape);
   if(image.itemId!==itemId||!image.pixels.length)throw new Error('Mismatched or empty native image.');
-  report.visuals.push({layer,date:image.date,itemId:image.itemId,pixels:image.pixels.length,resolutionM:image.resolutionM,valueRange:image.valueRange});
+  const index=layer==='ndvi'||layer==='contrast',outside=index?image.pixels.filter(p=>multiArea(intersection(p.geometry.coordinates,shape.coordinates))<=.001).length:null;
+  if(index&&(image.resolutionM!==10||outside))throw new Error('NDVI must retain native 10 m footprints intersecting the field.');
+  report.visuals.push({layer,date:image.date,itemId:image.itemId,pixels:image.pixels.length,resolutionM:image.resolutionM,valueRange:image.valueRange,fullyOutsidePixels:outside});
  }
  report.relayRequests=relayRequests;report.status='passed';
 }catch(error){report.status='failed';report.error=error.message;process.exitCode=1;}

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {writeArrayBuffer} from 'geotiff';
 import {rasterWindows,readRasterWindow,MAX_NATIVE_PIXELS} from '../lib/seasonal/raster.ts';
 import type {ParcelPolygon} from '../lib/seasonal/parcel.ts';
+import proj4 from 'proj4';
 
 test('Native windows cover the full rectangle once, with bounded decoder allocations',()=>{
   const seen=new Set<string>();
@@ -14,6 +15,22 @@ test('Native windows cover the full rectangle once, with bounded decoder allocat
   }
   assert.equal(seen.size,18000);
   assert.throws(()=>rasterWindows(0,0,MAX_NATIVE_PIXELS+1,1),/16 millions de pixels/);
+});
+
+test('a projected Sentinel-style GeoTIFF preserves every 10 m pixel footprint and raw sample',async()=>{
+ const width=13,height=9,east=400000,north=750000;
+ proj4.defs('EPSG:32631','+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs');
+ const toGeo=(p:number[])=>proj4('EPSG:32631','EPSG:4326',p) as [number,number];
+ const bytes=new Uint8Array(writeArrayBuffer(Uint16Array.from({length:width*height},(_,i)=>2000+i),{width,height,BitsPerSample:[16],GTModelTypeGeoKey:1,ProjectedCSTypeGeoKey:32631,ModelPixelScale:[10,10,0],ModelTiepoint:[0,0,0,east,north,0]}));
+ const fetcher:typeof fetch=async(_u,init)=>{const r=new Headers(init?.headers).get('range')!.match(/^bytes=(\d+)-(\d+)/)!,start=Number(r[1]),end=Math.min(Number(r[2]),bytes.length-1);return new Response(bytes.slice(start,end+1),{status:206,headers:{'content-range':`bytes ${start}-${end}/${bytes.length}`}});};
+ const ring=[[east,north],[east+width*10,north],[east+width*10,north-height*10],[east,north-height*10],[east,north]].map(toGeo);
+ const result=await readRasterWindow('https://e84-earth-search-sentinel-data.s3.us-west-2.amazonaws.com/test.tif',{type:'Polygon',coordinates:[ring]},fetcher);
+ assert.equal(result.resolutionM,10);assert.equal(result.crs,'EPSG:32631');assert.equal(result.cells.length,width*height);
+ for(const [i,c] of result.cells.entries()){
+  assert.equal(c.value,2000+i);
+  const p=c.geometry.coordinates[0].map(v=>proj4('EPSG:4326','EPSG:32631',v));
+  assert.ok(Math.abs(p[1][0]-p[0][0]-10)<1e-6);assert.ok(Math.abs(p[2][1]-p[1][1]+10)<1e-6);
+ }
 });
 
 test('WorldCover-sized contour above 10,000 pixels preserves all native values and coordinates',async()=>{
