@@ -16,11 +16,12 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
  const button=(t,prefix=false)=>[...host.querySelectorAll('button')].find(b=>prefix?b.textContent.trim().startsWith(t):b.textContent.trim()===t);
  try{
   await act(async()=>render());assert.equal(calls,0);assert.match(host.textContent,/NDVI moyen \(grille\)/);assert.match(host.textContent,/100 %/);assert.match(host.textContent,/100 % exploitable/);assert.match(host.textContent,/L’image satellite datée montre aussi les nuages/);
-  await act(async()=>button('NDVI contrasté',true).click());assert.match(host.textContent,/Échelle adaptée à cette image/);
-  const cell=host.querySelector('path[role=button]');await act(async()=>cell.focus());assert.match(host.textContent,/Cellule 0/);
-  await act(async()=>cell.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true})));assert.match(host.textContent,/Cellule 1/);
+  await act(async()=>button('NDVI contrasté',true).click());assert.match(host.textContent,/Charger le NDVI à 10 m/);
+  assert.equal(host.querySelectorAll('.fa-map-values path[data-cell]').length,0,'A saved 20 m summary is never substituted for the native NDVI map');
   await act(async()=>button('Comparer').click());assert.equal(host.querySelectorAll('.fa-map').length,2);assert.match(host.textContent,/Écart de NDVI, droite − gauche : [-−]?0,05/);
   const comparison=host.querySelector('[aria-label="Couche de comparaison"]');await act(async()=>{comparison.value='history';comparison.dispatchEvent(new window.Event('change',{bubbles:true}));});assert.match(host.textContent,/Historique à compléter/);
+  const cell=host.querySelector('path[role=button]');await act(async()=>cell.focus());assert.equal(document.activeElement.getAttribute('data-cell'),'0');
+  await act(async()=>cell.dispatchEvent(new window.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true})));assert.equal(document.activeElement.getAttribute('data-cell'),'1');
   await act(async()=>button('Plein écran').click());assert.ok(host.querySelector('[role=dialog][aria-modal=true]'));assert.equal(document.body.style.overflow,'hidden');await act(async()=>document.dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',bubbles:true})));assert.equal(host.querySelector('[role=dialog]'),null);assert.equal(document.body.style.overflow,'');
   await act(async()=>button('Évolution et météo').click());assert.match(host.textContent,/Végétation observée/);assert.match(host.textContent,/Pluie renseignée : 12 mm/);assert.match(host.textContent,/Renseignez une base thermique/);
   await act(async()=>button('Rapport du champ').click());assert.match(host.textContent,/Rapport du champ/);assert.match(host.textContent,/brillance du sol ne sont pas encore raccordés/);
@@ -37,8 +38,8 @@ test('field analysis connects dated maps, comparison, keyboard inspection, chart
   const chosen=dayAfter(c.asOfDate,-7),manual=host.querySelector('[aria-label="Date à charger"]');
   await act(async()=>{manual.value=chosen;manual.dispatchEvent(new window.Event('input',{bubbles:true}));});
   const consent=[...host.querySelectorAll('input[type=checkbox]')].find(el=>el.parentElement.textContent.includes('Autoriser le chargement'));
-  await act(async()=>consent.click());
+  await act(async()=>{consent.click();await new Promise(resolve=>setTimeout(resolve,0));});
   assert.equal(host.querySelector('[aria-label="Date à charger"]').value,chosen,'Use the date actually typed, including before blur');
-  assert.equal(button('Charger la date choisie').disabled,false);assert.equal(calls,0);
+  assert.equal(button('Charger la date choisie').disabled,false);assert.equal(calls,5,'Explicit consent loads the selected native date without requiring a second date selection');
  }finally{globalThis.fetch=before;await act(async()=>root.unmount());await window.happyDOM.close();}
 });

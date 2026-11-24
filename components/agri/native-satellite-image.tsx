@@ -1,21 +1,36 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
 import {framePoint} from '../../lib/seasonal/imagery-display';
+import {geometryIdentity} from '../../lib/seasonal/provenance';
+import type {ParcelPolygon} from '../../lib/seasonal/parcel';
 import type {readSatelliteVisual} from '../../lib/seasonal/satellite-visual';
 
-export default function NativeSatelliteImage({date,layer,bounds,itemId,onLoad,onError}:{date:string;layer:'rgb'|'classification'|'ndvi'|'contrast';bounds:number[];itemId?:string;onLoad:(image:Awaited<ReturnType<typeof readSatelliteVisual>>)=>void;onError:(message:string)=>void}){
+type NativeLayer='rgb'|'classification'|'ndvi'|'contrast';
+type NativeImage=Awaited<ReturnType<typeof readSatelliteVisual>>;
+export default function NativeSatelliteImage({date,layer,bounds,geometry,itemId,onLoad,onError}:{date:string;layer:'rgb'|'classification'|'ndvi'|'contrast';bounds:number[];geometry:ParcelPolygon;itemId?:string;onLoad:(image:Awaited<ReturnType<typeof readSatelliteVisual>>)=>void;onError:(message:string)=>void}){
  const [loaded,setImage]=useState<{key:string;image:Awaited<ReturnType<typeof readSatelliteVisual>>}|null>(null),callbacks=useRef({onLoad,onError});
  useEffect(()=>{callbacks.current={onLoad,onError};},[onLoad,onError]);
- const requestKey=layer+':'+date+':'+bounds.join(',')+':'+(itemId??'');
+ const requestKey=layer+':'+date+':'+bounds.join(',')+':'+(itemId??'')+':'+geometryIdentity(geometry);
  const image=loaded?.key===requestKey?loaded.image:null;
  useEffect(()=>{
   const ctrl=new AbortController();let alive=true;
-  import('../../lib/seasonal/satellite-visual').then(m=>m.readSatelliteVisual(bounds,date,layer,fetch,ctrl.signal,undefined,itemId)).then(r=>{if(alive){setImage({key:requestKey,image:r});callbacks.current.onLoad(r);}}).catch(e=>{if(alive)callbacks.current.onError((e as Error).message);});
+  import('../../lib/seasonal/satellite-visual').then(m=>m.readSatelliteVisual(bounds,date,layer,fetch,ctrl.signal,undefined,itemId,geometry)).then(r=>{if(alive){setImage({key:requestKey,image:r});callbacks.current.onLoad(r);}}).catch(e=>{if(alive)callbacks.current.onError((e as Error).message);});
   return()=>{alive=false;ctrl.abort();};
  // Bounds, date and layer cancel any earlier scene before it can paint.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[requestKey]);
- return image?<svg className="parcel-raster-image" viewBox="0 0 640 400" role="img" aria-label={layer==='ndvi'||layer==='contrast'?`${layer==='contrast'?'NDVI contrasté':'NDVI'} Sentinel-2 · pixels natifs à ${Math.round(image.resolutionM)} m · ${date}`:(layer==='rgb'?'Couleurs naturelles':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
+ return image?<NativeSatellitePixels image={image} date={date} layer={layer} bounds={bounds} geometry={geometry}/>:null;
+}
+
+/** The clipping path and native footprints use the same geographic frame.
+ * Even-odd clipping preserves holes without subdividing or resampling pixels. */
+export function NativeSatellitePixels({image,date,layer,bounds,geometry}:{image:NativeImage;date:string;layer:NativeLayer;bounds:number[];geometry:ParcelPolygon}){
+ const clipId='sentinel-field-'+useId().replace(/[^a-zA-Z0-9_-]/g,''),index=layer==='ndvi'||layer==='contrast';
+ const outline=geometry.coordinates.map(r=>'M'+r.map(v=>framePoint(v,bounds).join(',')).join('L')+'Z').join(' ');
+ return <svg className="parcel-raster-image" viewBox="0 0 640 400" role="img" data-resolution-m={image.resolutionM} aria-label={index?`${layer==='contrast'?'NDVI contrasté':'NDVI'} Sentinel-2 · pixels natifs à ${Math.round(image.resolutionM)} m · ${date}`:(layer==='rgb'?'Couleurs naturelles':'Nuages, sol et eau')+' Sentinel-2 · '+date}>
+  {index&&<defs><clipPath id={clipId} clipPathUnits="userSpaceOnUse"><path d={outline} clipRule="evenodd" fillRule="evenodd"/></clipPath></defs>}
+  <g clipPath={index?'url(#'+clipId+')':undefined}>
   {image.pixels.map((p,i)=>{const label=(layer==='ndvi'||layer==='contrast')&&p.value!==null?`NDVI ${p.value.toFixed(3)} · pixel source ${Math.round(image.resolutionM)} m`:undefined;return <path key={i} d={'M'+p.geometry.coordinates[0].map(v=>framePoint(v,bounds).join(',')).join('L')+'Z'} fill={p.color} stroke={p.color} strokeWidth=".15" aria-label={label}>{label&&<title>{label}</title>}</path>;})}
- </svg>:null;
+  </g>
+ </svg>;
 }

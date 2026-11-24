@@ -48,3 +48,27 @@ test('dated NDVI and contrast use aligned native 10 m B04/B08 pixels',async()=>{
  const coarseReader:typeof readRasterWindow=async(url,shape)=>({...await reader(url,shape),resolutionM:url.includes('/B04.tif')?20:10});
  await assert.rejects(()=>readSatelliteVisual([1.2,9.4,1.2001,9.4001],'2024-10-19','contrast',fetcher,new AbortController().signal,coarseReader),/doivent être à 10 m/);
 });
+
+test('parcel NDVI excludes outside and hole pixels from contrast and preserves native boundary footprints at every zoom',async()=>{
+ const square=(w:number,s:number,e:number,n:number)=>({type:'Polygon' as const,coordinates:[[[w,s],[e,s],[e,n],[w,n],[w,s]]] as [number,number][][]});
+ const field={...square(1.2,9.4,1.2004,9.4004),coordinates:[square(1.2,9.4,1.2004,9.4004).coordinates[0],square(1.2001,9.4001,1.2003,9.4003).coordinates[0]]};
+ const cells=[
+  {id:'a',geometry:square(1.2,9.4,1.20009,9.40009),value:3000},
+  {id:'b',geometry:square(1.2003,9.4,1.20039,9.40009),value:5000},
+  {id:'hole',geometry:square(1.20015,9.40015,1.20024,9.40024),value:1100},
+  {id:'outside',geometry:square(1.2006,9.4,1.20069,9.40009),value:5000},
+  {id:'edge',geometry:square(1.19995,9.40005,1.20004,9.40014),value:3000},
+ ];
+ const nirValues=[6000,8000,9000,1010,6000],queryBounds:number[][]=[];
+ const catalog:typeof fetch=async(input,init)=>{const u=new URL(String(input)),b=init?.body?JSON.parse(String(init.body)).bbox:u.searchParams.get('bbox')?.split(',').map(Number);queryBounds.push(b);return fetcher(input,init);};
+ const reader:typeof readRasterWindow=async(url,shape)=>{
+  assert.deepEqual(shape,field,'The field outline, not the display rectangle, bounds native reading');
+  return {crs:'EPSG:32631',resolutionM:url.includes('SCL')?20:10,cells:url.includes('SCL')?[{id:'scl',geometry:square(1.199,9.399,1.202,9.402),value:4}]:url.includes('B08')?cells.map((c,i)=>({...c,value:nirValues[i]})):cells};
+ };
+ const wide=await readSatelliteVisual([1.199,9.399,1.202,9.402],'2024-10-19','contrast',catalog,undefined,reader,'S2_TEST',field);
+ const zoomed=await readSatelliteVisual([1.2001,9.4001,1.2003,9.4003],'2024-10-19','contrast',catalog,undefined,reader,'S2_TEST',field);
+ assert.equal(wide.pixels.length,3);assert.equal(wide.resolutionM,10);assert.deepEqual(wide.pixels.map(p=>p.geometry),[cells[0].geometry,cells[1].geometry,cells[4].geometry]);
+ assert.deepEqual(wide.valueRange,zoomed.valueRange);assert.deepEqual(wide.pixels,zoomed.pixels,'Zoom neither groups nor interpolates native pixels');
+ assert.ok(wide.valueRange![0]>.27&&wide.valueRange![1]<.43,'Outside and hole extremes cannot stretch the field palette');
+ assert.ok(queryBounds.every(b=>JSON.stringify(b)===JSON.stringify([1.2,9.4,1.2004,9.4004])));
+});
