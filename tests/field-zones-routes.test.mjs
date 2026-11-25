@@ -24,6 +24,13 @@ test('historical observations and dose scenarios persist in immutable campaign r
  config=addFieldNote(config,{parameter:'Visite terrain',date:config.asOfDate,note:'Visite de contrôle',observer:'Auteur test',visit});
  config.fieldMonitoring.cropContext={cropId:'maize',sowingDate:dayAfter(config.asOfDate,-15)};
  const next=await request({action:'save',id:'zones-test',expectedRevision:1,config,events:[]});assert.ok(next.r.ok,JSON.stringify(next.data));assert.equal(next.data.campaign.config.fieldMonitoring.prescription.unit,'seeds/ha');
+ const zoneMap=await request({action:'field-zone-map',id:'zones-test'});
+ assert.equal(zoneMap.r.status,200,JSON.stringify(zoneMap.data));
+ assert.equal(zoneMap.data.version,'desktop-zone-map-1');
+ assert.equal(zoneMap.data.revision,2);
+ assert.ok(zoneMap.data.historical.features.length>0);
+ assert.ok(zoneMap.data.dose?.features.length>0,zoneMap.data.doseReason);
+ assert.equal(zoneMap.data.dose.metadata.forecastYieldTonnes,null);
  const reopened=await localFetch('https://agri.test/api/seasonal?id=zones-test');
  assert.equal(reopened.status,200);
  const loaded=(await reopened.json()).campaign.config;
@@ -32,4 +39,5 @@ test('historical observations and dose scenarios persist in immutable campaign r
  assert.equal(oldConfig.fieldMonitoring.prescription,undefined);
  assert.equal(fieldNotes(oldConfig).length,1);assert.equal(fieldNotes(oldConfig)[0].value,'Ancienne note sans coordonnées');
  setIdentity({userId:'other-zones',email:'other@example.test',displayName:'Other'});assert.equal((await localFetch('https://agri.test/api/seasonal?id=zones-test')).status,404);
+ assert.equal((await request({action:'field-zone-map',id:'zones-test'})).r.status,404);
  }finally{closeHarness();}});
