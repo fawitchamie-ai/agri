@@ -19,9 +19,9 @@ const weather=(start,days)=>Array.from({length:days},(_,i)=>({date:addDays(start
 function fixture(){const c=applyCropProfile(exampleCampaign(today),'maize');c.waterCondition='drained';c.fallback=null;c.system.sourceBudgetM3=1e6;
  c.parcelGeometry={type:'Polygon',coordinates:[[[1,8],[1.001,8],[1.001,8.001],[1,8.001],[1,8]]]};c.areaM2=parcelMetrics(c.parcelGeometry).areaM2;
  c.landAssessment=assessLandGeometry(c.parcelGeometry,[{id:'worldcover',status:'available',provider:'Synthetic',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:new Date().toISOString(),resolutionM:10,crs:'EPSG:4326',cells:[{id:'land',geometry:c.parcelGeometry,value:40}],reason:null,assets:[],limitations:[]}]);c.weather=weather(today,c.stages.reduce((n,s)=>n+s.days,0));return c;}
-async function mount(config){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);let back=false,applied=null;
- const render=c=>root.render(React.createElement(compiled.exports.default,{config:c,events:[],onBack:()=>{back=true;},onSowingDateChange:date=>{applied=date;},onCheckSoil:()=>{}},React.createElement('div',{className:'expert-target'},'Besoin cible N (kg/ha)')));
- await act(async()=>render(config));return {host,get back(){return back;},get applied(){return applied;},render,async close(){await act(async()=>root.unmount());host.remove();}};}
+async function mount(config){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);let back=false,applied=null,variety=null;
+ const render=c=>root.render(React.createElement(compiled.exports.default,{config:c,events:[],onBack:()=>{back=true;},onSowingDateChange:date=>{applied=date;},onVarietyChange:value=>{variety=value;},onCheckSoil:()=>{}},React.createElement('div',{className:'expert-target'},'Besoin cible N (kg/ha)')));
+ await act(async()=>render(config));return {host,get back(){return back;},get applied(){return applied;},get variety(){return variety;},render,async close(){await act(async()=>root.unmount());host.remove();}};}
 const compareButton=host=>[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Actualiser la météo'));
 test('date comparison fetches the missing tail, explains next steps and keeps technical forms collapsed',async()=>{
  const oldFetch=globalThis.fetch,c=fixture(),before=JSON.stringify(c),calls=[];
@@ -52,4 +52,20 @@ test('changing the campaign while weather is loading cancels obsolete comparison
   await act(async()=>complete(Response.json({weather:weather(today,c.weather.length+14)})));
   assert.equal(m.host.querySelector('table'),null);assert.doesNotMatch(m.host.textContent,/La comparaison est en cours/);
  }finally{globalThis.fetch=oldFetch;await m.close();await window.happyDOM.close();}
+});
+
+test('Togo maize candidates require producer availability confirmation and retain the selected variety',async()=>{
+ const c=fixture();c.country='TGO';c.crop='Maïs';const m=await mount(c);
+ try{
+  const card=m.host.querySelector('section[aria-label="Comparer des variétés de maïs au Togo"]');assert.ok(card);
+  const tzee=m.host.querySelector('input[aria-label="Semence TZEE disponible pour moi"]');const ikenne=m.host.querySelector('input[aria-label="Semence Ikenne disponible pour moi"]');assert.ok(tzee&&ikenne);
+  await act(async()=>tzee.click());await act(async()=>ikenne.click());
+  const table=m.host.querySelector('table[aria-label="Calendrier indicatif des variétés sélectionnées"]');assert.ok(table);assert.equal(table.querySelectorAll('tbody tr').length,2);
+  assert.match(table.textContent,/80–85 jours/);assert.match(table.textContent,/100–105 jours/);
+  assert.match(m.host.textContent,/aucun calendrier local qualifié/);
+  await act(async()=>[...m.host.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')?.includes('Retenir TZEE')).click());
+  assert.equal(m.variety,'TZEE (TZEE W Pop STR QPM)');assert.match(m.host.textContent,/Ajoutée au brouillon/);
+  await act(async()=>m.render({...c,country:'BEN'}));assert.match(m.host.textContent,/Aucun catalogue local de cycle vérifié/);
+  assert.equal(m.host.querySelector('table[aria-label="Calendrier indicatif des variétés sélectionnées"]'),null);
+ }finally{await m.close();await window.happyDOM.close();}
 });
