@@ -6,7 +6,7 @@ import {assessLandGeometry} from '../lib/seasonal/land.ts';
 import {parcelMetrics} from '../lib/seasonal/parcel.ts';
 import {addDays} from '../lib/seasonal/validation.ts';
 import {emptyManagement} from '../lib/seasonal/management.ts';
-import {comparisonWeatherRequests,comparisonWeather,compareSowingDates,sowingComparisonBlock} from '../lib/seasonal/sowing-comparison.ts';
+import {comparisonWeatherRequests,comparisonWeather,compareSowingDates,sowingComparisonBlock,sowingRainfallWindow} from '../lib/seasonal/sowing-comparison.ts';
 import type {WeatherDay,WaterEvent} from '../lib/seasonal/types.ts';
 const today=new Date().toISOString().slice(0,10);
 const weather=(start:string,days:number):WeatherDay[]=>Array.from({length:days},(_,i)=>({date:addDays(start,i),rainMm:3,et0Mm:4,status:'scenario',source:'Synthetic calendar, not a forecast',availableAt:today+'T00:00:00Z'}));
@@ -15,6 +15,20 @@ function fixture(){const c=applyCropProfile(exampleCampaign(today),'maize');c.wa
  c.landAssessment=assessLandGeometry(c.parcelGeometry,[{id:'worldcover',status:'available',provider:'Synthetic',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:new Date().toISOString(),resolutionM:10,crs:'EPSG:4326',cells:[{id:'land',geometry:c.parcelGeometry,value:40}],reason:null,assets:[],limitations:[]}]);
  c.weather=weather(today,c.stages.reduce((n,s)=>n+s.days,0));return c;
 }
+test('rainfall decision window keeps observations distinct from estimates and forecasts',()=>{
+ const from=addDays(today,-1),to=addDays(today,2),recent=weather(from,4),saved=weather(from,4);
+ recent[0].status='estimated';recent[0].rainMm=12;
+ recent[1].status='forecast';recent[1].rainMm=4;
+ recent[2].status='forecast';recent[2].rainMm=0;
+ recent[3].status='forecast';recent[3].rainMm=null;
+ saved[0].status='observed';saved[0].rainMm=0;
+ saved[1].status='scenario';saved[1].rainMm=99;
+ const rows=sowingRainfallWindow(recent,saved,from,to);
+ assert.deepEqual(rows.map(d=>d.date),[from,addDays(from,1),addDays(from,2),addDays(from,3)]);
+ assert.equal(rows[0].rainMm,0);assert.equal(rows[0].status,'observed');
+ assert.equal(rows[1].rainMm,4);assert.equal(rows[1].status,'forecast','a scenario does not replace the recent forecast');
+ assert.equal(rows[2].rainMm,0);assert.equal(rows[3].rainMm,null,'missing rain is not converted to zero');
+});
 test('delaying sowing requests the missing tail for the full three cycles',()=>{
  const c=fixture(),duration=c.weather.length;
  assert.deepEqual(comparisonWeatherRequests(c),[{start:addDays(today,duration),days:14}]);

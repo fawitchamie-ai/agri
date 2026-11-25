@@ -4,7 +4,7 @@ import type {CooperativeAccess} from '../../lib/contracts';
 
 type Item=[string,string,string?];
 const sections=[
- {title:'Décisions et cartes',icon:'chart',items:[['yield','Rendement et production','chart'],['water','Semis et eau','water'],['fertilizer','Engrais','leaf']] as Item[]},
+ {title:'Décisions et cartes',icon:'chart',items:[['yield','Rendement et production','chart'],['water','Décider · semis et eau','water'],['fertilizer','Engrais','leaf']] as Item[]},
  {title:'Coopérative',icon:'people',items:[['recoltes','Récoltes réelles','basket'],['collecte','Collectes et logistique','basket'],['gestion','Ma coopérative','people'],['fiche','Bilan de campagne','file']] as Item[]},
  {title:'Données et méthodes',icon:'book',items:[['dashboard','Vue d’ensemble','chart'],['atlas','Atlas des rendements','map'],['previsions','Estimations historiques','chart'],['comparaison','Comparer les campagnes','chart'],['models','Modèles et résultats','settings'],['quality','Qualité des données','check'],['lineage','Origine des résultats','file'],['explorer','Catalogue des données','book'],['simulation','Convertir un rendement','settings'],['import','Importer des données','file'],['guide','Guide pratique','book']] as Item[]},
 ];
