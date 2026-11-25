@@ -2,7 +2,7 @@ import {satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} fro
 import {satelliteIndexSeries} from '@/lib/seasonal/satellite-index';
 import {readZoneSeason} from '@/lib/seasonal/field-zones-provider';
 import {sentinelRasterProxy} from '@/lib/seasonal/sentinel-raster-proxy';
-import {parseZoneSeason} from '@/lib/seasonal/field-zones';
+import {parseZoneSeason,analyzeFieldZones,analyzeObservationZones,chooseFieldZoneMap,zonesGeoJson} from '@/lib/seasonal/field-zones';
 import {calibrationStatus,comparePlannedProducts} from '@/lib/seasonal/intervention-outcome';
 import {fertilizerEvidence,marginalScenario,nextFertilizerInformation} from '@/lib/seasonal/fertilizer-evidence';
 import {parseFieldTrials,protectFieldTrials,summarizeTrial} from '@/lib/seasonal/field-trials';
@@ -93,6 +93,23 @@ export async function POST(request:Request){
 async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
   onAction(b.action);
+  if(b.action==='field-zone-map'){
+    if(typeof b.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(b.id))throw new InputError('Identifiant de campagne invalide.');
+    const {row}=await readable(b.id,request);
+    const config=validateConfig(migrateInputs(decodeCampaignValue(row.config)));
+    if(!config.parcelGeometry)throw new InputError('Contour requis pour la carte de zones.');
+    const history=analyzeFieldZones(config);
+    const current=analyzeObservationZones(config);
+    const selected=chooseFieldZoneMap(history,current),analysis=selected.analysis;
+    let dose=null,doseReason=null;
+    const prescription=config.fieldMonitoring?.prescription;
+    if(prescription?.confirmed){
+      try{dose=zonesGeoJson(analysis,prescription);}catch(e){doseReason=(e as Error).message;}
+    }
+    return json({version:'desktop-zone-map-1',revision:row.revision,label:selected.label,
+      status:analysis.status,projection:analysis.projection,reasons:analysis.reasons,
+      historical:zonesGeoJson(analysis),dose,doseReason});
+  }
   if(b.action==='field-zone-season'){
     if(b.consent!==true)throw new InputError('Autorisez la recherche satellite pour ce contour avant de charger son historique.');
     let season;try{season=parseZoneSeason(b.season);validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
