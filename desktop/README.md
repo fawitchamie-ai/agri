@@ -27,6 +27,8 @@ npm.cmd run desktop:build
 
 L’installateur NSIS au format `*-setup.exe` se trouve par défaut dans `src-tauri/target/release/bundle/nsis/`. Il installe AgriPrévision pour l’utilisateur Windows courant. Si WebView2 doit être installé, l’installateur utilise une connexion pour le télécharger. Les écrans et les calculs de démonstration fonctionnent hors connexion ; la lecture des campagnes requiert Internet et une session Access autorisée.
 
+Cet EXE de développement n’est pas signé : Windows peut afficher « Windows a protégé votre ordinateur ». Pour une installation publique sans cet avertissement, la distribution prévue est un **MSIX certifié et signé par Microsoft Store**. Le processus de génération du paquet de soumission et les étapes du compte éditeur sont décrits dans [`store/README.md`](store/README.md). Le MSIX produit avant certification n’est pas destiné à une installation directe.
+
 ## Où intervenir
 
 | Besoin | Fichier ou dossier |
