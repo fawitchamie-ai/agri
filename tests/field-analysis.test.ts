@@ -1,16 +1,64 @@
 import test from 'node:test';import assert from 'node:assert/strict';
+import type {ZoneSeasonRead} from '../lib/seasonal/field-zones.ts';
 import {fieldObservationFixture,fieldZonesFixture} from './support/field-zones-fixture.ts';
+import {pointInField} from '../lib/seasonal/agronomic.ts';
 import {zoneGrid,parseFieldMonitoring,analyzeFieldZones,analyzeObservationZones,chooseFieldZoneMap,zonePrescription,fieldZoneMapScope,zonesGeoJson} from '../lib/seasonal/field-zones.ts';
-import {fieldImageArchive,fieldImageSummary,compareFieldImages,fieldIndexEvolution,fieldWeatherEvolution,datedLineSegments,fieldEvolutionCsv,dayAfter} from '../lib/seasonal/field-analysis.ts';
+import {fieldImageArchive,fieldImageSummary,compareFieldImages,fieldCropStage,fieldVisitTarget,fieldIndexEvolution,fieldWeatherEvolution,datedLineSegments,fieldEvolutionCsv,dayAfter} from '../lib/seasonal/field-analysis.ts';
 
 test('image summaries weight clipped-cell areas and compare absolute NDVI on identical support',()=>{
  const c=fieldObservationFixture(),grid=zoneGrid(c.parcelGeometry),a=c.fieldMonitoring!.currentObservation!;
- a.cells=a.cells.map(([id,,n],i)=>[id,i<100?.4:.8,n]);const b=structuredClone(a);b.cells=b.cells.slice(0,110);
+ a.cells=a.cells.map(([id,,n],i)=>[id,i<100?.4:.8,n]);const b=dated(a,dayAfter(c.asOfDate,5));b.cells=b.cells.slice(0,110);
  const sum=fieldImageSummary(grid,a),expected=grid.cells.reduce((s,v,i)=>s+v.areaM2*(i<100?.4:.8),0)/grid.areaM2;
  assert.ok(Math.abs(sum.mean!-expected)<1e-12);assert.equal(sum.minimum,.4);assert.equal(sum.maximum,.8);
  const comparison=compareFieldImages(grid,a,b);assert.ok(comparison.coverage>=.6);assert.equal(comparison.delta,0,'A coverage change alone cannot create an NDVI trend');
  assert.equal(compareFieldImages(grid,a,{...b,cells:b.cells.slice(0,5)}).delta,null);
  const changed={...b,cells:b.cells.map(([id,v,n])=>[id,v+.05,n] as [number,number,number])};assert.ok(Math.abs(compareFieldImages(grid,a,changed).delta!-.05)<1e-10);
+});
+
+function dated(read:ZoneSeasonRead|undefined,date:string){
+ const copy=structuredClone(read!);
+ copy.season={...copy.season,startDate:date,endDate:date};
+ copy.scenes[0].date=date;copy.retrievedOn=date;
+ return copy;
+}
+
+test('the common area median distinguishes uniform decline from contiguous local variations',()=>{
+ const c=fieldObservationFixture(),grid=zoneGrid(c.parcelGeometry);
+ const makeRead=(days:number,variation:(id:number)=>number)=>{
+  const read=dated(c.fieldMonitoring!.currentObservation,dayAfter(c.asOfDate,days));
+  read.cells=grid.cells.map(cell=>[cell.id,.5+variation(cell.id),1]);return read;
+ };
+ const base=makeRead(-10,()=>0),uniform=makeRead(-5,()=>-.08);
+ const decline=compareFieldImages(grid,base,uniform);
+ assert.ok(Math.abs(decline.delta!+.08)<1e-10);assert.deepEqual(decline.zones,[]);
+ assert.equal(compareFieldImages(grid,base,base).delta,null);
+ const changed=makeRead(-5,id=>id<3?-.24:.04),repeat=makeRead(0,id=>id<4?-.20:.06);
+ const stageAt=(date:string)=>fieldCropStage(c,date);
+ const watch=compareFieldImages(grid,base,changed,{archive:[repeat],stageAt});
+ assert.ok(Math.abs(watch.delta!-.04)<1e-10);assert.equal(watch.zones.length,1);
+ assert.deepEqual(watch.zones[0].cellIds,[0,1,2]);assert.equal(watch.zones[0].repeatedOn,null);
+ assert.ok(fieldVisitTarget(grid,watch,watch.zones[0]).planned);
+ assert.equal(fieldVisitTarget(grid,watch,watch.zones[0]).comparison,undefined);
+ c.fieldMonitoring!.cropContext={cropId:'maize',sowingDate:dayAfter(c.asOfDate,-12)};
+ const confirmed=compareFieldImages(grid,base,changed,{archive:[repeat],stageAt});
+ assert.equal(confirmed.zones[0].repeatedOn,c.asOfDate);
+ assert.equal(confirmed.persistenceDates,1);
+ assert.ok(Math.abs(confirmed.zones[0].residual+.28)<1e-10);
+ const target=fieldVisitTarget(grid,confirmed,confirmed.zones[0]);
+ assert.deepEqual(target.dates,[base.season.startDate,changed.season.startDate]);
+ assert.ok(target.planned&&pointInField(grid.shape,target.planned));
+ assert.ok(target.comparison&&pointInField(grid.shape,target.comparison));
+ assert.notDeepEqual(target.planned,target.comparison);
+ const clearElsewhere={...repeat,cells:repeat.cells.filter(([id])=>id>=3)};
+ assert.equal(compareFieldImages(grid,base,changed,{archive:[clearElsewhere],stageAt}).zones[0].repeatedOn,null);
+ assert.equal(compareFieldImages(grid,base,changed,{archive:[uniform],stageAt}).zones[0].repeatedOn,null);
+ const stageBoundary=(day:string)=>({key:day===repeat.season.startDate?'next-stage':'start-stage'});
+ assert.equal(compareFieldImages(grid,base,changed,{archive:[repeat],stageAt:stageBoundary}).zones[0].repeatedOn,null);
+ const weak={...changed,cells:changed.cells.slice(0,20)};
+ const weakPair=compareFieldImages(grid,base,weak);
+ assert.ok(weakPair.coverage<.60);assert.equal(weakPair.delta,null);assert.deepEqual(weakPair.zones,[]);
+ const isolated=makeRead(-5,id=>[0,13].includes(id)?-.24:0);
+ assert.deepEqual(compareFieldImages(grid,base,isolated).zones,[],'Corner touching cells do not form a zone');
 });
 
 test('dated archives roundtrip and exclude foreign outlines, future availability, composites and duplicate dates',()=>{

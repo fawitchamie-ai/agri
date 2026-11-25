@@ -1,9 +1,34 @@
+import {containsPoint,type ParcelPolygon,type Position} from './parcel.ts';
 import {planSeason} from './yield.ts';
 import {validateConfig,addDays,InputError} from './validation.ts';
 import {declareScenario,reconcileInputs,geometryIdentity} from './provenance.ts';
 import type {SeasonalConfig,WaterEvent} from './types.ts';
 export const AGRONOMIC_VERSION='agronomic-1';
-export type AgronomicConfig={version:'agronomic-1';geometryId:string;system:'single'|'associated'|'succession'|'multiple';season:{from:string;to:string;source:string}|null;observations:{parameter:string;value:number|string|null;unit:string;method:string;source:string;depthCm:[number,number]|null;availableOn:string}[]};
+export const FIELD_VISIT_OUTCOMES={difference:'Différence observée',ordinary:'Rien de particulier',review:'À revoir'} as const;
+export type FieldVisitOutcome=keyof typeof FIELD_VISIT_OUTCOMES;
+export type FieldVisitTarget={
+ dates:string[];
+ zone?:{id:string;cellIds:number[];areaM2:number;gridM:number;repeatedOn?:string};
+ planned?:Position;
+ comparison?:Position;
+};
+export type FieldVisit=FieldVisitTarget&{campaignId?:string;observed?:Position;outcome:FieldVisitOutcome};
+export const pointInField=(shape:ParcelPolygon,p:Position)=>containsPoint(shape.coordinates[0],p)&&!shape.coordinates.slice(1).some(r=>containsPoint(r,p));
+const validDay=(x:unknown):x is string=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString().slice(0,10)===x;
+export function validateFieldVisit(v:FieldVisit,c:SeasonalConfig,observedOn:string){
+ const validPosition=(p:Position|undefined)=>p===undefined||Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Math.abs(p[0])<=180&&Number.isFinite(p[1])&&Math.abs(p[1])<=90;
+ const z=v?.zone;
+ if(!v||!['difference','ordinary','review'].includes(v.outcome)||!Array.isArray(v.dates)||v.dates.length>2||
+  v.dates.some((d,i)=>!validDay(d)||d<'2017-01-01'||d>c.asOfDate||d>observedOn||i>0&&d<=v.dates[i-1])||
+  v.campaignId!==undefined&&(typeof v.campaignId!=='string'||!v.campaignId.trim()||v.campaignId.length>128)||
+  !validPosition(v.planned)||!validPosition(v.comparison)||!validPosition(v.observed)||
+  !c.parcelGeometry||v.planned&&!pointInField(c.parcelGeometry,v.planned)||v.comparison&&!pointInField(c.parcelGeometry,v.comparison)||
+  z!==undefined&&(!z||v.dates.length!==2||typeof z.id!=='string'||!/^ndvi-[0-9]{1,4}$/.test(z.id)||
+   !Array.isArray(z.cellIds)||z.cellIds.length<2||z.cellIds.length>3000||z.cellIds.some((id,i)=>!Number.isInteger(id)||id<0||id>=3000||i>0&&id<=z.cellIds[i-1])||
+   z.id!=='ndvi-'+z.cellIds[0]||z.repeatedOn!==undefined&&(!validDay(z.repeatedOn)||z.repeatedOn<'2017-01-01'||z.repeatedOn>observedOn||v.dates.includes(z.repeatedOn))||
+   !Number.isFinite(z.areaM2)||z.areaM2<=0||z.areaM2>5_000_000||!Number.isInteger(z.gridM)||z.gridM<20||z.gridM>10000))throw new InputError('Visite terrain invalide. Vérifiez les dates, les coordonnées et les points prévus dans le contour.');
+}
+export type AgronomicConfig={version:'agronomic-1';geometryId:string;system:'single'|'associated'|'succession'|'multiple';season:{from:string;to:string;source:string}|null;observations:{parameter:string;value:number|string|null;unit:string;method:string;source:string;depthCm:[number,number]|null;availableOn:string;visit?:FieldVisit}[]};
 const groups:Record<string,string[]>={
  'Géométrie et paysage':['Contour','Surface prévue à semer','Surface effectivement semée','Surface récoltée','Occupation du sol','Pente','Relief','Position topographique','Érosion','Ombrage','Incertitude des frontières','Connexion hydraulique'],
  'Sol physique':['Texture','Profondeur exploitable','Cailloux','Densité apparente','Compaction','Croûte de battance','Infiltration','Conductivité hydraulique','Capacité au champ','Flétrissement','Réserve utile','Humidité initiale','Humidité à 10 kPa','Nappe','Drainage'],
@@ -62,10 +87,10 @@ function modelRole(parameter:string,c:SeasonalConfig):string{
 }
 export function parseAgronomic(v:unknown,c:SeasonalConfig):AgronomicConfig|undefined{
  if(v===undefined)return undefined;const a=v as AgronomicConfig;
- const date=(x:string)=>/^\d{4}-\d{2}-\d{2}$/.test(x)&&Number.isFinite(Date.parse(x))&&new Date(x).toISOString().slice(0,10)===x;
+ const date=validDay;
  if(!a||a.version!==AGRONOMIC_VERSION||a.geometryId!==geometryIdentity(c.parcelGeometry)||!['single','associated','succession','multiple'].includes(a.system)||!Array.isArray(a.observations)||a.observations.length>100)throw new InputError('Suivi agronomique invalide ou lié à un ancien contour.');
  if(a.season&&(!date(a.season.from)||!date(a.season.to)||a.season.from>a.season.to||!a.season.source?.trim()))throw new InputError('Fenêtre saisonnière et source requises.');
- for(const o of a.observations){if(!Object.values(groups).flat().includes(o.parameter)||!o.unit?.trim()||!o.source?.trim()||!o.method?.trim()||!date(o.availableOn)||o.availableOn>c.asOfDate||!(o.value===null||typeof o.value==='string'&&o.value.length<=1200||typeof o.value==='number'&&Number.isFinite(o.value)))throw new InputError('Observation, source, unité ou disponibilité invalide.');if(o.depthCm&&(!Array.isArray(o.depthCm)||o.depthCm.length!==2||o.depthCm.some(x=>!Number.isFinite(x)||x<0)||o.depthCm[1]<=o.depthCm[0]))throw new InputError('Profondeur analytique invalide.');if(['pH','Salinité','Phosphore assimilable'].includes(o.parameter)&&o.value!==null&&!o.depthCm)throw new InputError('Profondeur et méthode analytiques requises.');}
+ for(const o of a.observations){if(o?.visit!==undefined)validateFieldVisit(o.visit,c,o.availableOn);if(!o||!(Object.values(groups).flat().includes(o.parameter)||o.visit&&o.parameter==='Visite terrain')||!o.unit?.trim()||!o.source?.trim()||!o.method?.trim()||!date(o.availableOn)||o.availableOn>c.asOfDate||!(o.value===null||typeof o.value==='string'&&o.value.length<=1200||typeof o.value==='number'&&Number.isFinite(o.value)))throw new InputError('Observation, source, unité ou disponibilité invalide.');if(o.depthCm&&(!Array.isArray(o.depthCm)||o.depthCm.length!==2||o.depthCm.some(x=>!Number.isFinite(x)||x<0)||o.depthCm[1]<=o.depthCm[0]))throw new InputError('Profondeur analytique invalide.');if(['pH','Salinité','Phosphore assimilable'].includes(o.parameter)&&o.value!==null&&!o.depthCm)throw new InputError('Profondeur et méthode analytiques requises.');}
  return structuredClone(a);
 }
 export function agronomicCoverage(c:SeasonalConfig){

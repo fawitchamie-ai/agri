@@ -1,9 +1,10 @@
 'use client';
 import {useEffect,useId,useMemo,useState} from 'react';
+import type {Position} from '../../lib/seasonal/parcel';
 import type {SeasonalConfig} from '../../lib/seasonal/types';
 import type {ZoneSeasonRead} from '../../lib/seasonal/field-zones';
 import {zoneGrid,analyzeFieldZones,ZONE_COLORS,ZONE_NAMES} from '../../lib/seasonal/field-zones';
-import {fieldImageSummary,fieldNdviColor} from '../../lib/seasonal/field-analysis';
+import {fieldImageSummary,fieldNdviColor,type FieldMapFocus,type FieldChangeZone} from '../../lib/seasonal/field-analysis';
 import {framePoint,imageScale} from '../../lib/seasonal/imagery-display';
 import {geometryIdentity} from '../../lib/seasonal/provenance';
 import {LAND_COLORS,LAND_NAMES} from '../../lib/seasonal/land-display';
@@ -25,29 +26,36 @@ export const ANALYSIS_LAYERS=[
 const fmt=(n:number|null|undefined,d=2)=>n==null?'—':new Intl.NumberFormat('fr-FR',{maximumFractionDigits:d}).format(n);
 export const dateLabel=(d:string)=>d?new Date(d+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'Date à choisir';
 
-export default function FieldAnalysisMap({config:c,grid,history,read,date,itemId,layer,allowed,photo,bounds,selected,onSelect,onHistory,onLoad,onTerrain,onLayer}:{config:SeasonalConfig;grid:ReturnType<typeof zoneGrid>;history:ReturnType<typeof analyzeFieldZones>;read?:ZoneSeasonRead;date:string;itemId?:string;layer:AnalysisLayer;allowed:boolean;photo:boolean;bounds:number[];selected:number|null;onSelect:(id:number)=>void;onHistory:()=>void;onLoad:()=>void;onTerrain:()=>void;onLayer:(layer:AnalysisLayer)=>void}){
+export default function FieldAnalysisMap({config:c,grid,history,read,date,itemId,layer,allowed,photo,bounds,selected,onSelect,onHistory,onLoad,onTerrain,onLayer,zones,selectedZone,onSelectZone,pins,available,onPlace}:{config:SeasonalConfig;grid:ReturnType<typeof zoneGrid>;history:ReturnType<typeof analyzeFieldZones>;read?:ZoneSeasonRead;date:string;itemId?:string;layer:AnalysisLayer;allowed:boolean;photo:boolean;bounds:number[];selected:number|null;onSelect:(id:number)=>void;onHistory:()=>void;onLoad:()=>void;onTerrain:()=>void;onLayer:(layer:AnalysisLayer)=>void;zones:Pick<FieldChangeZone,'id'|'cellIds'>[];selectedZone:string;onSelectZone:(id:string)=>void;pins?:FieldMapFocus;available:boolean;onPlace?:(point:Position)=>void}){
  const key=useId().replaceAll(':',''),[error,setError]=useState(''),[loading,setLoading]=useState(false),[nativeRange,setNativeRange]=useState<{date:string;minimum:number;maximum:number}|null>(null);
  const data=useMemo(()=>fieldImageSummary(grid,read),[grid,read]),byId=new Map(history.cells.map(v=>[v.id,v]));
  const path=(coordinates:number[][][][])=>coordinates.map(p=>p.map(r=>'M'+r.map(v=>framePoint(v,bounds).join(',')).join('L')+'Z').join(' ')).join(' ');
  const outline=path([c.parcelGeometry!.coordinates]),land=c.landAssessment&&geometryIdentity(c.landAssessment.geometry)===geometryIdentity(c.parcelGeometry)?c.landAssessment:undefined;
  const index=layer==='ndvi'||layer==='contrast',maskedIndex=index&&!!read&&read.scenes[0]?.clearFraction===0;
  // The 20 m summary is used for statistics, never as a replacement NDVI map.
- const nativeIndex=allowed&&!maskedIndex&&!!date&&index;
+ const nativeIndex=available&&allowed&&!maskedIndex&&!!date&&index;
  const rasterItemId=itemId??read?.scenes[0]?.itemId;
- const datedRaster=nativeIndex||layer==='rgb'||layer==='classification';
+ const datedRaster=available&&(nativeIndex||layer==='rgb'||layer==='classification');
  const cachedRaster=allowed&&datedRaster&&!!date?getCachedNativeSatelliteImage({layer,date,bounds,geometry:grid.shape,itemId:rasterItemId}):undefined;
  const cachedRasterAvailable=!!cachedRaster;
  const activeRange=nativeRange?.date===date?nativeRange:null;
  const contrastRange=activeRange??(layer==='contrast'&&cachedRaster?.valueRange?{date,minimum:cachedRaster.valueRange[0],maximum:cachedRaster.valueRange[1]}:null);
  const min=layer==='contrast'?(contrastRange?.minimum??-1):-1,max=layer==='contrast'?(contrastRange?.maximum??1):1;
  const raster=index||layer==='rgb'||layer==='classification'||layer==='photo',empty=layer==='history'?history.status==='insufficient':layer==='terrain'?!land:!raster&&!data.cells;
- const scale=imageScale(bounds);
+ const scale=imageScale(bounds),cellsById=new Map(grid.cells.map(cell=>[cell.id,cell]));
+ const hasOverlay=!!zones.length||!!(pins?.observed||pins?.planned||pins?.comparison);
+ const marker=(p:number[],label:string,letter:string,color:string)=>{
+  const [x,y]=framePoint(p,bounds);
+  return <g transform={`translate(${x} ${y})`} role="img" aria-label={label}><title>{label}</title>
+   <circle r="10" fill={color} stroke="#fff" strokeWidth="2"/><text y="4" textAnchor="middle" fill="#fff" fontSize="11">{letter}</text>
+  </g>;
+ };
  useEffect(()=>{setError('');setNativeRange(null);setLoading(allowed&&!maskedIndex&&(layer==='photo'||datedRaster&&!!date&&!cachedRasterAvailable));},[layer,allowed,date,bounds.join(','),maskedIndex,nativeIndex,datedRaster,cachedRasterAvailable]);
  return <figure className="fa-map" aria-label={ANALYSIS_LAYERS.find(v=>v.id===layer)!.name+' du champ'}>
   <div className="fa-map-surface">
    <svg viewBox="0 0 640 400" aria-hidden="true"><defs><pattern id={key+'grid'} width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0v32" fill="none" stroke="#6b8eaa" strokeOpacity=".1"/></pattern><pattern id={key+'missing'} width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#e6edf3"/><path d="M0 9 9 0" stroke="#aebfce" strokeWidth="1"/></pattern></defs><rect width="640" height="400" fill="#edf3f7"/><rect width="640" height="400" fill={'url(#'+key+'grid)'}/></svg>
    {allowed&&(photo||layer==='photo')&&<BasemapMosaic key={'base:'+bounds.join(',')} bounds={bounds} onLoad={()=>{if(layer==='photo')setLoading(false);}} onError={()=>{if(layer==='photo')setLoading(false);setError('Photo de repérage indisponible.');}}/>}
-   {allowed&&(nativeIndex||layer==='rgb'||layer==='classification')&&date&&<div className="fa-dated-raster"><NativeSatelliteImage key={layer+':'+date+':'+bounds.join(',')} layer={layer} date={date} bounds={bounds} geometry={grid.shape} itemId={rasterItemId} onLoad={image=>{setLoading(false);if(layer==='contrast'&&image.valueRange)setNativeRange({date,minimum:image.valueRange[0],maximum:image.valueRange[1]});}} onError={message=>{setLoading(false);setError('Image Sentinel-2 indisponible : '+message);}}/></div>}
+   {allowed&&datedRaster&&date&&<div className="fa-dated-raster"><NativeSatelliteImage key={layer+':'+date+':'+bounds.join(',')} layer={layer} date={date} bounds={bounds} geometry={grid.shape} itemId={rasterItemId} onLoad={image=>{setLoading(false);if(layer==='contrast'&&image.valueRange)setNativeRange({date,minimum:image.valueRange[0],maximum:image.valueRange[1]});}} onError={message=>{setLoading(false);setError('Image Sentinel-2 indisponible : '+message);}}/></div>}
    <svg className="fa-map-values" viewBox="0 0 640 400" aria-label="Cellules et contour du champ">
     {!raster&&layer!=='terrain'&&grid.cells.map(v=>{
      const ndvi=data.values.get(v.id),zone=byId.get(v.id)?.zone??'unknown';
@@ -57,13 +65,34 @@ export default function FieldAnalysisMap({config:c,grid,history,read,date,itemId
     })}
     {layer==='terrain'&&(land?Object.entries(land.fractions).map(([id,v])=><path key={id} d={path(v.geometry.coordinates)} fill={LAND_COLORS[id as keyof typeof LAND_COLORS]??'#dce5ef'} fillRule="evenodd"><title>{LAND_NAMES[id as keyof typeof LAND_NAMES]} · {fmt(v.areaM2/10000)} ha</title></path>):<path d={outline} fill={'url(#'+key+'missing)'} fillRule="evenodd"/>)}
     <path d={outline} fill="none" stroke="#fff" strokeWidth="4"/><path d={outline} fill="none" stroke="#193b5b" strokeWidth="1.3"/>
+    {zones.map(zone=>{
+     const active=selectedZone===zone.id;
+     const coordinates=zone.cellIds.flatMap(id=>cellsById.get(id)?.geometry.coordinates??[]);
+     return <path className="fa-change-zone" key={zone.id} data-zone={zone.id} role="button" aria-label="Sélectionner la zone à vérifier" aria-pressed={active}
+      tabIndex={0} d={path(coordinates)} fill={active?'#eead3a80':'#f1cb6663'} fillRule="evenodd" stroke={active?'#8f4710':'#aa681a'} strokeWidth={active?3:1.4}
+      onClick={()=>onSelectZone(zone.id)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onSelectZone(zone.id);}}}/>;
+    })}
+    {onPlace&&<path className="fa-place-point" d={outline} fill="transparent" fillRule="evenodd" onClick={e=>{
+     const svg=e.currentTarget.ownerSVGElement,transform=svg?.getScreenCTM();
+     if(!svg||!transform)return;
+     const screen=svg.createSVGPoint();screen.x=e.clientX;screen.y=e.clientY;
+     const p=screen.matrixTransform(transform.inverse());
+     onPlace([bounds[0]+p.x/640*(bounds[2]-bounds[0]),bounds[3]-p.y/400*(bounds[3]-bounds[1])]);
+    }}/>}
+    {pins?.comparison&&marker(pins.comparison,'Point de comparaison','C','#285786')}
+    {pins?.planned&&marker(pins.planned,'Point prévu','P','#9a560e')}
+    {pins?.observed&&marker(pins.observed,'Position observée','O','#285f43')}
     <text x="604" y="30" fill="#183e62" fontSize="13" fontWeight="700" stroke="#fff" strokeWidth="3" paintOrder="stroke">N ↑</text><path d={'M24 369h'+scale.pixels} stroke="#fff" strokeWidth="4"/><path d={'M24 369h'+scale.pixels} stroke="#153a5f" strokeWidth="1.5"/><text x="24" y="355" fontSize="11" fill="#153a5f" stroke="#fff" strokeWidth="3" paintOrder="stroke">{scale.meters>=1000?fmt(scale.meters/1000)+' km':scale.meters+' m'}</text>
    </svg>
-   {maskedIndex?<div className="fa-map-empty" role="status"><ProductIcon name="satellite" size={28}/><strong>Acquisition chargée · sol masqué</strong><span>Aucun pixel clair pour le NDVI sur ce champ à cette date.{read.scenes[0].mask&&<> Nuages et cirrus : {fmt(read.scenes[0].mask.cloud*100,0)} % · ombres : {fmt(read.scenes[0].mask.shadow*100,0)} %.</>}</span><button className="btn secondary small" onClick={()=>onLayer('rgb')}>Voir l’image datée</button><button className="qs-text-button" onClick={()=>onLayer('classification')}>Voir les nuages et les ombres</button><button className="qs-text-button" onClick={onLoad}>Chercher une date plus claire</button></div>:raster&&!allowed?<div className="fa-map-empty"><ProductIcon name="satellite" size={28}/><strong>{index?'Charger le NDVI à 10 m':'Charger les images du champ'}</strong><span>{index?'Les pixels natifs seront affichés uniquement dans le contour du champ.':'Autorisez le chargement pour voir cette couche.'}</span><button className="btn secondary small" onClick={onLoad}>Choisir les images</button></div>:empty?<div className="fa-map-empty"><ProductIcon name="map" size={28}/><strong>{layer==='history'?'Historique à compléter':layer==='terrain'?'Terrain non renseigné':'Votre champ, prêt à observer'}</strong><span>{layer==='history'?'Chargez plusieurs saisons comparables.':layer==='terrain'?'Préparez l’analyse terre et eau depuis la carte.':'Chargez une date pour afficher le NDVI du champ.'}</span><button className="btn secondary small" onClick={layer==='history'?onHistory:layer==='terrain'?onTerrain:onLoad}>{layer==='history'?'Préparer les saisons':layer==='terrain'?'Vérifier le terrain':'Charger une observation'}</button></div>:null}
+   {!hasOverlay&&(maskedIndex?<div className="fa-map-empty" role="status"><ProductIcon name="satellite" size={28}/><strong>Acquisition chargée · sol masqué</strong><span>Aucun pixel clair pour le NDVI sur ce champ à cette date.{read.scenes[0].mask&&<> Nuages et cirrus : {fmt(read.scenes[0].mask.cloud*100,0)} % · ombres : {fmt(read.scenes[0].mask.shadow*100,0)} %.</>}</span><button className="btn secondary small" onClick={()=>onLayer('rgb')}>Voir l’image datée</button><button className="qs-text-button" onClick={()=>onLayer('classification')}>Voir les nuages et les ombres</button><button className="qs-text-button" onClick={onLoad}>Chercher une date plus claire</button></div>:raster&&!allowed?<div className="fa-map-empty"><ProductIcon name="satellite" size={28}/><strong>{index?'Charger le NDVI à 10 m':'Charger les images du champ'}</strong><span>{index?'Les pixels natifs seront affichés uniquement dans le contour du champ.':'Autorisez le chargement pour voir cette couche.'}</span><button className="btn secondary small" onClick={onLoad}>Choisir les images</button></div>:empty?<div className="fa-map-empty"><ProductIcon name="map" size={28}/><strong>{layer==='history'?'Historique à compléter':layer==='terrain'?'Terrain non renseigné':'Votre champ, prêt à observer'}</strong><span>{layer==='history'?'Chargez plusieurs saisons comparables.':layer==='terrain'?'Préparez l’analyse terre et eau depuis la carte.':'Chargez une date pour afficher le NDVI du champ.'}</span><button className="btn secondary small" onClick={layer==='history'?onHistory:layer==='terrain'?onTerrain:onLoad}>{layer==='history'?'Préparer les saisons':layer==='terrain'?'Vérifier le terrain':'Charger une observation'}</button></div>:null)}
    {allowed&&(layer==='ndvi'||layer==='contrast'||layer==='rgb'||layer==='classification')&&!date&&<div className="fa-map-empty"><strong>Choisissez une acquisition Sentinel-2 datée</strong><button className="btn secondary small" onClick={onLoad}>Charger une date</button></div>}
+   {!hasOverlay&&allowed&&date&&!available&&raster&&layer!=='photo'&&<div className="fa-map-empty"><strong>Image du {dateLabel(date)} indisponible</strong><button className="btn secondary small" onClick={onLoad}>Rechercher cette date</button></div>}
    {loading&&<span className="fa-image-status" role="status">Chargement de l’image…</span>}{error&&<span className="fa-image-error" role="alert">{error}</span>}
    <span className="fa-map-stamp">{layer==='photo'?'Esri · date inconnue':layer==='history'?history.reads.length+' saisons':layer==='terrain'?'Classes du terrain':date?dateLabel(date):'Aucune observation'}</span>
   </div>
-  <figcaption>{index?<><div className="fa-scale"><span>{fmt(min)}</span><i style={{background:'linear-gradient(90deg,rgb(165,0,38),rgb(244,109,67),rgb(254,224,139),rgb(217,239,139),rgb(102,189,99),rgb(0,104,55))'}}/><span>{fmt(max)}</span></div><span>{layer==='contrast'?(activeRange?'Échelle contrastée '+fmt(min)+' à '+fmt(max):'Échelle contrastée à calculer sur le champ'):'Échelle fixe −1 à 1'} · pixels natifs Sentinel-2 · 10 m · limités au contour</span><strong>{nativeIndex?'Survolez un pixel pour lire sa valeur NDVI · pixel natif 10 m.':'Autorisez le chargement des pixels natifs à 10 m.'}</strong></>:layer==='history'?<div className="fa-zone-key">{Object.entries(ZONE_NAMES).map(([z,label])=><span key={z}><i style={{background:ZONE_COLORS[z as keyof typeof ZONE_COLORS]}}/>{label}</span>)}</div>:<span>{layer==='photo'?'Fond de repérage : date de prise de vue inconnue.':layer==='rgb'?'Sentinel-2 daté · pixels natifs à 10 m · les nuages peuvent masquer le champ.':layer==='classification'?'Blanc/gris : nuages · cyan : cirrus · brun : ombres · vert : végétation · jaune : sol · bleu : eau.':'Occupation cartographiée ; à confirmer sur le terrain.'}</span>}</figcaption>
+  <figcaption>
+   {hasOverlay&&raster&&!allowed&&<button className="btn secondary small" onClick={onLoad}>Autoriser les images</button>}
+   {hasOverlay&&raster&&allowed&&date&&!available&&layer!=='photo'&&<button className="btn secondary small" onClick={onLoad}>Rechercher l’image du {dateLabel(date)}</button>}
+   {index?<><div className="fa-scale"><span>{fmt(min)}</span><i style={{background:'linear-gradient(90deg,rgb(165,0,38),rgb(244,109,67),rgb(254,224,139),rgb(217,239,139),rgb(102,189,99),rgb(0,104,55))'}}/><span>{fmt(max)}</span></div><span>{layer==='contrast'?(activeRange?'Échelle contrastée '+fmt(min)+' à '+fmt(max):'Échelle contrastée à calculer sur le champ'):'Échelle fixe −1 à 1'} · pixels natifs Sentinel-2 · 10 m · limités au contour</span><strong>{nativeIndex?'Survolez un pixel pour lire sa valeur NDVI · pixel natif 10 m.':'Autorisez le chargement des pixels natifs à 10 m.'}</strong></>:layer==='history'?<div className="fa-zone-key">{Object.entries(ZONE_NAMES).map(([z,label])=><span key={z}><i style={{background:ZONE_COLORS[z as keyof typeof ZONE_COLORS]}}/>{label}</span>)}</div>:<span>{layer==='photo'?'Fond de repérage : date de prise de vue inconnue.':layer==='rgb'?'Sentinel-2 daté · pixels natifs à 10 m · les nuages peuvent masquer le champ.':layer==='classification'?'Blanc/gris : nuages · cyan : cirrus · brun : ombres · vert : végétation · jaune : sol · bleu : eau.':'Occupation cartographiée ; à confirmer sur le terrain.'}</span>}</figcaption>
  </figure>;
 }

@@ -14,6 +14,7 @@ export async function loadUsableFieldImage(geometry:unknown,dates:string[],optio
  onCheck?:(check:FieldImageCheck)=>void;
  onProgress?:(date:string,attempt:number,total:number)=>void;
 }){
+ options.signal.throwIfAborted();
  const grid=zoneGrid(geometry),fetcher=options.fetcher??fetch;
  const catalog=options.catalog??(!options.reader&&dates.length?await verifiedImageCatalog(bbox(grid.shape),[...dates].sort()[0],[...dates].sort().at(-1)!,fetcher):undefined);
  const candidates=[...new Set([...dates,...(catalog?.dates??[])])].sort().reverse(),issues:string[]=[],checks:FieldImageCheck[]=[];
