@@ -1,0 +1,13 @@
+{
+  "name": "agriprevision-desktop",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Application de bureau AgriPrévision",
+  "scripts": {
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build --bundles nsis"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}
