@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#16342e">
+  <meta name="description" content="Maquette desktop interactive d’AgriPrévision.">
+  <title>AgriPrévision · Mes champs</title>
+  <link rel="stylesheet" href="styles/application.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon"><canvas class="icon" data-icon="brand" aria-hidden="true"></canvas></span>
+        <div><div class="brand-name">AgriPrévision</div><small>TERRES D’AFRIQUE</small></div>
+      </div>
+      <nav class="nav" aria-label="Espace de travail">
+        <button type="button" data-view="fields" aria-current="page"><canvas class="icon" data-icon="fields" aria-hidden="true"></canvas>Champs</button>
+        <button type="button" data-view="compare"><canvas class="icon" data-icon="compare" aria-hidden="true"></canvas>Comparer</button>
+        <button type="button" data-view="zones"><canvas class="icon" data-icon="layers" aria-hidden="true"></canvas>Zones</button>
+        <button type="button" data-view="notes"><canvas class="icon" data-icon="note" aria-hidden="true"></canvas>Carnet</button>
+        <button type="button" data-view="decisions"><canvas class="icon" data-icon="decide" aria-hidden="true"></canvas>Décider</button>
+      </nav>
+      <div class="top-aside"><span class="season">AgriPrévision</span><span class="demo" id="data-status" title="Cartes et données fictives">Démonstration</span><button type="button" class="btn" id="worker-toggle">Mon compte</button></div>
+    </header>
+
+    <main class="workspace" id="workspace">
+      <section class="worker-panel" id="worker-panel" hidden aria-label="Connexion au Worker">
+        <div class="worker-panel-head"><strong>Mon compte AgriPrévision</strong><button type="button" class="icon-btn" id="worker-close" aria-label="Fermer">×</button></div>
+        <p class="soft-text">Campagnes du Worker · agri.fawitchamie.workers.dev</p>
+        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
+        <p id="worker-message" role="status">Connectez-vous avec votre compte Cloudflare Access, puis actualisez.</p>
+        <button type="button" class="action-text" id="worker-demo">Revenir à la démonstration</button>
+      </section>
+      <aside class="sidebar" id="primary-sidebar" aria-label="Champs et données">
+        <section class="fields-block" aria-labelledby="fields-title">
+          <header class="fields-heading">
+            <div><h1 id="fields-title">Mes champs</h1><p class="field-count" id="field-count"></p></div>
+            <button type="button" class="icon-btn add" id="add-field" aria-label="Ajouter un champ" title="Ajouter un champ"><canvas class="icon" data-icon="plus" aria-hidden="true"></canvas></button>
+          </header>
+          <label class="search">
+            <canvas class="icon small" data-icon="search" aria-hidden="true"></canvas>
+            <input type="search" id="field-search" placeholder="Rechercher un champ" aria-label="Rechercher un champ" autocomplete="off">
+          </label>
+          <ul class="fields" id="field-list"></ul>
+        </section>
+
+        <section class="detail" aria-labelledby="field-title">
+          <h2 class="detail-title" id="field-title"></h2>
+          <p class="detail-meta" id="field-meta"></p>
+
+          <div class="detail-body" id="view-fields">
+            <div class="worker-indices" id="worker-indices" hidden>
+              <button type="button" class="btn" id="worker-indices-load">Charger NDVI / EVI réels</button>
+              <p id="worker-indices-status" class="soft-text" role="status"></p>
+              <div id="worker-indices-rows"></div>
+            </div>
+            <p class="soft-text" id="no-reading" hidden>Aucune image disponible pour ce champ.</p>
+            <div id="reading">
+              <div class="reading-head"><h3 id="reading-label">NDVI moyen</h3><time class="observation-date" id="reading-date"></time></div>
+              <div class="numberline"><strong class="metric" id="reading-value"></strong><span class="variation" id="reading-variation"></span></div>
+              <canvas class="chart" id="trend" role="img" aria-label="Évolution de l’indice"></canvas>
+              <div class="chart-labels"><span>6 nov.</span><span>25 nov.</span></div>
+            </div>
+            <div class="detail-rule">
+              <div class="data-row"><span class="key"><canvas class="icon small" data-icon="rain" aria-hidden="true"></canvas>Pluie sur 7 jours</span><b id="rain-value"></b></div>
+              <button type="button" class="action-text" data-view="notes"><canvas class="icon small" data-icon="note" aria-hidden="true"></canvas><span id="notes-link"></span></button>
+            </div>
+            <div class="quick-decisions">
+              <h3>Décider pour ce champ</h3>
+              <div class="quick-row">
+                <button type="button" class="btn" data-quick-decision="water" data-quick-mode="field">
+                  <canvas class="icon small" data-icon="drop" aria-hidden="true"></canvas>Eau
+                </button>
+                <button type="button" class="btn" data-quick-decision="fertilizer" data-quick-mode="timing">
+                  <canvas class="icon small" data-icon="input" aria-hidden="true"></canvas>Engrais
+                </button>
+                <button type="button" class="btn" data-view="campaign">Campagne</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-body" id="view-compare" hidden>
+            <h3 class="section-title">Comparer deux images</h3>
+            <div id="comparison-reading">
+              <div class="comparison-list">
+                <div class="data-row"><span class="key"><span class="letter">A</span><time id="summary-date-a"></time></span><b id="summary-value-a"></b></div>
+                <div class="data-row"><span class="key"><span class="letter b">B</span><time id="summary-date-b"></time></span><b id="summary-value-b"></b></div>
+              </div>
+              <div class="detail-rule"><div class="reading-head"><h3>Écart NDVI</h3></div><div class="numberline"><strong class="metric" id="delta"></strong></div></div>
+            </div>
+            <p class="soft-text" id="comparison-message"></p>
+          </div>
+
+          <div class="detail-body" id="view-zones" hidden>
+            <h3 class="section-title" id="zones-heading">Productivité historique</h3>
+            <p class="soft-text" id="zones-description"></p>
+            <button type="button" class="btn" id="worker-zone-load" hidden>Charger la carte géographique</button>
+            <p class="soft-text" id="worker-zone-status" role="status"></p>
+            <div class="zone-list" id="zone-list"></div>
+            <button type="button" class="action-text decision-shortcuts" data-quick-decision="fertilizer" data-quick-mode="dose"><canvas class="icon small" data-icon="input" aria-hidden="true"></canvas>Préparer les doses</button>
+          </div>
+
+          <div class="detail-body" id="view-notes" hidden>
+            <div class="note-list-head"><h3 class="section-title">Observations</h3><button type="button" class="icon-btn add" id="add-note" aria-label="Ajouter une observation" title="Ajouter une observation"><canvas class="icon" data-icon="plus" aria-hidden="true"></canvas></button></div>
+            <div class="notes" id="notes"></div>
+            <p class="note-body" id="note-body" hidden></p>
+            <button type="button" class="action-text decision-shortcuts" data-quick-decision="stand"><canvas class="icon small" data-icon="stand" aria-hidden="true"></canvas>Contrôler la levée</button>
+          </div>
+
+          <div class="detail-body" id="view-campaign" hidden>
+            <h3 class="section-title">Repères de campagne</h3>
+            <div class="comparison-list">
+              <div class="data-row"><span class="key">Culture</span><b id="campaign-crop"></b></div>
+              <div class="data-row"><span class="key">Semis</span><b id="campaign-sowing"></b></div>
+              <div class="data-row"><span class="key">Pluie sur 7 jours</span><b id="campaign-rain"></b></div>
+              <div class="data-row"><span class="key">Rendement</span><b id="campaign-yield">Pas simulé</b></div>
+            </div>
+            <div class="campaign-brief"><b id="campaign-action"></b><p class="soft-text" id="campaign-action-detail"></p></div>
+            <div id="worker-campaign-detail" class="worker-campaign-detail" hidden></div>
+            <button type="button" class="btn" id="worker-edit" hidden>Modifier cette campagne</button>
+            <button type="button" class="action-text" data-view="notes"><canvas class="icon small" data-icon="pin" aria-hidden="true"></canvas>Ouvrir le carnet</button>
+          </div>
+        </section>
+      </aside>
+
+      
+      <aside class="sidebar decision-sidebar" id="decision-sidebar" aria-label="Aides à la décision" hidden>
+        <header class="decision-head">
+          <div class="decision-headline">
+            <h1>Décider</h1>
+            <button type="button" id="decision-history" class="icon-btn" aria-label="Brouillons enregistrés" title="Brouillons enregistrés">
+              <canvas class="icon" data-icon="archive" aria-hidden="true"></canvas>
+            </button>
+          </div>
+          <label class="field-select">
+            <canvas class="icon" data-icon="fields" aria-hidden="true"></canvas>
+            <select id="decision-field" aria-label="Champ pour la décision"></select>
+          </label>
+        </header>
+        <form id="decision-form" class="decision-form" aria-labelledby="decision-title">
+          <h2 id="decision-title"></h2>
+          <p class="decision-context" id="decision-context"></p>
+          <div id="decision-body"></div>
+        </form>
+        <footer class="decision-footer">
+          <p id="decision-error" role="status"></p>
+          <button type="submit" id="decision-preview-btn" form="decision-form" class="btn primary">Voir l’aperçu</button>
+        </footer>
+      </aside>
+
+      <section class="map-workspace" aria-label="Carte et aide à la décision">
+        <div class="map-panes" id="map-panes">
+          <div class="map-pane">
+            <canvas class="map-canvas" id="map-a" tabindex="0" aria-label="Carte des champs. Utilisez les touches plus et moins pour zoomer."></canvas>
+            <div class="decision-pane-tag" id="decision-pane-a" hidden>Zones historiques</div>
+            <div class="pane-bar" id="pane-a" hidden>
+              <span class="letter">A</span>
+              <select id="date-a" aria-label="Date de l’image A"></select>
+              <select class="pane-layer" id="layer-a" aria-label="Couche de l’image A"></select>
+            </div>
+          </div>
+          <div class="map-pane" id="second-map" hidden>
+            <canvas class="map-canvas" id="map-b" tabindex="0" aria-label="Deuxième vue cartographique"></canvas>
+            <div class="decision-pane-tag" id="decision-pane-b" hidden>Doses par zone</div>
+            <div class="pane-bar" id="pane-b">
+              <span class="letter b">B</span>
+              <select id="date-b" aria-label="Date de l’image B"></select>
+              <select class="pane-layer" id="layer-b" aria-label="Couche de l’image B"></select>
+            </div>
+          </div>
+        </div>
+
+        
+        <nav class="decision-dock glass" id="decision-dock" aria-label="Décisions de campagne" hidden></nav>
+        <section class="sale-view" id="sale-view" aria-labelledby="sale-title" hidden>
+          <div class="sale-compare">
+            <h2 id="sale-title">Les deux options pour ce lot</h2>
+            <div class="sale-grid">
+              <div class="sale-choice">
+                <h3>Vendre maintenant</h3>
+                <strong id="sale-now"></strong><span class="sale-unit">FCFA nets</span>
+                <p class="decision-short" id="sale-now-detail"></p>
+              </div>
+              <div class="sale-choice">
+                <h3>Stocker</h3>
+                <strong id="sale-minimum"></strong><span class="sale-unit">FCFA/kg au minimum</span>
+                <p class="decision-short" id="sale-later-detail"></p>
+              </div>
+            </div>
+            <p class="sale-result" id="sale-conclusion" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <div class="map-tools" id="map-tools">
+          <div class="layer-control" id="layers" role="group" aria-label="Couche de la carte">
+            <button type="button" data-layer="satellite">Satellite</button>
+            <button type="button" data-layer="ndvi" aria-pressed="true">NDVI</button>
+            <button type="button" data-layer="contrast">NDVI contrasté</button>
+            <button type="button" data-layer="evi">EVI</button>
+          </div>
+          <div class="layer-control" id="zone-layers" role="group" aria-label="Type de carte" hidden>
+            <button type="button" data-zone-layer="zones" aria-pressed="true">Zones historiques</button>
+            <button type="button" data-zone-layer="dose">Carte de doses</button>
+          </div>
+        </div>
+        <div class="worker-satellite glass" id="worker-satellite" hidden>
+          <button type="button" class="btn primary" id="worker-satellite-load">Charger les images</button>
+          <label id="worker-satellite-selects" hidden>
+            <select id="worker-satellite-date" aria-label="Date satellite réelle"></select>
+            <select id="worker-satellite-layer" aria-label="Couche satellite réelle">
+              <option value="rgb">Satellite</option><option value="ndvi">NDVI</option>
+            </select>
+          </label>
+          <span id="worker-satellite-message" role="status"></span>
+        </div>
+
+        <div class="map-actions" id="map-actions" aria-label="Commandes cartographiques">
+          <button type="button" class="map-btn" id="expand" aria-label="Agrandir la carte" aria-pressed="false" title="Agrandir la carte"><canvas class="icon" data-icon="expand" aria-hidden="true"></canvas></button>
+          <div class="zoom-set">
+            <button type="button" class="map-btn" id="zoom-in" aria-label="Zoom avant" title="Zoom avant"><canvas class="icon" data-icon="plus" aria-hidden="true"></canvas></button>
+            <button type="button" class="map-btn" id="zoom-out" aria-label="Zoom arrière" title="Zoom arrière"><canvas class="icon" data-icon="minus" aria-hidden="true"></canvas></button>
+          </div>
+          <button type="button" class="map-btn" id="recenter" aria-label="Recentrer sur le champ" title="Recentrer sur le champ"><canvas class="icon" data-icon="target" aria-hidden="true"></canvas></button>
+        </div>
+
+        <div class="drawbar" id="drawbar" hidden>
+          <p id="draw-instruction">Cliquez sur la carte pour tracer le contour.</p>
+          <button type="button" class="btn" id="undo-point">Retirer un point</button>
+          <button type="button" class="btn" id="cancel-draw">Annuler</button>
+          <button type="button" class="btn primary" id="save-draw">Enregistrer</button>
+        </div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <div class="map-end" id="map-end">
+          <div class="legends">
+            <div class="legend" id="legend">
+              <div class="legend-head"><span id="legend-title">Vigueur</span><span class="legend-index" id="legend-index">NDVI</span></div>
+              <div class="ramp" id="legend-ramp"></div>
+              <div class="legend-labels"><span id="legend-min">0,25</span><span id="legend-mid">0,50</span><span id="legend-max">0,75</span></div>
+            </div>
+            <span class="attribution" id="map-attribution">Fond aérien illustratif</span>
+          </div>
+          <div class="timebar" id="timebar">
+            <div class="time-label">Images<small class="time-year"> · nov. 2026</small></div>
+            <div class="time-step">
+              <button type="button" class="icon-btn" id="previous-date" aria-label="Image précédente" title="Image précédente"><canvas class="icon small" data-icon="left" aria-hidden="true"></canvas></button>
+              <button type="button" class="icon-btn" id="next-date" aria-label="Image suivante" title="Image suivante"><canvas class="icon small" data-icon="right" aria-hidden="true"></canvas></button>
+            </div>
+            <div class="days" id="days" role="group" aria-label="Images de novembre 2026"></div>
+            <button type="button" class="btn" data-view="compare"><canvas class="icon small" data-icon="compare" aria-hidden="true"></canvas>Comparer</button>
+          </div>
+          <div id="decision-map-foot" class="decision-map-foot" hidden></div>
+          <div class="compare-dock" id="compare-dock" hidden>
+            <div class="linked"><canvas class="icon small" data-icon="link" aria-hidden="true"></canvas>Vues synchronisées</div>
+            <button type="button" class="btn" data-view="fields">Revenir à la carte</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="field-dialog" aria-labelledby="field-dialog-title">
+    <form id="field-form">
+      <h2 id="field-dialog-title">Ajouter un champ</h2>
+      <div class="form-body">
+        <label>Nom du champ<input name="name" required maxlength="50" placeholder="Nom de la parcelle"></label>
+        <label>Culture<select name="crop"><option>Maïs</option><option>Riz</option><option>Sorgho</option><option>Mil</option></select></label>
+        <label>Surface déclarée (ha)<input name="area" type="number" min="0.01" max="10000" step="0.01" required></label>
+      </div>
+      <div class="form-end"><button type="button" class="btn" data-close="field-dialog">Annuler</button><button type="submit" class="btn primary">Dessiner le contour</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="note-dialog" aria-labelledby="note-dialog-title">
+    <form id="note-form">
+      <h2 id="note-dialog-title">Ajouter une observation</h2>
+      <p class="soft-text" id="note-location"></p>
+      <div class="form-body">
+        <label>Titre<input name="title" required maxlength="65" placeholder="Ce que vous avez observé"></label>
+        <label>Détail<textarea name="body" maxlength="300"></textarea></label>
+      </div>
+      <div class="form-end"><button type="button" class="btn" data-close="note-dialog">Annuler</button><button type="submit" class="btn primary">Enregistrer</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog class="decision-dialog" id="decision-preview" aria-labelledby="decision-preview-title">
+    <h2 id="decision-preview-title"></h2>
+    <p class="decision-short" id="decision-preview-field"></p>
+    <dl class="preview-list" id="decision-preview-list"></dl>
+    <div class="form-end">
+      <button type="button" class="btn" data-close="decision-preview">Revenir</button>
+      <button type="button" class="btn primary" id="save-decision">Enregistrer le brouillon</button>
+    </div>
+  </dialog>
+
+  <dialog class="decision-dialog" id="decision-history-dialog" aria-labelledby="decision-history-title">
+    <h2 id="decision-history-title">Brouillons enregistrés</h2>
+    <div class="history-items" id="decision-history-items"></div>
+    <div class="form-end"><button type="button" class="btn" data-close="decision-history-dialog">Fermer</button></div>
+  </dialog>
+
+  <dialog class="decision-dialog worker-editor" id="worker-editor" aria-labelledby="worker-editor-title">
+    <form id="worker-editor-form">
+      <h2 id="worker-editor-title">Campagne</h2>
+      <p class="soft-text" id="worker-editor-hint"></p>
+      <label>Nom de la parcelle<input name="name" maxlength="120" required></label>
+      <label>Localité<input name="territory" maxlength="160" required></label>
+      <label>Variété<input name="variety" maxlength="100" required value="Non renseignée"></label>
+      <div id="worker-new-fields">
+        <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option><option value="NGA">Nigeria</option></select></label>
+        <label>Date de semis<input type="date" name="sowingDate"></label>
+        <label>Contour GeoJSON (Polygon)<textarea name="geometry" rows="5" spellcheck="false" placeholder='{"type":"Polygon","coordinates":[[[1.2,6.1],[1.201,6.1],[1.201,6.101],[1.2,6.101],[1.2,6.1]]]}'></textarea></label>
+        <p class="soft-text">Création initiale en maïs avec paramètres hydriques à renseigner. Le Worker contrôlera le contour et les données avant le calcul.</p>
+      </div>
+      <p id="worker-editor-error" role="alert"></p>
+      <div class="form-end"><button type="button" class="btn" id="worker-editor-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-editor-save">Enregistrer sur le Worker</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="decision-dialog worker-editor" id="worker-event-dialog" aria-labelledby="worker-event-title">
+    <form id="worker-event-form">
+      <h2 id="worker-event-title">Observation du champ</h2>
+      <label>Type<select name="kind"><option value="rain">Pluie mesurée (mm)</option><option value="irrigation">Irrigation déclarée (mm au champ)</option></select></label>
+      <label>Date<input type="date" name="date" required></label>
+      <label>Quantité<input type="number" name="amount" min="0" step="any" required></label>
+      <label>Source de l’observation<input name="source" maxlength="600" required placeholder="Pluviomètre, carnet, relevé…"></label>
+      <p id="worker-event-error" role="alert"></p>
+      <div class="form-end"><button type="button" class="btn" id="worker-event-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-event-save">Enregistrer et recalculer</button></div>
+    </form>
+  </dialog>
+
+  <script defer src="js/carte.js"></script>
+  <script defer src="js/champs.js"></script>
+  <script defer src="js/calculs-decisions.js"></script>
+  <script defer src="js/ecrans-decisions.js"></script>
+  <script defer src="js/worker-campagnes.js"></script>
+  <script defer src="js/worker-edition.js"></script>
+  <script defer src="js/worker-zones.js"></script>
+  <script defer src="js/demarrage.js"></script>
+</body>
+</html>
+
