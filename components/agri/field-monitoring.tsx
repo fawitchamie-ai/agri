@@ -7,6 +7,8 @@ import {fieldMonitoringScope,analyzeFieldZones,analyzeObservationZones,chooseFie
 import {weatherLabel} from '../../lib/seasonal/field-intelligence';
 import ParcelLayers from './parcel-layers';
 import SatelliteNowcastPanel from './satellite-nowcast-panel';
+import type {FieldMapFocus} from '../../lib/seasonal/field-analysis';
+import type {FieldVisitTarget} from '../../lib/seasonal/agronomic';
 import FieldAnalysis from './field-analysis';
 import {FieldNotebook} from './field-workspace';
 import {ProductIcon} from './product-ui';
@@ -52,13 +54,16 @@ function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>
  <button className="qs-text-button" onClick={onWeather}>Ouvrir la météo et les mesures de la campagne →</button>
  <details><summary>Sources et disponibilité</summary>{live?<p>{live.attribution} Récupérées le {live.retrievedAt}. Ces prévisions consultées sont à intégrer dans les paramètres météo pour actualiser le calcul.</p>:[...new Set(days.map(w=>w.source))].map(s=><p key={s}>{s}</p>)}<p>Une prévision n’est pas une mesure de pluie sur la parcelle. Les valeurs absentes restent inconnues.</p></details></section>;
 }
-export default function FieldMonitoringWorkspace({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
- const scope=fieldMonitoringScope(c);
- return <FieldMonitoringBody key={`${scope}:${initialView??''}`} config={c} initialView={initialView} onChange={onChange} onMap={onMap} onWeather={onWeather}/>;
+type WorkspaceProps={config:SeasonalConfig;campaignId?:string;initialView?:string;initialFocus?:FieldMapFocus;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void};
+export default function FieldMonitoringWorkspace(props:WorkspaceProps){
+ const scope=fieldMonitoringScope(props.config);
+ return <FieldMonitoringBody key={JSON.stringify([scope,props.initialView,props.initialFocus])} {...props}/>;
 }
-function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{config:SeasonalConfig;initialView?:string;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void}){
+function FieldMonitoringBody({config:c,campaignId,initialView,initialFocus,onChange,onMap,onWeather}:WorkspaceProps){
  const scope=fieldMonitoringScope(c),current=c.fieldMonitoring?.scope===scope,stored=current?c.fieldMonitoring:undefined;
- const [view,setView]=useState(initialView??'satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
+ const [view,setView]=useState(initialFocus?'satellite':initialView??'satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
+ const [mapFocus,setMapFocus]=useState(initialFocus),[visit,setVisit]=useState<FieldVisitTarget>();
+ const [analysisConsent,setAnalysisConsent]=useState(false);
  const [consent,setConsent]=useState(false),[cultivated,setCultivated]=useState(stored?.cultivatedContour??false),[comparable,setComparable]=useState(stored?.comparableManagement??false);
  const [busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [mapPreference,setMapPreference]=useState('auto');
@@ -70,7 +75,7 @@ function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{co
  const analysis=derived.analysis,target=c.cropProfile?.id??c.crop;
  const choice=analysis?chooseFieldZoneMap(analysis,derived.observation):null,doseAnalysis=mapPreference==='history'?analysis:mapPreference==='current'?derived.observation:choice?.analysis??null;
  const prescription=useMemo(()=>{if(!doseAnalysis)return {result:null,error:'Choisissez une carte disponible.'};try{return {result:zonePrescription(doseAnalysis,dose),error:''};}catch(e){return {result:null,error:(e as Error).message};}},[doseAnalysis,dose]);
- function archive(reads:ZoneSeasonRead[],prescription?:ZoneDoseInput):FieldMonitoring{return {version:FIELD_ZONES_VERSION,scope,cultivatedContour:cultivated,comparableManagement:comparable,seasons:reads,...(prescription?.product.trim()&&prescription.reference.trim()?{prescription}:{}),...(stored?.currentObservation?{currentObservation:stored.currentObservation}:{}),...(stored?.datedObservations?{datedObservations:stored.datedObservations}:{}),...(stored?.imagerySearch?{imagerySearch:stored.imagerySearch}:{})};}
+ function archive(reads:ZoneSeasonRead[],prescription?:ZoneDoseInput):FieldMonitoring{return {...(stored?.cropContext?{cropContext:stored.cropContext}:{}),version:FIELD_ZONES_VERSION,scope,cultivatedContour:cultivated,comparableManagement:comparable,seasons:reads,...(prescription?.product.trim()&&prescription.reference.trim()?{prescription}:{}),...(stored?.currentObservation?{currentObservation:stored.currentObservation}:{}),...(stored?.datedObservations?{datedObservations:stored.datedObservations}:{}),...(stored?.imagerySearch?{imagerySearch:stored.imagerySearch}:{})};}
  function matchingReads(){return (stored?.seasons??[]).filter(r=>drafts.some(d=>d.id===r.season.id&&d.startDate===r.season.startDate&&d.endDate===r.season.endDate)).map(r=>({...r,season:{...r.season,cropId:drafts.find(d=>d.id===r.season.id)!.cropId,comparable:drafts.find(d=>d.id===r.season.id)!.comparable}}));}
  function settings(){
   const reads=matchingReads();
@@ -95,11 +100,11 @@ function FieldMonitoringBody({config:c,initialView,onChange,onMap,onWeather}:{co
  const tabs=[['satellite','Analyse du champ','map'],['layers','Images & indices','satellite'],['history','Zones historiques','grid'],['doses','Cartes de doses','leaf'],['weather','Météo','sun'],['notes','Carnet terrain','book']];
  if(!c.parcelGeometry)return <section className="qs-card"><h2>Suivi du champ</h2><p>Tracez d’abord le contour de votre parcelle.</p><button className="btn primary" onClick={onMap}>Tracer le champ</button></section>;
  return <div className="field-monitoring"><header className="monitoring-header"><div><span className="product-eyebrow">OBSERVER · COMPARER · PRÉPARER</span><h2>Suivi du champ</h2><p>Les images, les saisons passées et vos observations réunies autour de votre parcelle.</p></div><span className="monitoring-badge">{c.crop} · {fmt(parcelMetrics(c.parcelGeometry).areaM2/10000,2)} ha</span></header>
- <nav className="monitoring-tabs" aria-label="Outils de suivi du champ">{tabs.map(([id,label,icon])=><button type="button" key={id} aria-pressed={view===id} onClick={()=>setView(id)}><ProductIcon name={icon} size={17}/>{label}</button>)}</nav>
- {(view==='satellite'||view==='current')&&(analysis?<FieldAnalysis config={c} onChange={onChange} onMap={onMap} onHistory={()=>setView('history')} onLayers={()=>setView('layers')} onWeather={()=>setView('weather')} onNotes={()=>setView('notes')}/>:<section className="qs-card"><h3>Analyse du champ indisponible</h3><p role="alert">{derived.error}</p><button className="btn secondary" onClick={onMap}>Revoir le contour</button></section>)}
+ <nav className="monitoring-tabs" aria-label="Outils de suivi du champ">{tabs.map(([id,label,icon])=><button type="button" key={id} aria-pressed={view===id} onClick={()=>{if(id==='notes')setVisit(undefined);setView(id);}}><ProductIcon name={icon} size={17}/>{label}</button>)}</nav>
+ {(view==='satellite'||view==='current')&&(analysis?<FieldAnalysis config={c} focus={mapFocus} consent={analysisConsent} onConsent={setAnalysisConsent} onVisit={target=>{setVisit(target);setView('notes');}} onChange={onChange} onMap={onMap} onHistory={()=>setView('history')} onLayers={()=>setView('layers')} onWeather={()=>setView('weather')} onNotes={()=>{setVisit(undefined);setView('notes');}}/>:<section className="qs-card"><h3>Analyse du champ indisponible</h3><p role="alert">{derived.error}</p><button className="btn secondary" onClick={onMap}>Revoir le contour</button></section>)}
  {view==='layers'&&<><ParcelLayers config={c} assessment={c.landAssessment} onMap={onMap} onImages={()=>setView('satellite')}/><SatelliteNowcastPanel config={c} onChange={onChange}/></>}
  {view==='weather'&&<WeatherPanel config={c} onWeather={onWeather}/>}
- {view==='notes'&&<FieldNotebook config={c} onChange={onChange}/>}
+ {view==='notes'&&<FieldNotebook config={c} campaignId={campaignId} visit={visit} onChange={onChange} onOpenMap={focus=>{setMapFocus(focus);setView('satellite');}}/>}
  {(view==='history'||view==='doses')&&<>
  {view==='doses'&&<section className="qs-card"><label className="field"><span>Source de la carte de doses</span><select value={mapPreference} onChange={e=>{setMapPreference(e.target.value);setDose(d=>({...d,confirmed:false}));}}><option value="auto">Automatique</option><option value="history">Historique</option><option value="current" disabled={!derived.observation||derived.observation.status==='insufficient'}>Observation NDVI récente</option></select></label><p>{mapPreference==='auto'?choice?.label:doseAnalysis?.mapKind==='current-observation'?'Carte NDVI observée le '+doseAnalysis.observedOn:'Historique descriptif du champ'}</p><button className="qs-text-button" onClick={()=>setView('satellite')}>Examiner les cartes du champ</button></section>}
  {view==='history'&&<section className="qs-card monitoring-setup"><div className="field-panel-title"><div><span className="product-eyebrow">SENTINEL-2 · PLUSIEURS SAISONS</span><h3>Comparer les saisons</h3></div><span>Jusqu’à 6 fenêtres · 100 ha par secteur</span></div>

@@ -1,3 +1,4 @@
+import {cropById} from './catalog.ts';
 import {bbox,multiArea} from './land.ts';
 import {MINIMUM_FIELD_IMAGE_COVERAGE} from './sentinel-quality.ts';
 import {intersection,union} from './geometry-ops.ts';
@@ -22,7 +23,7 @@ export const MAX_CACHED_FIELD_IMAGES=48;
 export type FieldImageCheck={date:string;status:'pending'|'usable'|'insufficient'|'error'|'unavailable';fingerprint?:string;itemId?:string;clearFraction?:number;gridCoverage?:number;cells?:number;ndviMean?:number|null;reason?:string};
 export type FieldImageSearch={from:string;to:string;retrievedOn:string;minimumCoverage?:number;complete:boolean;officialVerified:boolean;sources:string[];warnings:string[];entries:FieldImageCheck[]};
 export type FieldMonitoring={version:typeof FIELD_ZONES_VERSION;scope:string;cultivatedContour:boolean;comparableManagement:boolean;
-  seasons:ZoneSeasonRead[];prescription?:ZoneDoseInput;currentObservation?:ZoneSeasonRead;datedObservations?:ZoneSeasonRead[];imagerySearch?:FieldImageSearch};
+  seasons:ZoneSeasonRead[];cropContext?:{cropId:string;sowingDate:string};prescription?:ZoneDoseInput;currentObservation?:ZoneSeasonRead;datedObservations?:ZoneSeasonRead[];imagerySearch?:FieldImageSearch};
 export type ZoneGridCell={id:number;geometry:{type:'MultiPolygon';coordinates:Position[][][]};areaM2:number;center:Position};
 export const fieldMonitoringScope=(c:Pick<SeasonalConfig,'country'|'parcelGeometry'|'cropProfile'|'crop'|'sowingDate'>)=>JSON.stringify([c.country,geometryIdentity(c.parcelGeometry),c.cropProfile?.id??c.crop,c.sowingDate]);
 const validDay=(v:unknown):v is string=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
@@ -163,7 +164,9 @@ export function parseFieldMonitoring(value:unknown,c:SeasonalConfig):FieldMonito
   if(q.minimumCoverage!==undefined&&(!Number.isFinite(q.minimumCoverage)||q.minimumCoverage<0||q.minimumCoverage>1))throw new Error('Seuil du calendrier satellite invalide.');
   imagerySearch={from:q.from,to:q.to,retrievedOn:q.retrievedOn,...(q.minimumCoverage!==undefined?{minimumCoverage:q.minimumCoverage}:{}),complete:q.complete,officialVerified:q.officialVerified,sources:[...q.sources],warnings:[...q.warnings],entries};
  }
- void c;return {version:FIELD_ZONES_VERSION,scope:m.scope,cultivatedContour:m.cultivatedContour,comparableManagement:m.comparableManagement,seasons,...(prescription?{prescription}:{}),...(currentObservation?{currentObservation}:{}),...(datedObservations?{datedObservations}:{}),...(imagerySearch?{imagerySearch}:{})};
+ const cropContext=m.cropContext;
+ if(cropContext!==undefined&&(!cropContext||typeof cropContext.cropId!=='string'||!cropById(cropContext.cropId)||!validDay(cropContext.sowingDate)||cropContext.sowingDate>today))throw new Error('Culture et date de semis observée invalides.');
+ void c;return {version:FIELD_ZONES_VERSION,scope:m.scope,cultivatedContour:m.cultivatedContour,comparableManagement:m.comparableManagement,seasons,...(cropContext?{cropContext:{cropId:cropContext.cropId,sowingDate:cropContext.sowingDate}}:{}),...(prescription?{prescription}:{}),...(currentObservation?{currentObservation}:{}),...(datedObservations?{datedObservations}:{}),...(imagerySearch?{imagerySearch}:{})};
 }
 export type ZoneAnalysis=ReturnType<typeof analyzeFieldZones>;
 /** Descriptive ranks + a genuinely withheld last-season spatial check.
