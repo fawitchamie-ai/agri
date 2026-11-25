@@ -1,0 +1,56 @@
+name: Préparer le paquet Microsoft Store
+
+on:
+  pull_request:
+    paths: ['desktop/store/**', '.github/workflows/desktop-store.yml']
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package/Identity Name exact dans Partner Center'
+        required: true
+        type: string
+      publisher:
+        description: 'Package/Identity Publisher exact (CN=...) dans Partner Center'
+        required: true
+        type: string
+      publisher_display_name:
+        description: 'Nom public de l’éditeur dans Partner Center'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  msix:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Compiler le binaire desktop
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          npm install --no-audit --no-fund
+          npx tauri build --no-bundle
+      - name: Construire et vérifier le MSIX
+        shell: pwsh
+        env:
+          STORE_PACKAGE_NAME: ${{ github.event.inputs.package_name || 'AgriPrevision.Test' }}
+          STORE_PUBLISHER: ${{ github.event.inputs.publisher || 'CN=AgriPrevision Test' }}
+          STORE_PUBLISHER_DISPLAY_NAME: ${{ github.event.inputs.publisher_display_name || 'AgriPrevision Test' }}
+        run: |
+          ./desktop/store/build-msix.ps1 -PackageName $env:STORE_PACKAGE_NAME -Publisher $env:STORE_PUBLISHER -PublisherDisplayName $env:STORE_PUBLISHER_DISPLAY_NAME -OutputDirectory "$env:RUNNER_TEMP/store-output"
+      - name: Conserver le candidat uniquement après réservation réelle
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AgriPrevision-StoreSubmission-UNSIGNED
+          path: ${{ runner.temp }}/store-output/*.msix
+          if-no-files-found: error
