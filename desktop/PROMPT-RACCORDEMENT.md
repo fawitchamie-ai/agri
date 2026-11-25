@@ -10,9 +10,9 @@ Faire de cette application Windows légère un vrai client du Worker AgriPrévis
 
 - L’interface Tauri embarque la maquette et ses ressources locales.
 - Le bouton Mon compte lit les campagnes avec `GET /api/seasonal` et le catalogue, les indices et les cartes avec `POST /api/seasonal`. La création, l’édition, les observations et les plans d’arrosage ou d’engrais appellent `save` ou `event` avec une révision attendue. Une fenêtre WebView ouvre la connexion Cloudflare Access ; le code Rust relit le cookie HTTP-only du profil et appelle le Worker fixe sans exposer le jeton au JavaScript.
-- Les campagnes réelles affichent leur contour dans l’emprise des images Sentinel‑2 publiées et peuvent comparer deux dates. La nouvelle route `field-zone-map`, fusionnée dans `main`, fournit les géométries des zones et les doses confirmées, sous réserve de son déploiement sur le Worker.
+- Les campagnes réelles affichent leur contour dans l’emprise des images Sentinel‑2 publiées et peuvent comparer deux dates. La route `field-zone-map`, publiée sur le Worker, fournit les géométries des zones et les doses confirmées.
 - Les sept fiches connectées utilisent les données de la campagne lorsqu’un calcul existe. La densité de levée et la comparaison vente/stockage restent des scénarios locaux explicitement signalés. Le mode Démonstration utilise des exemples séparés.
-- L’authentification et la compilation native Windows n’ont pas été validées sur cette machine Linux.
+- La compilation native et la création de l’installateur Windows ont réussi dans GitHub Actions. L’authentification et les parcours interactifs Windows avec une session Access réelle restent à valider.
 
 ## Travail à terminer
 
