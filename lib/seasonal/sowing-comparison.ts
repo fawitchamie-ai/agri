@@ -4,6 +4,16 @@ import {reconcileInputs} from './provenance.ts';
 import {planSeason} from './yield.ts';
 
 export const SOWING_OFFSETS=[0,7,14] as const;
+
+/** Recent rainfall context, preserving field observations over gridded estimates. */
+export function sowingRainfallWindow(recent:WeatherDay[],saved:WeatherDay[],from:string,to:string):WeatherDay[]{
+ const days=new Map(recent.filter(d=>d.date>=from&&d.date<=to).map(d=>[d.date,d]));
+ for(const observation of saved){
+  if(observation.date<from||observation.date>to||observation.status!=='observed')continue;
+  days.set(observation.date,observation);
+ }
+ return [...days.values()].sort((a,b)=>a.date.localeCompare(b.date));
+}
 export type SowingComparisonRow={date:string;end:string;complete:boolean;demandMm:number|null;sourceM3:number|null;missing:string[];historicalScenario:boolean};
 export function sowingComparisonBlock(c:SeasonalConfig,events:WaterEvent[],today:string):string|null{
  if(!c.parcelGeometry||!c.stages.length)return 'Choisissez d’abord une parcelle, une culture et sa durée de cycle.';

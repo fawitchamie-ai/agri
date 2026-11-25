@@ -19,9 +19,9 @@ const weather=(start,days)=>Array.from({length:days},(_,i)=>({date:addDays(start
 function fixture(){const c=applyCropProfile(exampleCampaign(today),'maize');c.waterCondition='drained';c.fallback=null;c.system.sourceBudgetM3=1e6;
  c.parcelGeometry={type:'Polygon',coordinates:[[[1,8],[1.001,8],[1.001,8.001],[1,8.001],[1,8]]]};c.areaM2=parcelMetrics(c.parcelGeometry).areaM2;
  c.landAssessment=assessLandGeometry(c.parcelGeometry,[{id:'worldcover',status:'available',provider:'Synthetic',product:'Test',version:'test',referencePeriod:null,observedAt:null,acquiredAt:new Date().toISOString(),resolutionM:10,crs:'EPSG:4326',cells:[{id:'land',geometry:c.parcelGeometry,value:40}],reason:null,assets:[],limitations:[]}]);c.weather=weather(today,c.stages.reduce((n,s)=>n+s.days,0));return c;}
-async function mount(config){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);let back=false;
- const render=c=>root.render(React.createElement(compiled.exports.default,{config:c,events:[],onBack:()=>{back=true;}},React.createElement('div',{className:'expert-target'},'Besoin cible N (kg/ha)')));
- await act(async()=>render(config));return {host,get back(){return back;},render,async close(){await act(async()=>root.unmount());host.remove();}};}
+async function mount(config){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);let back=false,applied=null;
+ const render=c=>root.render(React.createElement(compiled.exports.default,{config:c,events:[],onBack:()=>{back=true;},onSowingDateChange:date=>{applied=date;},onCheckSoil:()=>{}},React.createElement('div',{className:'expert-target'},'Besoin cible N (kg/ha)')));
+ await act(async()=>render(config));return {host,get back(){return back;},get applied(){return applied;},render,async close(){await act(async()=>root.unmount());host.remove();}};}
 const compareButton=host=>[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Actualiser la météo'));
 test('date comparison fetches the missing tail, explains next steps and keeps technical forms collapsed',async()=>{
  const oldFetch=globalThis.fetch,c=fixture(),before=JSON.stringify(c),calls=[];
@@ -32,11 +32,14 @@ test('date comparison fetches the missing tail, explains next steps and keeps te
   assert.match(m.host.textContent,/aucun besoin NPK ni rendement à renseigner/);
   await act(async()=>[...m.host.querySelectorAll('button')].find(b=>b.textContent==='Continuer ma simulation').click());assert.equal(m.back,true);
   await act(async()=>{compareButton(m.host).click();});
-  assert.equal(calls.length,1);assert.equal(calls[0].action,'environment');assert.equal(calls[0].days,14);assert.equal(calls[0].start,addDays(today,c.weather.length));
-  assert.equal(m.host.querySelectorAll('tbody tr').length,3);assert.equal((m.host.textContent.match(/Bilan complet/g)||[]).length,3);
+  assert.equal(calls.length,2);assert.equal(calls[0].action,'environment');assert.equal(calls[0].days,46);assert.equal(calls[0].start,addDays(today,-30));assert.equal(calls[1].action,'environment');assert.equal(calls[1].days,14);assert.equal(calls[1].start,addDays(today,c.weather.length));
+  const comparisonTable=m.host.querySelector('table[aria-label="Comparaison des dates de semis"]');assert.equal(comparisonTable.querySelectorAll('tbody tr').length,3);assert.equal((m.host.textContent.match(/Bilan complet/g)||[]).length,3);
   const chart=m.host.querySelector('figure[aria-label="Comparaison des besoins en eau simulés par date de semis"]');
   assert.ok(chart);assert.equal(chart.querySelectorAll('strong').length,4);assert.match(chart.textContent,/ne classe pas les récoltes/);
-  assert.match(m.host.textContent,/pas une prévision saisonnière/);assert.equal(JSON.stringify(c),before);
+  assert.match(m.host.textContent,/pas une prévision saisonnière/);
+  await act(async()=>[...m.host.querySelectorAll('button')].find(b=>b.textContent==='Prévisualiser').click());assert.match(m.host.textContent,/Aperçu/);assert.match(m.host.textContent,/restera dans le brouillon/);
+  await act(async()=>[...m.host.querySelectorAll('button')].find(b=>b.textContent.includes('Appliquer à la campagne')).click());assert.equal(m.applied,addDays(today,7));
+  assert.equal(JSON.stringify(c),before);
  }finally{globalThis.fetch=oldFetch;await m.close();}
 });
 test('changing the campaign while weather is loading cancels obsolete comparison results',async()=>{
