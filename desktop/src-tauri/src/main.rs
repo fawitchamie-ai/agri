@@ -106,7 +106,7 @@ async fn worker_get(window: tauri::WebviewWindow, campaign_id: Option<String>) -
 async fn worker_post(window: tauri::WebviewWindow, body: serde_json::Value) -> Result<ApiReply, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let action = body.get("action").and_then(|v| v.as_str()).unwrap_or("");
-    if !["satellite-catalog", "satellite-scenes", "satellite-index-series",
+    if !["places", "environment", "agronomic-soil", "satellite-catalog", "satellite-scenes", "satellite-index-series",
          "field-zone-season", "field-zone-map", "sowing-plan", "capabilities", "weather",
          "fertilizer-evidence", "fertilizer-information", "calibration-status", "product-catalog",
          "nutrient-balance", "compare-interventions", "data-readiness"].contains(&action) {

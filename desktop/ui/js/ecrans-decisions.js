@@ -239,30 +239,16 @@ function mapRebuildNecessary(before, after) {
 }
 
 function renderDecision(field) {
-  if (field.remote) { renderWorkerDecision(field); return; }
-  element("decision-preview-btn").hidden = false;
-  element("decision-history").hidden = false;
-  const context = decisionContext();
-  const { topic, data } = context;
-  const title = topic.id === "water" && data.mode === "pump" ? "Répartir la pompe" :
-    topic.id === "fertilizer" && data.mode === "dose" ? "Quelle quantité préparer ?" : topic.title;
-  putText("decision-title", title);
-  putText("decision-context", decisionSubtitle(context));
-  const select = element("decision-field");
-  const options = fields.map(item => new Option(item.name, item.id));
-  select.replaceChildren(...options);
-  select.value = field.id;
-  element("decision-body").innerHTML = decisionBuilders[topic.id](context);
-  element("decision-form").scrollTop = 0;
-  if (decisionState.doseZone >= 0) {
-    element("decision-body").querySelector('[data-dose-row="' + decisionState.doseZone + '"]')?.classList.add("selected-point");
-  }
+  if (field?.remote) { renderWorkerDecision(field); return; }
+  putText("decision-title", "Aucune campagne connectée");
+  putText("decision-context", "Les décisions se chargent depuis l’API AgriPrévision.");
+  element("decision-body").replaceChildren(makeNode("p", "soft-text",
+    "Connectez-vous et sélectionnez une campagne enregistrée. Aucun exemple local n’est affiché."));
+  element("decision-preview-btn").hidden = true;
+  element("decision-history").hidden = true;
+  element("decision-map-foot").hidden = true;
   element("decision-dock").querySelectorAll("[data-topic]").forEach(button =>
-    button.setAttribute("aria-pressed", String(button.dataset.topic === topic.id))
-  );
-  element("decision-history").title = decisionState.saved.length
-    ? "Brouillons enregistrés (" + decisionState.saved.length + ")" : "Brouillons enregistrés";
-  paintDecisionOutputs();
+    button.setAttribute("aria-pressed", "false"));
 }
 
 function paintDecisionOutputs() {

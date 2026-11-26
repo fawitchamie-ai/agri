@@ -15,7 +15,9 @@ function updateFieldList() {
     " · " + number.format(fields.reduce((sum, field) => sum + (Number.isFinite(field.area) ? field.area : 0), 0)) + " ha");
   list.replaceChildren();
   if (!found.length) {
-    list.append(makeNode("li", "empty-list", "Aucun champ trouvé."));
+    list.append(makeNode("li", "empty-list", fields.length
+      ? "Aucun champ ne correspond à cette recherche."
+      : "Aucune parcelle chargée. Connectez-vous puis actualisez les campagnes."));
     return;
   }
   for (const field of found) {
@@ -33,7 +35,10 @@ function updateFieldList() {
       field.crop + " · " + (Number.isFinite(field.area) ? number.format(field.area) + " ha" : "Surface indisponible")));
     const index = observedIndex(field, state.day);
     const value = makeNode("span", "field-number", index === null ? "—" : indexNumber.format(index));
-    value.title = "NDVI moyen · " + dateLabel(state.day);
+    const latest = field.remote ? field.indexSeries?.observations?.filter(item => item.quality === "usable" && Number.isFinite(item.ndviMedian)).sort((a, b) => a.date.localeCompare(b.date)).at(-1) : null;
+    value.title = field.remote
+      ? (latest ? "NDVI médian Sentinel‑2 · " + latest.date + " · " + latest.validPixels + " pixels valides" : "Aucune mesure NDVI exploitable reçue de l’API")
+      : "NDVI · " + dateLabel(state.day);
     button.append(thumb, info, value);
     button.addEventListener("click", () => selectField(field.id));
     li.append(button);
@@ -129,18 +134,44 @@ function configureDates() {
 function updateReading(field) {
   if (typeof renderWorkerIndices === "function") renderWorkerIndices(field);
   const value = observedIndex(field, state.day, state.layer);
-  element("no-reading").hidden = field.remote || value !== null;
-  element("reading").hidden = value === null;
-  if (value !== null) {
-    putText("reading-label", state.layer === "evi" ? "EVI moyen" : "NDVI moyen");
-    putText("reading-date", dateLabel(state.day, true));
-    putText("reading-value", indexNumber.format(value));
-    const variation = element("reading-variation");
-    variation.replaceChildren();
-    if (state.day > 0) {
-      const previous = observedIndex(field, state.day - 1, state.layer);
-      variation.append(document.createTextNode(signedIndex.format(value - previous)),
-        makeNode("small", "", "depuis le " + dateLabel(state.day - 1)));
+  const noReading = element("no-reading");
+  const reading = element("reading");
+  if (field.remote) {
+    const observations = field.indexSeries?.observations || [];
+    const property = state.layer === "evi" ? "eviMedian" : "ndviMedian";
+    const latest = observations.filter(item => item.quality === "usable" &&
+      Number.isFinite(item[property]) && item.validPixels > 0)
+      .slice().sort((a, b) => a.date.localeCompare(b.date)).at(-1);
+    noReading.hidden = !!latest;
+    reading.hidden = !latest;
+    if (!latest) putText("no-reading", "Aucune mesure " + (state.layer === "evi" ? "EVI" : "NDVI") +
+      " Sentinel‑2 exploitable n’a été retournée pour le contour.");
+    element("trend").hidden = true;
+    element("trend").nextElementSibling.hidden = true;
+    if (latest) {
+      putText("reading-label", state.layer === "evi" ? "EVI médian mesuré" : "NDVI médian mesuré");
+      putText("reading-date", new Date(latest.date + "T12:00:00Z").toLocaleDateString("fr-FR",
+        { day: "numeric", month: "short", year: "numeric" }));
+      putText("reading-value", indexNumber.format(latest[property]));
+      const variation = element("reading-variation");
+      variation.replaceChildren(makeNode("small", "", latest.validPixels + " pixels valides · " + latest.quality));
+    }
+  } else {
+    noReading.hidden = value !== null;
+    reading.hidden = value === null;
+    element("trend").hidden = false;
+    element("trend").nextElementSibling.hidden = false;
+    if (value !== null) {
+      putText("reading-label", state.layer === "evi" ? "EVI mesuré" : "NDVI mesuré");
+      putText("reading-date", dateLabel(state.day, true));
+      putText("reading-value", indexNumber.format(value));
+      const variation = element("reading-variation");
+      variation.replaceChildren();
+      if (state.day > 0) {
+        const previous = observedIndex(field, state.day - 1, state.layer);
+        if (Number.isFinite(previous)) variation.append(document.createTextNode(signedIndex.format(value - previous)),
+          makeNode("small", "", "depuis le " + dateLabel(state.day - 1)));
+      }
     }
   }
   putText("rain-value", field.rain === undefined ? "—" : number.format(field.rain) + " mm");
@@ -178,20 +209,10 @@ function updateComparison(field) {
 function updateZones(field) {
   const isDose = state.zoneLayer === "dose";
   putText("zones-heading", isDose ? "Carte de doses" : "Productivité historique");
-  if (field.remote) { updateWorkerZones(field, isDose); return; }
-  putText("zones-description", !field.ndvi ? "Aucune zone disponible pour ce champ." : isDose ? "Exemple de répartition · kg/ha" : "Trois zones · campagnes 2023 à 2025");
   const list = element("zone-list");
   list.replaceChildren();
-  if (!field.ndvi) return;
-  spatialData(field).areas.forEach((area, i) => {
-    const row = makeNode("div", "zone-row");
-    const label = makeNode("span");
-    const swatch = makeNode("i", "zone-color");
-    swatch.style.backgroundColor = ZONE_COLORS[i];
-    label.append(swatch, document.createTextNode(isDose ? DOSES[i] + " kg/ha" : NAMES[i]));
-    row.append(label, makeNode("b", "", number.format(area) + " ha"));
-    list.append(row);
-  });
+  if (field.remote) { updateWorkerZones(field, isDose); return; }
+  putText("zones-description", "Aucune donnée de zone renvoyée par l’API pour cette campagne.");
 }
 
 function updateNotes(field) {
@@ -303,6 +324,45 @@ function updateDrawbar() {
 
 function update() {
   const field = currentField();
+  if (!field) {
+    document.title = "AgriPrévision · Mes champs";
+    document.querySelectorAll(".nav [data-view]").forEach(button => {
+      if (button.dataset.view === "fields") button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+      button.disabled = button.dataset.view !== "fields";
+    });
+    document.querySelectorAll(".detail-body").forEach(panel => { panel.hidden = true; });
+    putText("field-title", "Aucune campagne chargée");
+    putText("field-meta", "Connectez-vous à votre compte pour lire vos parcelles.");
+    putText("data-status", "Connexion requise");
+    element("data-status").title = "Les campagnes et cartes proviennent de l’API AgriPrévision.";
+    putText("map-attribution", "Aucune image affichée · connectez-vous et chargez une campagne enregistrée");
+    element("worker-satellite").hidden = true;
+    element("worker-indices").hidden = true;
+    element("worker-campaign-detail").hidden = true;
+    element("worker-edit").hidden = true;
+    element("add-note").hidden = true;
+    element("add-note").disabled = true;
+    element("add-field").title = "Créer une campagne dans votre compte AgriPrévision";
+    element("map-tools").hidden = true;
+    element("map-actions").hidden = true;
+    element("map-end").hidden = true;
+    element("timebar").hidden = true;
+    element("compare-dock").hidden = true;
+    element("pane-a").hidden = element("pane-b").hidden = true;
+    element("decision-sidebar").hidden = true;
+    element("primary-sidebar").hidden = false;
+    element("map-panes").classList.remove("split");
+    element("second-map").hidden = true;
+    updateFieldList();
+    const chart = element("trend");
+    chart.getContext("2d").clearRect(0, 0, chart.width, chart.height);
+    updateZoom();
+    paintIcons();
+    scheduleDraw();
+    return;
+  }
+  document.querySelectorAll(".nav [data-view]").forEach(button => { button.disabled = false; });
   const comparing = isComparing();
   const split = hasSplitMap();
   document.title = "AgriPrévision · " + (state.view === "fields" ? field.name : { compare: "Comparer", zones: "Zones", notes: "Carnet", campaign: "Campagne", decisions: "Décider" }[state.view]);
@@ -316,14 +376,15 @@ function update() {
   putText("field-title", field.name);
   putText("field-meta", field.crop + " · " + (Number.isFinite(field.area) ? number.format(field.area) + " ha" : "Surface indisponible") +
     (field.sowing ? " · Semis " + field.sowing.replace(" 2026", "") : ""));
-  element("data-status").textContent = field.remote ? "Données du Worker" : "Démonstration";
-  element("data-status").title = field.remote ? "Campagne enregistrée sur le Worker" : "Cartes et données fictives";
-  putText("map-attribution", field.remote ? (field.remoteImages?.has(field.imageDate + ":" + field.imageLayer) ?
-    "Sentinel-2 L2A · Digital Earth Africa · " + field.imageDate : "Contour de la campagne · image non chargée") :
-    "Fond aérien illustratif");
+  element("data-status").textContent = field.remote ? "API AgriPrévision" : "Données non connectées";
+  element("data-status").title = field.remote ? "Campagne enregistrée sur l’API AgriPrévision" : "Aucune donnée API";
+  const activeImageKey = field.imageDate + ":" + (field.imageLayer === "ndvi" ? "ndvi" : "rgb");
+  putText("map-attribution", field.remoteImages?.has(activeImageKey)
+    ? "Sentinel‑2 · Digital Earth Africa · " + field.imageDate
+    : "Image réelle indisponible pour cette campagne ou cette date.");
   element("worker-satellite").hidden = !field.remote || !field.geometryAvailable;
   if (typeof updateSatelliteControls === "function") updateSatelliteControls(field);
-  element("add-field").title = field.remote ? "Nouvelle campagne sur le Worker" : "Ajouter un champ de démonstration";
+  element("add-field").title = "Nouvelle campagne dans l’API AgriPrévision";
   element("worker-edit").hidden = !field.remote;
   element("worker-edit").disabled = !!field.remote && !field.campaign;
   element("add-note").disabled = !!field.remote && !field.campaign;
@@ -392,20 +453,9 @@ function polygonArea(shape) {
 }
 
 function finishDraw(save) {
-  const draft = state.draft;
-  if (!draft) return;
-  if (save) {
-    if (draft.shape.length < 3 || polygonArea(draft.shape) < 100) {
-      showMessage("Posez au moins trois points formant une surface.");
-      return;
-    }
-    fields.push(draft);
-    state.fieldId = draft.id;
-    state.noteId = null;
-    element("field-search").value = "";
-    showMessage(persist() ? "Champ ajouté à votre maquette." : "Champ ajouté pour cette session.");
-  }
+  if (!state.draft) return;
   state.draft = null;
+  if (save) showMessage("Le tracé local n’est pas enregistré. Utilisez Nouvelle campagne pour envoyer le contour à l’API.");
   recenter();
   update();
 }
@@ -452,27 +502,8 @@ element("expand").addEventListener("click", () => {
 });
 
 element("add-field").addEventListener("click", () => {
-  if (currentField().remote) { openWorkerEditor(); return; }
-  if (state.draft) {
-    showMessage("Terminez le contour en cours ou annulez le tracé.");
-    return;
-  }
-  element("field-form").reset();
-  element("field-dialog").showModal();
-});
-element("field-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const name = String(data.get("name")).trim();
-  if (!name) {
-    event.currentTarget.elements.name.focus();
-    return;
-  }
-  state.view = "fields";
-  state.draft = { id: newId(), name, crop: data.get("crop"), area: Number(data.get("area")), shape: [] };
-  element("field-dialog").close();
-  update();
-  mapCanvases[0].focus();
+  if (state.draft) { showMessage("Terminez ou annulez le contour en cours."); return; }
+  openWorkerEditor();
 });
 element("undo-point").addEventListener("click", () => {
   state.draft.shape.pop();
@@ -482,23 +513,7 @@ element("undo-point").addEventListener("click", () => {
 element("cancel-draw").addEventListener("click", () => finishDraw(false));
 element("save-draw").addEventListener("click", () => finishDraw(true));
 
-element("add-note").addEventListener("click", () => currentField().remote ? openWorkerEvent(currentField()) : openNote());
-element("note-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const title = String(data.get("title")).trim();
-  if (!title) {
-    event.currentTarget.elements.title.focus();
-    return;
-  }
-  const note = {
-    id: newId(), fieldId: state.fieldId, point: state.notePoint, title,
-    body: String(data.get("body")).trim(), label: "Note locale"
-  };
-  notes.push(note);
-  state.noteId = note.id;
-  state.notePoint = null;
-  element("note-dialog").close();
-  showMessage(persist() ? "Observation enregistrée." : "Observation ajoutée pour cette session.");
-  update();
+element("add-note").addEventListener("click", () => {
+  const field = currentField();
+  if (field?.remote && field.campaign) openWorkerEvent(field);
 });
