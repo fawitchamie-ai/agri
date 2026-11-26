@@ -133,7 +133,8 @@ function resetWorkerPlacePicker() {
   workerPlaceState.zoom = 1;
   element("worker-place-query").value = "";
   element("worker-place-results").replaceChildren();
-  putText("worker-place-status", "La recherche et les acquisitions utilisent l’API AgriPrévision.");
+  putText("worker-place-status", "Connectez-vous à l’API AgriPrévision, puis recherchez une localité pour charger une image Sentinel‑2 réelle.");
+  element("worker-place-connect").hidden = false;
   putText("worker-place-attribution", "Contour à tracer sur une image réelle · non cadastral");
   element("worker-editor-form").elements.geometry.value = "";
   clearWorkerSoilSample("Tracez ou collez un contour, puis lancez l’analyse directe de l’API.");
@@ -190,6 +191,7 @@ async function searchWorkerPlaces() {
   try {
     const data = await workerPost({ action: "places", query });
     const places = Array.isArray(data.places) ? data.places : [];
+    element("worker-place-connect").hidden = true;
     if (!places.length) {
       putText("worker-place-status", "Aucune localité trouvée. Essayez une ville ou un village voisin.");
       return;
@@ -208,7 +210,10 @@ async function searchWorkerPlaces() {
     }
     putText("worker-place-status", (data.attribution || "API AgriPrévision") + " · choisissez le lieu qui correspond à votre champ.");
   } catch (error) {
-    putText("worker-place-status", error.message || String(error));
+    const message = error.message || String(error);
+    putText("worker-place-status", message);
+    if (/Cloudflare Access|Connexion requise/i.test(message))
+      element("worker-place-connect").hidden = false;
   } finally {
     button.disabled = false;
   }
@@ -230,6 +235,7 @@ function selectWorkerPlace(place) {
   if (countryCode && [...form.elements.country.options].some(option => option.value === countryCode))
     form.elements.country.value = countryCode;
   element("worker-place-results").replaceChildren();
+  element("worker-place-connect").hidden = true;
   form.elements.geometry.value = "";
   clearWorkerSoilSample("Nouvelle localité sélectionnée. Tracez le contour puis analysez les données réelles.");
   putText("worker-place-attribution", "Contour à tracer sur une image réelle · non cadastral");
@@ -589,6 +595,46 @@ async function saveWorkerEvent(event) {
 }
 
 element("worker-place-search").addEventListener("click", searchWorkerPlaces);
+element("worker-place-connect").addEventListener("click", () => {
+  const button = element("worker-place-connect");
+  button.disabled = true;
+  startWorkerLogin({
+    onStatus: message => putText("worker-place-status", message),
+    onConnected: async () => {
+      button.hidden = true;
+      await searchWorkerPlaces();
+    }
+  });
+  setTimeout(() => { button.disabled = false; }, 2000);
+});
+const workerPlacePicker = element("worker-place-picker");
+const workerPlaceExpand = element("worker-place-map-expand");
+function syncWorkerPlaceFullscreen() {
+  const expanded = document.fullscreenElement === workerPlacePicker || workerPlacePicker.classList.contains("is-expanded");
+  workerPlaceExpand.textContent = expanded ? "Quitter le plein écran" : "Plein écran";
+  workerPlaceExpand.setAttribute("aria-pressed", String(expanded));
+  drawWorkerPlaceMap();
+}
+workerPlaceExpand.addEventListener("click", async () => {
+  if (document.fullscreenElement === workerPlacePicker) {
+    await document.exitFullscreen().catch(() => {});
+    return;
+  }
+  if (workerPlacePicker.classList.contains("is-expanded")) {
+    workerPlacePicker.classList.remove("is-expanded");
+    syncWorkerPlaceFullscreen();
+    return;
+  }
+  try {
+    if (!workerPlacePicker.requestFullscreen) throw new Error("Plein écran indisponible");
+    await workerPlacePicker.requestFullscreen();
+  } catch {
+    workerPlacePicker.classList.add("is-expanded");
+  }
+  syncWorkerPlaceFullscreen();
+});
+document.addEventListener("fullscreenchange", syncWorkerPlaceFullscreen);
+element("map-empty-create").addEventListener("click", () => openWorkerEditor());
 element("worker-place-analyze").addEventListener("click", analyzeWorkerParcel);
 element("worker-editor-form").elements.geometry.addEventListener("input", () => {
   const form = element("worker-editor-form");

@@ -3,6 +3,8 @@ const workerPanel = element("worker-panel");
 const workerMessage = element("worker-message");
 let workerBusy = false;
 let workerGeneration = 0;
+let workerLoginPollTimer = null;
+let workerLoginPollGeneration = 0;
 
 function workerNotice(message) {
   workerMessage.textContent = message;
@@ -27,6 +29,63 @@ async function workerRead(campaignId = null) {
       ? response.data.error : "Le Worker a répondu avec le statut " + response.status + ".");
   }
   return response.data;
+}
+
+function stopWorkerLoginPolling() {
+  workerLoginPollGeneration++;
+  if (workerLoginPollTimer) clearTimeout(workerLoginPollTimer);
+  workerLoginPollTimer = null;
+}
+
+function startWorkerLogin({ onConnected = null, onStatus = null } = {}) {
+  stopWorkerLoginPolling();
+  const generation = workerLoginPollGeneration;
+  const status = message => {
+    workerNotice(message);
+    if (typeof onStatus === "function") onStatus(message);
+  };
+  status("Ouverture de la connexion sécurisée au Worker…");
+  workerInvoke("open_worker_login").then(() => {
+    status("Terminez la connexion dans la fenêtre ouverte. L’accès à l’API est vérifié automatiquement.");
+    const deadline = Date.now() + 180000;
+    const check = async () => {
+      if (generation !== workerLoginPollGeneration) return;
+      if (Date.now() >= deadline) {
+        workerLoginPollTimer = null;
+        status("Connexion non détectée. Vérifiez la fenêtre de connexion, puis réessayez.");
+        return;
+      }
+      try {
+        const data = await workerRead();
+        if (!Array.isArray(data.campaigns)) throw new Error("Liste des campagnes absente dans la réponse du Worker.");
+        if (workerBusy) {
+          workerLoginPollTimer = setTimeout(check, 1000);
+          return;
+        }
+        await refreshWorkerFields({ closeLogin: false });
+        if (generation !== workerLoginPollGeneration) return;
+        if (typeof onConnected === "function") await onConnected();
+        if (generation !== workerLoginPollGeneration) return;
+        await workerInvoke("close_worker_login");
+        workerLoginPollTimer = null;
+        status("Connexion à l’API établie. Les données proviennent du Worker.");
+        return;
+      } catch (error) {
+        const message = error.message || String(error);
+        if (!/Cloudflare Access requise|Connexion Cloudflare Access requise/i.test(message)) status(message);
+      }
+      workerLoginPollTimer = setTimeout(check, 2500);
+    };
+    void check();
+  }).catch(error => status(error.message || String(error)));
+}
+
+async function closeWorkerLogin() {
+  stopWorkerLoginPolling();
+  try {
+    await workerInvoke("close_worker_login");
+    workerNotice("Fenêtre de connexion fermée.");
+  } catch (error) { workerNotice(error.message || String(error)); }
 }
 
 async function workerPost(body) {
@@ -106,7 +165,7 @@ function resetWorkerFields() {
   update();
 }
 
-async function refreshWorkerFields() {
+async function refreshWorkerFields({ closeLogin = true } = {}) {
   if (workerBusy) return;
   workerBusyState(true);
   workerNotice("Chargement des campagnes…");
@@ -119,6 +178,7 @@ async function refreshWorkerFields() {
       resetWorkerFields();
       workerPanel.hidden = false;
       workerNotice("Aucune campagne enregistrée dans cet espace. Créez votre première campagne après avoir choisi une localité et tracé son contour réel.");
+      if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
       return;
     }
     fields.splice(0, fields.length, ...data.campaigns.map(workerField));
@@ -131,6 +191,7 @@ async function refreshWorkerFields() {
       (data.truncated ? " La liste est limitée aux 500 plus récentes." : ""));
     workerPanel.hidden = true;
     await openWorkerCampaign(fields[0], generation);
+    if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
   } catch (error) {
     workerNotice(error.message || String(error));
   } finally {
@@ -887,12 +948,8 @@ function renderWorkerCampaign(field) {
 
 element("worker-toggle").addEventListener("click", () => { workerPanel.hidden = !workerPanel.hidden; });
 element("worker-close").addEventListener("click", () => { workerPanel.hidden = true; });
-element("worker-login").addEventListener("click", async () => {
-  try {
-    await workerInvoke("open_worker_login");
-    workerNotice("Terminez la connexion dans la fenêtre ouverte, puis cliquez sur « Actualiser les campagnes ».");
-  } catch (error) { workerNotice(error.message || String(error)); }
-});
+element("worker-login").addEventListener("click", () => startWorkerLogin());
+element("worker-login-close").addEventListener("click", closeWorkerLogin);
 element("worker-refresh").addEventListener("click", refreshWorkerFields);
 element("worker-satellite-load").addEventListener("click", () => {
   void loadWorkerSatellite(currentField());

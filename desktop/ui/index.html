@@ -29,7 +29,7 @@
       <section class="worker-panel" id="worker-panel" aria-label="Connexion à l’API AgriPrévision">
         <div class="worker-panel-head"><strong>Mon compte AgriPrévision</strong><button type="button" class="icon-btn" id="worker-close" aria-label="Fermer">×</button></div>
         <p class="soft-text">Connexion directe à l’API AgriPrévision · agri.fawitchamie.workers.dev</p>
-        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
+        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn" id="worker-login-close">Fermer la fenêtre de connexion</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
         <p id="worker-message" role="status">Connectez-vous avec votre compte, puis chargez les campagnes enregistrées.</p>
       </section>
       <aside class="sidebar" id="primary-sidebar" aria-label="Champs et données">
@@ -153,6 +153,13 @@
         <div class="map-panes" id="map-panes">
           <div class="map-pane">
             <canvas class="map-canvas" id="map-a" tabindex="0" aria-label="Carte des champs. Utilisez les touches plus et moins pour zoomer."></canvas>
+            <div class="map-empty-state" id="map-empty-state" hidden>
+              <div class="map-empty-card">
+                <strong>La vue satellite de votre champ s’affichera ici</strong>
+                <p>Connectez-vous, recherchez votre localité et tracez le contour sur une image Sentinel‑2 reçue du Worker.</p>
+                <button type="button" class="btn primary" id="map-empty-create">Choisir une localité</button>
+              </div>
+            </div>
             <div class="decision-pane-tag" id="decision-pane-a" hidden>Zones historiques</div>
             <div class="pane-bar" id="pane-a" hidden>
               <span class="letter">A</span>
@@ -311,17 +318,18 @@
       <div id="worker-new-fields">
         <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option></select></label>
         <label>Date de semis<input type="date" name="sowingDate" required></label>
-        <section class="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
+        <section class="worker-place-picker" id="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
            <label for="worker-place-query">Rechercher un village ou une ville</label>
            <div class="worker-place-search-row"><input id="worker-place-query" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Ex. Kpalimé"><button type="button" class="btn" id="worker-place-search">Rechercher</button></div>
            <ul class="worker-place-results" id="worker-place-results" aria-label="Résultats de recherche"></ul>
-           <p class="soft-text" id="worker-place-status" role="status">La recherche et les acquisitions utilisent l’API AgriPrévision.</p>
-           <div class="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
-           <div class="worker-place-map-tools">
-             <span class="soft-text" id="worker-place-attribution">Contour à tracer sur une image réelle · non cadastral</span>
-             <div><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
-           </div>
-         </section>
+           <p class="soft-text" id="worker-place-status" role="status">Connectez-vous à l’API AgriPrévision, puis recherchez une localité pour charger une image Sentinel‑2 réelle.</p>
+            <button type="button" class="btn" id="worker-place-connect">Se connecter au Worker</button>
+            <div class="worker-place-map-wrap" id="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
+            <div class="worker-place-map-tools">
+              <span class="soft-text" id="worker-place-attribution">Image réelle requise · le contour dessiné n’est pas cadastral</span>
+              <div><button type="button" class="btn" id="worker-place-map-expand" aria-pressed="false">Plein écran</button><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
+            </div>
+          </section>
          <label>Contour GeoJSON (Polygon) · modifiable<textarea name="geometry" rows="5" spellcheck="false" placeholder="Le contour tracé sur l’image apparaît ici. Vous pouvez aussi coller un GeoJSON réel."></textarea></label>
         <button type="button" class="btn" id="worker-place-analyze">Analyser le terrain, le sol et la météo via l’API</button>
         <p class="soft-text" id="worker-place-analysis" role="status">Après le tracé, l’API récupère la classification du terrain, les profils SoilGrids à 250 m et les données météorologiques du cycle. L’overlay colore les terres candidates en vert, l’eau en bleu et les surfaces non classées en gris. Les valeurs manquantes restent inconnues.</p>

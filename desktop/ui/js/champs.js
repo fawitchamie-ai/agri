@@ -325,6 +325,7 @@ function updateDrawbar() {
 function update() {
   const field = currentField();
   if (!field) {
+    element("map-empty-state").hidden = false;
     document.title = "AgriPrévision · Mes champs";
     document.querySelectorAll(".nav [data-view]").forEach(button => {
       if (button.dataset.view === "fields") button.setAttribute("aria-current", "page");
@@ -362,6 +363,7 @@ function update() {
     scheduleDraw();
     return;
   }
+  element("map-empty-state").hidden = true;
   document.querySelectorAll(".nav [data-view]").forEach(button => { button.disabled = false; });
   const comparing = isComparing();
   const split = hasSplitMap();
