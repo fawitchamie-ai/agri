@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPair,exportJWK,SignJWT,createLocalJWKSet} from 'jose';
-import {accessConfiguration,authorizeAccessRequest,clearStaleDemoCookie,currentAccessIdentity,generateAccessLoginURL,identityFromClaims,runWithAccessIdentity,safeAccessReturnPath,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
+import {accessConfiguration,authorizeAccessRequest,clearStaleDemoCookie,currentAccessIdentity,identityFromClaims,runWithAccessIdentity,safeAccessReturnPath,sanitizedRequest,verifyAccessToken} from '../lib/cloudflare-access.ts';
 
 const env={CF_ACCESS_TEAM_DOMAIN:'https://agri-test.cloudflareaccess.com',CF_ACCESS_AUD:'application-audience-test'};
 const configuration=accessConfiguration(env);
@@ -63,21 +63,23 @@ test('Access: configuration manquante refuse par défaut, domaine des clés HTTP
  assert.throws(()=>accessConfiguration({...env,CF_ACCESS_AUD:''}));
 });
 
-test('Access: le lien de connexion vise l’application et ne permet pas de redirection externe',async()=>{
- assert.equal(safeAccessReturnPath('/#seasonal?library=1'),'/');
- assert.equal(safeAccessReturnPath('/api/workspace?tab=fields'),'/api/workspace?tab=fields');
- for(const path of ['https://attacker.test/','//attacker.test/','\\\\attacker.test/','/\\\\attacker.test/'])assert.equal(safeAccessReturnPath(path),'/');
- const login=new URL(generateAccessLoginURL('https://agri.example.test/campaigns?open=1',configuration));
- assert.equal(login.origin,'https://agri-test.cloudflareaccess.com');
- assert.equal(login.pathname,'/cdn-cgi/access/login/agri.example.test');
- assert.equal(login.searchParams.get('kid'),configuration.audience);
- assert.equal(login.searchParams.get('redirect_url'),'/campaigns?open=1');
- assert.throws(()=>generateAccessLoginURL('http://agri.example.test/',configuration));
+test('Access: le retour de connexion conserve l’outil et refuse les destinations étrangères ou récursives',()=>{
+ assert.equal(safeAccessReturnPath('/#seasonal?library=1'),'/#seasonal?library=1');
+ assert.equal(safeAccessReturnPath('/outils?entry=seasonal&campaign=champ#seasonal?section=images'),'/outils?entry=seasonal&campaign=champ#seasonal?section=images');
+ assert.equal(safeAccessReturnPath('/api/seasonal'),'/api/seasonal');
+ for(const path of ['https://attacker.test/','//attacker.test/','\\\\attacker.test/','/\\\\attacker.test/','/api/auth/login','/api/workspace','/champs/../api/auth/login'])assert.equal(safeAccessReturnPath(path),'/');
 });
 
-test('Access: le point d’entrée de connexion est accessible sans JWT, les autres méthodes restent protégées',async()=>{
+test('Access: le retour reçoit l’identité vérifiée et le point d’entrée peut signaler une session absente',async()=>{
  const login=await authorizeAccessRequest(request('/api/auth/login'),env,resolver);
  assert(!(login instanceof Response));assert.equal(login.identity,null);
+ const signed=await token();
+ for(const req of [request('/api/auth/login',signed),request('/api/auth/login',undefined,{cookie:`CF_Authorization=${signed}`})]){
+  const result=await authorizeAccessRequest(req,env,resolver);
+  assert(!(result instanceof Response));assert.equal(result.identity?.userId,'cf:person-01');
+ }
+ const service=await authorizeAccessRequest(request('/api/auth/login',await token({email:undefined})),env,resolver);
+ assert(service instanceof Response);assert.equal(service.status,403);
  const post=await authorizeAccessRequest(new Request('https://agri.example.test/api/auth/login',{method:'POST'}),env,resolver);
  assert(post instanceof Response);assert.equal(post.status,401);
 });

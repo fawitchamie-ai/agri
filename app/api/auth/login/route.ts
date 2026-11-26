@@ -1,14 +1,18 @@
-import { env } from 'cloudflare:workers';
-import { accessConfiguration, generateAccessLoginURL, safeAccessReturnPath, type AccessEnvironment } from '@/lib/cloudflare-access';
+import { currentAccessIdentity, safeAccessReturnPath } from '@/lib/cloudflare-access';
 
-export async function GET(request:Request){
-  try{
-    const settings=accessConfiguration(env as unknown as AccessEnvironment);
-    const current=new URL(request.url);
-    const destination=new URL(safeAccessReturnPath(current.searchParams.get('returnTo')),current.origin);
-    const loginURL=generateAccessLoginURL(destination,settings);
-    return new Response(null,{status:302,headers:{Location:loginURL,'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
-  }catch{
-    return Response.json({error:'La connexion Cloudflare Access n’est pas encore configurée.'},{status:503,headers:{'Cache-Control':'no-store'}});
+export async function GET(request: Request) {
+  const headers = new Headers({ 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer' });
+  if (currentAccessIdentity()) {
+    const requestUrl = new URL(request.url);
+    headers.set('Location', safeAccessReturnPath(requestUrl.searchParams.get('returnTo')));
+    return new Response(null, { status: 302, headers });
   }
+
+  headers.set('Content-Type', 'text/html; charset=utf-8');
+  return new Response(`<!doctype html>
+<html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion indisponible · AgriPrévision</title>
+<main><h1>La connexion n’a pas abouti</h1>
+<p>Cloudflare Access n’a pas transmis de session à AgriPrévision.</p>
+<a href="/champs/">Retour à Mes champs</a></main></html>`, { status: 503, headers });
 }

@@ -9,11 +9,12 @@ let cookie='';const results=[];
 async function request(path,method='GET',data,expected=200){const response=await fetchRoute(new URL(path,base),{method,headers:{...(cookie?{cookie}:{}),...(data?{'Content-Type':'application/json',Origin:new URL(base).origin}:{})},...(data?{body:JSON.stringify(data)}:{})});const setCookie=response.headers.getSetCookie?.()[0];if(setCookie)cookie=setCookie.split(';')[0];const text=await response.text();let result;try{result=JSON.parse(text);}catch{result=text;}assert.equal(response.status,expected,`${method} ${path}: ${text.slice(0,300)}`);return result;}
 async function check(name,fn){const start=performance.now();await fn();results.push({name,status:'PASS',ms:+(performance.now()-start).toFixed(2)});}
 let member,harvest,collection,simulation,forecast,coopA,cookieA,managerHarvest;
-if(harness)await check('Connexion e-mail: redirection Access limitée au domaine de l’application',async()=>{
- const response=await fetchRoute(new URL('https://agri.test/api/auth/login?returnTo=%2Fseasonal%3Fsection%3Dmap'),{method:'GET'});
- assert.equal(response.status,302);const login=new URL(response.headers.get('location'));
- assert.equal(login.origin,'https://agri-test.cloudflareaccess.com');assert.equal(login.pathname,'/cdn-cgi/access/login/agri.test');
- assert.equal(login.searchParams.get('kid'),'a'.repeat(64));assert.equal(login.searchParams.get('redirect_url'),'/seasonal?section=map');
+if(harness)await check('Connexion e-mail: diagnostic explicite quand Access ne transmet aucune session',async()=>{
+ const response=await fetchRoute(new URL('https://agri.test/api/auth/login?returnTo=%2Fchamps%2F'),{method:'GET'});
+ assert.equal(response.status,503);
+ assert.equal(response.headers.get('location'),null);
+ assert.match(response.headers.get('cache-control'),/no-store/);
+ assert.match(await response.text(),/Cloudflare Access n’a pas transmis de session/);
 });
 await check('Anonyme: accès aux données privées refusé',async()=>{await request('/api/workspace','GET',undefined,401);});
 await check('Démonstration: ouverture et prévisions traçables',async()=>{await request('/api/demo','POST',{role:'responsable',coopId:'demo-a'});const workspace=await request('/api/workspace');coopA=workspace.session.coopId;member=workspace.records.find(x=>x.kind==='member');assert.ok(member);const science=await request('/api/science');assert.equal(science.forecasts.length,1092);forecast=science.forecasts.find(x=>x.crop==='Maize'&&x.year===2026);assert.ok(forecast);});

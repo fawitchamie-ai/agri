@@ -29,10 +29,14 @@ Les vraies connexions restent gérées par Cloudflare Access; l’application ne
 
 `AUTH_DEMO_ONLY=true` permet une identité nulle uniquement sur `localhost`, `127.0.0.1` ou `::1`, pour les routes de l’interface et des API connues. Ce mode n’est pas une connexion administrateur : seuls les espaces fictifs obtenus via `/api/demo` peuvent fonctionner. Les invitations réelles restent impossibles sans identité vérifiée. Sur un domaine public, ce drapeau n’autorise aucun contournement.
 
-Le point d’entrée public `GET /api/auth/login` ne fait qu’émettre une redirection Access, avec un retour relatif validé. La déconnexion Access utilise le chemin géré par Cloudflare `/cdn-cgi/access/logout`.
+Le lien de connexion ouvre `GET /api/auth/login` sur l’hôte du Worker. Protégez ce chemin dans l’application Access « AgriPrévision Togo » pour que Cloudflare ouvre le formulaire sur le domaine d’équipe et ramène le navigateur sur ce même chemin avec une identité vérifiée. Pour garder l’accueil accessible, configurez le domaine de cette application avec le chemin `/api/auth/login`. Conservez son audience, ses méthodes de connexion et ses règles d’accès. L’option **Cookie path** doit rester désactivée afin que le navigateur transmette aussi le cookie à `/api/seasonal` et `/api/workspace`.
+
+À son retour, le Worker vérifie le JWT et renvoie le navigateur vers « Mes champs » ou vers l’outil demandé. Si Cloudflare laisse arriver une requête sans session sur ce chemin, le Worker affiche une erreur explicite. Pour vérifier le réglage dans une nouvelle session de navigateur, cliquez sur « Se connecter », terminez le parcours par e-mail et vérifiez que les campagnes de votre espace s’affichent. La déconnexion Access utilise le chemin géré par Cloudflare `/cdn-cgi/access/logout`.
 
 ## Vérification automatisée et service de santé
 
 La CI peut utiliser un service token Access. Un JWT Access valide sans identité humaine est accepté exclusivement pour `GET /api/health`, avec un contexte utilisateur nul. Il ne crée aucun compte et ne permet pas de lire ou modifier une coopérative. Un test de santé réussi ne remplace pas un test utilisateur réel.
 
 Les tests `tests/cloudflare-access.test.ts` génèrent une paire RSA locale et des JWT signés, sans contacter Cloudflare. Ils couvrent les signatures du header et du cookie, les retours de connexion, signature altérée, mauvais émetteur/audience, expiration, faux en-têtes, configuration manquante, mode local, service token et isolation concurrente du contexte. Ils ne prouvent pas que la politique Access du compte distant est correctement configurée; vérifiez la règle Allow et One-time PIN dans le tableau Cloudflare.
+
+Après `pnpm build`, lancez `pnpm test:access-worker`. Le test exécute le Worker compilé avec D1 local. Il vérifie le retour vers l’outil demandé, l’accès par cookie signé, l’écriture et la relecture d’une campagne, puis le refus de cette même campagne pour un autre compte ou une session expirée.
