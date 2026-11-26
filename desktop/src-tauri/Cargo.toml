@@ -1,6 +1,6 @@
 [package]
 name = "agriprevision-desktop"
-version = "0.4.2"
+version = "0.4.3"
 description = "Application de bureau autonome AgriPrévision reliée directement à son API"
 edition = "2021"
 publish = false

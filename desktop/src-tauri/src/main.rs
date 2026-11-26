@@ -30,9 +30,10 @@ fn worker_origin() -> &'static str {
 fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
     if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let app = caller.app_handle();
-    let url = Url::parse(WORKER)
-        .and_then(|origin| origin.join("api/seasonal"))
+    let mut url = Url::parse(WORKER)
+        .and_then(|origin| origin.join("api/auth/login"))
         .map_err(|_| "Adresse de connexion au Worker invalide.".to_owned())?;
+    url.query_pairs_mut().append_pair("returnTo", "/api/seasonal");
     if let Some(window) = app.get_webview_window("worker-login") {
         window.navigate(url.clone()).map_err(|_| "Impossible de charger la connexion au Worker.".to_owned())?;
         window.show().map_err(|_| "Impossible d’ouvrir la connexion.".to_owned())?;
@@ -97,8 +98,14 @@ async fn send_json(window: tauri::WebviewWindow, request: reqwest::RequestBuilde
     }
     let bytes = response.bytes().await.map_err(|_| "Réponse du Worker interrompue.".to_owned())?;
     if bytes.len() > 8_000_000 { return Err("Réponse du Worker trop volumineuse.".to_owned()); }
-    let data = serde_json::from_slice(&bytes)
-        .unwrap_or_else(|_| serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."}));
+    let data = serde_json::from_slice(&bytes).unwrap_or_else(|_| {
+        let message = String::from_utf8_lossy(&bytes).trim().to_owned();
+        if message.is_empty() {
+            serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."})
+        } else {
+            serde_json::json!({"error":message})
+        }
+    });
     Ok(ApiReply { status, data })
 }
 
