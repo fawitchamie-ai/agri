@@ -1,5 +1,5 @@
-import {satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} from '@/lib/seasonal/satellite';
-import {satelliteIndexSeries} from '@/lib/seasonal/satellite-index';
+import {satelliteBasemap,satelliteCatalog,satelliteImage,satelliteScenes,type SatelliteLayer} from '@/lib/seasonal/satellite';
+import {satelliteIndexSeries,type FieldIndexPixel} from '@/lib/seasonal/satellite-index';
 import {readZoneSeason} from '@/lib/seasonal/field-zones-provider';
 import {sentinelRasterProxy} from '@/lib/seasonal/sentinel-raster-proxy';
 import {parseZoneSeason,analyzeFieldZones,analyzeObservationZones,chooseFieldZoneMap,zonesGeoJson} from '@/lib/seasonal/field-zones';
@@ -23,7 +23,7 @@ import {authoritativeLand,startLandJob,stepLandJob,landJobStatus} from '@/lib/se
 import {planSeason,createSeasonCalculation,yieldCsv} from '@/lib/seasonal/yield';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
-import { body, database, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
+import { body, database, digest, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
 import { upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
@@ -32,7 +32,9 @@ import {terrestrialSoilPoint} from '@/lib/seasonal/land';
 import { loadEnvironment } from '@/lib/seasonal/environment';
 import { loadForecast } from '@/lib/seasonal/weather';
 import { seasonalCapabilities } from '@/lib/seasonal/capabilities';
-import { cropById } from '@/lib/seasonal/catalog';
+import { applyCropProfile, cropById, CROPS } from '@/lib/seasonal/catalog';
+import {addFieldNote} from '@/lib/seasonal/field-intelligence';
+import {emptyCampaign} from '@/lib/seasonal/example';
 import { searchPlaces } from '@/lib/seasonal/places';
 
 function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: migrateInputs(decodeCampaignValue(row.config)), events: decodeCampaignValue(row.events), plan: decodeCampaignValue(row.plan), updatedAt: row.updated_at, demo: !!row.demo, archivedAt: row.archived_at ?? null }; }
@@ -46,7 +48,12 @@ function error(e: unknown) { return e instanceof InputError ? json({ error: e.me
 export async function GET(request: Request) { try {
   const url = new URL(request.url), id = url.searchParams.get('id');
   if(url.searchParams.get('satellite')==='raster'){await session(request);return sentinelRasterProxy(request);}
-  if(url.searchParams.get('satellite')==='image'){await session(request);try{return await satelliteImage(url.searchParams.get('layer') as SatelliteLayer,url.searchParams.get('date')??'',(url.searchParams.get('bbox')??'').split(',').map(Number));}catch(e){throw new HttpError(502,(e as Error).message);}}
+  if(url.searchParams.get('satellite')==='image'){
+    await session(request);
+    const layer=url.searchParams.get('layer'),bounds=(url.searchParams.get('bbox')??'').split(',').map(Number);
+    try{return layer==='basemap'?await satelliteBasemap(bounds):await satelliteImage(layer as SatelliteLayer,url.searchParams.get('date')??'',bounds);}
+    catch(e){throw new HttpError(502,(e as Error).message);}
+  }
   if (id) {
     const { db, row } = await readable(id, request);
     const revision = url.searchParams.get('revision');
@@ -77,7 +84,8 @@ export async function GET(request: Request) { try {
   const ownerFilter = s.role === 'producteur' ? 'AND owner_id=?' : '';
   const args = s.role === 'producteur' ? [s.coopId, s.userId] : [s.coopId];
   const rows = await database().prepare(`SELECT id,coop_id,owner_id,revision,config,demo,updated_at,archived_at FROM seasonal_campaigns WHERE coop_id=? ${archiveFilter} ${ownerFilter} ORDER BY updated_at DESC LIMIT 500`).bind(...args).all<any>();
-  return json({ campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,archivedAt:r.archived_at??null,demo:!!r.demo};}), truncated: rows.results.length === 500 });
+  const decisionScope=s.demo?null:await digest(JSON.stringify([s.coopId,s.userId]));
+  return json({ demo: s.demo, decisionScope, campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,archivedAt:r.archived_at??null,demo:!!r.demo};}), truncated: rows.results.length === 500 });
 } catch (e) { return error(e); } }
 export async function POST(request:Request){
  const traceId=crypto.randomUUID(),start=Date.now();let action='unread';
@@ -117,6 +125,16 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
   }
   if(b.action==='satellite-scenes'){try{return json(await satelliteScenes(b.geometry,b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if(b.action==='satellite-index-series'){try{return json(await satelliteIndexSeries(b.geometry,b.startDate,b.asOfDate,fetch,undefined,6));}catch(e){throw new HttpError(502,(e as Error).message);}}
+  if(b.action==='field-index-image'){
+    if(b.consent!==true)throw new InputError('Autorisez la recherche satellite pour ce contour.');
+    const {row}=await readable(typeof b.id==='string'?b.id:'',request);
+    const config=decodeCampaignValue(row.config);
+    let pixels:FieldIndexPixel[]=[];
+    try{
+      const series=await satelliteIndexSeries(config.parcelGeometry,b.date,b.date,fetch,undefined,1,{onPixels:value=>{pixels=value;}});
+      return json({...series,pixels});
+    }catch(e){throw new HttpError(502,(e as Error).message);}
+  }
   if(b.action==='satellite-catalog'){try{return json(await satelliteCatalog(b.asOfDate));}catch(e){throw new HttpError(502,(e as Error).message);}}
   if(b.action==='fertilizer-evidence')return json(fertilizerEvidence(b.country,b.cropId,b.asOfDate));
   if(b.action==='fertilizer-information')return json(nextFertilizerInformation(validateConfig(b.config)));
@@ -182,6 +200,22 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
     if(config.latitude===null||config.longitude===null)throw new InputError('Coordonnées de la parcelle requises.');
     const result=await loadNasaHistory(config.latitude,config.longitude,b.start,b.end,config.asOfDate);return json({...result,config:mergeNasa(config,result.weather)});
   }
+  if(b.action==='campaign-crops')return json({crops:CROPS.map(c=>({id:c.id,name:c.name,
+    days:c.water&&!c.water.durationIssue&&c.id!=='rice-flooded'?c.water.stageExampleDays.reduce((a,b)=>a+b,0):null}))});
+  if(b.action==='campaign-draft'){
+    const p=typeof b.cropId==='string'?cropById(b.cropId):undefined;
+    if(!p||!p.water||p.water.durationIssue||p.id==='rice-flooded')throw new InputError('Ce cycle doit être renseigné dans « Ma simulation ».');
+    const c=b.config;if(!c||typeof c!=='object'||typeof c.sowingDate!=='string'||!Array.isArray(c.soil?.layers))throw new InputError('Données du champ manquantes.');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(c.sowingDate)||!Number.isFinite(Date.parse(c.sowingDate)))throw new InputError('Date de semis invalide.');
+    let parcelGeometry;try{parcelGeometry=validateParcel(c.parcelGeometry);}catch(e){throw new InputError((e as Error).message);}
+    const {point,areaM2}=parcelMetrics(parcelGeometry),base=emptyCampaign(c.sowingDate);
+    return json({config:validateConfig(applyCropProfile({...base,
+      name:c.name,territory:c.territory,country:c.country,variety:c.variety||'Non renseignée',parcelGeometry,
+      latitude:point[1],longitude:point[0],areaM2,landSelection:'potentialLand',
+      soil:c.soil,weather:Array.isArray(c.weather)?c.weather:[],
+      system:{...base.system,maxNetMmPerDay:null,targetDepletionFraction:0},
+    },p.id))});
+  }
   if(b.action==='environment'){
 
     let geometry;try{geometry=validateParcel(b.geometry);}catch(e){throw new InputError((e as Error).message);}
@@ -237,14 +271,14 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
     if (writes[1].meta.changes !== 1) throw new HttpError(409, 'Une autre personne vient de modifier cette campagne. Actualisez la liste.');
     return json({ campaign: { id, revision, config, events, plan, updatedAt: now, demo: !!old.demo, archivedAt }, reason });
   }
-  if (!['save', 'event'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
+  if (!['save', 'event', 'field-note'].includes(b.action)) throw new InputError('Action saisonnière inconnue.');
   const id = b.id;
   if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(id)) throw new InputError('Identifiant de campagne invalide.');
   if (!Number.isInteger(b.expectedRevision) || b.expectedRevision < 0) throw new InputError('Numéro de révision attendu.');
   const old = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
   if (old && !canSee(s,old)) throw new HttpError(404, 'Campagne introuvable.');
   if (old?.archived_at) throw new HttpError(409, 'Cette campagne est archivée. Restaurez-la depuis « Mes campagnes » avant de la modifier.');
-  if (!old && b.action === 'event') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
+  if (!old && b.action !== 'save') throw new HttpError(404, 'Enregistrez la campagne avant une observation.');
   const previousConfig=old?decodeCampaignValue(old.config):null,previousEvents=old?decodeCampaignValue(old.events):[];
   if (old && b.action === 'event') {
     const previous = previousEvents.find((e: any) => e.id === b.event?.id);
@@ -252,7 +286,15 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
   }
   if (old && b.expectedRevision !== old.revision || !old && b.expectedRevision !== 0) throw new HttpError(409, 'Cette campagne a changé. Rechargez sa dernière révision avant de corriger.');
   const calculation=b.action==='save'?createSeasonCalculation(b.config,old?previousEvents:b.events??[]):null;
-  const config = calculation?.config??validateConfig(previousConfig);
+  let config = calculation?.config??validateConfig(migrateInputs(previousConfig));
+  if(b.action==='field-note'){
+    if(s.demo)throw new HttpError(401,'Connectez-vous à votre compte pour enregistrer une observation.');
+    const n=b.note;
+    if(!n||!['parameter','date','note'].every(key=>typeof n[key]==='string'))throw new InputError('Observation incomplète.');
+    try{config=addFieldNote({...config,asOfDate:new Date().toISOString().slice(0,10)},
+      {parameter:n.parameter,date:n.date,note:n.note,observer:s.name});}
+    catch(e){throw new InputError((e as Error).message);}
+  }
   if(old&&b.action==='save')protectFieldTrials(previousConfig,config);
   const hasObservations=previousEvents.some((e:any)=>['measured','declared'].includes(e.status));
   if(old&&b.action==='save'&&hasObservations&&(previousConfig.sowingPlan?.areaM2??null)!==(config.sowingPlan?.areaM2??null))throw new InputError('Des observations sont liées à la surface précédente. Créez une nouvelle campagne pour modifier la surface prévue.');
@@ -276,7 +318,7 @@ async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { 
   if(config.parcelGeometry)config.landAssessment=await authoritativeLand(config.parcelGeometry,s);
   config.fieldTrials=parseFieldTrials(config.fieldTrials,config);
   const plan = calculation?calculation.calculate({requireGeometry:true}):planSeason(config, events,{requireGeometry:true}), revision = b.expectedRevision + 1, now = new Date().toISOString();
-  const reason = b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : recordedProductsCorrected?'Correction d’un apport réalisé : '+config.managementPlan!.recordedCorrection!.reason:'Paramètres et scénario de campagne actualisés.';
+  const reason = b.action==='field-note' ? 'Observation de terrain enregistrée.' : b.action === 'event' ? `Observation ${b.event.id} enregistrée/corrigée ; bilan et calendrier rejoués.` : recordedProductsCorrected?'Correction d’un apport réalisé : '+config.managementPlan!.recordedCorrection!.reason:'Paramètres et scénario de campagne actualisés.';
   const packed=encodeCampaignSnapshot(config,events,plan);
   if (!old) {
     await db.batch([

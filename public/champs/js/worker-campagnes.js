@@ -1,8 +1,12 @@
-/* Lecture des campagnes du Worker. La démonstration reste séparée des données réelles. */
+/* Lecture directe des campagnes et données de l’API AgriPrévision. */
 const workerPanel = element("worker-panel");
 const workerMessage = element("worker-message");
 let workerBusy = false;
+let workerSessionReady = false;
+const satellitePermissions = new Map();
 let workerGeneration = 0;
+let workerLoginPollTimer = null;
+let workerLoginPollGeneration = 0;
 
 function workerNotice(message) {
   workerMessage.textContent = message;
@@ -14,19 +18,74 @@ function workerBusyState(busy) {
   element("worker-login").disabled = busy;
 }
 
-async function workerInvoke(command, args = {}) {
-  const invoke = window.__TAURI__?.core?.invoke;
-  if (!invoke) throw new Error("La connexion au Worker fonctionne dans l’application Windows. Lancez le projet avec Tauri.");
-  return invoke(command, args);
-}
-
 async function workerRead(campaignId = null) {
   const response = await workerInvoke("worker_get", { campaignId });
   if (response.status !== 200) {
     throw new Error(typeof response.data?.error === "string"
       ? response.data.error : "Le Worker a répondu avec le statut " + response.status + ".");
   }
+  if (response.data?.demo === true || response.data?.campaign?.demo === true) {
+    throw new Error("Connectez-vous à votre compte AgriPrévision pour retrouver vos campagnes.");
+  }
   return response.data;
+}
+
+function stopWorkerLoginPolling() {
+  workerLoginPollGeneration++;
+  if (workerLoginPollTimer) clearTimeout(workerLoginPollTimer);
+  workerLoginPollTimer = null;
+}
+
+function startWorkerLogin({ onConnected = null, onStatus = null } = {}) {
+  if (!nativeInvoke) { void workerInvoke("open_worker_login"); return; }
+  stopWorkerLoginPolling();
+  const generation = workerLoginPollGeneration;
+  const status = message => {
+    workerNotice(message);
+    if (typeof onStatus === "function") onStatus(message);
+  };
+  status("Ouverture de la connexion sécurisée au Worker…");
+  workerInvoke("open_worker_login").then(() => {
+    status("Terminez la connexion dans la fenêtre ouverte. L’accès à l’API est vérifié automatiquement.");
+    const deadline = Date.now() + 180000;
+    const check = async () => {
+      if (generation !== workerLoginPollGeneration) return;
+      if (Date.now() >= deadline) {
+        workerLoginPollTimer = null;
+        status("Connexion non détectée. Vérifiez la fenêtre de connexion, puis réessayez.");
+        return;
+      }
+      try {
+        const data = await workerRead();
+        if (!Array.isArray(data.campaigns)) throw new Error("Liste des campagnes absente dans la réponse du Worker.");
+        if (workerBusy) {
+          workerLoginPollTimer = setTimeout(check, 1000);
+          return;
+        }
+        await refreshWorkerFields({ closeLogin: false });
+        if (generation !== workerLoginPollGeneration) return;
+        if (typeof onConnected === "function") await onConnected();
+        if (generation !== workerLoginPollGeneration) return;
+        await workerInvoke("close_worker_login");
+        workerLoginPollTimer = null;
+        status("Connexion à l’API établie. Les données proviennent du Worker.");
+        return;
+      } catch (error) {
+        const message = error.message || String(error);
+        if (!/Cloudflare Access requise|Connexion Cloudflare Access requise/i.test(message)) status(message);
+      }
+      workerLoginPollTimer = setTimeout(check, 2500);
+    };
+    void check();
+  }).catch(error => status(error.message || String(error)));
+}
+
+async function closeWorkerLogin() {
+  stopWorkerLoginPolling();
+  try {
+    await workerInvoke("close_worker_login");
+    workerNotice("Fenêtre de connexion fermée.");
+  } catch (error) { workerNotice(error.message || String(error)); }
 }
 
 async function workerPost(body) {
@@ -66,7 +125,7 @@ function projectedShape(geometry, bounds = satelliteBounds(geometry)) {
 function workerField(row) {
   const shape = projectedShape(row.geometry);
   return {
-    id: "worker:" + row.id,
+    id: row.id,
     campaignId: row.id,
     remote: true,
     geometry: row.geometry,
@@ -87,22 +146,26 @@ function workerField(row) {
     action: "Résultats du Worker",
     actionDetail: "Les valeurs disponibles proviennent de la campagne enregistrée.",
     geometryAvailable: !!shape,
-    shape: shape || [[380, 250], [580, 250], [580, 390], [380, 390]],
+    shape: shape || [],
+    soilProfileData: null,
+    soilProfileGeometry: "",
+    soilProfileLoading: false,
+    soilProfileMessage: "",
     campaign: null
   };
 }
 
 function resetWorkerFields() {
   workerGeneration++;
-  fields.splice(0, fields.length, ...localFields);
+  fields.splice(0, fields.length);
   geography.clear();
-  state.fieldId = localFields[0].id;
+  state.fieldId = null;
   state.view = "fields";
   recenter();
   update();
 }
 
-async function refreshWorkerFields() {
+async function refreshWorkerFields({ closeLogin = true } = {}) {
   if (workerBusy) return;
   workerBusyState(true);
   workerNotice("Chargement des campagnes…");
@@ -111,30 +174,48 @@ async function refreshWorkerFields() {
     const data = await workerRead();
     if (!Array.isArray(data.campaigns)) throw new Error("Liste des campagnes absente dans la réponse du Worker.");
     if (generation !== workerGeneration) return;
-    if (!data.campaigns.length) {
+    const campaigns = data.campaigns.filter(row => row.demo !== true);
+    workerSessionReady = true;
+    setDecisionScope(data.decisionScope);
+    if (!campaigns.length) {
       resetWorkerFields();
-      workerNotice("Votre espace ne contient aucune campagne. Cliquez sur « Nouvelle campagne » pour créer votre premier champ.");
+      workerPanel.hidden = false;
+      workerNotice("Aucune campagne enregistrée dans cet espace. Créez votre première campagne après avoir choisi une localité et tracé son contour réel.");
+      if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
       return;
     }
-    fields.splice(0, fields.length, ...data.campaigns.map(workerField));
+    const lastId = state.fieldId;
+    fields.splice(0, fields.length, ...campaigns.map(workerField));
     geography.clear();
-    state.fieldId = fields[0].id;
-    state.view = "campaign";
+    state.fieldId = fields.find(field => field.id === lastId)?.id || fields[0].id;
+    if (!lastId) state.view = "fields";
     recenter();
     update();
     workerNotice(fields.length + (fields.length === 1 ? " campagne chargée." : " campagnes chargées.") +
       (data.truncated ? " La liste est limitée aux 500 plus récentes." : ""));
     workerPanel.hidden = true;
-    await openWorkerCampaign(fields[0], generation);
+    await openWorkerCampaign(currentField(), generation);
+    if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
   } catch (error) {
+    if (/connectez-vous|connexion.*(?:requise|expirée)/i.test(error.message || String(error))) {
+      workerSessionReady = false;
+      satellitePermissions.clear();
+      setDecisionScope(null);
+      decisionState.inputs.clear();
+      decisionState.saved.length = 0;
+      resetWorkerFields();
+    }
     workerNotice(error.message || String(error));
+    workerPanel.hidden = false;
   } finally {
     workerBusyState(false);
   }
 }
 
 async function openWorkerCampaign(field, generation = workerGeneration) {
-  if (!field.remote || field.campaign || field.loadingCampaign) return;
+  if (!field?.remote) return;
+  if (field.campaign) return;
+  if (field.loadingCampaign) return;
   field.loadingCampaign = true;
   if (state.fieldId === field.id) workerNotice("Chargement du détail de « " + field.name + " »…");
   try {
@@ -143,6 +224,10 @@ async function openWorkerCampaign(field, generation = workerGeneration) {
     if (!result.campaign || result.campaign.id !== field.campaignId) throw new Error("Campagne incompatible avec la sélection.");
     field.campaign = result.campaign;
     field.revision = result.campaign.revision;
+    const config = result.campaign.config;
+    const days = Array.from({length:7}, (_, i) => new Date(Date.parse(config.asOfDate) - i * 86400000).toISOString().slice(0, 10));
+    const recent = days.map(date => config.weather?.find(item => item.date === date && item.status === "observed")?.rainMm);
+    field.rain = recent.every(Number.isFinite) ? recent.reduce((sum, value) => sum + value, 0) : undefined;
     if (result.campaign.config?.parcelGeometry) {
       field.geometry = result.campaign.config.parcelGeometry;
       field.imageBounds = satelliteBounds(field.geometry);
@@ -153,9 +238,14 @@ async function openWorkerCampaign(field, generation = workerGeneration) {
     if (state.fieldId === field.id) {
       workerNotice("Campagne « " + field.name + " » chargée · révision " + field.revision + ".");
       update();
+      if (hasSatelliteConsent(field)) void loadWorkerSatellite(field);
+      if (state.view === "zones" || isDecisionSplit()) void loadWorkerZoneMap(field);
     }
   } catch (error) {
-    if (state.fieldId === field.id) workerNotice(error.message || String(error));
+    if (state.fieldId === field.id) {
+      showMessage(error.message || String(error));
+      workerNotice(error.message || String(error));
+    }
   } finally {
     field.loadingCampaign = false;
   }
@@ -163,87 +253,114 @@ async function openWorkerCampaign(field, generation = workerGeneration) {
 
 function updateSatelliteControls(field) {
   const controls = element("worker-satellite");
-  if (!field.remote || !field.geometryAvailable) { controls.hidden = true; return; }
+  if (!field.geometryAvailable || ["decisions", "zones", "notes", "campaign"].includes(state.view)) { controls.hidden = true; return; }
   controls.hidden = false;
   element("worker-satellite-load").disabled = !field.campaign || !!field.imageLoading;
-  element("worker-satellite-selects").hidden = !field.imageDates?.length;
   element("worker-satellite-load").hidden = !!field.imageDates?.length;
-  if (field.imageDates?.length) {
-    const dates = element("worker-satellite-date");
-    if (dates.options.length !== field.imageDates.length ||
-        dates.options[0]?.value !== field.imageDates[0])
-      dates.replaceChildren(...field.imageDates.map(day => new Option(day, day)));
-    dates.value = field.imageDate;
-    element("worker-satellite-layer").value = field.imageLayer;
-  }
-  putText("worker-satellite-message", field.imageMessage || "");
+  element("worker-satellite-load").textContent = hasSatelliteConsent(field) ? "Relancer la recherche" : "Autoriser et rechercher des images";
+  putText("worker-satellite-message", field.imageMessage || (hasSatelliteConsent(field) ? "" : "Le contour sera transmis pour rechercher les images Sentinel‑2."));
+}
+
+function hasSatelliteConsent(field) {
+  return !!field?.geometry && satellitePermissions.get(field.id) === JSON.stringify(field.geometry);
 }
 
 async function loadWorkerImage(field, date, layer, side = null) {
-  if (!field.remote || !field.imageBounds || !field.imageDates?.includes(date)) return;
-  const key = date + ":" + layer;
+  if (!hasSatelliteConsent(field) || !field.imageDates?.includes(date)) return;
   if (side === null) {
     field.imageDate = date;
     field.imageLayer = layer;
   } else {
     field.compareDates[side] = date;
-    field.compareLayers[side] = layer === "ndvi" ? "ndvi" : "satellite";
+    field.compareLayers[side] = layer;
   }
-  if (field.remoteImages.has(key)) { update(); return; }
+  if (currentField() === field) update();
+  const requestKey = date + (layer === "satellite" ? ":photo" : ":indices");
+  field.imageRequests ??= new Map();
+  let request = field.imageRequests.get(requestKey);
+  if (!request) {
+    request = (async () => {
+      if (layer === "satellite") {
+        const key = date + ":rgb";
+        if (!field.remoteImages.has(key)) field.remoteImages.set(key, await workerImage({date, layer: "rgb", bounds: field.imageBounds}));
+        return;
+      }
+      field.indexMaps ??= new Map();
+      if (!field.indexMaps.has(date)) {
+        const result = await workerPost({action: "field-index-image", id: field.id, date, consent: true});
+        if (!result.observations?.length || !result.pixels?.length)
+          throw new Error("Couverture claire insuffisante pour afficher cet indice à cette date.");
+        field.indexMaps.set(date, result);
+        const others = (field.indexSeries?.observations || []).filter(item => item.date !== date);
+        field.indexSeries = {...result, observations: [...others, ...result.observations]};
+      }
+    })().finally(() => field.imageRequests.delete(requestKey));
+    field.imageRequests.set(requestKey, request);
+  }
+  const isActive = () => currentField() === field && (side === null
+    ? field.imageDate === date && field.imageLayer === layer
+    : field.compareDates[side] === date && field.compareLayers[side] === layer);
   field.imageMessage = "Chargement de l’image…";
-  updateSatelliteControls(field);
+  if (isActive()) updateSatelliteControls(field);
   try {
-    const response = await workerInvoke("worker_image", { date, layer, bounds: field.imageBounds });
-    if (response.mime !== "image/png" || !response.data) throw new Error("Image indisponible.");
-    const image = new Image();
-    image.src = "data:image/png;base64," + response.data;
-    await image.decode();
-    if (!fields.includes(field)) return;
-    field.remoteImages.set(key, image);
-    field.imageMessage = "Date régionale publiée · " + date + " · " + (layer === "ndvi" ? "NDVI" : "Satellite") +
-      " · vérifiez la couverture du champ avec les indices.";
-    if (field.id === state.fieldId) update();
+    await request;
+    if (isActive() && state.view !== "decisions") {
+      const observation = field.indexMaps?.get(date)?.observations[0];
+      field.imageMessage = layer === "satellite" ? "" : "Pixels Sentinel‑2 de 10 m · " + number.format(observation.clearFraction * 100) + " % clairs";
+      update();
+    }
   } catch (error) {
-    field.imageMessage = error.message || String(error);
-    if (field.id === state.fieldId) updateSatelliteControls(field);
+    if (isActive()) {
+      field.imageMessage = error.message || String(error);
+      updateSatelliteControls(field);
+      showMessage(field.imageMessage);
+    }
   }
 }
 
 async function loadWorkerSatellite(field) {
-  if (!field.remote || !field.geometryAvailable || !field.campaign || field.imageLoading) return;
+  if (!hasSatelliteConsent(field) || !field.campaign || field.imageLoading) return;
   field.imageLoading = true;
-  field.imageMessage = "Recherche des dates publiées…";
+  field.imageMessage = "Recherche des scènes Sentinel‑2 sur le contour…";
   updateSatelliteControls(field);
-  const asOfDate = field.campaign.config?.asOfDate || new Date().toISOString().slice(0, 10);
+  const asOfDate = new Date().toISOString().slice(0, 10);
   try {
-    const catalog = await workerPost({ action: "satellite-catalog", asOfDate });
-    const rgb = catalog.layers?.rgb?.dates || [], ndvi = catalog.layers?.ndvi?.dates || [];
-    const both = rgb.filter(date => ndvi.includes(date) && date <= asOfDate);
-    const from = field.campaign.config?.sowingDate ||
-      new Date(Date.parse(asOfDate) - 120 * 86400000).toISOString().slice(0, 10);
-    field.imageDates = both.filter(date => date >= from).sort().reverse().slice(0, 48);
-    if (!field.imageDates.length) throw new Error("Aucune date Sentinel-2 publiée pour cette campagne.");
-    field.imageDate = field.imageDates[0];
-    field.compareDates = [field.imageDates[Math.min(1, field.imageDates.length - 1)], field.imageDates[0]];
-    updateSatelliteControls(field);
-    await loadWorkerImage(field, field.imageDate, field.imageLayer);
-    if (state.view === "compare" && state.fieldId === field.id)
-      await Promise.all(field.compareDates.map((day, side) =>
-        loadWorkerImage(field, day, field.compareLayers[side] === "ndvi" ? "ndvi" : "rgb", side)));
+    const scenes = await workerPost({ action: "satellite-scenes", geometry: field.geometry, asOfDate });
+    if (currentField() !== field && !fields.includes(field)) return;
+    field.imageDates = [...new Set((scenes.dates || []).map(scene => scene.date))].sort();
+    if (!field.imageDates.length) throw new Error("Aucune scène Sentinel‑2 répertoriée sur ce contour durant les 120 derniers jours.");
+    const latest = field.imageDates.at(-1);
+    field.compareDates = [field.imageDates.at(-2) || latest, latest];
+    field.compareLayers = ["satellite", "satellite"];
+    field.imageLayer = "satellite";
+    field.imageDate = latest;
+    field.automaticImage = latest;
+    if (currentField() === field) update();
+    const photo = workerImage({layer: "basemap", date: "", bounds: field.imageBounds}).then(image => {
+      field.basemap = image;
+      if (currentField() === field) update();
+    }).catch(() => {});
+    await Promise.all([photo, loadWorkerImage(field, latest, "satellite")]);
+    if (currentField() === field) void loadWorkerIndices(field);
+    if (currentField() === field && isComparing()) void loadCompareImages(field);
   } catch (error) {
     field.imageMessage = error.message || String(error);
   } finally {
     field.imageLoading = false;
-    updateSatelliteControls(field);
+    if (currentField() === field) update();
   }
+}
+
+function loadCompareImages(field) {
+  return Promise.all(field.compareDates?.map((date, side) => loadWorkerImage(field, date, field.compareLayers[side], side)) || []);
 }
 
 function renderWorkerIndices(field) {
   const panel = element("worker-indices");
   panel.hidden = !field.remote;
   if (!field.remote) return;
-  element("worker-indices-load").disabled = !field.geometryAvailable || !field.campaign || !!field.indicesLoading;
-  element("worker-indices-load").hidden = !!field.indexSeries;
+  element("worker-indices-load").disabled = !hasSatelliteConsent(field) || !field.campaign || !!field.indicesLoading;
+  element("worker-indices-load").hidden = !hasSatelliteConsent(field);
   putText("worker-indices-status", field.indicesMessage ||
     (field.geometryAvailable ? "Indices mesurés sur les pixels clairs du contour." : "Contour requis pour les indices."));
   const rows = element("worker-indices-rows");
@@ -278,8 +395,7 @@ function updateWorkerComparison(field) {
     const dates = field.imageDates || [];
     if (dateSelect.options.length !== dates.length || dateSelect.options[0]?.value !== dates[0])
       dateSelect.replaceChildren(...dates.map(date => new Option(date, date)));
-    if (layerSelect.options.length !== 2 || layerSelect.options[0]?.value !== "satellite")
-      layerSelect.replaceChildren(new Option("Satellite", "satellite"), new Option("NDVI", "ndvi"));
+    if (layerSelect.options.length !== 4) layerSelect.replaceChildren(...["satellite", "ndvi", "contrast", "evi"].map(key => new Option(LAYERS[key], key)));
     dateSelect.value = field.compareDates?.[side] || "";
     layerSelect.value = field.compareLayers?.[side] || "satellite";
     const date = field.compareDates?.[side];
@@ -361,7 +477,7 @@ function updateWorkerZones(field, isDose) {
 }
 
 async function loadWorkerZoneMap(field) {
-  if (!field?.remote || !field.campaign || !field.geometryAvailable || field.zoneLoading) return;
+  if (!field?.campaign || !field.geometryAvailable || field.zoneLoading || field.zoneMapData?.revision === field.revision) return;
   field.zoneLoading = true;
   field.zoneMessage = "Analyse géographique du Worker…";
   updateWorkerZones(field,state.zoneLayer === "dose");
@@ -383,9 +499,10 @@ async function loadWorkerZoneMap(field) {
 }
 
 async function loadWorkerIndices(field) {
-  if (!field?.remote || !field.campaign?.config?.parcelGeometry || field.indicesLoading) return;
+  if (!field?.campaign || !field.geometry || field.indicesLoading) return;
+  if (!hasSatelliteConsent(field)) { showMessage("Autorisez d’abord la recherche d’images pour ce contour."); return; }
   const config = field.campaign.config;
-  const asOfDate = config.asOfDate || new Date().toISOString().slice(0, 10);
+  const asOfDate = new Date().toISOString().slice(0, 10);
   const limit = new Date(Date.parse(asOfDate) - 120 * 86400000).toISOString().slice(0, 10);
   const startDate = config.sowingDate > limit && config.sowingDate <= asOfDate ? config.sowingDate : limit;
   field.indicesLoading = true;
@@ -398,25 +515,22 @@ async function loadWorkerIndices(field) {
     if (result.version !== "sentinel-parcel-indices-1" || !Array.isArray(result.observations))
       throw new Error("Format des indices inattendu.");
     if (!fields.includes(field)) return;
-    field.indexSeries = result;
+    const byDate = new Map((field.indexSeries?.observations || []).map(item => [item.date, item]));
+    for (const item of result.observations) byDate.set(item.date, item);
+    field.indexSeries = {...result, observations: [...byDate.values()]};
+    const latest = observationsFor(field, "ndvi").at(-1)?.date;
+    if (latest && field.imageDates?.includes(latest) && field.automaticImage === field.imageDate && field.imageLayer === "satellite") {
+      field.automaticImage = null;
+      void loadWorkerImage(field, latest, "ndvi");
+    }
     field.indicesMessage = result.coverageNote || "Indices Sentinel‑2 chargés.";
   } catch (error) {
     field.indicesMessage = error.message || String(error);
   } finally {
     field.indicesLoading = false;
-    if (field.id === state.fieldId) renderWorkerIndices(field);
+    if (field.id === state.fieldId && state.view !== "decisions") update();
   }
 }
-
-const localSelectField = selectField;
-selectField = function (id) {
-  localSelectField(id);
-  const field = currentField();
-  if (field.remote) {
-    update();
-    void openWorkerCampaign(field);
-  }
-};
 
 function workerDecision(field, topicId) {
   const c = field.campaign?.config || {};
@@ -478,6 +592,14 @@ function workerVarietyRows(field, body) {
 
 function renderWorkerDecision(field) {
   const topic = decisionTopics.find(item => item.id === decisionState.topic);
+  if (!field.campaign) {
+    putText("decision-title", topic.title);
+    putText("decision-context", field.name);
+    element("decision-body").replaceChildren(makeNode("p", "soft-text", "Chargement de la campagne…"));
+    element("decision-preview-btn").hidden = true;
+    element("decision-history").hidden = true;
+    return;
+  }
   const result = workerDecision(field, topic.id);
   putText("decision-title", topic.title);
   putText("decision-context", field.name + " · données du Worker · révision " + (field.revision || "—"));
@@ -499,6 +621,13 @@ function renderWorkerDecision(field) {
       number.format(sowing.rangeKg[0]) + " à " + number.format(sowing.rangeKg[1]) + " kg"));
   }
   if (topic.id === "fertilizer") {
+    const tabs = makeNode("div");
+    tabs.innerHTML = segmented("Plan d’engrais", [["timing", "Date d’apport"], ["dose", "Doses et coût"]], decisionState.mode);
+    body.append(tabs);
+    if (decisionState.mode === "dose") {
+      renderWorkerDoseBudget(body, field);
+      body.append(toolButton("Confirmer les doses dans la campagne", "seasonal", {campaign: field.id, section: "images", monitor: "doses"}));
+    } else {
     for (const item of field.campaign?.plan?.management?.products ||
       field.campaign?.config?.managementPlan?.products || []) {
       if (item.kind !== "fertilizer") continue;
@@ -521,8 +650,15 @@ function renderWorkerDecision(field) {
     });
     body.append(advice,result);
     if (field.campaign) workerFertilizerForm(body,field);
+    }
   }
   if (topic.id === "water") {
+    const tabs = makeNode("div");
+    tabs.innerHTML = segmented("Plan d’eau", [["field", "Ce champ"], ["pump", "Partager la pompe"]], decisionState.mode);
+    body.append(tabs);
+    if (decisionState.mode === "pump") {
+      body.append(toolButton("Ouvrir le planning des pompes partagées", "gestion"));
+    } else {
     const config = field.campaign?.config;
     if (Number.isFinite(config?.latitude) && Number.isFinite(config?.longitude)) {
       const weather = makeNode("button","btn","Voir la météo prévue");
@@ -545,8 +681,10 @@ function renderWorkerDecision(field) {
       body.append(weather,result);
     }
     if (field.campaign) workerIrrigationForm(body,field);
+    body.append(toolButton("Ouvrir le bilan d’eau", "seasonal", {campaign: field.id, section: "water"}));
+    }
   }
-  if (topic.id === "stand") workerStandForm(body);
+  if (topic.id === "stand") body.innerHTML = buildStand({data: decisionValues(field), field});
   if (topic.id === "harvest") {
     const estimate = field.campaign?.plan?.yieldEstimation;
     const recorded = estimate?.scenarios?.find(s => s.id === "recorded");
@@ -557,12 +695,70 @@ function renderWorkerDecision(field) {
         body.append(workerRow("Production conditionnelle", number.format(recorded.totals.productionKg / 1000) + " t"));
     } else body.append(makeNode("p", "soft-text", estimate?.missing?.[0] || "Rendement non disponible."));
   }
-  if (topic.id === "sale") workerSaleForm(body,field);
+  if (topic.id === "sale") body.innerHTML = buildSale({data: decisionValues(field)});
+  if (topic.id === "harvest") {
+    const data = decisionValues(field);
+    const section = makeNode("section", "decision-inputs");
+    section.innerHTML = numberInput("Lot à récolter (t)", "quantity", data.quantity, .001, 100000) +
+      numberInput("Humidité mesurée (%)", "moisture", data.moisture, 0, 100) +
+      numberInput("Camion (t/rotation)", "truck", data.truck, .1, 100) +
+      numberInput("Rotations", "trips", data.trips, 1, 100, 1) +
+      numberInput("Seuil acheteur (%)", "limit", data.limit, 1, 100) +
+      numberInput("Capacité de séchage (t)", "dryer", data.dryer, 0, 100000);
+    body.append(section, toolButton("Organiser la collecte", "collecte"));
+  }
+  if (topic.id === "sowing" || topic.id === "variety")
+    body.append(toolButton("Comparer dans la simulation", "seasonal", {campaign: field.id, section: "water"}));
   element("decision-preview-btn").hidden = true;
   element("decision-history").hidden = true;
   element("decision-map-foot").hidden = true;
   element("decision-dock").querySelectorAll("[data-topic]").forEach(button =>
     button.setAttribute("aria-pressed", String(button.dataset.topic === topic.id)));
+}
+
+function doseFeatures(field) {
+  const map = field.zoneMapData;
+  return map?.revision === field.revision && Array.isArray(map.historical?.features)
+    ? map.historical.features.filter(feature => Number.isFinite(feature.properties?.area_ha) && feature.properties.area_ha > 0)
+    : [];
+}
+
+function workerDoseBudget(field, data) {
+  const features = doseFeatures(field);
+  if (!features.length || !nonnegative(data.usual) || !positive(data.bag)) return null;
+  const rows = features.map(({properties}) => ({area: properties.area_ha, rate: data["rate-" + properties.zone]}));
+  if (!rows.every(row => nonnegative(row.rate))) return null;
+  const area = rows.reduce((sum, row) => sum + row.area, 0);
+  const total = rows.reduce((sum, row) => sum + row.area * row.rate, 0);
+  const difference = total - area * data.usual;
+  const cost = nonnegative(data.price) ? total * data.price : null;
+  const threshold = cost !== null && difference > 0 && positive(data.grain) ? difference * data.price / data.grain : null;
+  return {total, difference, cost, threshold, bags: Math.ceil(total / data.bag)};
+}
+
+function renderWorkerDoseBudget(body, field) {
+  const features = doseFeatures(field);
+  if (!features.length) {
+    body.append(makeNode("p", "soft-text", field.zoneMessage || "Une carte qualifiée est nécessaire pour calculer les doses par zone."));
+    return;
+  }
+  const data = decisionValues(field);
+  const confirmed = new Map((field.zoneMapData.dose?.features || []).filter(feature => feature.properties.unit === "kg/ha")
+    .map(feature => [feature.properties.zone, feature.properties.dose]));
+  for (const {properties} of features) {
+    const name = "rate-" + properties.zone;
+    if (data[name] === undefined && confirmed.has(properties.zone)) data[name] = confirmed.get(properties.zone);
+  }
+  const section = makeNode("section", "decision-section");
+  section.innerHTML = `<div class="decision-lead"><div><strong id="decision-dose-mass">—</strong><span class="lead-label">de produit à préparer</span></div></div>
+    <h3>Doses saisies par zone</h3><table class="decision-table"><thead><tr><th>Zone</th><th>Surface</th><th>kg/ha</th></tr></thead><tbody>${features.map(({properties:p}) =>
+      `<tr><td>${htmlEscape(p.label)}</td><td>${number.format(p.area_ha)} ha</td><td>${numberInput("Dose " + p.label, "rate-" + p.zone, data["rate-" + p.zone], 0, 1000000, "any", {inline:true})}</td></tr>`).join("")}</tbody></table>
+    <h3>Produit et budget</h3><div class="decision-inputs">${numberInput("Dose uniforme (kg/ha)", "usual", data.usual, 0, 1000000)}
+    ${numberInput("Poids d’un sac (kg)", "bag", data.bag, .01, 1000)}
+    ${numberInput("Engrais (FCFA/kg)", "price", data.price, 0, 100000000)}
+    ${numberInput("Grain (FCFA/kg)", "grain", data.grain, .01, 100000000)}</div>
+    ${help("Les surfaces proviennent de la carte du champ. Les doses et prix viennent de votre saisie. L’aperçu calcule des quantités et des coûts.")}`;
+  body.append(section);
 }
 
 function workerNumberInput(parent,label,value="") {
@@ -593,8 +789,9 @@ function managementFor(config) {
 function workerIrrigationForm(body,field) {
   body.append(makeNode("h3","section-title","Planifier un arrosage"));
   const date = workerTextInput(body,"Date dans le cycle","date",
-    field.campaign.config.sowingDate > field.campaign.config.asOfDate
-      ? field.campaign.config.sowingDate : field.campaign.config.asOfDate || "");
+    workerCampaignDate(field.campaign.config));
+  date.min=field.campaign.config.sowingDate;
+  date.max=workerCampaignDate({...field.campaign.config,asOfDate:"9999-12-31"});
   const volume = workerNumberInput(body,"Volume au champ (m³/ha)");
   const button = makeNode("button","btn primary","Enregistrer l’arrosage prévu");
   button.type = "button";
@@ -618,81 +815,132 @@ function workerIrrigationForm(body,field) {
   body.append(button,feedback);
 }
 
+function workerCampaignDate(config) {
+  const start=config?.sowingDate;
+  const days=Array.isArray(config?.stages)?config.stages.reduce((sum,stage)=>sum+(Number(stage.days)||0),0):0;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start||"") || days < 1) return start || "";
+  const end=new Date(Date.parse(start+"T12:00:00Z")+(days-1)*86400000).toISOString().slice(0,10);
+  const today=config.asOfDate || new Date().toISOString().slice(0,10);
+  return today<start?start:today>end?end:today;
+}
+
 function workerFertilizerForm(body,field) {
   body.append(makeNode("h3","section-title","Documenter un apport prévu"));
   const product=workerTextInput(body,"Produit commercial");
   const date=workerTextInput(body,"Date dans le cycle","date",
-    field.campaign.config.sowingDate > field.campaign.config.asOfDate
-      ? field.campaign.config.sowingDate : field.campaign.config.asOfDate || "");
+    workerCampaignDate(field.campaign.config));
+  date.min=field.campaign.config.sowingDate;
+  date.max=workerCampaignDate({...field.campaign.config,asOfDate:"9999-12-31"});
   const dose=workerNumberInput(body,"Dose de produit (kg/ha)");
   const source=workerTextInput(body,"Source de la dose (conseil ou étiquette)");
+  const nitrogen=workerNumberInput(body,"Azote N (%) · facultatif");
+  const phosphate=workerNumberInput(body,"Phosphate P₂O₅ (%) · facultatif");
+  const potassium=workerNumberInput(body,"Potasse K₂O (%) · facultatif");
+  const npkInputs=[nitrogen,phosphate,potassium];
+  npkInputs.forEach(input=>{input.max="100";input.placeholder="Inconnu si absent";});
+  const compositionSource=workerTextInput(body,"Source de la composition NPK · si renseignée");
   const button=makeNode("button","btn primary","Enregistrer l’apport prévu");
   button.type="button";
-  const feedback=makeNode("p","soft-text","Produit enregistré sans gain de rendement présumé. La composition pourra être complétée dans l’application web.");
+  const feedback=makeNode("p","soft-text","Les teneurs inconnues restent non renseignées. L’effet de l’engrais sur le rendement n’est pas calculé.");
   button.addEventListener("click",async()=>{
     const quantity=dose.valueAsNumber;
+    const npk=npkInputs.map(input=>input.value===""?null:input.valueAsNumber);
     if (!product.value.trim() || !date.value || !source.value.trim() || !Number.isFinite(quantity) || quantity <= 0) {
       feedback.textContent="Produit, date, dose positive et source requis.";return;
+    }
+    if (npk.some(value=>value!==null&&(!Number.isFinite(value)||value<0||value>100))) {
+      feedback.textContent="Chaque teneur NPK doit être comprise entre 0 et 100 %.";return;
+    }
+    if (npk.some(value=>value!==null)&&!compositionSource.value.trim()) {
+      feedback.textContent="Indiquez l’étiquette ou la source qui confirme les teneurs NPK.";return;
     }
     button.disabled=true; feedback.textContent="Enregistrement et recalcul du Worker…";
     try {
       const id=crypto.randomUUID();
       await saveWorkerConfig(field,config=>{
         const plan=managementFor(config);
+        const provenance=npk.some(value=>value!==null)
+          ? source.value.trim()+" · composition NPK : "+compositionSource.value.trim()
+          : source.value.trim();
         plan.products.push({id,date:date.value,kind:"fertilizer",product:product.value.trim(),
-          dose:quantity,unit:"kg/ha",status:"planned",source:source.value.trim(),npkPercent:[null,null,null]});
+          dose:quantity,unit:"kg/ha",status:"planned",source:provenance,npkPercent:npk});
         config.managementPlan=plan;
       });
-      showMessage("Apport prévu enregistré ; effet sur le rendement non modélisé.");
+      showMessage("Apport prévu enregistré ; aucun gain de rendement n’est présumé.");
     } catch(error) { feedback.textContent=error.message || String(error); button.disabled=false; }
   });
   body.append(button,feedback);
 }
 
-function workerStandForm(body) {
-  const observed = workerNumberInput(body,"Plants comptés par hectare");
-  const target = workerNumberInput(body,"Densité cible (plants/ha)");
-  const result = makeNode("p","worker-computed soft-text","Saisissez les deux valeurs pour comparer.");
-  body.append(result);
-  function calculate() {
-    const measured = observed.valueAsNumber, wanted = target.valueAsNumber;
-    result.textContent = Number.isFinite(measured) && measured >= 0 && Number.isFinite(wanted) && wanted > 0
-      ? number.format(measured / wanted * 100) + " % de la densité cible · écart " +
-        number.format(Math.max(0,wanted-measured)) + " plants/ha. Vérifiez le nombre de points comptés et la régularité spatiale."
-      : "Saisissez un comptage et une cible positive.";
-  }
-  observed.addEventListener("input",calculate); target.addEventListener("input",calculate);
-}
-
-function workerSaleForm(body,field) {
-  const estimate = field.campaign?.plan?.yieldEstimation;
-  const recorded = estimate?.scenarios?.find(s=>s.id==="recorded");
-  const predicted = estimate?.status === "conditional" && recorded?.status === "conditional" &&
-    Number.isFinite(recorded.totals?.productionKg) ? Math.round(recorded.totals.productionKg) : "";
-  const mass = workerNumberInput(body,"Lot à vendre (kg) · pesé ou scénario",predicted);
-  const now = workerNumberInput(body,"Prix actuel (FCFA/kg)");
-  const later = workerNumberInput(body,"Prix futur supposé (FCFA/kg)");
-  const cost = workerNumberInput(body,"Coût total de stockage (FCFA)");
-  const result = makeNode("p","worker-computed soft-text","Saisissez les prix et les coûts.");
-  body.append(result);
-  function calculate() {
-    const values = [mass,now,later,cost].map(input=>input.valueAsNumber);
-    if (!values.every(v=>Number.isFinite(v) && v>=0) || values[0]<=0) {
-      result.textContent="Lot positif et prix/coûts requis.";return;
-    }
-    const [kg,p1,p2,storage]=values;
-    const netNow=kg*p1, netLater=kg*p2-storage, threshold=p1+storage/kg;
-    result.textContent="Vendre : "+number.format(netNow)+" FCFA · Stocker : "+number.format(netLater)+
-      " FCFA selon votre prix supposé. Seuil pour couvrir le stockage : "+number.format(threshold)+
-      " FCFA/kg. "+(predicted!==""?"Lot initial tiré de la production conditionnelle, remplacez-le par une pesée réelle.":"Lot saisi par vous.");
-  }
-  [mass,now,later,cost].forEach(input=>input.addEventListener("input",calculate));
+function toolButton(label, entry, options) {
+  const button = makeNode("button", "btn", label);
+  button.type = "button";
+  button.addEventListener("click", () => openAgriTool(entry, options));
+  return button;
 }
 
 function workerRow(label, value) {
   const row = makeNode("div", "data-row");
   row.append(makeNode("span", "key", label), makeNode("b", "", value));
   return row;
+}
+
+function renderWorkerSoilProfile(detail, field, config) {
+  detail.append(makeNode("h3", "section-title", "Propriétés du sol · source réelle"));
+  const geometry = config.parcelGeometry;
+  if (!geometry) {
+    detail.append(makeNode("p", "soft-text", "Aucun contour n’est enregistré pour interroger le profil spatial."));
+    return;
+  }
+  const geometryKey = JSON.stringify(geometry);
+  if (field.soilProfileGeometry !== geometryKey) {
+    field.soilProfileData = null;
+    field.soilProfileGeometry = geometryKey;
+    field.soilProfileMessage = "";
+  }
+  const button = makeNode("button", "btn",
+    field.soilProfileData ? "Actualiser le profil SoilGrids" : "Charger le profil spatial réel");
+  button.type = "button";
+  button.disabled = field.soilProfileLoading;
+  const status = makeNode("p", "soft-text", field.soilProfileMessage ||
+    "Interroge l’API AgriPrévision pour cette géométrie; les valeurs restent des estimations cartographiques.");
+  button.addEventListener("click", async () => {
+    if (field.soilProfileLoading) return;
+    field.soilProfileLoading = true;
+    field.soilProfileMessage = "Interrogation SoilGrids en cours…";
+    renderWorkerCampaign(field);
+    try {
+      const result = await workerPost({action:"agronomic-soil",geometry});
+      if (!fields.includes(field) || field.revision !== field.campaign?.revision ||
+          JSON.stringify(field.campaign?.config?.parcelGeometry) !== geometryKey) return;
+      if (result?.version !== "spatial-soil-1" || !Array.isArray(result.summary))
+        throw new Error("L’API n’a pas fourni de profil spatial dans le format attendu.");
+      field.soilProfileData = result;
+      field.soilProfileMessage = result.complete === true
+        ? "Couverture déclarée complète par l’API; maille cartographique de 250 m, pas mesure de laboratoire."
+        : "Couverture partielle renvoyée par l’API; ne pas extrapoler les valeurs manquantes.";
+    } catch (error) {
+      field.soilProfileData = null;
+      field.soilProfileMessage = error.message || String(error);
+    } finally {
+      field.soilProfileLoading = false;
+      if (fields.includes(field)) renderWorkerCampaign(field);
+    }
+  });
+  detail.append(button, status);
+  const profile = field.soilProfileData;
+  if (!profile || field.soilProfileGeometry !== geometryKey) return;
+  const area = value => Number.isFinite(value) ? number.format(value / 10000) + " ha" : "indisponible";
+  detail.append(makeNode("small", "worker-index-quality",
+    "Couverture spatiale : " + area(profile.coveredM2) + " / " + area(profile.totalM2) +
+    " · " + (Array.isArray(profile.samples) ? profile.samples.length : 0) + " profil(s) représentatif(s) · maille native " +
+    (Number.isFinite(profile.nativeResolutionM) ? profile.nativeResolutionM : "—") + " m."));
+  if (profile.method) detail.append(makeNode("p", "soft-text", profile.method));
+  for (const item of profile.summary.filter(row => Number.isFinite(row.value) && row.coveredM2 > 0)) {
+    detail.append(workerRow(item.label, number.format(item.value) + (item.unit ? " " + item.unit : "")));
+  }
+  if (!profile.summary.some(row => Number.isFinite(row.value) && row.coveredM2 > 0))
+    detail.append(makeNode("p", "soft-text", "Aucune propriété numérique exploitable renvoyée pour cette parcelle."));
 }
 
 function renderWorkerCampaign(field) {
@@ -709,8 +957,37 @@ function renderWorkerCampaign(field) {
   detail.append(makeNode("h3", "section-title", "Résultats enregistrés"));
   detail.append(workerRow("Révision", String(field.campaign.revision)));
   detail.append(workerRow("Date des données", date));
+  renderWorkerSoilProfile(detail, field, config);
   detail.append(workerRow("Statut du plan", plan.status === "conditional" ? "Conditionnel" :
     plan.status === "blocked" ? "Suspendu" : "Non disponible"));
+  detail.append(makeNode("h3", "section-title", "Sols et météo enregistrés"));
+  const soil = config.soil || {};
+  const layers = Array.isArray(soil.layers) ? soil.layers : [];
+  if (soil.source) detail.append(makeNode("p", "soft-text", soil.source));
+  if (layers.length) {
+    let depthCm = 0;
+    for (const layer of layers) {
+      const top = depthCm;
+      depthCm += Number.isFinite(layer.thicknessM) ? layer.thicknessM * 100 : 0;
+      const available = Number.isFinite(layer.thicknessM) && Number.isFinite(layer.thetaFC) &&
+        Number.isFinite(layer.thetaWP) && layer.thetaFC > layer.thetaWP
+        ? number.format(1000 * layer.thicknessM * (layer.thetaFC - layer.thetaWP)) + " mm d’eau disponible"
+        : "Rétention indisponible";
+      detail.append(workerRow(Math.round(top) + "–" + Math.round(depthCm) + " cm",
+        available + " · capacité au champ " +
+        (Number.isFinite(layer.thetaFC) ? number.format(layer.thetaFC * 100) + " %" : "inconnue") +
+        " · flétrissement " + (Number.isFinite(layer.thetaWP) ? number.format(layer.thetaWP * 100) + " %" : "inconnu")));
+      detail.append(workerRow("Humidité initiale · " + Math.round(depthCm) + " cm",
+        Number.isFinite(layer.initialTheta) ? number.format(layer.initialTheta * 100) + " % volumique" : "Inconnue; aucune valeur inventée"));
+    }
+  } else detail.append(makeNode("p", "soft-text", "Aucun profil hydraulique enregistré dans cette campagne."));
+  const weather = Array.isArray(config.weather) ? config.weather : [];
+  if (weather.length) {
+    const observed = weather.filter(item => item.status === "observed").length;
+    const forecast = weather.filter(item => item.status === "forecast").length;
+    detail.append(workerRow("Série météo enregistrée",
+      observed + " jour(s) observés · " + forecast + " jour(s) prévus · " + weather.length + " au total"));
+  } else detail.append(makeNode("p", "soft-text", "Aucune série météo observée ou prévue n’est enregistrée."));
   const yieldReport = plan.yieldEstimation;
   const scenario = yieldReport?.scenarios?.find(item => item.id === "recorded");
   if (yieldReport?.status === "conditional" && scenario?.status === "conditional" &&
@@ -750,26 +1027,14 @@ function renderWorkerCampaign(field) {
 
 element("worker-toggle").addEventListener("click", () => { workerPanel.hidden = !workerPanel.hidden; });
 element("worker-close").addEventListener("click", () => { workerPanel.hidden = true; });
-element("worker-login").addEventListener("click", async () => {
-  try {
-    await workerInvoke("open_worker_login");
-    workerNotice("Terminez la connexion dans la fenêtre ouverte, puis cliquez sur « Actualiser les campagnes ».");
-  } catch (error) { workerNotice(error.message || String(error)); }
-});
+element("worker-login").addEventListener("click", () => startWorkerLogin());
+element("worker-login-close").addEventListener("click", closeWorkerLogin);
 element("worker-refresh").addEventListener("click", refreshWorkerFields);
-element("worker-demo").addEventListener("click", () => {
-  resetWorkerFields();
-  workerPanel.hidden = true;
-  workerNotice("Démonstration locale affichée.");
-});
 element("worker-satellite-load").addEventListener("click", () => {
-  void loadWorkerSatellite(currentField());
-});
-element("worker-satellite-date").addEventListener("change", event => {
-  void loadWorkerImage(currentField(), event.target.value, currentField().imageLayer);
-});
-element("worker-satellite-layer").addEventListener("change", event => {
-  void loadWorkerImage(currentField(), currentField().imageDate, event.target.value);
+  const field = currentField();
+  if (!field?.geometry) return;
+  satellitePermissions.set(field.id, JSON.stringify(field.geometry));
+  void loadWorkerSatellite(field);
 });
 element("worker-indices-load").addEventListener("click", () => {
   void loadWorkerIndices(currentField());
@@ -781,7 +1046,7 @@ for (const [side, letter] of ["a", "b"].entries()) {
       const field = currentField();
       if (!field.remote) return;
       const date = element("date-" + letter).value;
-      const layer = element("layer-" + letter).value === "ndvi" ? "ndvi" : "rgb";
+      const layer = element("layer-" + letter).value;
       void loadWorkerImage(field, date, layer, side);
     });
   }

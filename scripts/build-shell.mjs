@@ -14,11 +14,11 @@ try{
  let html;
  for(let i=0;i<120;i++){
   if(child.exitCode!==null)throw new Error('Local renderer stopped: '+output);
-  try{const r=await fetch(`http://127.0.0.1:${port}/`,{signal:AbortSignal.timeout(2000)});if(r.ok){html=await r.text();break;}}catch{}
+  try{const r=await fetch(`http://127.0.0.1:${port}/outils`,{signal:AbortSignal.timeout(2000)});if(r.ok){html=await r.text();break;}}catch{}
   await new Promise(r=>setTimeout(r,250));
  }
  if(!html||!html.includes('Chargement des données agricoles')||!html.includes('<script')||!html.includes('</html>'))throw new Error('Incomplete loading shell: '+output);
  if(html.includes('cf-access-jwt-assertion'))throw new Error('Unexpected authentication data in shell');
  await mkdir('dist/client/_shell',{recursive:true});await writeFile('dist/client/_shell/index.html',html);
- console.log(`Accueil précompilé : ${Buffer.byteLength(html)} octets ; rendu React retiré des GET /.`);
+ console.log(`Accueil précompilé : ${Buffer.byteLength(html)} octets ; rendu React retiré des GET /outils.`);
 }finally{child.kill('SIGTERM');await new Promise(r=>{if(child.exitCode!==null)return r();child.once('exit',r);setTimeout(()=>{child.kill('SIGKILL');r();},3000).unref();});await rm(state,{recursive:true,force:true});}
