@@ -1,4 +1,18 @@
-const decisionState = {topic: "water", mode: "field", inputs: new Map(), saved: [], pending: null};
+const decisionState = {topic: "water", mode: "field", inputs: new Map(), saved: [], pending: null, scope: null};
+
+function setDecisionScope(scope) {
+  scope = typeof scope === "string" && /^[a-f0-9]{64}$/.test(scope) ? scope : null;
+  if (scope === decisionState.scope) return;
+  decisionState.scope = scope;
+  decisionState.inputs.clear();
+  decisionState.saved = [];
+  if (!scope) return;
+  try {
+    const stored = JSON.parse(localStorage.getItem("agriprevision.decisions." + scope) || "[]");
+    if (Array.isArray(stored)) decisionState.saved = stored.slice(0, 50).filter(item =>
+      typeof item?.fieldId === "string" && decisionTopics.some(topic => topic.id === item.topic) && item.data && typeof item.data === "object");
+  } catch { /* Drafts remain usable in memory when storage is unavailable. */ }
+}
 
 function decisionValues(field, topic = decisionState.topic) {
   const key = field.id + "/" + topic;
@@ -42,6 +56,14 @@ function decisionResult(field) {
       ["Graines pour la surface envisagée", number.format(result.seeds)],
       ...(result.expense === null ? [] : [["Coût des graines", number.format(result.expense) + " FCFA"]])];
   }
+  if (topic === "fertilizer" && decisionState.mode === "dose") {
+    const result = workerDoseBudget(field, data);
+    if (!result) return null;
+    return [["Produit à préparer", number.format(result.total) + " kg"], ["Sacs à prévoir", number.format(result.bags)],
+      ["Écart avec la dose uniforme", number.format(result.difference) + " kg"],
+      ...(result.cost === null ? [] : [["Coût du produit", number.format(result.cost) + " FCFA"]]),
+      ...(result.threshold === null ? [] : [["Grain pour couvrir le surcoût", number.format(result.threshold) + " kg"]])];
+  }
   if (topic === "harvest") {
     if (![data.quantity, data.truck, data.trips, data.limit].every(positive) || !nonnegative(data.moisture)) return null;
     const drying = data.moisture > data.limit;
@@ -63,6 +85,11 @@ function updateDecisionPreview() {
   if (decisionState.topic === "stand") {
     const result = computeStand(decisionValues(field));
     putText("stand-density", result ? number.format(result.density) : "—");
+  }
+  if (isDecisionSplit()) {
+    const result = workerDoseBudget(field, decisionValues(field));
+    if (element("decision-dose-mass")) putText("decision-dose-mass", result ? number.format(result.total) + " kg" : "—");
+    scheduleDraw();
   }
   if (decisionState.topic === "sale") {
     const result = computeSale(decisionValues(field));
@@ -101,7 +128,7 @@ function setupDecisionInterface() {
     const rows = decisionResult(field);
     if (!rows) return;
     const topic = decisionTopics.find(item => item.id === decisionState.topic);
-    decisionState.pending = {fieldId: field.id, topic: topic.id, data: {...decisionValues(field)}};
+    decisionState.pending = {fieldId: field.id, topic: topic.id, mode: decisionState.mode, data: {...decisionValues(field)}};
     putText("decision-preview-title", topic.title);
     putText("decision-preview-field", field.name);
     element("decision-preview-list").replaceChildren(...rows.map(([label, value]) => {
@@ -114,9 +141,17 @@ function setupDecisionInterface() {
   element("save-decision").addEventListener("click", () => {
     if (!decisionState.pending) return;
     decisionState.saved.unshift(decisionState.pending);
+    decisionState.saved.length = Math.min(decisionState.saved.length, 50);
     decisionState.pending = null;
     element("decision-preview").close();
-    putText("decision-error", "Brouillon conservé pour cette session.");
+    let message = "Brouillon conservé pour cette session.";
+    if (decisionState.scope) {
+      try {
+        localStorage.setItem("agriprevision.decisions." + decisionState.scope, JSON.stringify(decisionState.saved));
+        message = "Brouillon enregistré pour votre compte sur cet appareil.";
+      } catch { /* The session copy remains available. */ }
+    }
+    putText("decision-error", message);
   });
   element("decision-preview").addEventListener("close", () => { decisionState.pending = null; });
   element("decision-history").addEventListener("click", () => {
@@ -129,11 +164,11 @@ function setupDecisionInterface() {
       button.addEventListener("click", () => {
         decisionState.inputs.set(field.id + "/" + record.topic, {...record.data});
         element("decision-history-dialog").close();
-        openDecision(record.topic);
+        openDecision(record.topic, record.mode);
       });
       return button;
     }));
-    if (!records.length) items.append(makeNode("p", "decision-short", "Aucun brouillon pour ce champ dans cette session."));
+    if (!records.length) items.append(makeNode("p", "decision-short", "Aucun brouillon pour ce champ."));
     element("decision-history-dialog").showModal();
   });
   document.querySelectorAll("[data-quick-decision]").forEach(button =>

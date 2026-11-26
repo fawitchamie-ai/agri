@@ -176,6 +176,7 @@ async function refreshWorkerFields({ closeLogin = true } = {}) {
     if (generation !== workerGeneration) return;
     const campaigns = data.campaigns.filter(row => row.demo !== true);
     workerSessionReady = true;
+    setDecisionScope(data.decisionScope);
     if (!campaigns.length) {
       resetWorkerFields();
       workerPanel.hidden = false;
@@ -199,6 +200,7 @@ async function refreshWorkerFields({ closeLogin = true } = {}) {
     if (/connectez-vous|connexion.*(?:requise|expirée)/i.test(error.message || String(error))) {
       workerSessionReady = false;
       satellitePermissions.clear();
+      setDecisionScope(null);
       decisionState.inputs.clear();
       decisionState.saved.length = 0;
       resetWorkerFields();
@@ -623,10 +625,8 @@ function renderWorkerDecision(field) {
     tabs.innerHTML = segmented("Plan d’engrais", [["timing", "Date d’apport"], ["dose", "Doses et coût"]], decisionState.mode);
     body.append(tabs);
     if (decisionState.mode === "dose") {
-      const map = field.zoneMapData;
-      body.append(makeNode("p", "soft-text", map?.dose ? "Doses validées pour les zones couvertes." : "Préparez puis confirmez les doses de chaque zone dans votre campagne."));
-      for (const feature of map?.dose?.features || []) body.append(workerRow(feature.properties.label, number.format(feature.properties.dose) + " " + feature.properties.unit));
-      body.append(toolButton("Préparer les doses par zone", "seasonal", {campaign: field.id, section: "images", monitor: "doses"}));
+      renderWorkerDoseBudget(body, field);
+      body.append(toolButton("Confirmer les doses dans la campagne", "seasonal", {campaign: field.id, section: "images", monitor: "doses"}));
     } else {
     for (const item of field.campaign?.plan?.management?.products ||
       field.campaign?.config?.managementPlan?.products || []) {
@@ -714,6 +714,51 @@ function renderWorkerDecision(field) {
   element("decision-map-foot").hidden = true;
   element("decision-dock").querySelectorAll("[data-topic]").forEach(button =>
     button.setAttribute("aria-pressed", String(button.dataset.topic === topic.id)));
+}
+
+function doseFeatures(field) {
+  const map = field.zoneMapData;
+  return map?.revision === field.revision && Array.isArray(map.historical?.features)
+    ? map.historical.features.filter(feature => Number.isFinite(feature.properties?.area_ha) && feature.properties.area_ha > 0)
+    : [];
+}
+
+function workerDoseBudget(field, data) {
+  const features = doseFeatures(field);
+  if (!features.length || !nonnegative(data.usual) || !positive(data.bag)) return null;
+  const rows = features.map(({properties}) => ({area: properties.area_ha, rate: data["rate-" + properties.zone]}));
+  if (!rows.every(row => nonnegative(row.rate))) return null;
+  const area = rows.reduce((sum, row) => sum + row.area, 0);
+  const total = rows.reduce((sum, row) => sum + row.area * row.rate, 0);
+  const difference = total - area * data.usual;
+  const cost = nonnegative(data.price) ? total * data.price : null;
+  const threshold = cost !== null && difference > 0 && positive(data.grain) ? difference * data.price / data.grain : null;
+  return {total, difference, cost, threshold, bags: Math.ceil(total / data.bag)};
+}
+
+function renderWorkerDoseBudget(body, field) {
+  const features = doseFeatures(field);
+  if (!features.length) {
+    body.append(makeNode("p", "soft-text", field.zoneMessage || "Une carte qualifiée est nécessaire pour calculer les doses par zone."));
+    return;
+  }
+  const data = decisionValues(field);
+  const confirmed = new Map((field.zoneMapData.dose?.features || []).filter(feature => feature.properties.unit === "kg/ha")
+    .map(feature => [feature.properties.zone, feature.properties.dose]));
+  for (const {properties} of features) {
+    const name = "rate-" + properties.zone;
+    if (data[name] === undefined && confirmed.has(properties.zone)) data[name] = confirmed.get(properties.zone);
+  }
+  const section = makeNode("section", "decision-section");
+  section.innerHTML = `<div class="decision-lead"><div><strong id="decision-dose-mass">—</strong><span class="lead-label">de produit à préparer</span></div></div>
+    <h3>Doses saisies par zone</h3><table class="decision-table"><thead><tr><th>Zone</th><th>Surface</th><th>kg/ha</th></tr></thead><tbody>${features.map(({properties:p}) =>
+      `<tr><td>${htmlEscape(p.label)}</td><td>${number.format(p.area_ha)} ha</td><td>${numberInput("Dose " + p.label, "rate-" + p.zone, data["rate-" + p.zone], 0, 1000000, "any", {inline:true})}</td></tr>`).join("")}</tbody></table>
+    <h3>Produit et budget</h3><div class="decision-inputs">${numberInput("Dose uniforme (kg/ha)", "usual", data.usual, 0, 1000000)}
+    ${numberInput("Poids d’un sac (kg)", "bag", data.bag, .01, 1000)}
+    ${numberInput("Engrais (FCFA/kg)", "price", data.price, 0, 100000000)}
+    ${numberInput("Grain (FCFA/kg)", "grain", data.grain, .01, 100000000)}</div>
+    ${help("Les surfaces proviennent de la carte du champ. Les doses et prix viennent de votre saisie. L’aperçu calcule des quantités et des coûts.")}`;
+  body.append(section);
 }
 
 function workerNumberInput(parent,label,value="") {

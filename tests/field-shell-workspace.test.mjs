@@ -31,6 +31,7 @@ test('shared field workspace prepares reference campaigns and applies notebook r
     assert.equal(campaign.campaign.demo, false);
     const listed = await (await localFetch(origin + '/api/seasonal')).json();
     assert.equal(listed.demo, false);
+    assert.match(listed.decisionScope, /^[a-f0-9]{64}$/);
     const note = {action: 'field-note', id, expectedRevision: 1, note: {parameter: 'Levée', date, note: 'Comptage à poursuivre'}};
     const saved = await request(note);
     const savedData = await saved.json();
@@ -41,6 +42,8 @@ test('shared field workspace prepares reference campaigns and applies notebook r
     assert.equal((await request({action: 'field-index-image', id, date})).status, 400);
     setIdentity({userId: 'unrelated', displayName: 'Autre compte', email: 'other@example.test'});
     assert.equal((await request({...note, expectedRevision: 2})).status, 404);
+    const other = await (await localFetch(origin + '/api/seasonal')).json();
+    assert.notEqual(other.decisionScope, listed.decisionScope);
     assert.equal((await request({action: 'field-index-image', id, date, consent: true})).status, 404);
   } finally { closeHarness(); }
 });

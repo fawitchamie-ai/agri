@@ -23,7 +23,7 @@ import {authoritativeLand,startLandJob,stepLandJob,landJobStatus} from '@/lib/se
 import {planSeason,createSeasonCalculation,yieldCsv} from '@/lib/seasonal/yield';
 import {migrateInputs} from '@/lib/seasonal/provenance';
 import {validateParcel,parcelMetrics} from '@/lib/seasonal/parcel';
-import { body, database, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
+import { body, database, digest, failure, HttpError, PreparationPending, ServiceStageError, json } from '@/lib/server-db';
 import { session, canSee } from '@/lib/server-auth';
 import { upsertEvent, waterPlanCsv } from '@/lib/seasonal/engine';
 import { validateConfig, validateEvents, InputError } from '@/lib/seasonal/validation';
@@ -84,7 +84,8 @@ export async function GET(request: Request) { try {
   const ownerFilter = s.role === 'producteur' ? 'AND owner_id=?' : '';
   const args = s.role === 'producteur' ? [s.coopId, s.userId] : [s.coopId];
   const rows = await database().prepare(`SELECT id,coop_id,owner_id,revision,config,demo,updated_at,archived_at FROM seasonal_campaigns WHERE coop_id=? ${archiveFilter} ${ownerFilter} ORDER BY updated_at DESC LIMIT 500`).bind(...args).all<any>();
-  return json({ demo: s.demo, campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,archivedAt:r.archived_at??null,demo:!!r.demo};}), truncated: rows.results.length === 500 });
+  const decisionScope=s.demo?null:await digest(JSON.stringify([s.coopId,s.userId]));
+  return json({ demo: s.demo, decisionScope, campaigns: rows.results.filter(r => canSee(s,r)).map(r => {const c=decodeCampaignValue(r.config);return {id:r.id,revision:r.revision,name:c.name,country:c.country,crop:c.crop,territory:c.territory,sowingDate:c.sowingDate,areaM2:c.areaM2,geometry:c.parcelGeometry??null,updatedAt:r.updated_at,archivedAt:r.archived_at??null,demo:!!r.demo};}), truncated: rows.results.length === 500 });
 } catch (e) { return error(e); } }
 export async function POST(request:Request){
  const traceId=crypto.randomUUID(),start=Date.now();let action='unread';

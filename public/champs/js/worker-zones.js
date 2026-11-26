@@ -29,6 +29,12 @@ function paintWorkerZoneCells(ctx,field,layer) {
   const map=field.zoneMapData?.revision===field.revision?field.zoneMapData:null;
   if (!map) return;
   const isDose=layer==="dose";
+  if (isDose && isDecisionSplit()) {
+    const data = decisionValues(field);
+    const features = doseFeatures(field).filter(feature => nonnegative(data["rate-" + feature.properties.zone]))
+      .map(feature => ({...feature, properties: {...feature.properties, dose: data["rate-" + feature.properties.zone]}}));
+    if (features.length) { paintGeoZoneMap(ctx, field, {features}, true); return; }
+  }
   paintGeoZoneMap(ctx,field,isDose?map.dose:map.historical,isDose);
 }
 
