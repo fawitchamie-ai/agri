@@ -195,6 +195,15 @@ export function satelliteBasemapUrl(bounds:number[],width:1600|1024|640=1600){
  u.search=new URLSearchParams({bbox:bounds.join(','),bboxSR:'4326',imageSR:'4326',size:`${width},${width/1.6}`,format:'png32',transparent:'false',f:'image'}).toString();return u.toString();
 }
 
+export async function satelliteBasemap(bounds:number[],fetcher:typeof fetch=fetch){
+ const response=await satelliteFetch(satelliteBasemapUrl(bounds,1024),20_000,fetcher);
+ if(!response.ok){await response.body?.cancel();throw new Error('Fond photographique indisponible.');}
+ const bytes=await response.arrayBuffer(), signature=new Uint8Array(bytes,0,Math.min(8,bytes.byteLength));
+ if(bytes.byteLength>3_000_000||signature.length!==8||![137,80,78,71,13,10,26,10].every((v,i)=>signature[i]===v))
+  throw new Error('Le fournisseur n’a pas renvoyé un fond photographique exploitable.');
+ return new Response(bytes,{headers:{'Content-Type':'image/png','Cache-Control':'private, max-age=3600','X-Content-Type-Options':'nosniff'}});
+}
+
 /** Four bounded requests, each within the provider's 512 px limit.
  * Together they render 1024×640 actual output pixels, with no invented source detail. */
 export function satelliteTilePlan(layer:SatelliteLayer,date:string,bounds:number[]){

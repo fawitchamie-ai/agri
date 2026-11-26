@@ -12,6 +12,15 @@ export default {
       const response=await runWithAccessIdentity(authorized.identity,()=>authorized.request.method==='GET'?seasonalGet(authorized.request):authorized.request.method==='POST'?seasonalPost(authorized.request):new Response(null,{status:405,headers:{Allow:'GET, POST'}}));
       return clearStaleDemoCookie(response,authorized.request,authorized.identity);
     }
+    const url = new URL(authorized.request.url);
+    if (url.pathname === '/' && ['GET', 'HEAD'].includes(authorized.request.method) &&
+        !authorized.request.headers.has('rsc') && !url.searchParams.has('_rsc') &&
+        !authorized.request.headers.get('accept')?.includes('text/x-component')) {
+      url.pathname = '/champs/';
+      return clearStaleDemoCookie(new Response(null, {
+        status: 302, headers: {Location: url.toString(), 'Cache-Control': 'private, no-store'},
+      }), authorized.request, authorized.identity);
+    }
     const shell=await loadingShell(authorized.request,(env as unknown as {ASSETS?:{fetch:(r:Request)=>Promise<Response>}}).ASSETS);
     if(shell)return clearStaleDemoCookie(shell,authorized.request,authorized.identity);
     const response=await runWithAccessIdentity(authorized.identity,()=>handler.fetch(authorized.request,env,ctx));

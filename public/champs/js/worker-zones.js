@@ -25,10 +25,33 @@ function paintGeoZoneMap(ctx,field,collection,isDose) {
   ctx.restore();
 }
 
-function paintWorkerZoneCells(ctx,field) {
-  if (state.view!=="zones") return;
+function paintWorkerZoneCells(ctx,field,layer) {
   const map=field.zoneMapData?.revision===field.revision?field.zoneMapData:null;
   if (!map) return;
-  const isDose=state.zoneLayer==="dose";
+  const isDose=layer==="dose";
   paintGeoZoneMap(ctx,field,isDose?map.dose:map.historical,isDose);
+}
+
+function paintFieldIndex(ctx, field, layer, date) {
+  const result = field.indexMaps?.get(date);
+  if (!result) return;
+  const [west, south, east, north] = field.imageBounds;
+  const project = ([lon, lat]) => [96 + (lon - west) / (east - west) * 768, 80 + (north - lat) / (north - south) * 480];
+  const property = layer === "evi" ? "evi" : "ndvi";
+  const median = result.observations[0].ndviMedian;
+  ctx.save();
+  ctx.beginPath();
+  for (const ring of field.geometry.coordinates) {
+    ring.forEach((point, i) => (i ? ctx.lineTo(...project(point)) : ctx.moveTo(...project(point))));
+    ctx.closePath();
+  }
+  ctx.clip("evenodd");
+  ctx.globalAlpha = .84;
+  for (const pixel of result.pixels) {
+    const value = pixel[property];
+    ctx.fillStyle = palette(layer === "contrast" ? .5 + (value - median) * 2.35 : (value - .25) / .50);
+    pathPolygon(ctx, pixel.ring.map(project));
+    ctx.fill();
+  }
+  ctx.restore();
 }

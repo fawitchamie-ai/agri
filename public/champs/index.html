@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#16342e">
-  <meta name="description" content="Maquette desktop interactive d’AgriPrévision.">
+  <meta name="description" content="AgriPrévision · vos champs, vos images et vos décisions de campagne.">
   <title>AgriPrévision · Mes champs</title>
   <link rel="stylesheet" href="styles/application.css">
 </head>
@@ -22,16 +22,15 @@
         <button type="button" data-view="notes"><canvas class="icon" data-icon="note" aria-hidden="true"></canvas>Carnet</button>
         <button type="button" data-view="decisions"><canvas class="icon" data-icon="decide" aria-hidden="true"></canvas>Décider</button>
       </nav>
-      <div class="top-aside"><span class="season">AgriPrévision</span><span class="demo" id="data-status" title="Cartes et données fictives">Démonstration</span><button type="button" class="btn" id="worker-toggle">Mon compte</button></div>
+      <div class="top-aside"><button type="button" class="btn" id="tools-toggle">Autres outils</button><span class="api-status" id="data-status" title="Connexion à l’API AgriPrévision requise">Connexion requise</span><button type="button" class="btn" id="worker-toggle">Mon compte</button></div>
     </header>
 
     <main class="workspace" id="workspace">
-      <section class="worker-panel" id="worker-panel" hidden aria-label="Connexion au Worker">
+      <section class="worker-panel" id="worker-panel" hidden aria-label="Connexion à l’API AgriPrévision">
         <div class="worker-panel-head"><strong>Mon compte AgriPrévision</strong><button type="button" class="icon-btn" id="worker-close" aria-label="Fermer">×</button></div>
-        <p class="soft-text">Campagnes du Worker · agri.fawitchamie.workers.dev</p>
-        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
-        <p id="worker-message" role="status">Connectez-vous avec votre compte Cloudflare Access, puis actualisez.</p>
-        <button type="button" class="action-text" id="worker-demo">Revenir à la démonstration</button>
+        <p class="soft-text">Retrouvez les campagnes de votre espace de travail.</p>
+        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn" id="worker-login-close" hidden>Fermer la fenêtre de connexion</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
+        <p id="worker-message" role="status">Connectez-vous avec votre compte, puis chargez les campagnes enregistrées.</p>
       </section>
       <aside class="sidebar" id="primary-sidebar" aria-label="Champs et données">
         <section class="fields-block" aria-labelledby="fields-title">
@@ -61,7 +60,7 @@
               <div class="reading-head"><h3 id="reading-label">NDVI moyen</h3><time class="observation-date" id="reading-date"></time></div>
               <div class="numberline"><strong class="metric" id="reading-value"></strong><span class="variation" id="reading-variation"></span></div>
               <canvas class="chart" id="trend" role="img" aria-label="Évolution de l’indice"></canvas>
-              <div class="chart-labels"><span>6 nov.</span><span>25 nov.</span></div>
+              <div class="chart-labels"><span id="trend-start"></span><span id="trend-end"></span></div>
             </div>
             <div class="detail-rule">
               <div class="data-row"><span class="key"><canvas class="icon small" data-icon="rain" aria-hidden="true"></canvas>Pluie sur 7 jours</span><b id="rain-value"></b></div>
@@ -106,6 +105,7 @@
             <div class="note-list-head"><h3 class="section-title">Observations</h3><button type="button" class="icon-btn add" id="add-note" aria-label="Ajouter une observation" title="Ajouter une observation"><canvas class="icon" data-icon="plus" aria-hidden="true"></canvas></button></div>
             <div class="notes" id="notes"></div>
             <p class="note-body" id="note-body" hidden></p>
+            <button type="button" class="action-text" id="add-water-event">Déclarer une pluie ou un arrosage</button>
             <button type="button" class="action-text decision-shortcuts" data-quick-decision="stand"><canvas class="icon small" data-icon="stand" aria-hidden="true"></canvas>Contrôler la levée</button>
           </div>
 
@@ -118,6 +118,7 @@
               <div class="data-row"><span class="key">Rendement</span><b id="campaign-yield">Pas simulé</b></div>
             </div>
             <div class="campaign-brief"><b id="campaign-action"></b><p class="soft-text" id="campaign-action-detail"></p></div>
+            <button type="button" class="btn" data-field-tool="overview">Ouvrir la simulation de campagne</button>
             <div id="worker-campaign-detail" class="worker-campaign-detail" hidden></div>
             <button type="button" class="btn" id="worker-edit" hidden>Modifier cette campagne</button>
             <button type="button" class="action-text" data-view="notes"><canvas class="icon small" data-icon="pin" aria-hidden="true"></canvas>Ouvrir le carnet</button>
@@ -154,6 +155,13 @@
         <div class="map-panes" id="map-panes">
           <div class="map-pane">
             <canvas class="map-canvas" id="map-a" tabindex="0" aria-label="Carte des champs. Utilisez les touches plus et moins pour zoomer."></canvas>
+            <div class="map-empty-state" id="map-empty-state" hidden>
+              <div class="map-empty-card">
+                <strong>La vue satellite de votre champ s’affichera ici</strong>
+                <p>Recherchez votre localité et tracez le contour sur le fond photographique.</p>
+                <button type="button" class="btn primary" id="map-empty-create">Choisir une localité</button>
+              </div>
+            </div>
             <div class="decision-pane-tag" id="decision-pane-a" hidden>Zones historiques</div>
             <div class="pane-bar" id="pane-a" hidden>
               <span class="letter">A</span>
@@ -207,12 +215,6 @@
         </div>
         <div class="worker-satellite glass" id="worker-satellite" hidden>
           <button type="button" class="btn primary" id="worker-satellite-load">Charger les images</button>
-          <label id="worker-satellite-selects" hidden>
-            <select id="worker-satellite-date" aria-label="Date satellite réelle"></select>
-            <select id="worker-satellite-layer" aria-label="Couche satellite réelle">
-              <option value="rgb">Satellite</option><option value="ndvi">NDVI</option>
-            </select>
-          </label>
           <span id="worker-satellite-message" role="status"></span>
         </div>
 
@@ -225,12 +227,6 @@
           <button type="button" class="map-btn" id="recenter" aria-label="Recentrer sur le champ" title="Recentrer sur le champ"><canvas class="icon" data-icon="target" aria-hidden="true"></canvas></button>
         </div>
 
-        <div class="drawbar" id="drawbar" hidden>
-          <p id="draw-instruction">Cliquez sur la carte pour tracer le contour.</p>
-          <button type="button" class="btn" id="undo-point">Retirer un point</button>
-          <button type="button" class="btn" id="cancel-draw">Annuler</button>
-          <button type="button" class="btn primary" id="save-draw">Enregistrer</button>
-        </div>
         <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
         <div class="map-end" id="map-end">
@@ -240,15 +236,15 @@
               <div class="ramp" id="legend-ramp"></div>
               <div class="legend-labels"><span id="legend-min">0,25</span><span id="legend-mid">0,50</span><span id="legend-max">0,75</span></div>
             </div>
-            <span class="attribution" id="map-attribution">Fond aérien illustratif</span>
+            <span class="attribution" id="map-attribution">Images réelles chargées depuis l’API AgriPrévision</span>
           </div>
           <div class="timebar" id="timebar">
-            <div class="time-label">Images<small class="time-year"> · nov. 2026</small></div>
+            <div class="time-label">Images<small class="time-year" id="time-year"></small></div>
             <div class="time-step">
               <button type="button" class="icon-btn" id="previous-date" aria-label="Image précédente" title="Image précédente"><canvas class="icon small" data-icon="left" aria-hidden="true"></canvas></button>
               <button type="button" class="icon-btn" id="next-date" aria-label="Image suivante" title="Image suivante"><canvas class="icon small" data-icon="right" aria-hidden="true"></canvas></button>
             </div>
-            <div class="days" id="days" role="group" aria-label="Images de novembre 2026"></div>
+            <div class="days" id="days" role="group" aria-label="Dates des images"></div>
             <button type="button" class="btn" data-view="compare"><canvas class="icon small" data-icon="compare" aria-hidden="true"></canvas>Comparer</button>
           </div>
           <div id="decision-map-foot" class="decision-map-foot" hidden></div>
@@ -261,27 +257,17 @@
     </main>
   </div>
 
-  <dialog id="field-dialog" aria-labelledby="field-dialog-title">
-    <form id="field-form">
-      <h2 id="field-dialog-title">Ajouter un champ</h2>
-      <div class="form-body">
-        <label>Nom du champ<input name="name" required maxlength="50" placeholder="Nom de la parcelle"></label>
-        <label>Culture<select name="crop"><option>Maïs</option><option>Riz</option><option>Sorgho</option><option>Mil</option></select></label>
-        <label>Surface déclarée (ha)<input name="area" type="number" min="0.01" max="10000" step="0.01" required></label>
-      </div>
-      <div class="form-end"><button type="button" class="btn" data-close="field-dialog">Annuler</button><button type="submit" class="btn primary">Dessiner le contour</button></div>
-    </form>
-  </dialog>
-
   <dialog id="note-dialog" aria-labelledby="note-dialog-title">
     <form id="note-form">
       <h2 id="note-dialog-title">Ajouter une observation</h2>
       <p class="soft-text" id="note-location"></p>
       <div class="form-body">
-        <label>Titre<input name="title" required maxlength="65" placeholder="Ce que vous avez observé"></label>
-        <label>Détail<textarea name="body" maxlength="300"></textarea></label>
+        <label>Type d’observation<select name="parameter"><option>Levée</option><option>Adventices</option><option>Ravageurs</option><option>Maladies</option><option>Drainage</option><option>Stades</option></select></label>
+        <label>Date<input name="date" type="date" required></label>
+        <label>Détail<textarea name="body" maxlength="1200" required></textarea></label>
+        <p class="soft-text" id="note-error" role="status"></p>
       </div>
-      <div class="form-end"><button type="button" class="btn" data-close="note-dialog">Annuler</button><button type="submit" class="btn primary">Enregistrer</button></div>
+      <div class="form-end"><button type="button" class="btn" data-close="note-dialog">Annuler</button><button type="submit" class="btn primary" id="save-note">Enregistrer</button></div>
     </form>
   </dialog>
 
@@ -308,15 +294,31 @@
       <p class="soft-text" id="worker-editor-hint"></p>
       <label>Nom de la parcelle<input name="name" maxlength="120" required></label>
       <label>Localité<input name="territory" maxlength="160" required></label>
-      <label>Variété<input name="variety" maxlength="100" required value="Non renseignée"></label>
+      <label>Variété observée (facultatif)<input name="variety" maxlength="100" value=""></label>
       <div id="worker-new-fields">
-        <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option><option value="NGA">Nigeria</option></select></label>
-        <label>Date de semis<input type="date" name="sowingDate"></label>
-        <label>Contour GeoJSON (Polygon)<textarea name="geometry" rows="5" spellcheck="false" placeholder='{"type":"Polygon","coordinates":[[[1.2,6.1],[1.201,6.1],[1.201,6.101],[1.2,6.101],[1.2,6.1]]]}'></textarea></label>
-        <p class="soft-text">Création initiale en maïs avec paramètres hydriques à renseigner. Le Worker contrôlera le contour et les données avant le calcul.</p>
+        <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option></select></label>
+        <label>Culture<select name="crop" required><option value="">Chargement des cultures…</option></select></label>
+        <label>Date de semis<input type="date" name="sowingDate" required></label>
+        <section class="worker-place-picker" id="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
+           <label for="worker-place-query">Rechercher un village ou une ville</label>
+           <div class="worker-place-search-row"><input id="worker-place-query" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Ex. Kpalimé"><button type="button" class="btn" id="worker-place-search">Rechercher</button></div>
+           <ul class="worker-place-results" id="worker-place-results" aria-label="Résultats de recherche"></ul>
+           <p class="soft-text" id="worker-place-status" role="status">Connectez-vous à l’API AgriPrévision, puis recherchez une localité pour charger une image Sentinel‑2 réelle.</p>
+            <button type="button" class="btn" id="worker-place-connect">Se connecter</button>
+            <div class="worker-place-map-wrap" id="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
+            <div class="worker-place-map-tools">
+              <span class="soft-text" id="worker-place-attribution">Fond photographique de repérage</span>
+              <div><button type="button" class="btn" id="worker-place-map-expand" aria-pressed="false">Plein écran</button><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
+            </div>
+          </section>
+         <label>Contour GeoJSON (Polygon) · modifiable<textarea name="geometry" rows="5" spellcheck="false" placeholder="Le contour tracé sur l’image apparaît ici. Vous pouvez aussi coller un GeoJSON réel."></textarea></label>
+        <label class="outline-consent"><input type="checkbox" name="outlineConsent"> J’autorise l’envoi du contour pour récupérer les données de terrain, de sol et de météo.</label>
+        <button type="button" class="btn" id="worker-place-analyze">Analyser le terrain, le sol et la météo via l’API</button>
+        <p class="soft-text" id="worker-place-analysis" role="status">Après le tracé, l’API récupère la classification du terrain, les profils SoilGrids à 250 m et les données météorologiques du cycle. L’overlay colore les terres candidates en vert, l’eau en bleu et les surfaces non classées en gris. Les valeurs manquantes restent inconnues.</p>
+        <p class="soft-text">Le contour est dessiné par vous sur l’image Sentinel‑2; il n’est pas cadastral. Le profil SoilGrids est une prédiction cartographique, pas une mesure de laboratoire. Les prévisions et observations météo gardent leur statut de source.</p>
       </div>
       <p id="worker-editor-error" role="alert"></p>
-      <div class="form-end"><button type="button" class="btn" id="worker-editor-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-editor-save">Enregistrer sur le Worker</button></div>
+      <div class="form-end"><button type="button" class="btn" id="worker-editor-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-editor-save">Enregistrer la campagne</button></div>
     </form>
   </dialog>
 
@@ -332,6 +334,22 @@
     </form>
   </dialog>
 
+  <dialog id="tools-dialog" aria-labelledby="tools-title">
+    <h2 id="tools-title">Autres outils</h2>
+    <div class="form-body tools-list">
+      <button type="button" class="btn" data-tool="seasonal" data-library="1">Mes campagnes</button>
+      <button type="button" class="btn" data-tool="seasonal">Ma simulation</button>
+      <button type="button" class="btn" data-tool="gestion">Ma coopérative</button>
+      <button type="button" class="btn" data-tool="previsions">Prévisions territoriales</button>
+      <button type="button" class="btn" data-tool="simulation">Convertir un rendement en volume</button>
+      <button type="button" class="btn" data-tool="recoltes">Récoltes observées</button>
+      <button type="button" class="btn" data-tool="collecte">Organiser la collecte</button>
+      <button type="button" class="btn" data-tool="dashboard">Données et analyses</button>
+    </div>
+    <div class="form-end"><button type="button" class="btn" data-close="tools-dialog">Fermer</button></div>
+  </dialog>
+
+  <script defer src="js/connexion.js"></script>
   <script defer src="js/carte.js"></script>
   <script defer src="js/champs.js"></script>
   <script defer src="js/calculs-decisions.js"></script>

@@ -27,15 +27,19 @@ fn worker_origin() -> &'static str {
 }
 
 #[tauri::command]
-fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
+async fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
     if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let app = caller.app_handle();
+    let mut url = Url::parse(WORKER)
+        .and_then(|origin| origin.join("api/auth/login"))
+        .map_err(|_| "Adresse de connexion au Worker invalide.".to_owned())?;
+    url.query_pairs_mut().append_pair("returnTo", "/api/seasonal");
     if let Some(window) = app.get_webview_window("worker-login") {
+        window.navigate(url.clone()).map_err(|_| "Impossible de charger la connexion au Worker.".to_owned())?;
         window.show().map_err(|_| "Impossible d’ouvrir la connexion.".to_owned())?;
         window.set_focus().map_err(|_| "Impossible d’activer la fenêtre de connexion.".to_owned())?;
         return Ok(());
     }
-    let url = Url::parse(WORKER).map_err(|_| "Adresse du Worker invalide.".to_owned())?;
     WebviewWindowBuilder::new(app, "worker-login", WebviewUrl::External(url))
         .title("Connexion AgriPrévision")
         .inner_size(1000.0, 760.0)
@@ -44,7 +48,54 @@ fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+async fn open_worker_tool(
+    caller: tauri::WebviewWindow, entry: String, campaign_id: Option<String>,
+    section: Option<String>, monitor: Option<String>, library: bool,
+) -> Result<(), String> {
+    if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
+    if !["seasonal", "gestion", "previsions", "simulation", "recoltes", "collecte", "dashboard"].contains(&entry.as_str()) {
+        return Err("Outil inconnu.".to_owned());
+    }
+    let mut url = Url::parse(WORKER).and_then(|origin| origin.join("outils"))
+        .map_err(|_| "Adresse des outils AgriPrévision invalide.".to_owned())?;
+    {
+        let mut query = url.query_pairs_mut();
+        query.append_pair("entry", &entry);
+        if let Some(id) = campaign_id.filter(|id| !id.is_empty() && id.len() <= 100 &&
+            id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-')) {
+            query.append_pair("campaign", &id);
+        }
+        if let Some(section) = section.filter(|value| ["overview", "yield", "water", "fertilizer", "images", "settings", "map"].contains(&value.as_str())) {
+            query.append_pair("section", &section);
+        }
+        if let Some(monitor) = monitor.filter(|value| ["compare", "history", "doses", "notes", "weather", "satellite"].contains(&value.as_str())) {
+            query.append_pair("monitor", &monitor);
+        }
+        if library { query.append_pair("library", "1"); }
+    }
+    let app = caller.app_handle();
+    if let Some(window) = app.get_webview_window("worker-tools") {
+        window.navigate(url).map_err(|_| "Impossible de charger cet outil.".to_owned())?;
+        return window.set_focus().map_err(|_| "Impossible d’activer la fenêtre.".to_owned());
+    }
+    WebviewWindowBuilder::new(app, "worker-tools", WebviewUrl::External(url))
+        .title("Outils AgriPrévision")
+        .inner_size(1200.0, 800.0)
+        .build().map_err(|_| "Impossible d’ouvrir cet outil.".to_owned())?;
+    Ok(())
+}
+
 /// Les cookies HTTP-only restent dans WebView2 ; aucun jeton ne traverse le JavaScript.
+#[tauri::command]
+async fn close_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
+    if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
+    if let Some(login) = caller.app_handle().get_webview_window("worker-login") {
+        login.close().map_err(|_| "Impossible de fermer la fenêtre de connexion.".to_owned())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 async fn access_cookie(window: tauri::WebviewWindow) -> Result<String, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
@@ -85,8 +136,14 @@ async fn send_json(window: tauri::WebviewWindow, request: reqwest::RequestBuilde
     }
     let bytes = response.bytes().await.map_err(|_| "Réponse du Worker interrompue.".to_owned())?;
     if bytes.len() > 8_000_000 { return Err("Réponse du Worker trop volumineuse.".to_owned()); }
-    let data = serde_json::from_slice(&bytes)
-        .unwrap_or_else(|_| serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."}));
+    let data = serde_json::from_slice(&bytes).unwrap_or_else(|_| {
+        let message = String::from_utf8_lossy(&bytes).trim().to_owned();
+        if message.is_empty() {
+            serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."})
+        } else {
+            serde_json::json!({"error":message})
+        }
+    });
     Ok(ApiReply { status, data })
 }
 
@@ -106,10 +163,10 @@ async fn worker_get(window: tauri::WebviewWindow, campaign_id: Option<String>) -
 async fn worker_post(window: tauri::WebviewWindow, body: serde_json::Value) -> Result<ApiReply, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let action = body.get("action").and_then(|v| v.as_str()).unwrap_or("");
-    if !["satellite-catalog", "satellite-scenes", "satellite-index-series",
+    if !["places", "environment", "agronomic-soil", "satellite-catalog", "satellite-scenes", "satellite-index-series",
          "field-zone-season", "field-zone-map", "sowing-plan", "capabilities", "weather",
          "fertilizer-evidence", "fertilizer-information", "calibration-status", "product-catalog",
-         "nutrient-balance", "compare-interventions", "data-readiness"].contains(&action) {
+         "nutrient-balance", "compare-interventions", "data-readiness", "campaign-draft", "campaign-crops", "field-index-image"].contains(&action) {
         return Err("Action de lecture non autorisée dans le desktop.".to_owned());
     }
     let serialized = serde_json::to_vec(&body).map_err(|_| "Données invalides.".to_owned())?;
@@ -124,7 +181,7 @@ async fn worker_post(window: tauri::WebviewWindow, body: serde_json::Value) -> R
 async fn worker_mutate(window: tauri::WebviewWindow, body: serde_json::Value) -> Result<ApiReply, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let action = body.get("action").and_then(|v| v.as_str()).unwrap_or("");
-    if !["save", "event"].contains(&action) { return Err("Modification non autorisée.".to_owned()); }
+    if !["save", "event", "field-note"].contains(&action) { return Err("Modification non autorisée.".to_owned()); }
     let id = body.get("id").and_then(|v| v.as_str()).unwrap_or("");
     if id.is_empty() || id.len() > 100 || !id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-') {
         return Err("Identifiant de campagne invalide.".to_owned());
@@ -142,8 +199,8 @@ async fn worker_mutate(window: tauri::WebviewWindow, body: serde_json::Value) ->
 #[tauri::command]
 async fn worker_image(window: tauri::WebviewWindow, layer: String, date: String, bounds: Vec<f64>) -> Result<ImageReply, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
-    if !["rgb", "ndvi"].contains(&layer.as_str()) || date.len() != 10 ||
-        !date.chars().enumerate().all(|(i, c)| if i == 4 || i == 7 { c == '-' } else { c.is_ascii_digit() }) ||
+    if !["rgb", "ndvi", "basemap"].contains(&layer.as_str()) || (layer != "basemap" && (date.len() != 10 ||
+        !date.chars().enumerate().all(|(i, c)| if i == 4 || i == 7 { c == '-' } else { c.is_ascii_digit() }))) ||
         bounds.len() != 4 || bounds.iter().any(|v| !v.is_finite()) {
         return Err("Image ou emprise invalide.".to_owned());
     }
@@ -170,7 +227,7 @@ async fn worker_image(window: tauri::WebviewWindow, layer: String, date: String,
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![worker_origin, open_worker_login, worker_get, worker_post, worker_mutate, worker_image])
+        .invoke_handler(tauri::generate_handler![worker_origin, open_worker_login, close_worker_login, open_worker_tool, worker_get, worker_post, worker_mutate, worker_image])
         .run(tauri::generate_context!())
         .expect("AgriPrévision n’a pas pu ouvrir sa fenêtre");
 }

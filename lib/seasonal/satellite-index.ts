@@ -7,6 +7,7 @@ import {SATELLITE_INDEX_VERSION,type SatelliteIndexObservation,type SatelliteSta
 import {sentinelAssetUrl} from './sentinel-assets.ts';
 import {bestSentinelScene} from './sentinel-scene.ts';
 import {verifiedImageCatalog} from './sentinel-catalog.ts';
+export type FieldIndexPixel={ring:Position[];ndvi:number;evi:number};
 export {sentinelAssetUrl} from './sentinel-assets.ts';
 const SATELLITE_READ_MAX_PIXELS=50_000,MAX_INDEX_SCENES=241;
 const isoDay=(v:string)=>/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;
@@ -54,7 +55,7 @@ function sampledDates(features:StacIndexItem[],limit=MAX_INDEX_SCENES){
  return Array.from({length:limit},(_,i)=>sorted[Math.round(i*(sorted.length-1)/(limit-1))]);
 }
 /** Parcel medians from native Sentinel-2 pixels. These indices are monitoring features, not tonnes/ha. */
-export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:string,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,maxScenes=MAX_INDEX_SCENES,options?:{signal?:AbortSignal;onProgress?:(date:string,attempt:number,total:number)=>void;onObservation?:(observation:SatelliteIndexObservation,source:string)=>void}){
+export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:string,fetcher:typeof fetch=fetch,reader:typeof readRasterWindow=readRasterWindow,maxScenes=MAX_INDEX_SCENES,options?:{signal?:AbortSignal;onProgress?:(date:string,attempt:number,total:number)=>void;onObservation?:(observation:SatelliteIndexObservation,source:string)=>void;onPixels?:(pixels:FieldIndexPixel[])=>void}){
  const shape=validateParcel(input),area=parcelMetrics(shape).areaM2,today=new Date().toISOString().slice(0,10);
  if(!Number.isInteger(maxScenes)||maxScenes<1||maxScenes>241)throw new Error('Nombre de scènes Sentinel-2 invalide (1 à 241).');
  if(!isoDay(startDate)||!isoDay(asOf)||asOf>today||startDate>asOf||(Date.parse(asOf)-Date.parse(startDate))/86400000>240)throw new Error('Période satellite invalide : une campagne doit tenir dans les 240 derniers jours.');
@@ -82,20 +83,21 @@ export async function satelliteIndexSeries(input:unknown,startDate:string,asOf:s
   ]);
   const redCells=new Map(red.cells.map(c=>[centerKey(pixelCenter(c)),c])),nirCells=new Map(nir.cells.map(c=>[centerKey(pixelCenter(c)),c]));
   const sclBuckets=new Map<string,RasterCell[]>();for(const cell of scl.cells){const p=pixelCenter(cell),key=`${Math.floor(p[0]/.00005)}:${Math.floor(p[1]/.00005)}`;sclBuckets.set(key,[...(sclBuckets.get(key)??[]),cell]);}
-  const ndviValues:number[]=[],eviValues:number[]=[];let parcelPixels=0;
+  const ndviValues:number[]=[],eviValues:number[]=[],pixels:FieldIndexPixel[]=[];let parcelPixels=0;
  const transforms={blue:reflectanceTransform(blueAsset,item),red:reflectanceTransform(redAsset,item),nir:reflectanceTransform(nirAsset,item)};
   for(const cell of blue.cells){const point=pixelCenter(cell);if(!inParcel(shape,point))continue;parcelPixels++;
    const redCell=redCells.get(centerKey(point)),nirCell=nirCells.get(centerKey(point)),blueValue=cell.value,redValue=redCell?.value,nirValue=nirCell?.value;
    if(blueValue===null||redValue===null||nirValue===null||redValue===undefined||nirValue===undefined)continue;
    const sclValue=sclAt(scl.cells,sclBuckets,point);if(sclValue!==4&&sclValue!==5)continue;
-   const indices=vegetationIndices(blueValue,redValue,nirValue,transforms);if(indices.ndvi!==null&&indices.evi!==null){ndviValues.push(indices.ndvi);eviValues.push(indices.evi);}
+   const indices=vegetationIndices(blueValue,redValue,nirValue,transforms);if(indices.ndvi!==null&&indices.evi!==null){ndviValues.push(indices.ndvi);eviValues.push(indices.evi);
+    if(options?.onPixels)pixels.push({ring:cell.geometry.coordinates[0].slice(0,4).map(([x,y])=>[Number(x.toFixed(6)),Number(y.toFixed(6))]),ndvi:Number(indices.ndvi.toFixed(5)),evi:Number(indices.evi.toFixed(5))});}
   }
   const validPixels=Math.min(ndviValues.length,eviValues.length),clearFraction=parcelPixels?validPixels/parcelPixels:0;
   if(validPixels<10||clearFraction<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8){issues.push(date+' : pixels NDVI/EVI insuffisants pour 20 % de couverture.');continue;}
   const quality:SatelliteIndexObservation['quality']=validPixels<10?'too-few-pixels':clearFraction<MINIMUM_FIELD_IMAGE_COVERAGE-1e-8?'low-coverage':'usable';
   const cloud=item.properties?.['eo:cloud_cover'],sceneCloudPercent=typeof cloud==='number'&&Number.isFinite(cloud)&&cloud>=0&&cloud<=100?cloud:null;
   const observation={date,availableOn:today,itemId:(item.id??date).slice(0,200),ndviMedian:median(ndviValues),eviMedian:median(eviValues),validPixels,parcelPixels,clearFraction,sceneCloudPercent,quality};
-  observations.push(observation);options?.onObservation?.(observation,source);
+  observations.push(observation);options?.onObservation?.(observation,source);options?.onPixels?.(pixels);
   }catch(error){options?.signal?.throwIfAborted();issues.push(date+' : '+(error as Error).message);}
  }
  return {version:SATELLITE_INDEX_VERSION,source,retrievedOn:today,observations,
