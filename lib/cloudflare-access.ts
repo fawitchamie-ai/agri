@@ -33,15 +33,9 @@ export function safeAccessReturnPath(value:string|null):string {
   if(!value||!value.startsWith('/')||value.startsWith('//')||value.includes('\\')||/[\u0000-\u001f]/.test(value))return '/';
   try{
     const url=new URL(value,'https://agri.invalid');
-    return url.origin==='https://agri.invalid'?url.pathname+url.search:'/';
+    const destinations=['/','/champs','/champs/','/outils','/api/seasonal'];
+    return url.origin==='https://agri.invalid'&&destinations.includes(url.pathname)?url.pathname+url.search+url.hash:'/';
   }catch{return '/';}
-}
-export function generateAccessLoginURL(redirectURL:string|URL,config:AccessConfiguration):string {
-  const destination=typeof redirectURL==='string'?new URL(redirectURL):redirectURL;
-  if(destination.protocol!=='https:'||destination.username||destination.password)throw new Error('La destination de connexion doit être une URL HTTPS valide.');
-  const loginURL=new URL(`/cdn-cgi/access/login/${destination.hostname}`,config.issuer);
-  loginURL.search=new URLSearchParams({kid:config.audience,redirect_url:destination.pathname+destination.search}).toString();
-  return loginURL.toString();
 }
 function remoteKeys(issuer:string) {
   let keys=keySets.get(issuer);
@@ -102,12 +96,13 @@ export async function authorizeAccessRequest(request:Request,env:AccessEnvironme
   const url=new URL(request.url),clean=sanitizedRequest(request);
   // Version metadata contains no identity, database state or user input.
   if(request.method==='GET'&&url.pathname==='/api/version')return {request:clean,identity:null};
-  // Let visitors initiate the Access login flow while keeping business APIs protected.
-  if(request.method==='GET'&&url.pathname==='/api/auth/login')return {request:clean,identity:null};
+  // Access normally handles this navigation at the edge. If it lets an
+  // anonymous request reach the Worker, the route explains the failure.
+  const login=request.method==='GET'&&url.pathname==='/api/auth/login';
   if(env.AUTH_DEMO_ONLY==='true'&&(localHosts.has(url.hostname)||(import.meta.env?.DEV===true&&url.hostname==='terminal.local'))&&localPaths.has(url.pathname))
     return {request:clean,identity:null};
   const token=request.headers.get('cf-access-jwt-assertion')||accessTokenFromCookie(request);
-  if(!token&&env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))return {request:clean,identity:null};
+  if(!token&&(login||(env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))))return {request:clean,identity:null};
   let config:AccessConfiguration;
   try{config=accessConfiguration(env);}catch{return denied('Authentification Cloudflare Access non configurée.',503);}
   if(!token)return denied('Connexion Cloudflare Access requise.',401);
@@ -118,7 +113,7 @@ export async function authorizeAccessRequest(request:Request,env:AccessEnvironme
       return denied('Une identité utilisateur Cloudflare Access est requise.',403);
     return {request:clean,identity};
   }catch{
-    if(env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request))return {request:clean,identity:null};
+    if(login||(env.AUTH_PUBLIC_DEMO==='true'&&publicDemoRequest(request)))return {request:clean,identity:null};
     return denied('Connexion Cloudflare Access invalide ou expirée.',401);
   }
 }
