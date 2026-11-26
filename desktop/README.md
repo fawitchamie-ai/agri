@@ -1,53 +1,49 @@
 # AgriPrévision Desktop
 
-Version 0.4.0 · Base Windows avec Tauri 2 et synchronisation volontaire avec le Worker
+Version 0.4.1 · Application Windows autonome avec Tauri 2
 
-Le projet embarque la maquette AgriPrévision dans une fenêtre de bureau. Les sept aides locales restent des scénarios de démonstration. Le bouton **Mon compte** ouvre le Worker `https://agri.fawitchamie.workers.dev/` avec votre session Cloudflare Access. Le mode connecté lit et enregistre les campagnes avec révision attendue, documente les observations de pluie et d’irrigation, planifie des apports et affiche les résultats recalculés par le Worker. Les images Sentinel‑2, indices NDVI/EVI et cartes de zones et de doses sont chargés à la demande. Une carte de doses n’apparaît que si sa prescription est confirmée et validée par le Worker.
+L’interface est incluse dans l’application. Elle appelle directement l’API AgriPrévision (/api/seasonal) par le client natif de Tauri; elle ne charge pas le site Web AgriPrévision comme interface.
+
+La connexion utilise Microsoft/Cloudflare Access. Une connexion Internet et un compte autorisé sont nécessaires pour lire les campagnes et obtenir les données distantes. L’application n’affiche aucun champ de démonstration.
+
+## Fonctions connectées
+
+- Recherche de localités par l’API et affichage d’images Sentinel‑2 retournées par l’API.
+- Création d’une campagne à partir d’un contour dessiné ou d’un GeoJSON. Le contour est manuel et n’a pas de statut cadastral.
+- Analyse du terrain, des profils SoilGrids et de l’environnement météorologique par les actions API environment et agronomic-soil. Les propriétés spatiales du sol peuvent aussi être rechargées depuis une campagne enregistrée.
+- Affichage des données de sol à résolution native de 250 m. Ce sont des prédictions cartographiques; elles ne remplacent pas une analyse de laboratoire. Le profil de campagne est pondéré à partir des profils API disponibles. Les campagnes ne sont pas créées avec des valeurs de sol inventées.
+- Enregistrement dans la campagne des seules lignes météo API marquées « observé » ou « prévision » et pourvues de pluie et d’ET0. Le point météo reprend le point représentatif calculé pour le contour. Les jours estimés ou scénarisés ne sont pas ajoutés comme des mesures réelles; une couverture partielle reste visible.
+- Lecture et mise à jour des campagnes par révision, observations, images, séries NDVI/EVI, cartes de zones, informations sur les engrais et résultats conditionnels du Worker.
+
+Le formulaire de création desktop est actuellement limité au maïs; les autres cultures des campagnes déjà enregistrées restent lisibles si l’API les fournit. Les paramètres hydriques non mesurés, comme l’humidité initiale du sol, restent inconnus et bloquent les conseils concernés. Les propriétés chimiques du sol sont affichées avec leur provenance; elles ne sont pas converties automatiquement en dose d’engrais ou en gain de rendement. Un résultat conditionnel reste une estimation du modèle, pas une récolte mesurée ni une prévision validée à l’échelle de la parcelle.
 
 ## Démarrer sur Windows
 
-Installez [Node.js](https://nodejs.org/fr), [Rust stable](https://rust-lang.org/tools/install) et les [outils Microsoft C++](https://visualstudio.microsoft.com/fr/visual-cpp-build-tools/) avec la charge de travail **Développement Desktop en C++**. Le [guide de Tauri](https://v2.tauri.app/start/prerequisites/#windows) indique comment vérifier le runtime WebView2.
+Installez [Node.js](https://nodejs.org/fr), [Rust stable](https://rust-lang.org/tools/install) et les [outils Microsoft C++](https://visualstudio.microsoft.com/fr/visual-cpp-build-tools/) avec la charge de travail **Développement Desktop en C++**. Consultez le [guide Tauri pour Windows](https://v2.tauri.app/start/prerequisites/#windows) pour WebView2.
 
-Extrayez le dossier **AgriPrevision-Desktop**. Ouvrez-le dans VS Code ou ouvrez PowerShell dans ce dossier, puis lancez ces deux commandes.
+Dans le dossier extrait AgriPrevision-Desktop, ouvrez PowerShell et lancez :
 
-```powershell
-npm.cmd install
-npm.cmd run desktop:dev
-```
+    npm.cmd install
+    npm.cmd run desktop:dev
 
-Le premier lancement télécharge les dépendances de compilation. La fenêtre AgriPrévision s’ouvre une fois la compilation terminée. Choisissez **Mon compte → Se connecter**, terminez l’authentification Cloudflare Access dans la fenêtre ouverte, puis cliquez sur **Actualiser les campagnes**. Si aucun espace personnel n’est ouvert, l’API refuse l’accès et l’application affiche son erreur. **Revenir à la démonstration** restaure les scénarios locaux.
+Dans l’application, choisissez **Mon compte → Se connecter**, terminez l’authentification Access, puis cliquez sur **Actualiser les campagnes**. Si Access ou l’API refuse la connexion, l’application affiche l’erreur reçue.
 
-## Préparer l’installateur
+## Construire l’installateur
 
-Dans le même dossier, exécutez cette commande.
+    npm.cmd run desktop:build
 
-```powershell
-npm.cmd run desktop:build
-```
+L’installateur NSIS *-setup.exe est créé dans src-tauri/target/release/bundle/nsis/. Il s’installe pour l’utilisateur Windows courant. Le premier lancement peut demander le téléchargement de WebView2. L’application a besoin d’Internet pour toutes les fonctions qui lisent ou enregistrent les données AgriPrévision.
 
-L’installateur NSIS au format `*-setup.exe` se trouve par défaut dans `src-tauri/target/release/bundle/nsis/`. Il installe AgriPrévision pour l’utilisateur Windows courant. Si WebView2 doit être installé, l’installateur utilise une connexion pour le télécharger. Les écrans et les calculs de démonstration fonctionnent hors connexion ; la lecture des campagnes requiert Internet et une session Access autorisée.
+L’EXE de développement n’est pas signé et peut afficher l’avertissement SmartScreen. Le workflow Desktop produit également les paquets de soumission MSIX. Le paquet MSIX de soumission ne devient installable depuis le Microsoft Store qu’après certification et publication.
 
-Cet EXE de développement n’est pas signé : Windows peut afficher « Windows a protégé votre ordinateur ». Pour une installation publique sans cet avertissement, la distribution prévue est un **MSIX certifié et signé par Microsoft Store**. Le processus de génération du paquet de soumission et les étapes du compte éditeur sont décrits dans [`store/README.md`](store/README.md). Le MSIX produit avant certification n’est pas destiné à une installation directe.
+## Fichiers principaux
 
-## Où intervenir
-
-| Besoin | Fichier ou dossier |
+| Fonction | Fichier |
 | --- | --- |
-| Structure et style de l’écran | `ui/index.html` et `ui/styles/` |
-| Parcelles, carte, couches et carnet | `ui/js/carte.js` et `ui/js/champs.js` |
-| Données d’exemple et calculs de décision | `ui/js/calculs-decisions.js` |
-| Fiches, aperçus et brouillons | `ui/js/ecrans-decisions.js` |
-| Fenêtre et installateur Windows | `src-tauri/` |
-| Lecture sécurisée des campagnes du Worker | `src-tauri/src/main.rs` et `ui/js/worker-campagnes.js` |
+| Écrans et style locaux | ui/index.html, ui/styles/ |
+| Carte, campagnes et données distantes | ui/js/carte.js, ui/js/champs.js, ui/js/worker-campagnes.js |
+| Recherche, contour, terrain, sol et météo | ui/js/worker-edition.js |
+| Client natif direct vers l’API | src-tauri/src/main.rs |
+| Construction Windows | src-tauri/, ../.github/workflows/desktop.yml |
 
-## Reprendre le développement
-
-La création initiale accepte un contour GeoJSON et prépare un **maïs** avec un profil FAO56 indicatif, sans météo, humidité initiale ou paramètres de pompe inventés. Complétez ces données sur la campagne avant d’utiliser un résultat hydrique. L’édition rapide modifie le nom et la localité ; les autres saisies de la maquette connectée passent par les fiches Eau, Engrais et Observations. Chaque enregistrement utilise `expectedRevision` : en cas de conflit ou d’erreur, le formulaire reste ouvert. La comparaison de vente et le contrôle de levée sont des calculs locaux à partir des valeurs saisies ; ils ne prétendent pas prédire le prix ou décider automatiquement un regarnissage. Les données du mode Démonstration ne sont jamais envoyées au compte.
-
-La route `field-zone-map` du Worker fournit le GeoJSON calculé par son analyse spatiale et les doses confirmées. Le bouton « Charger la carte géographique » signale toute erreur ou absence de couverture ; aucune carte fictive ne la remplace. L’enregistrement d’une dose commerciale ne calcule pas son effet sur le rendement. Cette route est publiée sur le Worker, avec un contrôle de santé Access réussi après déploiement.
-
-Pour poursuivre sans répéter tout le contexte, utilisez `PROMPT-RACCORDEMENT.md` depuis ce dossier.
-
-## État de ce jalon
-
-Le projet source et ses ressources locales sont fournis. La syntaxe JavaScript, les contrats de route et le test d’accès aux cartes ont été contrôlés. La compilation Windows et la création de l’installateur NSIS ont réussi dans le [workflow Desktop](https://github.com/fawitchamie-ai/agri/actions/runs/45693087636). L’ouverture interactive sous Windows, la qualité des images pour une campagne donnée et une connexion à un compte Access réel restent à confirmer. Un appel public à `/api/health` du Worker a répondu « Connexion Cloudflare Access requise » le 25 novembre 2026. L’installateur est disponible dans l’artefact du workflow, séparément du projet source.
+Les données indisponibles restent identifiées comme telles. Une limite dessinée sur Sentinel‑2 n’est pas une limite juridique ou cadastrale; l’API ne fournit pas de source universelle de limites cadastrales.

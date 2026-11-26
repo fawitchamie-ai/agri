@@ -1,43 +1,12 @@
-/* Données et interface intégrées pour une ouverture locale du fichier. */
-const AERIAL_IMAGE = "assets/terrain.webp";
-
+/* Interface desktop connectée aux campagnes et images de l’API. */
 const DAYS = [6, 11, 16, 20, 25];
 const WORLD = { width: 960, height: 640 };
 const CELL = 10;
-const STORAGE_KEY = "agriprevision.maquette.desktop.v2";
 const LAYERS = { satellite: "Satellite", ndvi: "NDVI", contrast: "NDVI contrasté", evi: "EVI", zones: "Zones historiques", dose: "Carte de doses" };
 const NAMES = ["Faible", "Moyenne", "Élevée"];
 const ZONE_COLORS = ["#eec379", "#98bda9", "#35866e"];
 const DOSES = [30, 45, 60];
 const RAMP = [[222, 113, 74], [235, 185, 82], [178, 203, 106], [100, 164, 104], [41, 116, 79]];
-const DEMO_FIELDS = [
-  {
-    id: "kpele", name: "Champ de Kpélé", crop: "Maïs", area: 17.64, sowing: "12 sept. 2026", rain: 24,
-    ndvi: [.43, .49, .54, .58, .62], notePoint: [333, 366],
-    action: "Observer la bordure ouest",
-    actionDetail: "La vigueur y est plus faible sur les dernières images. Comparez l’état des plants et l’humidité du sol avec le reste du champ.",
-    shape: [[248, 418], [250, 372], [267, 326], [290, 267], [311, 245], [518, 194], [539, 182], [602, 189], [691, 209], [702, 223], [688, 290], [665, 365], [646, 423], [607, 484], [571, 475], [480, 456], [367, 435], [307, 429]]
-  },
-  {
-    id: "sodji", name: "Bas-fond Sodji", crop: "Riz", area: 8.4, sowing: "28 août 2026", rain: 28,
-    ndvi: [.50, .55, .62, .65, .68], notePoint: [160, 151],
-    action: "Vérifier l’état du bas-fond",
-    actionDetail: "Comparez la zone basse avec la partie haute du champ lors du prochain passage.",
-    shape: [[64, 76], [90, 44], [139, 53], [202, 72], [247, 77], [285, 96], [314, 113], [306, 169], [287, 218], [269, 273], [228, 256], [190, 241], [143, 225], [107, 202], [91, 175], [78, 142]]
-  },
-  {
-    id: "adeta", name: "Parcelle Adéta", crop: "Sorgho", area: 5.21, sowing: "1 oct. 2026", rain: 19,
-    ndvi: [.34, .40, .46, .50, .56], notePoint: [752, 456],
-    action: "Revoir la limite sud",
-    actionDetail: "Suivez l’évolution des bandes de vigueur après les pluies de la semaine.",
-    shape: [[609, 500], [628, 461], [656, 422], [685, 404], [723, 387], [775, 363], [891, 405], [875, 468], [850, 516], [849, 574], [831, 615], [763, 594], [679, 567], [645, 544], [610, 523]]
-  }
-];
-const DEMO_NOTES = [
-  { id: "k-1", fieldId: "kpele", point: [333, 366], title: "Bordure ouest à revoir", body: "Vigueur plus faible près de la piste. Vérifier les plants lors du prochain passage.", label: "23 nov. 2026" },
-  { id: "k-2", fieldId: "kpele", point: [547, 378], title: "Couverture régulière au centre", body: "Les rangs sont réguliers sur cette partie du champ.", label: "16 nov. 2026" },
-  { id: "s-1", fieldId: "sodji", point: [167, 169], title: "Niveau d’eau à vérifier", body: "Observer le bas de la parcelle lors du prochain passage.", label: "20 nov. 2026" }
-];
 
 const iconPaths = {
   brand: "M2.5 8.5 12 3l9.5 5.5L12 14z M2.5 12l9.5 5.5 9.5-5.5 M2.5 15.5 12 21l9.5-5.5 M12 7.4l3.1 1.8-3.1 1.8L8.9 9.2z",
@@ -64,15 +33,14 @@ const mapCanvases = [element("map-a"), element("map-b")];
 const number = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
 const indexNumber = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const signedIndex = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "exceptZero" });
-const saved = readSaved();
-const fields = DEMO_FIELDS.concat(saved.fields);
-const localFields = fields.slice();
-const notes = DEMO_NOTES.concat(saved.notes);
+const fields = [];
+const localFields = [];
+const notes = [];
 const geography = new Map();
 const state = {
-  fieldId: "kpele", view: "fields", layer: "ndvi", zoneLayer: "zones", day: DAYS.length - 1,
-  comparisonDays: [1, DAYS.length - 1], comparisonLayers: ["ndvi", "ndvi"],
-  camera: { x: 480, y: 328, zoom: 1 }, noteId: null, expanded: false,
+  fieldId: null, view: "fields", layer: "satellite", zoneLayer: "zones", day: DAYS.length - 1,
+  comparisonDays: [1, DAYS.length - 1], comparisonLayers: ["satellite", "ndvi"],
+  camera: { x: 480, y: 320, zoom: 1 }, noteId: null, expanded: false,
   draft: null, notePoint: null
 };
 const aerial = new Image();
@@ -80,27 +48,7 @@ let drawRequested = false;
 let messageTimer = 0;
 let pan = null;
 
-function readSaved() {
-  try {
-    const item = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return { fields: Array.isArray(item.fields) ? item.fields : [], notes: Array.isArray(item.notes) ? item.notes : [] };
-  } catch {
-    return { fields: [], notes: [] };
-  }
-}
-
-function persist() {
-  try {
-    if (!fields.some(field => field.remote)) localFields.splice(0, localFields.length, ...fields);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      fields: localFields.slice(DEMO_FIELDS.length),
-      notes: notes.slice(DEMO_NOTES.length)
-    }));
-    return true;
-  } catch {
-    return false;
-  }
-}
+function persist() { return false; }
 
 function putText(id, value) {
   element(id).textContent = value;
@@ -149,6 +97,15 @@ function sameIndex(layer) {
 }
 
 function observedIndex(field, day, layer = "ndvi") {
+  if (!field) return null;
+  if (field.remote) {
+    const observations = field.indexSeries?.observations || [];
+    const property = layer === "evi" ? "eviMedian" : "ndviMedian";
+    const usable = observations.filter(item => item.quality === "usable" &&
+      Number.isFinite(item[property]) && item.validPixels > 0)
+      .slice().sort((a, b) => a.date.localeCompare(b.date));
+    return usable.length ? usable.at(-1)[property] : null;
+  }
   if (!field.ndvi) return null;
   const ndvi = field.ndvi[day];
   return layer === "evi" ? ndvi * .83 - .03 : ndvi;
@@ -173,7 +130,14 @@ function blob(x, y, cx, cy, wx, wy) {
 }
 
 function spatialData(field) {
+  if (!field) return { bounds: { x0: 0, x1: WORLD.width, y0: 0, y1: WORLD.height },
+    center: [WORLD.width / 2, WORLD.height / 2], width: WORLD.width, height: WORLD.height,
+    tiles: [], marks: [], areas: [] };
   if (geography.has(field.id)) return geography.get(field.id);
+  if (!Array.isArray(field.shape) || field.shape.length < 3)
+    return { bounds: { x0: 0, x1: WORLD.width, y0: 0, y1: WORLD.height },
+      center: [WORLD.width / 2, WORLD.height / 2], width: WORLD.width, height: WORLD.height,
+      tiles: [], marks: [], areas: [] };
   const xs = field.shape.map(([x]) => x);
   const ys = field.shape.map(([, y]) => y);
   const bounds = { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
@@ -233,6 +197,7 @@ function palette(value) {
 }
 
 function activeLayer(field) {
+  if (!field) return "satellite";
   if (field.remote) return field.imageLayer === "ndvi" ? "ndvi" : "satellite";
   if (!state.draft && state.view === "decisions") return decisionLayer(field);
   if (state.draft || !field.ndvi || state.view === "notes" || state.view === "campaign") return "satellite";
@@ -241,12 +206,14 @@ function activeLayer(field) {
 
 function isComparing() {
   const field = currentField();
-  return !state.draft && state.view === "compare" && (field.remote || !!field.ndvi);
+  return !!field && !state.draft && state.view === "compare" && (field.remote || !!field.ndvi);
 }
 
 function projection(width, height) {
   const field = currentField();
   const camera = state.camera;
+  if (!field) return { scale: Math.max(width / WORLD.width, height / WORLD.height),
+    left: 0, top: 0, centerX: WORLD.width / 2, centerY: WORLD.height / 2 };
   const fullScale = Math.max(width / WORLD.width, height / WORLD.height);
   const area = spatialData(field);
   const baseScale = hasSplitMap()
@@ -289,46 +256,24 @@ function pathPolygon(ctx, shape) {
 }
 
 function paintAerial(ctx, width, height, frame, day, layer, side = null) {
-  if (currentField().remote) {
-    ctx.fillStyle = "#e9eee5";
-    ctx.fillRect(0, 0, width, height);
-    const field = currentField();
-    const date = side === null ? field.imageDate : field.compareDates?.[side];
-    const key = date + ":" + (layer === "ndvi" ? "ndvi" : "rgb");
-    const image = field.remoteImages?.get(key);
-    if (image?.complete && image.naturalWidth) {
-      ctx.save();
-      ctx.translate(frame.left, frame.top);
-      ctx.scale(frame.scale, frame.scale);
-      ctx.drawImage(image, 96, 80, 768, 480);
-      ctx.restore();
-    }
-    ctx.fillStyle = "#61766a";
-    ctx.font = "600 12px Agri Sans, Open Sans, sans-serif";
-    ctx.fillText(image ? "Image du " + date + " · Digital Earth Africa" :
-      "Contour de la campagne · image à charger", 24, 32);
-    return;
-  }
-  ctx.fillStyle = "#40563c";
+  const field = currentField();
+  ctx.fillStyle = "#e9eee5";
   ctx.fillRect(0, 0, width, height);
-  if (!aerial.naturalWidth) return;
-  const scaledWidth = WORLD.width * frame.scale;
-  const scaledHeight = WORLD.height * frame.scale;
-  const brightness = layer === "satellite" ? .87 + .025 * (day % 3) : .74;
-  ctx.imageSmoothingQuality = "high";
-  for (let tileY = -1; tileY <= 1; tileY++) {
-    for (let tileX = -1; tileX <= 1; tileX++) {
-      const x = frame.left + tileX * scaledWidth;
-      const y = frame.top + tileY * scaledHeight;
-      if (x >= width || x + scaledWidth <= 0 || y >= height || y + scaledHeight <= 0) continue;
-      ctx.save();
-      ctx.filter = "brightness(" + brightness + ") saturate(.88)";
-      ctx.translate(x + (tileX ? scaledWidth : 0), y + (tileY ? scaledHeight : 0));
-      ctx.scale(tileX ? -1 : 1, tileY ? -1 : 1);
-      ctx.drawImage(aerial, 0, 0, scaledWidth + .6, scaledHeight + .6);
-      ctx.restore();
-    }
+  if (!field?.remote) return;
+  const date = side === null ? field.imageDate : field.compareDates?.[side];
+  const imageLayer = layer === "ndvi" ? "ndvi" : "rgb";
+  const image = field.remoteImages?.get(date + ":" + imageLayer);
+  if (image?.complete && image.naturalWidth) {
+    ctx.save();
+    ctx.translate(frame.left, frame.top);
+    ctx.scale(frame.scale, frame.scale);
+    ctx.drawImage(image, 96, 80, 768, 480);
+    ctx.restore();
   }
+  ctx.fillStyle = "#61766a";
+  ctx.font = "600 12px Agri Sans, Open Sans, sans-serif";
+  ctx.fillText(image ? "Sentinel‑2 · " + date + " · Digital Earth Africa" :
+    "Aucune image satellite chargée depuis l’API", 24, 32);
 }
 
 function paintOverlay(ctx, field, layer, day) {
@@ -360,8 +305,16 @@ function renderMap(canvas, layer, day) {
   const surface = matchCanvas(canvas);
   if (!surface) return;
   const { ctx, width, height } = surface;
-  const frame = projection(width, height);
   const field = currentField();
+  if (!field) {
+    ctx.fillStyle = "#edf2f0";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#53665d";
+    ctx.font = "600 15px Agri Sans, Open Sans, sans-serif";
+    ctx.fillText("Connectez-vous pour charger vos campagnes enregistrées.", 24, 34);
+    return;
+  }
+  const frame = projection(width, height);
   paintAerial(ctx, width, height, frame, day, layer,
     field.remote && isComparing() ? (canvas.id === "map-b" ? 1 : 0) : null);
   if (field.remote && !field.geometryAvailable) {
@@ -373,28 +326,20 @@ function renderMap(canvas, layer, day) {
   ctx.save();
   ctx.translate(frame.left, frame.top);
   ctx.scale(frame.scale, frame.scale);
-
   const pump = !field.remote && state.view === "decisions" && decisionState.topic === "water" &&
     chooseDraft(field,"water").mode === "pump" ? computePump(chooseDraft(field,"water")) : null;
-  if (pump) {
-    pump.rows.filter(row => !row.missing && row.minutes > 0).forEach(row => paintOverlay(ctx,row.field,"irrigation",day));
-  } else if (!state.draft) paintOverlay(ctx, field, layer, day);
-  if (!hasSplitMap() && !field.remote) {
-    fields.filter((item) => item.id !== field.id).forEach((item) => paintOutline(ctx, item.shape, frame.scale, false));
-  }
-  paintOutline(ctx, field.shape, frame.scale, !state.draft);
-
+  if (pump) pump.rows.filter(row => !row.missing && row.minutes > 0).forEach(row => paintOverlay(ctx,row.field,"irrigation",day));
+  else if (!state.draft) paintOverlay(ctx, field, layer, day);
+  if (!hasSplitMap() && !field.remote) fields.filter(item => item.id !== field.id).forEach(item => paintOutline(ctx, item.shape, frame.scale, false));
+  if (field.shape?.length >= 3) paintOutline(ctx, field.shape, frame.scale, !state.draft);
   if (state.draft) paintDraft(ctx, state.draft.shape, frame.scale);
   ctx.restore();
-
   if (!state.draft && state.view === "notes") paintPins(ctx, field, frame);
   if (!state.draft && state.view !== "notes") {
     const displayFields = hasSplitMap() || field.remote ? [field] : fields;
-    for (const item of displayFields) {
-      paintMapLabel(ctx, item, frame, width, height, item.id === field.id, layer, day);
-    }
+    for (const item of displayFields) paintMapLabel(ctx, item, frame, width, height, item.id === field.id, layer, day);
   }
-  if (!state.draft) paintDecisionPoints(ctx,field,frame);
+  if (!state.draft) paintDecisionPoints(ctx, field, frame);
 }
 
 function paintOutline(ctx, shape, scale, active) {
@@ -484,7 +429,7 @@ function paintDraft(ctx, shape, scale) {
 
 function paintTrend() {
   const field = currentField();
-  if (!field.ndvi || state.view !== "fields") return;
+  if (!field?.ndvi || state.view !== "fields") return;
   const canvas = element("trend");
   const surface = matchCanvas(canvas);
   if (!surface) return;
@@ -537,36 +482,31 @@ function paintTrend() {
 function paintThumb(canvas, field) {
   const ctx = canvas.getContext("2d");
   const width = canvas.width, height = canvas.height;
-  const area = spatialData(field);
-  ctx.fillStyle = "#546947";
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "#e9eee5";
   ctx.fillRect(0, 0, width, height);
-  if (field.remote) {
-    ctx.fillStyle = "#dce8dd";
-    ctx.fillRect(0, 0, width, height);
-    if (!field.geometryAvailable) return;
+  if (!field?.remote) {
+    ctx.fillStyle = "#53665d";
+    ctx.font = "600 10px sans-serif";
+    ctx.fillText("Données API requises", 5, height / 2);
+    return;
+  }
+  const date = field.imageDate;
+  const image = date && field.remoteImages?.get(date + ":" + (field.imageLayer === "ndvi" ? "ndvi" : "rgb"));
+  if (image?.complete && image.naturalWidth)
+    ctx.drawImage(image, 96 / WORLD.width * width, 80 / WORLD.height * height,
+      768 / WORLD.width * width, 480 / WORLD.height * height);
+  if (field.geometryAvailable && field.shape?.length >= 3) {
     ctx.save();
     ctx.scale(width / WORLD.width, height / WORLD.height);
     paintOutline(ctx, field.shape, width / WORLD.width, field.id === state.fieldId);
     ctx.restore();
-    return;
   }
-  const worldWidth = Math.min(Math.max(area.width * 1.22, 40), WORLD.height * width / height, WORLD.width);
-  const worldHeight = worldWidth * height / width;
-  const x = clamp(area.center[0] - worldWidth / 2, 0, WORLD.width - worldWidth);
-  const y = clamp(area.center[1] - worldHeight / 2, 0, WORLD.height - worldHeight);
-  const scale = width / worldWidth;
-  if (aerial.naturalWidth) {
-    const f = aerial.naturalWidth / WORLD.width;
-    ctx.drawImage(aerial, x * f, y * f, worldWidth * f, worldHeight * f, 0, 0, width, height);
+  if (!image) {
+    ctx.fillStyle = "#34483b";
+    ctx.font = "600 9px sans-serif";
+    ctx.fillText("Image API indisponible", 4, height - 7);
   }
-  ctx.save();
-  ctx.scale(scale, scale);
-  ctx.translate(-x, -y);
-  ctx.globalAlpha = .6;
-  paintOverlay(ctx, field, "ndvi", state.day);
-  ctx.globalAlpha = 1;
-  paintOutline(ctx, field.shape, scale * 2.4, field.id === state.fieldId);
-  ctx.restore();
 }
 
 function scheduleDraw() {
@@ -590,6 +530,10 @@ function scheduleDraw() {
 
 function recenter() {
   const field = currentField();
+  if (!field) {
+    state.camera = { x: WORLD.width / 2, y: WORLD.height / 2, zoom: 1 };
+    return;
+  }
   const area = spatialData(field);
   state.camera = { x: area.center[0], y: area.center[1], zoom: hasSplitMap() || field.id === "kpele" ? 1 : 1.13 };
 }

@@ -30,12 +30,16 @@ fn worker_origin() -> &'static str {
 fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
     if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let app = caller.app_handle();
+    let mut url = Url::parse(WORKER)
+        .and_then(|origin| origin.join("api/auth/login"))
+        .map_err(|_| "Adresse de connexion au Worker invalide.".to_owned())?;
+    url.query_pairs_mut().append_pair("returnTo", "/api/seasonal");
     if let Some(window) = app.get_webview_window("worker-login") {
+        window.navigate(url.clone()).map_err(|_| "Impossible de charger la connexion au Worker.".to_owned())?;
         window.show().map_err(|_| "Impossible d’ouvrir la connexion.".to_owned())?;
         window.set_focus().map_err(|_| "Impossible d’activer la fenêtre de connexion.".to_owned())?;
         return Ok(());
     }
-    let url = Url::parse(WORKER).map_err(|_| "Adresse du Worker invalide.".to_owned())?;
     WebviewWindowBuilder::new(app, "worker-login", WebviewUrl::External(url))
         .title("Connexion AgriPrévision")
         .inner_size(1000.0, 760.0)
@@ -45,6 +49,15 @@ fn open_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
 }
 
 /// Les cookies HTTP-only restent dans WebView2 ; aucun jeton ne traverse le JavaScript.
+#[tauri::command]
+fn close_worker_login(caller: tauri::WebviewWindow) -> Result<(), String> {
+    if caller.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
+    if let Some(login) = caller.app_handle().get_webview_window("worker-login") {
+        login.close().map_err(|_| "Impossible de fermer la fenêtre de connexion.".to_owned())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 async fn access_cookie(window: tauri::WebviewWindow) -> Result<String, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
@@ -85,8 +98,14 @@ async fn send_json(window: tauri::WebviewWindow, request: reqwest::RequestBuilde
     }
     let bytes = response.bytes().await.map_err(|_| "Réponse du Worker interrompue.".to_owned())?;
     if bytes.len() > 8_000_000 { return Err("Réponse du Worker trop volumineuse.".to_owned()); }
-    let data = serde_json::from_slice(&bytes)
-        .unwrap_or_else(|_| serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."}));
+    let data = serde_json::from_slice(&bytes).unwrap_or_else(|_| {
+        let message = String::from_utf8_lossy(&bytes).trim().to_owned();
+        if message.is_empty() {
+            serde_json::json!({"error":"Le Worker n’a pas retourné de données JSON."})
+        } else {
+            serde_json::json!({"error":message})
+        }
+    });
     Ok(ApiReply { status, data })
 }
 
@@ -106,7 +125,7 @@ async fn worker_get(window: tauri::WebviewWindow, campaign_id: Option<String>) -
 async fn worker_post(window: tauri::WebviewWindow, body: serde_json::Value) -> Result<ApiReply, String> {
     if window.label() != "main" { return Err("Fenêtre non autorisée.".to_owned()); }
     let action = body.get("action").and_then(|v| v.as_str()).unwrap_or("");
-    if !["satellite-catalog", "satellite-scenes", "satellite-index-series",
+    if !["places", "environment", "agronomic-soil", "satellite-catalog", "satellite-scenes", "satellite-index-series",
          "field-zone-season", "field-zone-map", "sowing-plan", "capabilities", "weather",
          "fertilizer-evidence", "fertilizer-information", "calibration-status", "product-catalog",
          "nutrient-balance", "compare-interventions", "data-readiness"].contains(&action) {
@@ -170,7 +189,7 @@ async fn worker_image(window: tauri::WebviewWindow, layer: String, date: String,
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![worker_origin, open_worker_login, worker_get, worker_post, worker_mutate, worker_image])
+        .invoke_handler(tauri::generate_handler![worker_origin, open_worker_login, close_worker_login, worker_get, worker_post, worker_mutate, worker_image])
         .run(tauri::generate_context!())
         .expect("AgriPrévision n’a pas pu ouvrir sa fenêtre");
 }

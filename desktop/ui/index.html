@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#16342e">
-  <meta name="description" content="Maquette desktop interactive d’AgriPrévision.">
+  <meta name="description" content="AgriPrévision Desktop, application connectée directement à l’API agricole.">
   <title>AgriPrévision · Mes champs</title>
   <link rel="stylesheet" href="styles/application.css">
 </head>
@@ -22,16 +22,15 @@
         <button type="button" data-view="notes"><canvas class="icon" data-icon="note" aria-hidden="true"></canvas>Carnet</button>
         <button type="button" data-view="decisions"><canvas class="icon" data-icon="decide" aria-hidden="true"></canvas>Décider</button>
       </nav>
-      <div class="top-aside"><span class="season">AgriPrévision</span><span class="demo" id="data-status" title="Cartes et données fictives">Démonstration</span><button type="button" class="btn" id="worker-toggle">Mon compte</button></div>
+      <div class="top-aside"><span class="season">AgriPrévision</span><span class="api-status" id="data-status" title="Connexion à l’API AgriPrévision requise">Connexion requise</span><button type="button" class="btn" id="worker-toggle">Mon compte</button></div>
     </header>
 
     <main class="workspace" id="workspace">
-      <section class="worker-panel" id="worker-panel" hidden aria-label="Connexion au Worker">
+      <section class="worker-panel" id="worker-panel" aria-label="Connexion à l’API AgriPrévision">
         <div class="worker-panel-head"><strong>Mon compte AgriPrévision</strong><button type="button" class="icon-btn" id="worker-close" aria-label="Fermer">×</button></div>
-        <p class="soft-text">Campagnes du Worker · agri.fawitchamie.workers.dev</p>
-        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
-        <p id="worker-message" role="status">Connectez-vous avec votre compte Cloudflare Access, puis actualisez.</p>
-        <button type="button" class="action-text" id="worker-demo">Revenir à la démonstration</button>
+        <p class="soft-text">Connexion directe à l’API AgriPrévision · agri.fawitchamie.workers.dev</p>
+        <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn" id="worker-login-close">Fermer la fenêtre de connexion</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new">Nouvelle campagne</button></div>
+        <p id="worker-message" role="status">Connectez-vous avec votre compte, puis chargez les campagnes enregistrées.</p>
       </section>
       <aside class="sidebar" id="primary-sidebar" aria-label="Champs et données">
         <section class="fields-block" aria-labelledby="fields-title">
@@ -154,6 +153,13 @@
         <div class="map-panes" id="map-panes">
           <div class="map-pane">
             <canvas class="map-canvas" id="map-a" tabindex="0" aria-label="Carte des champs. Utilisez les touches plus et moins pour zoomer."></canvas>
+            <div class="map-empty-state" id="map-empty-state" hidden>
+              <div class="map-empty-card">
+                <strong>La vue satellite de votre champ s’affichera ici</strong>
+                <p>Connectez-vous, recherchez votre localité et tracez le contour sur une image Sentinel‑2 reçue du Worker.</p>
+                <button type="button" class="btn primary" id="map-empty-create">Choisir une localité</button>
+              </div>
+            </div>
             <div class="decision-pane-tag" id="decision-pane-a" hidden>Zones historiques</div>
             <div class="pane-bar" id="pane-a" hidden>
               <span class="letter">A</span>
@@ -240,7 +246,7 @@
               <div class="ramp" id="legend-ramp"></div>
               <div class="legend-labels"><span id="legend-min">0,25</span><span id="legend-mid">0,50</span><span id="legend-max">0,75</span></div>
             </div>
-            <span class="attribution" id="map-attribution">Fond aérien illustratif</span>
+            <span class="attribution" id="map-attribution">Images réelles chargées depuis l’API AgriPrévision</span>
           </div>
           <div class="timebar" id="timebar">
             <div class="time-label">Images<small class="time-year"> · nov. 2026</small></div>
@@ -308,12 +314,26 @@
       <p class="soft-text" id="worker-editor-hint"></p>
       <label>Nom de la parcelle<input name="name" maxlength="120" required></label>
       <label>Localité<input name="territory" maxlength="160" required></label>
-      <label>Variété<input name="variety" maxlength="100" required value="Non renseignée"></label>
+      <label>Variété observée (facultatif)<input name="variety" maxlength="100" value=""></label>
       <div id="worker-new-fields">
-        <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option><option value="NGA">Nigeria</option></select></label>
-        <label>Date de semis<input type="date" name="sowingDate"></label>
-        <label>Contour GeoJSON (Polygon)<textarea name="geometry" rows="5" spellcheck="false" placeholder='{"type":"Polygon","coordinates":[[[1.2,6.1],[1.201,6.1],[1.201,6.101],[1.2,6.101],[1.2,6.1]]]}'></textarea></label>
-        <p class="soft-text">Création initiale en maïs avec paramètres hydriques à renseigner. Le Worker contrôlera le contour et les données avant le calcul.</p>
+        <label>Pays<select name="country"><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option></select></label>
+        <label>Date de semis<input type="date" name="sowingDate" required></label>
+        <section class="worker-place-picker" id="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
+           <label for="worker-place-query">Rechercher un village ou une ville</label>
+           <div class="worker-place-search-row"><input id="worker-place-query" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Ex. Kpalimé"><button type="button" class="btn" id="worker-place-search">Rechercher</button></div>
+           <ul class="worker-place-results" id="worker-place-results" aria-label="Résultats de recherche"></ul>
+           <p class="soft-text" id="worker-place-status" role="status">Connectez-vous à l’API AgriPrévision, puis recherchez une localité pour charger une image Sentinel‑2 réelle.</p>
+            <button type="button" class="btn" id="worker-place-connect">Se connecter au Worker</button>
+            <div class="worker-place-map-wrap" id="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
+            <div class="worker-place-map-tools">
+              <span class="soft-text" id="worker-place-attribution">Image réelle requise · le contour dessiné n’est pas cadastral</span>
+              <div><button type="button" class="btn" id="worker-place-map-expand" aria-pressed="false">Plein écran</button><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
+            </div>
+          </section>
+         <label>Contour GeoJSON (Polygon) · modifiable<textarea name="geometry" rows="5" spellcheck="false" placeholder="Le contour tracé sur l’image apparaît ici. Vous pouvez aussi coller un GeoJSON réel."></textarea></label>
+        <button type="button" class="btn" id="worker-place-analyze">Analyser le terrain, le sol et la météo via l’API</button>
+        <p class="soft-text" id="worker-place-analysis" role="status">Après le tracé, l’API récupère la classification du terrain, les profils SoilGrids à 250 m et les données météorologiques du cycle. L’overlay colore les terres candidates en vert, l’eau en bleu et les surfaces non classées en gris. Les valeurs manquantes restent inconnues.</p>
+        <p class="soft-text">Le contour est dessiné par vous sur l’image Sentinel‑2; il n’est pas cadastral. Le profil SoilGrids est une prédiction cartographique, pas une mesure de laboratoire. Les prévisions et observations météo gardent leur statut de source.</p>
       </div>
       <p id="worker-editor-error" role="alert"></p>
       <div class="form-end"><button type="button" class="btn" id="worker-editor-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-editor-save">Enregistrer sur le Worker</button></div>
