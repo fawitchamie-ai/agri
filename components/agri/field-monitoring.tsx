@@ -1,10 +1,11 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
-import type {SeasonalConfig,WeatherDay} from '../../lib/seasonal/types';
-import {parcelMetrics} from '../../lib/seasonal/parcel';
+import type {SeasonalConfig,WeatherDay,WaterEvent,WaterPlan} from '../../lib/seasonal/types';
+import {parcelMetrics,type Position} from '../../lib/seasonal/parcel';
 import {seasonalRequest} from '../../lib/seasonal/request';
 import {fieldMonitoringScope,analyzeFieldZones,analyzeObservationZones,chooseFieldZoneMap,fieldZoneMapScope,FIELD_ZONES_VERSION,ZONE_NAMES,ZONE_COLORS,zonePrescription,zonesGeoJson,zonePrescriptionCsv,type ZoneClass,type FieldMonitoring,type ZoneSeason,type ZoneSeasonRead,type ZoneDoseInput,type ZoneAnalysis} from '../../lib/seasonal/field-zones';
-import {weatherLabel} from '../../lib/seasonal/field-intelligence';
+import {fieldNotes,weatherLabel} from '../../lib/seasonal/field-intelligence';
+import {pointInField} from '../../lib/seasonal/agronomic';
 import ParcelLayers from './parcel-layers';
 import SatelliteNowcastPanel from './satellite-nowcast-panel';
 import type {FieldMapFocus} from '../../lib/seasonal/field-analysis';
@@ -54,14 +55,56 @@ function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>
  <button className="qs-text-button" onClick={onWeather}>Ouvrir la météo et les mesures de la campagne →</button>
  <details><summary>Sources et disponibilité</summary>{live?<p>{live.attribution} Récupérées le {live.retrievedAt}. Ces prévisions consultées sont à intégrer dans les paramètres météo pour actualiser le calcul.</p>:[...new Set(days.map(w=>w.source))].map(s=><p key={s}>{s}</p>)}<p>Une prévision n’est pas une mesure de pluie sur la parcelle. Les valeurs absentes restent inconnues.</p></details></section>;
 }
-type WorkspaceProps={config:SeasonalConfig;campaignId?:string;initialView?:string;initialFocus?:FieldMapFocus;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void};
+const layerItems=[['sowing','Semis'],['variety','Variété'],['emergence','Levée'],['water','Eau'],['fertilizer','Engrais'],['harvest','Récolte'],['sales','Vente']] as const;
+type CampaignLayer=typeof layerItems[number][0];
+const dayLabel=(value:string)=>new Date(value+'T12:00:00Z').toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+function CampaignMap({config,points}:{config:SeasonalConfig;points:Position[]}){
+ const shape=config.parcelGeometry!,all=shape.coordinates.flat(),xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+ const west=Math.min(...xs),east=Math.max(...xs),south=Math.min(...ys),north=Math.max(...ys),cos=Math.cos((south+north)/2*Math.PI/180);
+ const scale=Math.min(560/Math.max((east-west)*cos,1e-9),270/Math.max(north-south,1e-9));
+ const project=([x,y]:Position):[number,number]=>[320+(x-(west+east)/2)*cos*scale,165-(y-(south+north)/2)*scale];
+ const path=shape.coordinates.map(ring=>'M'+ring.map(project).map(p=>p.join(',')).join('L')+'Z').join(' ');
+ return <figure className="campaign-layer-map"><svg viewBox="0 0 640 330" role="img" aria-label="Contour réel de la campagne et observations de levée géolocalisées"><rect width="640" height="330" fill="#f2f6fa"/><path d={path} fill="#dceadf" fillRule="evenodd" stroke="#245b3d" strokeWidth="3"/>{points.map((point,i)=>{const [cx,cy]=project(point);return <g key={i}><circle cx={cx} cy={cy} r="9" fill="#e58b24" stroke="white" strokeWidth="3"/><title>Observation de levée géolocalisée</title></g>})}<text x="30" y="30" fill="#35556f" fontSize="13">Contour dessiné · WGS84</text>{points.length>0&&<text x="30" y="52" fill="#35556f" fontSize="13">{points.length} point{points.length===1?'':'s'} d’observation déclarée{points.length===1?'':'s'}</text>}</svg><figcaption>Contour de la parcelle de cette campagne. Les points ne sont affichés que si une observation réelle possède des coordonnées dans le champ.</figcaption></figure>;
+}
+export function CampaignLayerPanel({config:c,campaignId,events,plan,onOpen}:{config:SeasonalConfig;campaignId?:string;events:WaterEvent[];plan:WaterPlan|null;onOpen:(target:string)=>void}){
+ const [layer,setLayer]=useState<CampaignLayer>('sowing');
+ const notes=fieldNotes(c).filter(note=>note.parameter==='Levée');
+ const points=layer==='emergence'&&c.parcelGeometry?notes.flatMap(note=>note.visit?.observed&&pointInField(c.parcelGeometry!,note.visit.observed)?[note.visit.observed]:[]):[];
+ const actualWater=events.filter(event=>event.kind==='irrigation'&&['measured','declared'].includes(event.status)).slice().sort((a,b)=>b.date.localeCompare(a.date));
+ const proposedWater=(plan?.days??[]).filter(day=>day.intervention?.type==='proposed'&&day.intervention.sourceM3!==null&&day.intervention.sourceM3>0);
+ const products=(c.managementPlan?.products??[]).filter(item=>item.kind==='fertilizer').slice().sort((a,b)=>a.date.localeCompare(b.date));
+ const headings:Record<CampaignLayer,{title:string;source:string}>={
+  sowing:{title:'Semis de la campagne',source:'Date saisie dans les paramètres de cette campagne.'},
+  variety:{title:'Variété déclarée',source:'Nom renseigné dans les paramètres; ce n’est pas une recommandation variétale.'},
+  emergence:{title:'Observations de levée',source:'Carnet de terrain lié au contour de cette campagne.'},
+  water:{title:'Eau et arrosages',source:'Apports observés ou déclarés, et propositions du bilan hydrique enregistré.'},
+  fertilizer:{title:'Apports d’engrais',source:'Calendrier de produits de cette campagne; aucun effet de rendement n’est ajouté ici.'},
+  harvest:{title:'Récolte',source:'Aucune fiche n’est reliée explicitement à cette parcelle et à cette campagne.'},
+  sales:{title:'Vente',source:'Aucune vente n’est reliée explicitement à cette parcelle et à cette campagne.'},
+ };
+ const heading=headings[layer];
+ return <section className="qs-card campaign-layers" aria-labelledby="campaign-layers-title"><div className="field-panel-title"><div><span className="product-eyebrow">DONNÉES DE LA CAMPAGNE</span><h3 id="campaign-layers-title">Couches et décisions</h3></div><span className="monitoring-badge">{c.crop} · {dayLabel(c.sowingDate)}</span></div>
+  <div className="campaign-layer-tabs" role="group" aria-label="Couches de campagne">{layerItems.map(([id,label])=><button type="button" key={id} aria-pressed={layer===id} onClick={()=>setLayer(id)}>{label}</button>)}</div>
+  <div className="campaign-layer-content"><div><h4>{heading.title}</h4><p>{heading.source}</p></div>{c.parcelGeometry&&<CampaignMap config={c} points={points}/>}
+   {layer==='sowing'&&<dl className="campaign-layer-facts"><div><dt>Culture</dt><dd>{c.crop||'Non renseignée'}</dd></div><div><dt>Date de semis</dt><dd>{dayLabel(c.sowingDate)}</dd></div><div><dt>Statut</dt><dd>Date renseignée pour la campagne · à confirmer au champ</dd></div></dl>}
+   {layer==='variety'&&<dl className="campaign-layer-facts"><div><dt>Variété</dt><dd>{c.variety?.trim()||'Non renseignée'}</dd></div><div><dt>Statut</dt><dd>{c.variety?.trim()?'Déclarée dans les paramètres de campagne':'Information manquante'}</dd></div></dl>}
+   {layer==='emergence'&&<>{notes.length?<ul className="campaign-layer-list">{notes.map((note,index)=><li key={`${note.availableOn}-${index}`}><strong>{dayLabel(note.availableOn)} · {String(note.value||'Observation sans détail')}</strong><span>{note.visit?.observed&&c.parcelGeometry&&pointInField(c.parcelGeometry,note.visit.observed)?'Point observé sur le contour':note.visit?.observed?'Coordonnées saisies hors du contour':'Observation sans position GPS déclarée'}</span><small>{note.source} · {note.method}</small></li>)}</ul>:<p className="campaign-layer-empty">Aucune observation de levée n’est enregistrée dans le carnet de cette campagne.</p>}<button className="btn secondary" onClick={()=>onOpen('notes')}>Ouvrir le carnet terrain</button></>}
+   {layer==='water'&&<>{actualWater.length||proposedWater.length?<ul className="campaign-layer-list">{actualWater.map(event=><li key={event.id}><strong>{dayLabel(event.date)} · {fmt(event.amount)} {event.unit}</strong><span>{event.status==='measured'?'Mesuré':'Déclaré'} · {event.source}</span></li>)}{proposedWater.map(day=><li key={'proposed-'+day.date}><strong>{dayLabel(day.date)} · {fmt(day.intervention!.sourceM3)} m³ à la source</strong><span>Proposé par le bilan hydrique · {fmt(day.intervention!.durationHours)} h estimées</span></li>)}</ul>:<p className="campaign-layer-empty">Aucun arrosage observé ou proposé n’est disponible pour cette campagne.</p>}<button className="btn secondary" onClick={()=>onOpen('water')}>Ouvrir le calendrier d’eau</button></>}
+   {layer==='fertilizer'&&<>{products.length?<ul className="campaign-layer-list">{products.map(item=><li key={item.id}><strong>{dayLabel(item.date)} · {item.product}</strong><span>{item.status==='declared'?'Apport déclaré réalisé':'Apport prévu'} · {fmt(item.dose)} {item.unit}</span><small>{item.source}</small></li>)}</ul>:<p className="campaign-layer-empty">Aucun apport d’engrais n’est renseigné dans cette campagne.</p>}<button className="btn secondary" onClick={()=>onOpen('fertilizer')}>Ouvrir les apports</button></>}
+   {layer==='harvest'&&<><p className="campaign-layer-empty">Les récoltes de la coopérative ne sont pas rattachées à un contour de champ. Elles ne sont donc pas projetées sur cette carte.</p><button className="btn secondary" onClick={()=>onOpen('recoltes')}>Consulter les récoltes réelles</button></>}
+   {layer==='sales'&&<><p className="campaign-layer-empty">Les collectes et ventes ne sont pas explicitement reliées à cette campagne. Aucune quantité de la coopérative n’est attribuée à ce champ.</p><button className="btn secondary" onClick={()=>onOpen('collecte')}>Consulter les collectes</button></>}
+  </div>
+  <p className="campaign-layer-footnote">Campagne {campaignId?'enregistrée':'non enregistrée'} · les éléments non reliés ou absents restent signalés comme tels.</p>
+ </section>;
+}
+type WorkspaceProps={config:SeasonalConfig;campaignId?:string;events?:WaterEvent[];plan?:WaterPlan|null;initialView?:string;initialFocus?:FieldMapFocus;onChange:(c:SeasonalConfig)=>void;onMap:()=>void;onWeather:()=>void;onOpenAction?:(target:string)=>void};
 export default function FieldMonitoringWorkspace(props:WorkspaceProps){
  const scope=fieldMonitoringScope(props.config);
  return <FieldMonitoringBody key={JSON.stringify([scope,props.initialView,props.initialFocus])} {...props}/>;
 }
-function FieldMonitoringBody({config:c,campaignId,initialView,initialFocus,onChange,onMap,onWeather}:WorkspaceProps){
+function FieldMonitoringBody({config:c,campaignId,events=[],plan=null,initialView,initialFocus,onChange,onMap,onWeather,onOpenAction=()=>{}}:WorkspaceProps){
  const scope=fieldMonitoringScope(c),current=c.fieldMonitoring?.scope===scope,stored=current?c.fieldMonitoring:undefined;
- const [view,setView]=useState(initialFocus?'satellite':initialView??'satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
+ const [view,setView]=useState(initialFocus?'satellite':initialView==='compare'?'satellite':initialView??'satellite'),[drafts,setDrafts]=useState<ZoneSeason[]>(stored?.seasons.length?stored.seasons.map(r=>r.season):suggestedSeasons(c));
  const [mapFocus,setMapFocus]=useState(initialFocus),[visit,setVisit]=useState<FieldVisitTarget>();
  const [analysisConsent,setAnalysisConsent]=useState(false);
  const [consent,setConsent]=useState(false),[cultivated,setCultivated]=useState(stored?.cultivatedContour??false),[comparable,setComparable]=useState(stored?.comparableManagement??false);
@@ -97,14 +140,15 @@ function FieldMonitoringBody({config:c,campaignId,initialView,initialFocus,onCha
  }
  function exportMap(withRates:boolean){try{const map=withRates?doseAnalysis:analysis;if(!map)throw new Error('Analyse absente');saveFile(withRates?'carte-doses.geojson':'zones-historiques.geojson',JSON.stringify(zonesGeoJson(map,withRates?dose:undefined),null,2));setError('');}catch(e){setError((e as Error).message);}}
  function saveDoses(){try{if(!doseAnalysis)throw new Error('Analyse absente');zonePrescription(doseAnalysis,dose);onChange({...c,fieldMonitoring:archive(stored?.seasons??[],dose)});setNotice('Carte de doses préparée. Enregistrez la campagne pour conserver ce scénario.');setError('');}catch(e){setError((e as Error).message);}}
- const tabs=[['satellite','Analyse du champ','map'],['layers','Images & indices','satellite'],['history','Zones historiques','grid'],['doses','Cartes de doses','leaf'],['weather','Météo','sun'],['notes','Carnet terrain','book']];
+ const tabs=[['satellite','Analyse du champ','map'],['layers','Images & indices','satellite'],['history','Zones historiques','grid'],['doses','Cartes de doses','leaf'],['campaign','Couches','chart'],['weather','Météo','sun'],['notes','Carnet terrain','book']];
  if(!c.parcelGeometry)return <section className="qs-card"><h2>Suivi du champ</h2><p>Tracez d’abord le contour de votre parcelle.</p><button className="btn primary" onClick={onMap}>Tracer le champ</button></section>;
  return <div className="field-monitoring"><header className="monitoring-header"><div><span className="product-eyebrow">OBSERVER · COMPARER · PRÉPARER</span><h2>Suivi du champ</h2><p>Les images, les saisons passées et vos observations réunies autour de votre parcelle.</p></div><span className="monitoring-badge">{c.crop} · {fmt(parcelMetrics(c.parcelGeometry).areaM2/10000,2)} ha</span></header>
  <nav className="monitoring-tabs" aria-label="Outils de suivi du champ">{tabs.map(([id,label,icon])=><button type="button" key={id} aria-pressed={view===id} onClick={()=>{if(id==='notes')setVisit(undefined);setView(id);}}><ProductIcon name={icon} size={17}/>{label}</button>)}</nav>
- {(view==='satellite'||view==='current')&&(analysis?<FieldAnalysis config={c} focus={mapFocus} consent={analysisConsent} onConsent={setAnalysisConsent} onVisit={target=>{setVisit(target);setView('notes');}} onChange={onChange} onMap={onMap} onHistory={()=>setView('history')} onLayers={()=>setView('layers')} onWeather={()=>setView('weather')} onNotes={()=>{setVisit(undefined);setView('notes');}}/>:<section className="qs-card"><h3>Analyse du champ indisponible</h3><p role="alert">{derived.error}</p><button className="btn secondary" onClick={onMap}>Revoir le contour</button></section>)}
+ {(view==='satellite'||view==='current')&&(analysis?<FieldAnalysis config={c} focus={mapFocus} initialCompare={initialView==='compare'} consent={analysisConsent} onConsent={setAnalysisConsent} onVisit={target=>{setVisit(target);setView('notes');}} onChange={onChange} onMap={onMap} onHistory={()=>setView('history')} onLayers={()=>setView('layers')} onWeather={()=>setView('weather')} onNotes={()=>{setVisit(undefined);setView('notes');}}/>:<section className="qs-card"><h3>Analyse du champ indisponible</h3><p role="alert">{derived.error}</p><button className="btn secondary" onClick={onMap}>Revoir le contour</button></section>)}
  {view==='layers'&&<><ParcelLayers config={c} assessment={c.landAssessment} onMap={onMap} onImages={()=>setView('satellite')}/><SatelliteNowcastPanel config={c} onChange={onChange}/></>}
  {view==='weather'&&<WeatherPanel config={c} onWeather={onWeather}/>}
  {view==='notes'&&<FieldNotebook config={c} campaignId={campaignId} visit={visit} onChange={onChange} onOpenMap={focus=>{setMapFocus(focus);setView('satellite');}}/>}
+ {view==='campaign'&&<CampaignLayerPanel config={c} campaignId={campaignId} events={events} plan={plan} onOpen={target=>target==='notes'?setView('notes'):onOpenAction(target)}/>}
  {(view==='history'||view==='doses')&&<>
  {view==='doses'&&<section className="qs-card"><label className="field"><span>Source de la carte de doses</span><select value={mapPreference} onChange={e=>{setMapPreference(e.target.value);setDose(d=>({...d,confirmed:false}));}}><option value="auto">Automatique</option><option value="history">Historique</option><option value="current" disabled={!derived.observation||derived.observation.status==='insufficient'}>Observation NDVI récente</option></select></label><p>{mapPreference==='auto'?choice?.label:doseAnalysis?.mapKind==='current-observation'?'Carte NDVI observée le '+doseAnalysis.observedOn:'Historique descriptif du champ'}</p><button className="qs-text-button" onClick={()=>setView('satellite')}>Examiner les cartes du champ</button></section>}
  {view==='history'&&<section className="qs-card monitoring-setup"><div className="field-panel-title"><div><span className="product-eyebrow">SENTINEL-2 · PLUSIEURS SAISONS</span><h3>Comparer les saisons</h3></div><span>Jusqu’à 6 fenêtres · 100 ha par secteur</span></div>

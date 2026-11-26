@@ -4,7 +4,6 @@ import type {CooperativeAccess} from '../../lib/contracts';
 
 type Item=[string,string,string?];
 const sections=[
- {title:'Décisions et cartes',icon:'chart',items:[['yield','Rendement et production','chart'],['water','Décider · semis et eau','water'],['fertilizer','Engrais','leaf']] as Item[]},
  {title:'Coopérative',icon:'people',items:[['recoltes','Récoltes réelles','basket'],['collecte','Collectes et logistique','basket'],['gestion','Ma coopérative','people'],['fiche','Bilan de campagne','file']] as Item[]},
  {title:'Données et méthodes',icon:'book',items:[['dashboard','Vue d’ensemble','chart'],['atlas','Atlas des rendements','map'],['previsions','Estimations historiques','chart'],['comparaison','Comparer les campagnes','chart'],['models','Modèles et résultats','settings'],['quality','Qualité des données','check'],['lineage','Origine des résultats','file'],['explorer','Catalogue des données','book'],['simulation','Convertir un rendement','settings'],['import','Importer des données','file'],['guide','Guide pratique','book']] as Item[]},
 ];
@@ -13,12 +12,12 @@ export default function ApplicationNavigation({view,onNavigate,onClose,name,coop
  function item([id,label,icon]:Item){return <button key={id} className={'product-nav-item'+(view===id?' active':'')} aria-current={view===id?'page':undefined} onClick={()=>onNavigate(id)}>{icon&&<ProductIcon name={icon}/>}<span>{label}</span>{view===id&&<i/>}</button>;}
  const roleName:Record<string,string>={responsable:'Responsable',admin:'Administrateur',agent:'Agent',producteur:'Producteur'};
  return <aside className="product-sidebar no-print"><div className="product-sidebar-brand"><ProductBrand onClick={()=>onNavigate('home')}/><button className="product-nav-close" aria-label="Fermer la navigation" onClick={onClose}><ProductIcon name="close"/></button></div><nav aria-label="Navigation principale">
-  <span className="sidebar-section-label">MES CHAMPS</span>
-  {item(['home','Carte des champs','map'])}
-  {item(['monitoring','Suivi satellite','satellite'])}
-  {item(['zones','Zones historiques','grid'])}
-  {item(['doses','Cartes de doses','chart'])}
-  {item(['notes','Carnet terrain','book'])}
+  <span className="sidebar-section-label">MON CHAMP</span>
+  {item(['home','Champs','map'])}
+  {item(['compare','Comparer','grid'])}
+  {item(['zones','Zones','grid'])}
+  {item(['notes','Carnet','book'])}
+  {item(['decide','Décider','chart'])}
   <div className="sidebar-separator"/>
   <span className="sidebar-section-label">CAMPAGNES</span>
   {item(['campaigns','Mes campagnes','file'])}
