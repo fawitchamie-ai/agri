@@ -19,15 +19,15 @@ function mapBounds(c:SeasonalConfig,zoom:number){const [w,s,e,n]=bbox(c.parcelGe
 function download(body:string){const url=URL.createObjectURL(new Blob([body],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='evolution-du-champ.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
 type Props={
- config:SeasonalConfig;focus?:FieldMapFocus;consent:boolean;onConsent:(value:boolean)=>void;
+ config:SeasonalConfig;focus?:FieldMapFocus;initialCompare?:boolean;consent:boolean;onConsent:(value:boolean)=>void;
  onVisit:(target:FieldVisitTarget)=>void;onChange:(c:SeasonalConfig)=>void;
  onHistory:()=>void;onLayers:()=>void;onMap:()=>void;onWeather:()=>void;onNotes:()=>void;
 };
-export default function FieldAnalysis({config:c,focus,consent,onConsent,onVisit,onChange,onHistory,onLayers,onMap,onWeather,onNotes}:Props){
+export default function FieldAnalysis({config:c,focus,initialCompare=false,consent,onConsent,onVisit,onChange,onHistory,onLayers,onMap,onWeather,onNotes}:Props){
  const focusDates=focus?.dates??[];
  const scope=fieldMonitoringScope(c),grid=useMemo(()=>zoneGrid(c.parcelGeometry),[c.parcelGeometry]),history=useMemo(()=>analyzeFieldZones(c),[c]);
  const archive=useMemo(()=>fieldImageArchive(c,grid),[c,grid]),index=useMemo(()=>fieldIndexEvolution(c),[c]);
- const [layer,setLayer]=useState<AnalysisLayer>(focus?'ndvi':'contrast'),[rightLayer,setRightLayer]=useState<AnalysisLayer>('ndvi'),[compare,setCompare]=useState(focusDates.length===2),[expanded,setExpanded]=useState(false),[photo,setPhoto]=useState(false),[zoom,setZoom]=useState(1),[cell,setCell]=useState<number|null>(null);
+ const [layer,setLayer]=useState<AnalysisLayer>(focus?'ndvi':'contrast'),[rightLayer,setRightLayer]=useState<AnalysisLayer>('ndvi'),[compare,setCompare]=useState(initialCompare||focusDates.length===2),[expanded,setExpanded]=useState(false),[photo,setPhoto]=useState(false),[zoom,setZoom]=useState(1),[cell,setCell]=useState<number|null>(null);
  const [selected,setSelected]=useState(focusDates[0]??''),[rightDate,setRightDate]=useState(focusDates[1]??''),[busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [zoneId,setZoneId]=useState(focus?.zone?.id??''),[pins,setPins]=useState(focus),[cropId,setCropId]=useState(''),[sowingDate,setSowingDate]=useState('');
  const [pointToMove,setPointToMove]=useState<'planned'|'comparison'|null>(null);

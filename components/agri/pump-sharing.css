@@ -1,0 +1,16 @@
+.pump-share-panel{margin-top:20px;padding:20px;border:1px solid #d9e3ed;border-radius:16px;background:#f8fafc}
+.pump-share-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.pump-share-heading h3{margin:4px 0 6px;color:#142b45;font-size:1.1rem}
+.pump-share-empty{margin-top:14px;padding:16px;border:1px dashed #b8c8d9;border-radius:12px;background:#fff}
+.pump-share-empty strong{color:#173b60}
+.pump-share-empty p,.pump-share-booking p,.pump-share-bookings p{margin:6px 0;color:#50657c}
+.pump-share-booking{margin-top:14px;padding:16px;border-radius:12px;background:#fff}
+.pump-share-booking .field{max-width:260px}
+.pump-share-booking .btn{margin-top:8px}
+.pump-share-bookings{margin-top:18px}
+.pump-share-bookings h4{margin:0 0 8px;color:#173b60}
+.pump-share-bookings ul{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.pump-share-bookings li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e0e8f0;border-radius:10px;background:#fff}
+.pump-share-bookings li span{display:grid;gap:3px}
+.pump-share-bookings li small{color:#5c7187}
+@media(max-width:600px){.pump-share-panel{padding:14px}.pump-share-bookings li{align-items:flex-start;flex-direction:column}}

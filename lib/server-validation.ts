@@ -1,6 +1,6 @@
 import type { RecordKind } from './contracts';
 import { finiteNonnegative, observedYield, production, tonnes } from './calculations';
-const kinds = ['member', 'simulation', 'collection', 'harvest', 'capacity'];
+const kinds = ['member', 'simulation', 'collection', 'harvest', 'capacity', 'pumpBooking'];
 function text(d: Record<string, any>, key: string, required = true, max = 300) { const v = d[key]; if (required && (typeof v !== 'string' || !v.trim()))
     throw new Error(`Le champ ${key} est obligatoire.`); if (v !== undefined && v !== null && (typeof v !== 'string' || v.length > max))
     throw new Error(`Le champ ${key} est invalide ou trop long.`); return typeof v === 'string' ? v.trim() : ''; }
@@ -8,6 +8,7 @@ function n(d: Record<string, any>, key: string, positive = false, optional = fal
     throw new Error(`${key} est hors des limites autorisées.`); return value; }
 function date(value: unknown, label: string) { if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || new Date(value + 'T00:00:00Z').toISOString().slice(0, 10) !== value)
     throw new Error(`${label} doit être une date valide.`); return value; }
+function clock(value: unknown, label: string) { if (typeof value !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) throw new Error(`${label} doit être au format HH:mm.`); return value; }
 export function validateRecord(kind: RecordKind, input: unknown) {
     if (!kinds.includes(kind))
         throw new Error('Type d’enregistrement inconnu.');
@@ -29,6 +30,29 @@ export function validateRecord(kind: RecordKind, input: unknown) {
         data.storage = n(d, 'storage', false, true);
         data.transport = n(d, 'transport', false, true);
         data.point = text(d, 'point', false, 160);
+        data.pumpFlowM3h = d.pumpFlowM3h === undefined || d.pumpFlowM3h === null || d.pumpFlowM3h === '' ? null : n(d, 'pumpFlowM3h', true);
+        const days = d.pumpDays === undefined ? [] : d.pumpDays;
+        if (!Array.isArray(days) || days.some((day:unknown) => !Number.isInteger(day) || Number(day) < 0 || Number(day) > 6) || new Set(days).size !== days.length)
+            throw new Error('Les jours de disponibilité de la pompe sont invalides.');
+        if (data.pumpFlowM3h === null) {
+            if (days.length || d.pumpStartHHmm || d.pumpEndHHmm) throw new Error('Renseignez le débit de la pompe avant ses disponibilités.');
+            data.pumpDays = []; data.pumpStartHHmm = ''; data.pumpEndHHmm = '';
+        } else {
+            data.pumpDays = [...days].sort((a:number,b:number)=>a-b);
+            if (!data.pumpDays.length) throw new Error('Choisissez au moins un jour de disponibilité de la pompe.');
+            data.pumpStartHHmm = clock(d.pumpStartHHmm, 'Début de disponibilité');
+            data.pumpEndHHmm = clock(d.pumpEndHHmm, 'Fin de disponibilité');
+            if (data.pumpEndHHmm <= data.pumpStartHHmm) throw new Error('La fin de disponibilité doit suivre son début le même jour.');
+        }
+        return { data, warnings };
+    }
+    if (kind === 'pumpBooking') {
+        data.pumpId = text(d, 'pumpId', true, 180);
+        data.campaignId = text(d, 'campaignId', true, 180);
+        data.date = date(d.date, 'Date de pompage');
+        data.startHHmm = clock(d.startHHmm, 'Début du pompage');
+        data.status = text(d, 'status');
+        if (!['reserved', 'cancelled'].includes(data.status)) throw new Error('État de réservation invalide.');
         return { data, warnings };
     }
     data.crop = text(d, 'crop', true, 100);
