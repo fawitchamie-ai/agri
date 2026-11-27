@@ -73,9 +73,19 @@ try {
   assert.equal(emptyLogin.status, 503, emptyLoginBody.slice(0, 200));
   assert.match(emptyLoginBody, /La connexion n’a pas abouti/);
   assert.equal((await request('/api/workspace')).status, 401);
+  assert.equal((await request('/api/session')).status, 401,'une session absente ne doit jamais apparaître connectée');
 
   const user = await accessToken('farm-owner');
   const sessionCookie = 'CF_Authorization=' + user;
+  const verifiedSession=await request('/api/session',sessionCookie);
+  assert.equal(verifiedSession.status,200);
+  const verifiedData=await verifiedSession.json();
+  assert.equal(verifiedData.session.userId,'cf:farm-owner');
+  assert.equal(verifiedData.session.demo,false);
+  assert.ok(verifiedData.session.cooperatives.some(space=>space.coopId===verifiedData.session.coopId));
+  const emptyCampaigns=await request('/api/seasonal?workspace='+encodeURIComponent(verifiedData.session.coopId),sessionCookie);
+  assert.equal(emptyCampaigns.status,200);
+  assert.deepEqual((await emptyCampaigns.json()).campaigns,[]);
   const authorizedReturn = await request(loginPath, sessionCookie);
   assert.equal(authorizedReturn.status, 302);
   assert.equal(authorizedReturn.headers.get('location'), destination);
@@ -117,6 +127,7 @@ try {
   assert.equal(created.status, 201, createdData.error);
   const listed = await (await request('/api/seasonal', sessionCookie)).json();
   assert.ok(listed.campaigns.some(campaign => campaign.id === 'auth-qa'));
+  assert.equal((await request('/api/seasonal?workspace=another-space',sessionCookie)).status,409);
 
   const response = await post('/api/workspace', sessionCookie, {
     kind: 'member', data: { name: 'Membre de test', locality: 'Localité de test' },

@@ -776,10 +776,23 @@
     }
 .map-empty-state{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:24px;background:rgba(27,49,35,.18);pointer-events:none}
 .map-empty-state[hidden]{display:none}
-.map-empty-card{max-width:560px;padding:26px 30px;border:1px solid #d9e6db;border-radius:18px;background:#f9fcf8;color:#183a2f;box-shadow:0 18px 55px rgba(9,28,18,.24);text-align:center;pointer-events:auto}
-.map-empty-card strong{display:block;font-size:21px}
-.map-empty-card p{margin:10px 0 18px;line-height:1.5;color:#52685d}
-@media(max-width:620px){.map-empty-card{padding:20px}.map-empty-card strong{font-size:18px}}
+.map-empty-card{width:min(100%,1080px);max-height:calc(100vh - 128px);overflow:auto;padding:20px 24px;border:1px solid #d9e6db;border-radius:18px;background:rgba(249,252,248,.97);color:#183a2f;box-shadow:0 18px 55px rgba(9,28,18,.24);text-align:left;pointer-events:auto}
+.map-empty-card>strong{display:block;font-size:21px}
+.map-empty-card>p{margin:7px 0 12px;line-height:1.5;color:#52685d}
+#map-empty-picker-slot:empty{display:none}
+#map-empty-picker-slot .worker-place-picker{margin:8px 0 12px;padding:0;border:0;background:transparent}
+#map-empty-picker-slot .worker-place-map-wrap{display:grid;place-items:center;height:auto;min-height:0;padding:8px}
+#map-empty-picker-slot #worker-place-map{width:min(100%,960px);height:auto}
+#map-empty-picker-slot .worker-place-results{max-height:110px}
+#map-empty-picker-slot .worker-place-picker[hidden]{display:none}
+.worker-account-context{display:grid;gap:10px;margin:12px 0;padding:12px;border:1px solid #d9e5d8;border-radius:12px;background:#f4f8f3}
+.worker-account-context strong{font-size:13px;overflow-wrap:anywhere}
+.worker-account-context label{display:grid;gap:5px;font-size:12px;color:#52685d}
+.worker-account-context select{padding:8px 10px;border:1px solid #d4e0d4;border-radius:8px;background:#fff;color:#1c392d;font:inherit}
+.active-context{max-width:260px;overflow:hidden;text-overflow:ellipsis;color:#e2eddd;font-size:12px}
+.worker-place-picker[hidden]{display:none}
+.active-context[hidden],#map-empty-create[hidden],#map-empty-login[hidden]{display:none!important}
+@media(max-width:620px){.map-empty-state{padding:8px}.map-empty-card{max-height:calc(100vh - 100px);padding:14px;border-radius:13px}.map-empty-card>strong{font-size:18px}.top-aside{flex-wrap:wrap;justify-content:flex-end}.top-aside .active-context{display:block;flex-basis:100%;max-width:180px;white-space:normal;text-align:right;font-size:10px}}
 .worker-panel {
   position: absolute;
   z-index: 40;

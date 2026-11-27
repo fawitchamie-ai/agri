@@ -99,7 +99,7 @@ test('mode public: ouvre le site et la démo, mais refuse les données réelles 
   const auth=await authorizeAccessRequest(new Request('https://agri.example.test'+path,{method}),publicEnv,resolver);
   assert(!(auth instanceof Response),`${method} ${path} doit être accessible au parcours public/démo`);assert.equal(auth.identity,null);
  }
- for(const [method,path] of [['GET','/api/health'],['POST','/api/access'],['DELETE','/api/session'],['GET','/api/export?kind=harvest'],['GET','/api/export?kind=member'],['POST','/api/science'],['PUT','/api/workspace'],['POST','/api/unknown']]){
+ for(const [method,path] of [['GET','/api/health'],['GET','/api/session'],['POST','/api/access'],['DELETE','/api/session'],['GET','/api/export?kind=harvest'],['GET','/api/export?kind=member'],['POST','/api/science'],['PUT','/api/workspace'],['POST','/api/unknown']]){
   const auth=await authorizeAccessRequest(new Request('https://agri.example.test'+path,{method}),publicEnv,resolver);
   assert(auth instanceof Response,`${method} ${path} ne doit pas être public`);assert.equal(auth.status,401);
  }

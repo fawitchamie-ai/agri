@@ -3,6 +3,7 @@ const workerPanel = element("worker-panel");
 const workerMessage = element("worker-message");
 let workerBusy = false;
 let workerSessionReady = false;
+let workerSession = null;
 const satellitePermissions = new Map();
 let workerGeneration = 0;
 let workerLoginPollTimer = null;
@@ -16,13 +17,18 @@ function workerBusyState(busy) {
   workerBusy = busy;
   element("worker-refresh").disabled = busy;
   element("worker-login").disabled = busy;
+  element("worker-space").disabled = busy || !workerSession || (workerSession.cooperatives?.length || 0) < 2;
+  element("worker-new").disabled = busy || !workerSessionReady;
 }
 
 async function workerRead(campaignId = null) {
-  const response = await workerInvoke("worker_get", { campaignId });
+  const response = await workerInvoke("worker_get", { campaignId, coopId: workerSession?.coopId });
   if (response.status !== 200) {
-    throw new Error(typeof response.data?.error === "string"
+    const error = new Error(typeof response.data?.error === "string"
       ? response.data.error : "Le Worker a répondu avec le statut " + response.status + ".");
+    error.code = response.data?.code || (response.status === 409 ? "WORKSPACE_CHANGED" : "HTTP_ERROR");
+    error.status = response.status;
+    throw error;
   }
   if (response.data?.demo === true || response.data?.campaign?.demo === true) {
     throw new Error("Connectez-vous à votre compte AgriPrévision pour retrouver vos campagnes.");
@@ -89,9 +95,107 @@ async function closeWorkerLogin() {
 }
 
 async function workerPost(body) {
-  const response = await workerInvoke("worker_post", { body });
-  if (response.status !== 200) throw new Error(response.data?.error || "Le Worker a répondu avec le statut " + response.status + ".");
+  const response = await workerInvoke("worker_post", { body: { ...body, ...(workerSession?.coopId ? { workspaceId: workerSession.coopId } : {}) } });
+  if (response.status !== 200) {
+    const error = new Error(response.data?.error || "Le Worker a répondu avec le statut " + response.status + ".");
+    error.code = response.data?.code || (response.status === 409 ? "WORKSPACE_CHANGED" : "HTTP_ERROR");
+    error.status = response.status;
+    throw error;
+  }
   return response.data;
+}
+
+function renderWorkerIdentity(session) {
+  window.agriActiveWorkspace = session?.coopId || null;
+  const spaces = Array.isArray(session?.cooperatives) ? session.cooperatives : [];
+  const active = spaces.find(space => space.coopId === session?.coopId);
+  putText("worker-identity", session ? session.name + " · " + (active?.name || "Espace actif") : "Aucun compte vérifié");
+  const select = element("worker-space");
+  select.replaceChildren(...spaces.map(space => new Option(space.name + " · " + space.role, space.coopId)));
+  select.value = session?.coopId || "";
+  select.disabled = !session || spaces.length < 2 || workerBusy;
+  element("worker-logout").hidden = !session;
+  element("worker-login").hidden = !!session;
+  element("worker-refresh").disabled = workerBusy || !session;
+  element("worker-new").disabled = workerBusy || !workerSessionReady;
+  putText("active-context", session ? session.name + " · " + (active?.name || session.coopId) : "");
+  element("active-context").hidden = !session;
+  putText("data-status", session ? "Compte connecté" : workerBusy ? "Vérification…" : "Connexion requise");
+  element("data-status").title = session
+    ? "Compte vérifié par l’API AgriPrévision · " + session.name + " · " + (active?.name || session.coopId)
+    : "La session sera confirmée par une réponse protégée du Worker.";
+}
+
+function clearRemoteContext({ invalidate = true } = {}) {
+  if (invalidate) workerGeneration++;
+  workerSessionReady = false;
+  workerSession = null;
+  satellitePermissions.clear();
+  setDecisionScope(null);
+  decisionState.inputs.clear();
+  decisionState.saved.length = 0;
+  fields.splice(0, fields.length);
+  geography.clear();
+  state.fieldId = null;
+  state.view = "fields";
+  renderWorkerIdentity(null);
+  if(typeof unmountWorkerEmptyPicker==="function")unmountWorkerEmptyPicker();
+  recenter();
+  update();
+  if(typeof mountWorkerEmptyPicker==="function")mountWorkerEmptyPicker();
+}
+
+function handleWorkerSessionFailure(failure) {
+  if(!["SESSION_EXPIRED","FORBIDDEN","SERVICE_UNAVAILABLE","ACCESS_REDIRECT","NETWORK","WORKSPACE_CHANGED"].includes(failure?.code))return;
+  const context=window.agriPendingReturnContext||window.agriReturnContext;
+  const views=["fields","compare","zones","notes","campaign","decisions"];
+  if(!window.agriPendingReturnContext&&context&&views.includes(context.view))
+    window.agriPendingReturnContext={view:context.view,
+      ...(typeof context.campaignId==="string"&&/^[a-zA-Z0-9_-]{1,100}$/.test(context.campaignId)?{campaignId:context.campaignId}:{})};
+  window.agriClearSensitiveUi?.({preserveParcelDraft:true});
+  clearRemoteContext();
+  workerPanel.hidden=false;
+  workerNotice(failure.message||"La session n’a pas pu être vérifiée. Les données de l’espace précédent ont été effacées.");
+}
+window.agriHandleSessionFailure=handleWorkerSessionFailure;
+
+async function switchWorkerSpace(coopId) {
+  if(workerBusy||!workerSessionReady||!workerSession)return;
+  if(element("worker-editor").open){
+    workerNotice("Fermez ou enregistrez le formulaire de campagne avant de changer d’espace.");
+    renderWorkerIdentity(workerSession);
+    return;
+  }
+  const target=workerSession.cooperatives?.find(space=>space.coopId===coopId);
+  if(!target||coopId===workerSession.coopId){renderWorkerIdentity(workerSession);return;}
+  window.agriPendingReturnContext=null;
+  clearRemoteContext();
+  workerBusyState(true);
+  workerNotice("Effacement de l’ancien espace, puis vérification du nouvel espace…");
+  let failure=null;
+  try{
+    const response=await workerInvoke("worker_space_switch",{body:{action:"switch",coopId}});
+    if(response.status!==200||response.data?.coopId!==coopId){
+      failure=new Error(response.data?.error||"Le Worker n’a pas confirmé le changement d’espace.");
+      failure.code=response.data?.code||"HTTP_ERROR";
+    }
+  }catch(error){failure=error;}
+  finally{workerBusyState(false);}
+  if(failure)workerNotice(failure.message||String(failure));
+  await refreshWorkerFields();
+}
+
+function logoutWorkerAccess(){
+  stopWorkerLoginPolling();
+  window.agriPendingReturnContext=null;
+  window.agriReturnContext=null;
+  try{sessionStorage.removeItem("agriprevision.return-context");}catch{}
+  window.agriClearSensitiveUi?.({discardDrafts:true});
+  clearRemoteContext();
+  workerPanel.hidden=false;
+  workerNotice("Session effacée de l’écran. Déconnexion de Cloudflare Access…");
+  const returnTo="/field-workspace/";
+  location.assign("/cdn-cgi/access/logout?"+new URLSearchParams({returnTo}));
 }
 
 function satelliteBounds(geometry) {
@@ -155,8 +259,8 @@ function workerField(row) {
   };
 }
 
-function resetWorkerFields() {
-  workerGeneration++;
+function resetWorkerFields(invalidate = true) {
+  if (invalidate) workerGeneration++;
   fields.splice(0, fields.length);
   geography.clear();
   state.fieldId = null;
@@ -165,30 +269,62 @@ function resetWorkerFields() {
   update();
 }
 
-async function refreshWorkerFields({ closeLogin = true } = {}) {
+async function refreshWorkerFields({ closeLogin = true, preferredCampaignId = null } = {}) {
   if (workerBusy) return;
+  const previousFieldId = state.fieldId;
+  const previousView = state.view;
+  if(!window.agriPendingReturnContext&&workerSessionReady&&previousFieldId)
+    window.agriPendingReturnContext={view:previousView,campaignId:previousFieldId};
   workerBusyState(true);
-  workerNotice("Chargement des campagnes…");
+  clearRemoteContext({ invalidate: false });
+  workerNotice("Vérification de la session et chargement des campagnes…");
   const generation = ++workerGeneration;
   try {
+    const sessionResponse = await workerInvoke("worker_session");
+    if (sessionResponse.status !== 200 || !sessionResponse.data?.session || sessionResponse.data.session.demo) {
+      const error = new Error(sessionResponse.data?.error || "Session Cloudflare Access non vérifiée.");
+      error.code = sessionResponse.data?.code || (sessionResponse.status === 401 ? "SESSION_EXPIRED" : "HTTP_ERROR");
+      error.status = sessionResponse.status;
+      throw error;
+    }
+    const account = sessionResponse.data.session;
+    if (!account.userId || !account.coopId || !Array.isArray(account.cooperatives) ||
+        !account.cooperatives.some(space => space.coopId === account.coopId))
+      throw new Error("La réponse de session ne précise pas le compte et l’espace actifs.");
+    if(typeof prepareWorkerParcelDraftForSession==="function")prepareWorkerParcelDraftForSession(account);
+    workerSession = account;
     const data = await workerRead();
     if (!Array.isArray(data.campaigns)) throw new Error("Liste des campagnes absente dans la réponse du Worker.");
     if (generation !== workerGeneration) return;
     const campaigns = data.campaigns.filter(row => row.demo !== true);
     workerSessionReady = true;
+    renderWorkerIdentity(account);
     setDecisionScope(data.decisionScope);
     if (!campaigns.length) {
-      resetWorkerFields();
+      window.agriPendingReturnContext=null;
+      resetWorkerFields(false);
       workerPanel.hidden = false;
-      workerNotice("Aucune campagne enregistrée dans cet espace. Créez votre première campagne après avoir choisi une localité et tracé son contour réel.");
+      workerNotice("Compte connecté · aucune campagne enregistrée. Recherchez la localité du champ et tracez son contour sur la carte satellite.");
+      mountWorkerEmptyPicker();
       if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
       return;
     }
-    const lastId = state.fieldId;
+    const pendingContext=window.agriPendingReturnContext;
+    const pendingCampaignId=pendingContext?.campaignId||null;
+    const lastId = preferredCampaignId || pendingCampaignId || previousFieldId;
     fields.splice(0, fields.length, ...campaigns.map(workerField));
     geography.clear();
     state.fieldId = fields.find(field => field.id === lastId)?.id || fields[0].id;
-    if (!lastId) state.view = "fields";
+    if(pendingContext){
+      const requestedCampaignAvailable=!pendingCampaignId||fields.some(field=>field.id===pendingCampaignId);
+      state.view=requestedCampaignAvailable&&(!pendingCampaignId||state.fieldId===pendingCampaignId)
+        ? pendingContext.view : "fields";
+      window.agriPendingReturnContext=null;
+    }else if(previousFieldId&&state.fieldId===previousFieldId){
+      state.view=previousView;
+    }else{
+      state.view="fields";
+    }
     recenter();
     update();
     workerNotice(fields.length + (fields.length === 1 ? " campagne chargée." : " campagnes chargées.") +
@@ -197,18 +333,14 @@ async function refreshWorkerFields({ closeLogin = true } = {}) {
     await openWorkerCampaign(currentField(), generation);
     if (closeLogin) await workerInvoke("close_worker_login").catch(() => {});
   } catch (error) {
-    if (/connectez-vous|connexion.*(?:requise|expirée)/i.test(error.message || String(error))) {
-      workerSessionReady = false;
-      satellitePermissions.clear();
-      setDecisionScope(null);
-      decisionState.inputs.clear();
-      decisionState.saved.length = 0;
-      resetWorkerFields();
-    }
+    if (generation !== workerGeneration) return;
+    window.agriClearSensitiveUi?.({preserveParcelDraft:true});
+    clearRemoteContext();
     workerNotice(error.message || String(error));
     workerPanel.hidden = false;
   } finally {
     workerBusyState(false);
+    if (workerSession) renderWorkerIdentity(workerSession);
   }
 }
 
@@ -1012,6 +1144,8 @@ element("worker-close").addEventListener("click", () => { workerPanel.hidden = t
 element("worker-login").addEventListener("click", () => startWorkerLogin());
 element("worker-login-close").addEventListener("click", closeWorkerLogin);
 element("worker-refresh").addEventListener("click", refreshWorkerFields);
+element("worker-space").addEventListener("change",event=>void switchWorkerSpace(event.currentTarget.value));
+element("worker-logout").addEventListener("click",logoutWorkerAccess);
 element("worker-satellite-load").addEventListener("click", () => {
   const field = currentField();
   if (!field?.geometry) return;
