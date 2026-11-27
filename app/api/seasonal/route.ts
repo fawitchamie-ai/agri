@@ -38,8 +38,9 @@ import {emptyCampaign} from '@/lib/seasonal/example';
 import { searchPlaces } from '@/lib/seasonal/places';
 
 function campaign(row: any): Campaign { return { id: row.id, revision: row.revision, config: migrateInputs(decodeCampaignValue(row.config)), events: decodeCampaignValue(row.events), plan: decodeCampaignValue(row.plan), updatedAt: row.updated_at, demo: !!row.demo, archivedAt: row.archived_at ?? null }; }
-async function readable(id: string, request: Request) {
+async function readable(id: string, request: Request, expectedWorkspace?:string|null) {
   const s = await session(request), db = database();
+  if(expectedWorkspace&&expectedWorkspace!==s.coopId)throw new HttpError(409,'L’espace actif a changé. Rechargez les campagnes avant de continuer.');
   const row = await db.prepare('SELECT * FROM seasonal_campaigns WHERE id=? AND coop_id=?').bind(id, s.coopId).first<any>();
   if (!row || !canSee(s, row)) throw new HttpError(404, 'Campagne introuvable dans votre espace.');
   return { s, db, row };
@@ -47,15 +48,21 @@ async function readable(id: string, request: Request) {
 function error(e: unknown) { return e instanceof InputError ? json({ error: e.message }, 400) : failure(e); }
 export async function GET(request: Request) { try {
   const url = new URL(request.url), id = url.searchParams.get('id');
-  if(url.searchParams.get('satellite')==='raster'){await session(request);return sentinelRasterProxy(request);}
+  const expectedWorkspace=url.searchParams.get('workspace');
+  if(url.searchParams.get('satellite')==='raster'){
+    const s=await session(request);
+    if(expectedWorkspace&&expectedWorkspace!==s.coopId)throw new HttpError(409,'L’espace actif a changé. Rechargez les campagnes avant de continuer.');
+    return sentinelRasterProxy(request);
+  }
   if(url.searchParams.get('satellite')==='image'){
-    await session(request);
+    const s=await session(request);
+    if(expectedWorkspace&&expectedWorkspace!==s.coopId)throw new HttpError(409,'L’espace actif a changé. Rechargez les campagnes avant de continuer.');
     const layer=url.searchParams.get('layer'),bounds=(url.searchParams.get('bbox')??'').split(',').map(Number);
     try{return layer==='basemap'?await satelliteBasemap(bounds):await satelliteImage(layer as SatelliteLayer,url.searchParams.get('date')??'',bounds);}
     catch(e){throw new HttpError(502,(e as Error).message);}
   }
   if (id) {
-    const { db, row } = await readable(id, request);
+    const { db, row } = await readable(id, request, url.searchParams.get('workspace'));
     const revision = url.searchParams.get('revision');
     if (revision !== null) {
       if (!/^\d+$/.test(revision)) throw new InputError('Révision invalide.');
@@ -80,6 +87,7 @@ export async function GET(request: Request) { try {
     return json({ campaign: campaign(row), history: histories.results });
   }
   const s = await session(request), includeArchived = url.searchParams.get('includeArchived') === '1';
+  if(expectedWorkspace&&expectedWorkspace!==s.coopId)throw new HttpError(409,'L’espace actif a changé. Rechargez les campagnes avant de continuer.');
   const archiveFilter = includeArchived ? '' : 'AND archived_at IS NULL';
   const ownerFilter = s.role === 'producteur' ? 'AND owner_id=?' : '';
   const args = s.role === 'producteur' ? [s.coopId, s.userId] : [s.coopId];
@@ -100,6 +108,7 @@ export async function POST(request:Request){
 }
 async function postSeasonal(request: Request,onAction:(action:unknown)=>void) { try {
   const s = await session(request), b = await body(request,8000000), db = database();
+  if(typeof b.workspaceId==='string'&&b.workspaceId!==s.coopId)throw new HttpError(409,'L’espace actif a changé. Rechargez les campagnes avant de continuer.');
   onAction(b.action);
   if(b.action==='field-zone-map'){
     if(typeof b.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(b.id))throw new InputError('Identifiant de campagne invalide.');

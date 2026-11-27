@@ -19,6 +19,8 @@ async function saveCampaign(id,cookie){
 test('comptes réels : campagnes conservées par espace, multi-coopératives et démonstration isolée',async()=>{
  try{
   setIdentity(null);
+  const absentSession=await request('/api/session');
+  assert.equal(absentSession.response.status,401,'une session absente n’est pas présentée comme un compte connecté');
   const openedDemo=await request('/api/demo',{method:'POST',body:{role:'responsable',coopId:'demo-a'}});
   assert.equal(openedDemo.response.status,200);
   const staleDemoCookie=openedDemo.response.headers.get('set-cookie')?.match(/agri_demo=([^;]+)/)?.[1];assert.ok(staleDemoCookie);
@@ -26,6 +28,12 @@ test('comptes réels : campagnes conservées par espace, multi-coopératives et 
   const owner={userId:'session-owner',email:'owner@example.test',displayName:'Owner',fullName:null};
   const invited={userId:'session-invited',email:'agent@example.test',displayName:'Agent',fullName:null};
   setIdentity(owner);
+  const ownerSession=await request('/api/session');
+  assert.equal(ownerSession.response.status,200);assert.equal(ownerSession.data.session.userId,owner.userId);
+  assert.equal(ownerSession.data.session.demo,false);assert.equal(ownerSession.data.session.name,'Owner');
+  const emptyCampaigns=await request('/api/seasonal');
+  assert.equal(emptyCampaigns.response.status,200);assert.deepEqual(emptyCampaigns.data.campaigns,[]);
+  assert.equal(emptyCampaigns.data.demo,false);
   const first=await request('/api/workspace',{cookie:`agri_demo=${staleDemoCookie}`});
   assert.equal(first.response.status,200);assert.equal(first.data.session.demo,false);assert.equal(first.data.session.userId,owner.userId);
   assert.equal(first.data.session.cooperatives.length,1);
@@ -50,12 +58,19 @@ test('comptes réels : campagnes conservées par espace, multi-coopératives et 
   assert.equal(joined.data.session.cooperatives.length,2);
   assert.ok(joined.data.session.cooperatives.some(space=>space.coopId===ownerCoop&&space.role==='agent'));
   assert.ok(joined.data.session.cooperatives.some(space=>space.coopId===invitedPersonalCoop&&space.role==='responsable'));
+  const joinedSession=await request('/api/session',{cookie:`agri_demo=${staleDemoCookie}`});
+  assert.equal(joinedSession.response.status,200);assert.equal(joinedSession.data.session.coopId,ownerCoop);
+  assert.equal(joinedSession.data.session.cooperatives.length,2);
   const sharedCampaigns=await request('/api/seasonal?includeArchived=1',{cookie:`agri_demo=${staleDemoCookie}`});
   assert.deepEqual(sharedCampaigns.data.campaigns.map(c=>c.id),[ownerCampaign.id]);
   assert.equal((await request('/api/seasonal?id=session-invited-campaign',{cookie:`agri_demo=${staleDemoCookie}`})).response.status,404);
 
   const switched=await request('/api/session',{method:'POST',body:{action:'switch',coopId:invitedPersonalCoop},cookie:`agri_demo=${staleDemoCookie}`});
   assert.equal(switched.response.status,200);
+  const switchedSession=await request('/api/session',{cookie:`agri_demo=${staleDemoCookie}`});
+  assert.equal(switchedSession.data.session.coopId,invitedPersonalCoop);
+  const staleWorkspace=await request('/api/seasonal?workspace='+encodeURIComponent(ownerCoop),{cookie:`agri_demo=${staleDemoCookie}`});
+  assert.equal(staleWorkspace.response.status,409,'le client ne peut pas réutiliser une réponse d’un espace précédent');
   const personalAgain=await request('/api/seasonal?includeArchived=1',{cookie:`agri_demo=${staleDemoCookie}`});
   assert.deepEqual(personalAgain.data.campaigns.map(c=>c.id),['session-invited-campaign']);
   setIdentity(owner);

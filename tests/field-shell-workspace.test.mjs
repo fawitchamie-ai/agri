@@ -29,6 +29,9 @@ test('shared field workspace prepares reference campaigns and applies notebook r
     const campaign = await created.json();
     assert.equal(created.status, 201, campaign.error);
     assert.equal(campaign.campaign.demo, false);
+    const reopened=await (await localFetch(origin+'/api/seasonal?id='+encodeURIComponent(id))).json();
+    assert.deepEqual(reopened.campaign.config.parcelGeometry,testParcel,'le GeoJSON WGS84 réel est relu depuis la révision Worker enregistrée');
+    assert.ok(Number.isFinite(reopened.campaign.config.areaM2)&&reopened.campaign.config.areaM2>0,'la surface vient du calcul serveur de la géométrie');
     const listed = await (await localFetch(origin + '/api/seasonal')).json();
     assert.equal(listed.demo, false);
     assert.match(listed.decisionScope, /^[a-f0-9]{64}$/);

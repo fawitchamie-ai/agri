@@ -207,6 +207,7 @@ function updateLegend(field, comparing) {
 
 function update() {
   const field = currentField();
+  window.agriReturnContext={view:state.view,campaignId:field?.id||null};
   if (!field) {
     element("map-empty-state").hidden = false;
     document.title = "AgriPrévision · Mes champs";
@@ -216,11 +217,24 @@ function update() {
       button.disabled = button.dataset.view !== "fields";
     });
     document.querySelectorAll(".detail-body").forEach(panel => { panel.hidden = true; });
-    putText("field-title", "Aucune campagne chargée");
-    putText("field-meta", workerSessionReady ? "Ajoutez un champ pour démarrer votre campagne." : "Connectez-vous à votre compte pour lire vos parcelles.");
-    putText("data-status", workerSessionReady ? "Compte connecté" : "Connexion requise");
+    putText("field-title", workerSessionReady ? "Aucune campagne enregistrée" : workerBusy ? "Vérification du compte" : "Campagnes masquées");
+    const activeSpace=workerSession?.cooperatives?.find(space=>space.coopId===workerSession.coopId);
+    putText("field-meta", workerSessionReady
+      ? "Compte connecté · aucune campagne enregistrée dans " + (activeSpace?.name||"l’espace actif")
+      : workerBusy ? "Le Worker vérifie la session et l’espace actif."
+        : "Connectez-vous pour lire les campagnes enregistrées.");
+    putText("data-status", workerSessionReady ? "Compte connecté" : workerBusy ? "Vérification…" : "Connexion requise");
+    putText("active-context", workerSession ? workerSession.name + " · " + (activeSpace?.name||workerSession.coopId) : "");
+    element("active-context").hidden=!workerSession;
+    putText("map-empty-title", workerSessionReady ? "Compte connecté · aucune campagne enregistrée" : workerBusy ? "Vérification du compte…" : "Connexion requise");
+    putText("map-empty-copy", workerSessionReady
+      ? (activeSpace?.name||"Espace actif") + " · Recherchez la localité réelle avant de tracer; aucun champ n’est présélectionné."
+      : workerBusy ? "Le Worker vérifie la session avant d’afficher les données de cet espace."
+        : "Connectez-vous pour afficher les données réelles de votre espace.");
+    element("map-empty-login").hidden=workerSessionReady;
+    element("worker-new").disabled=!workerSessionReady;
     element("data-status").title = "Les campagnes et cartes proviennent de l’API AgriPrévision.";
-    putText("map-attribution", "Aucune image affichée · connectez-vous et chargez une campagne enregistrée");
+    putText("map-attribution", workerSessionReady ? "Image satellite réelle via Esri World Imagery · aucune parcelle sélectionnée" : "Aucune donnée de campagne affichée");
     element("worker-satellite").hidden = true;
     element("worker-indices").hidden = true;
     element("worker-campaign-detail").hidden = true;
@@ -242,6 +256,7 @@ function update() {
     const chart = element("trend");
     chart.getContext("2d").clearRect(0, 0, chart.width, chart.height);
     updateZoom();
+    if(typeof mountWorkerEmptyPicker==="function")mountWorkerEmptyPicker();
     paintIcons();
     scheduleDraw();
     return;
