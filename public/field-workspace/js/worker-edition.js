@@ -3,120 +3,9 @@ let editedWorkerField = null;
 let workerSaving = false;
 let workerSoilSample = null;
 let workerSoilGeneration = 0;
-let workerEditorStep = 1;
 
 const workerPlaceState = { bounds: null, viewBounds: null, center: null, image: null, points: [], geometry: null, zoom: 1, generation: 0, selectedVertex: null, pointer: null };
 let workerGeometryImageTimer = null;
-
-function workerSoilSampleMatches(form = element("worker-editor-form")) {
-  if (!workerSoilSample || !form) return false;
-  try {
-    const geometry = workerEditorGeometry(form);
-    return workerSoilSample.geometryText === JSON.stringify(geometry) &&
-      workerSoilSample.country === form.elements.country.value &&
-      workerSoilSample.sowingDate === form.elements.sowingDate.value &&
-      workerSoilSample.crop === form.elements.crop.value;
-  } catch { return false; }
-}
-
-function refreshWorkerEditorReview() {
-  const review = element("worker-editor-review");
-  if (!review) return;
-  const form = element("worker-editor-form");
-  const country = form.elements.country.selectedOptions?.[0]?.textContent || "À choisir";
-  const crop = form.elements.crop.selectedOptions?.[0]?.textContent || "À choisir";
-  let contour = "À tracer";
-  try { contour = (workerEditorGeometry(form).coordinates[0].length - 1) + " sommets · contour fermé"; } catch {}
-  const sampleReady = workerSoilSampleMatches(form);
-  const analysis = sampleReady
-    ? workerSoilSample.weatherSourceDays + " jour(s) météo source · " + workerSoilSample.soil.sampleCount + " profil(s) SoilGrids"
-    : "À analyser pour ces paramètres";
-  const rows = [
-    ["Champ", form.elements.name.value.trim() || "À renseigner"],
-    ["Localité", [form.elements.territory.value.trim() || "À choisir", country].filter(Boolean).join(" · ")],
-    ["Culture", crop],
-    ["Semis", form.elements.sowingDate.value || "À renseigner"],
-    ["Contour", contour],
-    ["Données réelles", analysis],
-  ];
-  review.replaceChildren(...rows.map(([label, value]) => {
-    const row = makeNode("div", "campaign-review-row");
-    row.append(makeNode("dt", "", label), makeNode("dd", "", value));
-    return row;
-  }));
-  const save = element("worker-editor-save");
-  if (save) save.disabled = workerSaving || (!editedWorkerField && !sampleReady);
-  const analyze = element("worker-place-analyze");
-  if (analyze) analyze.textContent = sampleReady ? "Actualiser l’analyse" : "Analyser les données réelles";
-}
-
-function renderWorkerEditorStep(step = workerEditorStep) {
-  workerEditorStep = Math.max(1, Math.min(3, Number(step) || 1));
-  const editing = !!editedWorkerField;
-  element("worker-editor").classList.toggle("is-editing", editing);
-  element("worker-editor-steps").hidden = editing;
-  document.querySelectorAll("[data-wizard-panel]").forEach(panel => {
-    panel.hidden = editing ? panel.dataset.wizardPanel !== "1" : Number(panel.dataset.wizardPanel) !== workerEditorStep;
-  });
-  document.querySelectorAll(".campaign-stepper li").forEach((item, index) => {
-    if (index + 1 === workerEditorStep && !editing) item.setAttribute("aria-current", "step");
-    else item.removeAttribute("aria-current");
-  });
-  element("worker-editor-back").hidden = editing || workerEditorStep === 1;
-  element("worker-editor-next").hidden = editing || workerEditorStep === 3;
-  element("worker-editor-save").hidden = !editing && workerEditorStep !== 3;
-  element("worker-editor-map-slot").hidden = editing;
-  refreshWorkerEditorReview();
-  if (!editing && workerEditorStep === 3 && !workerSoilSampleMatches() && !element("worker-place-analyze").disabled)
-    void analyzeWorkerParcel();
-}
-
-function validateWorkerEditorStep(step) {
-  const panel = document.querySelector('[data-wizard-panel="' + step + '"]');
-  const form = element("worker-editor-form");
-  const controls = [...(panel?.querySelectorAll("input,select,textarea") || [])].filter(control => !control.disabled && control.required);
-  const invalid = controls.find(control => !control.checkValidity());
-  if (invalid) { invalid.reportValidity(); return false; }
-  if (step === 1) {
-    if (!form.elements.outlineConsent.checked) {
-      putText("worker-editor-error", "Cochez l’autorisation d’envoyer le contour avant de continuer.");
-      return false;
-    }
-    try { workerEditorGeometry(form); }
-    catch (error) { putText("worker-editor-error", error.message || String(error)); return false; }
-  }
-  if (step === 2) {
-    if (!form.elements.crop.selectedOptions[0]?.dataset.days) {
-      putText("worker-editor-error", "Choisissez une culture dont le cycle est configuré pour cette campagne.");
-      return false;
-    }
-    if (!form.elements.sowingDate.value) {
-      form.elements.sowingDate.reportValidity();
-      return false;
-    }
-  }
-  putText("worker-editor-error", "");
-  return true;
-}
-
-function closeWorkerEditor({ preserveDraft = true, showEmptyMap = true } = {}) {
-  const editor = element("worker-editor");
-  if (!editedWorkerField && preserveDraft) saveWorkerParcelDraft();
-  editor.hidden = true;
-  element("workspace").classList.remove("is-campaign-wizard");
-  element("shell").classList.remove("is-campaign-wizard");
-  workerPlacePicker.classList.remove("is-expanded");
-  if (document.fullscreenElement === workerPlacePicker) void document.exitFullscreen().catch(() => {});
-  if (showEmptyMap && workerSessionReady && !fields.length) mountWorkerEmptyPicker();
-  editedWorkerField = null;
-}
-
-function advanceWorkerEditor() {
-  if (editedWorkerField || !validateWorkerEditorStep(workerEditorStep)) return;
-  renderWorkerEditorStep(workerEditorStep + 1);
-  if (workerEditorStep === 2) element("worker-editor-form").elements.crop.focus();
-  else if (workerEditorStep === 3) element("worker-place-analysis").scrollIntoView({block:"nearest"});
-}
 
 function drawWorkerLandOverlay(ctx, assessment, bounds, width, height) {
   if (!assessment?.fractions || !bounds) return;
@@ -448,7 +337,6 @@ function clearWorkerSoilSample(message = "Le contour a changé. Relancez l’ana
   const result = element("worker-place-analysis");
   if (result) result.textContent = message;
   if (typeof drawWorkerPlaceMap === "function") drawWorkerPlaceMap();
-  refreshWorkerEditorReview();
 }
 
 function aggregateWorkerSoil(data) {
@@ -489,15 +377,15 @@ async function analyzeWorkerParcel() {
   const form = element("worker-editor-form");
   const button = element("worker-place-analyze");
   const output = element("worker-place-analysis");
-  if (!form.elements.outlineConsent.checked) { output.textContent = "Autorisez l’envoi du contour avant l’analyse."; return false; }
+  if (!form.elements.outlineConsent.checked) { output.textContent = "Autorisez l’envoi du contour avant l’analyse."; return; }
   const days = Number(form.elements.crop.selectedOptions[0]?.dataset.days);
   if (!days || !form.elements.sowingDate.value) {
     output.textContent = "Choisissez la culture et la date de semis. Configurez les cycles sans référence dans « Ma simulation ».";
-    return false;
+    return;
   }
   let geometry;
   try { geometry = workerEditorGeometry(form); }
-  catch (error) { output.textContent = error.message || String(error); return false; }
+  catch (error) { output.textContent = error.message || String(error); return; }
   const geometryText = JSON.stringify(geometry);
   const generation = ++workerSoilGeneration;
   button.disabled = true;
@@ -508,7 +396,7 @@ async function analyzeWorkerParcel() {
         start:form.elements.sowingDate.value, days}),
       workerPost({action:"agronomic-soil", geometry})
     ]);
-    if (generation !== workerSoilGeneration) return false;
+    if (generation !== workerSoilGeneration) return;
     if (!environment?.landAssessment?.fractions || !Array.isArray(environment.weather))
       throw new Error("L’API n’a pas retourné l’analyse de terrain et la série météo attendue.");
     const profile = aggregateWorkerSoil(soil);
@@ -551,17 +439,12 @@ async function analyzeWorkerParcel() {
       "SoilGrids est une prédiction à 250 m, pas une mesure de laboratoire. Jours estimés/scénarisés exclus. " + warnings;
     if (land.legalStatus === "not_assessed")
       output.textContent += " Limite du champ dessinée par vous; statut cadastral non évalué.";
-    return true;
   } catch (error) {
     if (generation === workerSoilGeneration)
       output.textContent = error.message || String(error);
     workerSoilSample = null;
-    return false;
   } finally {
-    if (generation === workerSoilGeneration) {
-      button.disabled = false;
-      refreshWorkerEditorReview();
-    }
+    if (generation === workerSoilGeneration) button.disabled = false;
   }
 }
 
@@ -569,8 +452,10 @@ async function newWorkerConfig(form) {
   const { country, crop, sowingDate, name, territory, variety, outlineConsent } = form.elements;
   const parcelGeometry = workerEditorGeometry(form);
   if (!outlineConsent.checked) throw new Error("Autorisez l’envoi du contour avant l’enregistrement.");
-  if (!workerSoilSampleMatches(form)) {
-    throw new Error("Les paramètres ont changé depuis l’analyse. Revenez à l’étape « Données », relancez l’analyse réelle, puis enregistrez.");
+  if (!workerSoilSample || workerSoilSample.geometryText !== JSON.stringify(parcelGeometry) ||
+      workerSoilSample.country !== country.value || workerSoilSample.sowingDate !== sowingDate.value ||
+      workerSoilSample.crop !== crop.value) {
+    throw new Error("Les données analysées ne correspondent plus aux paramètres actuels. Relancez l’analyse réelle du contour, du sol et de la météo avant l’enregistrement.");
   }
   const { config } = await workerPost({action: "campaign-draft", cropId: crop.value, config: {
     country: country.value, name: name.value.trim(), territory: territory.value.trim(), variety: variety.value.trim(),
@@ -582,49 +467,29 @@ async function newWorkerConfig(form) {
 
 function openWorkerEditor(field = null, {preserveMap = false} = {}) {
   if (!field && !workerSessionReady) { workerPanel.hidden = false; workerNotice("Connectez-vous pour créer un champ dans votre espace."); return; }
-  if (field && !field.campaign) { workerNotice("Attendez le chargement du détail de la campagne."); return; }
   editedWorkerField = field;
   const form = element("worker-editor-form");
-  const savedDraft=workerPlaceDraftScope?workerLocalParcelDrafts.get(workerPlaceDraftScope):null;
-  const preserveCurrentMap=preserveMap||!!savedDraft||!!workerPlaceState.center||!!workerPlaceState.viewBounds||!!workerPlaceState.geometry||workerPlaceState.points.length>0;
-  const mapDraft = preserveCurrentMap ? {name:form.elements.name.value,territory:form.elements.territory.value,
-    country:form.elements.country.value,crop:form.elements.crop.value,sowingDate:form.elements.sowingDate.value,
-    variety:form.elements.variety.value,geometry:form.elements.geometry.value,outlineConsent:form.elements.outlineConsent.checked} : null;
+  const mapDraft = preserveMap ? {territory:form.elements.territory.value,country:form.elements.country.value,geometry:form.elements.geometry.value} : null;
   form.reset();
-  if(mapDraft){form.elements.name.value=mapDraft.name;form.elements.territory.value=mapDraft.territory;
-    form.elements.country.value=mapDraft.country;form.elements.geometry.value=mapDraft.geometry;
-    form.elements.sowingDate.value=mapDraft.sowingDate;form.elements.variety.value=mapDraft.variety;
-    form.elements.outlineConsent.checked=mapDraft.outlineConsent;}
+  if(mapDraft){form.elements.territory.value=mapDraft.territory;form.elements.country.value=mapDraft.country;form.elements.geometry.value=mapDraft.geometry;}
   putText("worker-editor-error", "");
-  if(!preserveCurrentMap)resetWorkerPlacePicker();
-  element("worker-editor").hidden=false;
-  element("workspace").classList.add("is-campaign-wizard");
-  element("shell").classList.add("is-campaign-wizard");
-  element("worker-editor-map-slot").append(workerPlacePicker);
+  if(!preserveMap)resetWorkerPlacePicker();
   element("worker-new-fields").hidden = !!field;
-  element("worker-parcel-new-fields").hidden = !!field;
-  form.elements.country.disabled=!!field;
-  form.elements.outlineConsent.disabled=!!field;
   form.elements.variety.disabled = !!field;
   form.elements.crop.disabled = !!field;
   form.elements.sowingDate.disabled = !!field;
-  workerEditorStep=1;
   if (field) {
+    if (!field.campaign) { workerNotice("Attendez le chargement du détail de la campagne."); return; }
     const c = field.campaign.config;
     form.elements.name.value = c.name || "";
     form.elements.territory.value = c.territory || "";
     form.elements.variety.value = c.variety || "Non renseignée";
     putText("worker-editor-title", "Modifier « " + field.name + " »");
     putText("worker-editor-hint", "Nom et localité · enregistrement sur la révision " + field.revision + ". Les autres paramètres restent ceux de la campagne.");
-    putText("worker-step-one-title", "Mettre à jour le nom et la localité");
-    element("worker-editor-steps").hidden=true;
-    element("worker-editor-map-slot").hidden=true;
   } else {
     putText("worker-editor-title", "Nouvelle campagne");
-    putText("worker-editor-hint", "Trois étapes courtes. Le contour et les paramètres seront vérifiés avant leur enregistrement.");
-    putText("worker-step-one-title", "Définir la parcelle");
-    element("worker-editor-steps").hidden=false;
-    element("worker-editor-map-slot").hidden=false;
+    putText("worker-editor-hint", "Complétez les informations de campagne. Le contour reste votre brouillon local jusqu’à l’enregistrement explicite.");
+    element("worker-new-fields").append(workerPlacePicker);
     const select = form.elements.crop;
     void workerPost({action: "campaign-crops"}).then(data => {
       select.replaceChildren(new Option("Choisir une culture", ""));
@@ -635,13 +500,15 @@ function openWorkerEditor(field = null, {preserveMap = false} = {}) {
         select.add(option);
       }
       const draft=workerLocalParcelDrafts.get(workerPlaceDraftScope);
-      const crop=draft?.form?.crop||mapDraft?.crop;
-      if(crop&&[...select.options].some(option=>option.value===crop))select.value=crop;
-      refreshWorkerEditorReview();
+      if(draft?.form?.crop&&[...select.options].some(option=>option.value===draft.form.crop))select.value=draft.form.crop;
     }).catch(error => putText("worker-editor-error", error.message || String(error)));
   }
-  renderWorkerEditorStep(1);
-  if (!field) requestAnimationFrame(() => form.elements.name.focus({preventScroll:true}));
+  element("worker-editor").showModal();
+  if (!field && !preserveMap) requestAnimationFrame(() => {
+    workerPlacePicker.classList.add("is-expanded");
+    syncWorkerPlaceFullscreen();
+    element("worker-place-query").focus({preventScroll:true});
+  });
 }
 
 async function saveWorkerEditor(event) {
@@ -649,7 +516,6 @@ async function saveWorkerEditor(event) {
   if (workerSaving) return;
   const form = event.currentTarget;
   const field = editedWorkerField;
-  if (!field && workerEditorStep < 3) { advanceWorkerEditor(); return; }
   putText("worker-editor-error", "");
   workerSaving = true;
   element("worker-editor-save").disabled = true;
@@ -666,7 +532,7 @@ async function saveWorkerEditor(event) {
       throw new Error(response.data?.error || "Enregistrement refusé (HTTP " + response.status + ").");
     const savedCampaign=response.data.campaign;
     if(!field&&workerPlaceDraftScope){workerLocalParcelDrafts.delete(workerPlaceDraftScope);persistWorkerParcelDrafts();workerPlaceDraftRestorePending=false;}
-    closeWorkerEditor({preserveDraft:false,showEmptyMap:false});
+    element("worker-editor").close();
     workerPanel.hidden = false;
     await refreshWorkerFields({preferredCampaignId:savedCampaign.id});
     if(workerSessionReady&&state.fieldId===savedCampaign.id)
@@ -680,7 +546,7 @@ async function saveWorkerEditor(event) {
       (message.includes("modifi") || message.includes("révision") ? " Actualisez la campagne avant de reprendre ; votre formulaire reste ouvert." : ""));
   } finally {
     workerSaving = false;
-    refreshWorkerEditorReview();
+    element("worker-editor-save").disabled = false;
   }
 }
 
@@ -855,20 +721,16 @@ function workerParcelScope(session){return session?.userId&&session?.coopId?sess
 function saveWorkerParcelDraft(){
   if(!workerPlaceDraftScope)return;
   const form=element("worker-editor-form");
-  const existing=workerLocalParcelDrafts.get(workerPlaceDraftScope);
-  const mapInEmptyView=workerPlacePicker.parentElement===element("map-empty-picker-slot");
-  const formActive=!editedWorkerField&&(!element("worker-editor").hidden||mapInEmptyView);
-  const formValues=formActive?{name:form.elements.name.value,territory:form.elements.territory.value,
-    country:form.elements.country.value,crop:form.elements.crop.value,sowingDate:form.elements.sowingDate.value,
-    variety:form.elements.variety.value,outlineConsent:form.elements.outlineConsent.checked}:existing?.form||null;
+  const formValues=editedWorkerField||!element("worker-editor").open?null:{name:form.elements.name.value,
+    territory:form.elements.territory.value,country:form.elements.country.value,crop:form.elements.crop.value,
+    sowingDate:form.elements.sowingDate.value,variety:form.elements.variety.value};
   const hasFormValues=formValues&&Object.values(formValues).some(value=>typeof value==="string"&&value.trim());
   if(!workerPlaceState.center&&!workerPlaceState.points.length&&!workerPlaceState.geometry&&!hasFormValues)return;
   workerLocalParcelDrafts.set(workerPlaceDraftScope,{center:workerPlaceState.center?{...workerPlaceState.center}:null,
     bounds:workerPlaceState.bounds?[...workerPlaceState.bounds]:null,pannedBounds:workerPlaceState.pannedBounds?[...workerPlaceState.pannedBounds]:null,
     points:workerPlaceState.points.map(point=>[...point]),geometry:workerPlaceState.geometry?structuredClone(workerPlaceState.geometry):null,
-    zoom:workerPlaceState.zoom,query:element("worker-place-query").value,
-    territory:formActive?form.elements.territory.value:(existing?.territory||form.elements.territory.value),
-    country:formActive?form.elements.country.value:(existing?.country||form.elements.country.value),form:formValues});
+    zoom:workerPlaceState.zoom,query:element("worker-place-query").value,territory:form.elements.territory.value,
+    country:form.elements.country.value,form:formValues});
   persistWorkerParcelDrafts();
 }
 function prepareWorkerParcelDraftForSession(session){
@@ -893,7 +755,6 @@ function prepareWorkerParcelDraftForSession(session){
     form.elements.name.value=typeof draft.form.name==="string"?draft.form.name:"";
     form.elements.sowingDate.value=typeof draft.form.sowingDate==="string"?draft.form.sowingDate:"";
     form.elements.variety.value=typeof draft.form.variety==="string"?draft.form.variety:"";
-    form.elements.outlineConsent.checked=draft.form.outlineConsent===true;
   }
   form.elements.geometry.value=draft.geometry?JSON.stringify(draft.geometry):"";
   putText("worker-place-status","Brouillon local de cet espace · non envoyé. Le fond satellite est rechargé pour vérifier le contour.");
@@ -901,11 +762,8 @@ function prepareWorkerParcelDraftForSession(session){
 }
 function clearWorkerLocalParcelDrafts(){workerLocalParcelDrafts.clear();workerPlaceDraftScope=null;workerPlaceDraftRestorePending=false;try{sessionStorage.removeItem(workerParcelDraftStorageKey);}catch{}resetWorkerPlacePicker();}
 function clearWorkerSensitiveUi({preserveParcelDraft=false,discardDrafts=false}={}){
-  if(preserveParcelDraft&&!editedWorkerField){saveWorkerParcelDraft();workerPlaceDraftRestorePending=true;}
-  element("worker-editor").hidden=true;
-  element("workspace").classList.remove("is-campaign-wizard");
-  element("shell").classList.remove("is-campaign-wizard");
-  for(const id of ["note-dialog","worker-event-dialog","decision-preview","decision-history-dialog"]){
+  if(preserveParcelDraft&&element("worker-editor").open&&!editedWorkerField){saveWorkerParcelDraft();workerPlaceDraftRestorePending=true;}
+  for(const id of ["worker-editor","note-dialog","worker-event-dialog","decision-preview","decision-history-dialog"]){
     const dialog=element(id);if(dialog.open)dialog.close();
   }
   for(const id of ["worker-editor-form","note-form","worker-event-form","decision-form"]){
@@ -931,7 +789,7 @@ function mountWorkerEmptyPicker() {
     element("map-empty-copy").textContent=workerBusy?"Le Worker vérifie la session avant d’afficher les données de cet espace.":"Connectez-vous pour voir les campagnes réelles et créer un champ dans votre espace.";
     element("map-empty-create").hidden=true;
     workerPlacePicker.hidden=true;
-    element("worker-editor-map-slot").append(workerPlacePicker);
+    element("worker-new-fields").append(workerPlacePicker);
     return;
   }
   slot.append(workerPlacePicker);
@@ -951,7 +809,7 @@ function mountWorkerEmptyPicker() {
 }
 function unmountWorkerEmptyPicker() {
   if(workerPlacePicker.parentElement===element("map-empty-picker-slot"))
-    element("worker-editor-map-slot").append(workerPlacePicker);
+    element("worker-new-fields").append(workerPlacePicker);
   workerPlacePicker.hidden=false;
   element("map-empty-create").hidden=true;
 }
@@ -980,22 +838,11 @@ workerPlaceExpand.addEventListener("click", async () => {
   syncWorkerPlaceFullscreen();
 });
 document.addEventListener("fullscreenchange", syncWorkerPlaceFullscreen);
+element("worker-editor").addEventListener("close",()=>{
+  if(workerSessionReady&&!fields.length)mountWorkerEmptyPicker();
+});
 element("map-empty-create").addEventListener("click", () => openWorkerEditor(null,{preserveMap:true}));
 element("map-empty-login").addEventListener("click",()=>startWorkerLogin());
-element("worker-editor-next").addEventListener("click",advanceWorkerEditor);
-element("worker-editor-back").addEventListener("click",()=>{
-  putText("worker-editor-error","");
-  renderWorkerEditorStep(workerEditorStep-1);
-});
-element("worker-editor-cancel").addEventListener("click",()=>closeWorkerEditor());
-element("worker-editor-form").addEventListener("input",()=>{
-  if(!editedWorkerField)saveWorkerParcelDraft();
-  refreshWorkerEditorReview();
-});
-element("worker-editor-form").addEventListener("change",()=>{
-  if(!editedWorkerField)saveWorkerParcelDraft();
-  refreshWorkerEditorReview();
-});
 element("worker-editor-form").elements.crop.addEventListener("change", () => clearWorkerSoilSample("Relancez l’analyse pour la culture sélectionnée."));
 element("worker-place-analyze").addEventListener("click", analyzeWorkerParcel);
 element("worker-editor-form").elements.geometry.addEventListener("input", () => {
@@ -1136,6 +983,7 @@ element("worker-place-zoom-out").addEventListener("click", () => {
 });
 element("worker-new").addEventListener("click", () => openWorkerEditor(null,{preserveMap:!fields.length&&workerSessionReady}));
 element("worker-edit").addEventListener("click", () => openWorkerEditor(currentField()));
+element("worker-editor-cancel").addEventListener("click", () => element("worker-editor").close());
 element("worker-editor-form").addEventListener("submit", saveWorkerEditor);
 element("worker-event-cancel").addEventListener("click", () => element("worker-event-dialog").close());
 element("worker-event-form").addEventListener("submit", saveWorkerEvent);

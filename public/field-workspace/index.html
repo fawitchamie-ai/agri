@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles/application.css">
 </head>
 <body>
-  <div class="shell" id="shell">
+  <div class="shell">
     <header class="topbar">
       <div class="brand">
         <span class="brand-icon"><canvas class="icon" data-icon="brand" aria-hidden="true"></canvas></span>
@@ -32,75 +32,6 @@
         <div class="worker-account-context"><strong id="worker-identity">Aucun compte vérifié</strong><label for="worker-space">Espace actif<select id="worker-space" aria-label="Espace coopératif actif" disabled></select></label></div>
         <div class="worker-actions"><button type="button" class="btn" id="worker-login">Se connecter</button><button type="button" class="btn" id="worker-login-close" hidden>Fermer la fenêtre de connexion</button><button type="button" class="btn primary" id="worker-refresh">Actualiser les campagnes</button><button type="button" class="btn" id="worker-new" disabled>Nouvelle campagne</button><button type="button" class="btn" id="worker-logout" hidden>Se déconnecter</button></div>
         <p id="worker-message" role="status">Connectez-vous avec votre compte, puis chargez les campagnes enregistrées.</p>
-      </section>
-      <section class="worker-editor campaign-wizard" id="worker-editor" hidden aria-labelledby="worker-editor-title">
-        <header class="campaign-wizard-head">
-          <div><p class="campaign-eyebrow">NOUVELLE CAMPAGNE</p><h1 id="worker-editor-title">Nouvelle campagne</h1><p class="soft-text" id="worker-editor-hint"></p></div>
-          <button type="button" class="btn" id="worker-editor-cancel">Quitter la création</button>
-        </header>
-        <ol class="campaign-stepper" id="worker-editor-steps" aria-label="Étapes de création">
-          <li aria-current="step"><span>01</span><b>Parcelle</b><small>Localité et contour</small></li>
-          <li><span>02</span><b>Culture</b><small>Cycle et semis</small></li>
-          <li><span>03</span><b>Données</b><small>Analyse et enregistrement</small></li>
-        </ol>
-        <form id="worker-editor-form">
-          <div class="campaign-wizard-grid">
-            <div class="campaign-wizard-main">
-              <p class="campaign-draft-note">Votre saisie reste un brouillon local jusqu’à l’enregistrement explicite.</p>
-              <section class="campaign-wizard-step" data-wizard-panel="1" aria-labelledby="worker-step-one-title">
-                <h2 id="worker-step-one-title">Définir la parcelle</h2>
-                <p class="soft-text">Choisissez la localité réelle, vérifiez le pays, puis tracez le contour sur la carte.</p>
-                <label>Nom du champ<input name="name" maxlength="120" autocomplete="off" required placeholder="Ex. Champ familial"></label>
-                <label>Localité<input name="territory" maxlength="160" autocomplete="off" required placeholder="Choisissez un résultat de recherche"></label>
-                <div id="worker-parcel-new-fields">
-                  <label>Pays<select name="country" required><option value="">Choisir un pays</option><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option><option value="NGA">Nigeria</option></select></label>
-                  <label class="outline-consent"><input type="checkbox" name="outlineConsent"> J’autorise l’envoi du contour pour récupérer les données réelles du terrain, du sol et de la météo.</label>
-                </div>
-              </section>
-              <section class="campaign-wizard-step" data-wizard-panel="2" hidden aria-labelledby="worker-step-two-title">
-                <h2 id="worker-step-two-title">Préciser la campagne</h2>
-                <p class="soft-text">Indiquez la culture et la date prévue ou observée du semis. Aucun choix n’est prérempli.</p>
-                <div id="worker-new-fields">
-                  <label>Culture<select name="crop" required><option value="">Chargement des cultures…</option></select></label>
-                  <label>Date de semis<input type="date" name="sowingDate" required></label>
-                  <label>Variété (facultatif)<input name="variety" maxlength="100" value=""></label>
-                </div>
-              </section>
-              <section class="campaign-wizard-step" data-wizard-panel="3" hidden aria-labelledby="worker-step-three-title">
-                <h2 id="worker-step-three-title">Vérifier les données réelles</h2>
-                <p class="soft-text">Nous analysons le contour, le sol et la météo à partir des sources disponibles. Les données sans couverture restent indisponibles.</p>
-                <dl class="campaign-review" id="worker-editor-review"></dl>
-                <div class="campaign-analysis-card">
-                  <div><strong>Terrain, sol et météo</strong><p class="soft-text">Source terrain du Worker, profils ISRIC SoilGrids et météo observée ou prévue selon les disponibilités.</p></div>
-                  <button type="button" class="btn" id="worker-place-analyze">Analyser les données réelles</button>
-                </div>
-                <p class="campaign-analysis-result soft-text" id="worker-place-analysis" role="status" aria-live="polite">L’analyse démarrera après la vérification de vos paramètres.</p>
-                <p class="campaign-yield-note"><b>Rendement :</b> pas simulé tant que le Worker ne fournit pas un résultat calculé pour ces paramètres.</p>
-              </section>
-              <p id="worker-editor-error" role="alert" aria-live="polite"></p>
-              <div class="form-end campaign-wizard-actions">
-                <button type="button" class="btn" id="worker-editor-back" hidden>Retour</button>
-                <button type="button" class="btn" id="worker-editor-next">Continuer</button>
-                <button type="submit" class="btn primary" id="worker-editor-save" hidden disabled>Enregistrer la campagne</button>
-              </div>
-            </div>
-            <aside class="campaign-wizard-map" id="worker-editor-map-slot" aria-label="Recherche de lieu et contour du champ">
-              <section class="worker-place-picker" id="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
-                <label for="worker-place-query">Rechercher un village ou une ville</label>
-                <div class="worker-place-search-row"><input id="worker-place-query" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Ex. Kpalimé"><button type="button" class="btn" id="worker-place-search">Rechercher</button></div>
-                <ul class="worker-place-results" id="worker-place-results" aria-label="Résultats de recherche"></ul>
-                <p class="soft-text" id="worker-place-status" role="status">Recherchez votre localité. Le fond satellite réel s’affichera après votre choix.</p>
-                <button type="button" class="btn" id="worker-place-connect">Se connecter</button>
-                <div class="worker-place-map-wrap" id="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
-                <div class="worker-place-map-tools">
-                  <span class="soft-text" id="worker-place-attribution">Fond satellite · aucune localité sélectionnée</span>
-                  <div><button type="button" class="btn" id="worker-place-map-expand" aria-pressed="false">Plein écran</button><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-remove" disabled>Retirer le sommet sélectionné</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
-                </div>
-              </section>
-              <textarea name="geometry" hidden aria-hidden="true" tabindex="-1"></textarea>
-            </aside>
-          </div>
-        </form>
       </section>
       <aside class="sidebar" id="primary-sidebar" aria-label="Champs et données">
         <section class="fields-block" aria-labelledby="fields-title">
@@ -357,6 +288,40 @@
     <h2 id="decision-history-title">Brouillons enregistrés</h2>
     <div class="history-items" id="decision-history-items"></div>
     <div class="form-end"><button type="button" class="btn" data-close="decision-history-dialog">Fermer</button></div>
+  </dialog>
+
+  <dialog class="decision-dialog worker-editor" id="worker-editor" aria-labelledby="worker-editor-title">
+    <form id="worker-editor-form">
+      <h2 id="worker-editor-title">Campagne</h2>
+      <p class="soft-text" id="worker-editor-hint"></p>
+      <label>Nom de la parcelle<input name="name" maxlength="120" required></label>
+      <label>Localité<input name="territory" maxlength="160" required></label>
+      <label>Variété observée (facultatif)<input name="variety" maxlength="100" value=""></label>
+      <div id="worker-new-fields">
+        <label>Pays<select name="country" required><option value="">Choisir un pays</option><option value="TGO">Togo</option><option value="BEN">Bénin</option><option value="BFA">Burkina Faso</option><option value="GHA">Ghana</option><option value="CIV">Côte d’Ivoire</option><option value="SEN">Sénégal</option><option value="NGA">Nigeria</option></select></label>
+        <label>Culture<select name="crop" required><option value="">Chargement des cultures…</option></select></label>
+        <label>Date de semis<input type="date" name="sowingDate" required></label>
+        <section class="worker-place-picker" id="worker-place-picker" aria-label="Rechercher une localité et tracer le champ">
+           <label for="worker-place-query">Rechercher un village ou une ville</label>
+           <div class="worker-place-search-row"><input id="worker-place-query" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Ex. Kpalimé"><button type="button" class="btn" id="worker-place-search">Rechercher</button></div>
+           <ul class="worker-place-results" id="worker-place-results" aria-label="Résultats de recherche"></ul>
+           <p class="soft-text" id="worker-place-status" role="status">Recherchez une localité pour charger le fond satellite réel et tracer votre contour.</p>
+            <button type="button" class="btn" id="worker-place-connect">Se connecter</button>
+            <div class="worker-place-map-wrap" id="worker-place-map-wrap"><canvas id="worker-place-map" width="640" height="400" tabindex="0" role="img" aria-label="Image satellite réelle autour de la localité sélectionnée; cliquez pour tracer le contour du champ."></canvas></div>
+            <div class="worker-place-map-tools">
+              <span class="soft-text" id="worker-place-attribution">Fond satellite · aucune localité sélectionnée</span>
+              <div><button type="button" class="btn" id="worker-place-map-expand" aria-pressed="false">Plein écran</button><button type="button" class="btn" id="worker-place-zoom-out" aria-label="Dézoomer">−</button><button type="button" class="btn" id="worker-place-zoom-in" aria-label="Zoomer">+</button><button type="button" class="btn" id="worker-place-undo">Annuler le dernier point</button><button type="button" class="btn" id="worker-place-remove" disabled>Retirer le sommet sélectionné</button><button type="button" class="btn" id="worker-place-clear">Effacer le contour</button></div>
+            </div>
+          </section>
+         <textarea name="geometry" hidden aria-hidden="true" tabindex="-1"></textarea>
+        <label class="outline-consent"><input type="checkbox" name="outlineConsent"> J’autorise l’envoi du contour pour récupérer les données de terrain, de sol et de météo.</label>
+        <button type="button" class="btn" id="worker-place-analyze">Analyser le terrain, le sol et la météo via l’API</button>
+        <p class="soft-text" id="worker-place-analysis" role="status">Après le tracé, l’API récupère la classification du terrain, les profils SoilGrids à 250 m et les données météorologiques du cycle. L’overlay colore les terres candidates en vert, l’eau en bleu et les surfaces non classées en gris. Les valeurs manquantes restent inconnues.</p>
+        <p class="soft-text">Le contour est dessiné par vous sur l’image Sentinel‑2; il n’est pas cadastral. Le profil SoilGrids est une prédiction cartographique, pas une mesure de laboratoire. Les prévisions et observations météo gardent leur statut de source.</p>
+      </div>
+      <p id="worker-editor-error" role="alert"></p>
+      <div class="form-end"><button type="button" class="btn" id="worker-editor-cancel">Annuler</button><button type="submit" class="btn primary" id="worker-editor-save">Enregistrer la campagne</button></div>
+    </form>
   </dialog>
 
   <dialog class="decision-dialog worker-editor" id="worker-event-dialog" aria-labelledby="worker-event-title">

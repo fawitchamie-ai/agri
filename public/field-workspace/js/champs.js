@@ -15,9 +15,12 @@ function updateFieldList() {
     " · " + number.format(fields.reduce((sum, field) => sum + (Number.isFinite(field.area) ? field.area : 0), 0)) + " ha");
   list.replaceChildren();
   if (!found.length) {
-    list.append(makeNode("li", "empty-list", fields.length
+    const emptyMessage = fields.length
       ? "Aucun champ ne correspond à cette recherche."
-      : "Aucune parcelle chargée. Connectez-vous puis actualisez les campagnes."));
+      : workerSessionReady ? "Aucune campagne enregistrée dans cet espace."
+        : workerBusy ? "Vérification de la session auprès du Worker…"
+          : "Connectez-vous pour afficher les campagnes de votre espace.";
+    list.append(makeNode("li", "empty-list", emptyMessage));
     return;
   }
   for (const field of found) {

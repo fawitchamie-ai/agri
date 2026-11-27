@@ -102,10 +102,8 @@ test('le retour Access garde l’écran et la campagne, restaure uniquement ce c
 test('l’espace vide connecté utilise la carte réelle et ne préremplit aucune campagne de démonstration',()=>{
   assert.match(workspaceHtml,/map-empty-picker-slot/);
   assert.match(workspaceHtml,/worker-place-remove/);
-  assert.match(workspaceHtml,/<section class="worker-editor campaign-wizard" id="worker-editor"/);
-  assert.match(workspaceHtml,/class="campaign-stepper"[^>]*aria-label="Étapes de création"/);
-  assert.deepEqual([...workspaceHtml.matchAll(/data-wizard-panel="([123])"/g)].map(match=>match[1]),['1','2','3']);
-  assert.doesNotMatch(workspaceHtml,/<dialog[^>]*id="worker-editor"/);
+  assert.match(workspaceHtml,/<dialog class="decision-dialog worker-editor" id="worker-editor"/);
+  assert.doesNotMatch(workspaceHtml,/campaign-wizard|campaign-stepper|data-wizard-panel/);
   assert.match(workspaceHtml,/name="country" required><option value="">Choisir un pays/);
   assert.match(workspaceHtml,/name="crop" required><option value="">/);
   assert.doesNotMatch(workspaceHtml,/Parcelle de démonstration|Localité fictive|Contour GeoJSON \(Polygon\)/);
@@ -124,54 +122,38 @@ test('l’espace vide connecté utilise la carte réelle et ne préremplit aucun
   assert.match(workspaceMap,/window\.agriClearSensitiveUi=clearWorkerSensitiveUi/);
   assert.match(workspaceCampaigns,/agriClearSensitiveUi\?\.\(\{preserveParcelDraft:true\}\)/);
   assert.match(workspaceCampaigns,/agriClearSensitiveUi\?\.\(\{discardDrafts:true\}\)/);
-  assert.doesNotMatch(workspaceMap,/element\("worker-editor"\)\.showModal/);
-  assert.doesNotMatch(workspaceMap,/Analysez d’abord le terrain, le sol et la météo pour ces paramètres/);
-  assert.match(workspaceMap,/workerEditorStep === 3[\s\S]*?void analyzeWorkerParcel\(\)/);
-  assert.match(workspaceMap,/workerSoilSampleMatches/);
+  assert.match(workspaceMap,/element\("worker-editor"\)\.showModal\(\)/);
+  assert.match(workspaceMap,/Relancez l’analyse réelle du contour, du sol et de la météo/);
+  assert.doesNotMatch(workspaceMap,/workerEditorStep|campaign-stepper|data-wizard-panel/);
 });
 
-test('une analyse de terrain ne reste valide que pour le même contour, pays, culture et semis',()=>{
-  const start=workspaceMap.indexOf('function workerSoilSampleMatches(');
-  const end=workspaceMap.indexOf('\nfunction refreshWorkerEditorReview',start);
-  const source=workspaceMap.slice(start,end)+'\nglobalThis.__matches=workerSoilSampleMatches;';
+test('une campagne n’envoie au Worker que les paramètres et données analysés pour ce contour',async()=>{
+  const start=workspaceMap.indexOf('async function newWorkerConfig(form) {');
+  const end=workspaceMap.indexOf('\nfunction openWorkerEditor',start);
+  const source=workspaceMap.slice(start,end)+'\nglobalThis.__createConfig=newWorkerConfig;';
   const geometry={type:'Polygon',coordinates:[[[1,8],[1.01,8],[1.01,8.01],[1,8.01],[1,8]]]};
-  const context={workerSoilSample:{geometryText:JSON.stringify(geometry),country:'TGO',crop:'maize',sowingDate:'2026-11-01'},
-    workerEditorGeometry:()=>geometry,globalThis:null};context.globalThis=context;
+  let posted;
+  const context={workerSoilSample:{geometryText:JSON.stringify(geometry),country:'TGO',crop:'maize',sowingDate:'2026-11-01',
+      weather:[{date:'2026-11-01',status:'observed',rainMm:0,et0Mm:1}],source:'ISRIC SoilGrids',layers:[{thicknessM:.3,thetaFC:.2,thetaWP:.1}]},
+    workerEditorGeometry:()=>geometry,workerPost:async body=>{posted=body;return {config:body.config};},globalThis:null};context.globalThis=context;
   vm.runInNewContext(source,context);
-  const form={elements:{country:{value:'TGO'},crop:{value:'maize'},sowingDate:{value:'2026-11-01'}}};
-  assert.equal(context.__matches(form),true);
+  const form={elements:{country:{value:'TGO'},crop:{value:'maize'},sowingDate:{value:'2026-11-01'},name:{value:'Champ réel'},
+    territory:{value:'Lomé'},variety:{value:''},outlineConsent:{checked:true}}};
+  const config=await context.__createConfig(form);
+  assert.equal(config.country,'TGO');
+  assert.equal(config.parcelGeometry.type,'Polygon');
+  assert.equal(config.weather[0].status,'observed');
+  assert.equal(posted.action,'campaign-draft');
+  assert.equal(posted.cropId,'maize');
   form.elements.country.value='GHA';
-  assert.equal(context.__matches(form),false);
-});
-
-test('le récapitulatif lit le nombre de profils réellement agrégés sans casser l’analyse',()=>{
-  const start=workspaceMap.indexOf('function refreshWorkerEditorReview(');
-  const end=workspaceMap.indexOf('\nfunction renderWorkerEditorStep',start);
-  const source=workspaceMap.slice(start,end)+'\nglobalThis.__refresh=refreshWorkerEditorReview;';
-  const review={rows:[],replaceChildren(...rows){this.rows=rows;}};
-  const save={disabled:false},analyze={disabled:false,textContent:''};
-  const elements=new Map([['worker-editor-review',review],['worker-editor-save',save],['worker-place-analyze',analyze]]);
-  const form={elements:{
-    name:{value:'Champ réel'},territory:{value:'Lomé'},sowingDate:{value:'2026-11-01'},
-    country:{value:'TGO',selectedOptions:[{textContent:'Togo'}]},crop:{value:'maize',selectedOptions:[{textContent:'Maïs'}]}
-  }};
-  const geometry={type:'Polygon',coordinates:[[[1,8],[1.01,8],[1.01,8.01],[1,8.01],[1,8]]]};
-  const context={workerSoilSample:{weatherSourceDays:70,soil:{sampleCount:3}},workerSaving:false,editedWorkerField:null,
-    workerSoilSampleMatches:()=>true,workerEditorGeometry:()=>geometry,element:id=>id==='worker-editor-form'?form:elements.get(id),
-    makeNode:(tag,className,text)=>({tag,className,text,children:[],append(...children){this.children.push(...children);}}),globalThis:null};
-  context.globalThis=context;
-  vm.runInNewContext(source,context);
-  assert.doesNotThrow(()=>context.__refresh());
-  assert.equal(save.disabled,false);
-  assert.equal(analyze.textContent,'Actualiser l’analyse');
-  assert.match(review.rows[5].children[1].text,/3 profil\(s\) SoilGrids/);
+  await assert.rejects(context.__createConfig(form),/ne correspondent plus aux paramètres actuels/);
 });
 
 test('à la perte de session les formulaires et dialogues sont vidés, le brouillon neuf reste local',()=>{
   const start=workspaceMap.indexOf('function clearWorkerSensitiveUi(');
   const end=workspaceMap.indexOf('\nwindow.agriClearSensitiveUi=',start);
   const functionSource=workspaceMap.slice(start,end)+'\nglobalThis.__clear=clearWorkerSensitiveUi;';
-  const dialogs=new Map(['note-dialog','worker-event-dialog','decision-preview','decision-history-dialog'].map(id=>[id,{open:true,closed:false,close(){this.closed=true;}}]));
+  const dialogs=new Map(['worker-editor','note-dialog','worker-event-dialog','decision-preview','decision-history-dialog'].map(id=>[id,{open:true,closed:false,close(){this.closed=true;}}]));
   const forms=new Map(['worker-editor-form','note-form','worker-event-form','decision-form'].map(id=>[id,{resetCount:0,reset(){this.resetCount++;}}]));
   const elements=new Map([
     ...dialogs,
@@ -183,9 +165,6 @@ test('à la perte de session les formulaires et dialogues sont vidés, le brouil
     ['decision-history-items',{cleared:false,replaceChildren(){this.cleared=true;}}],
     ['note-body',{textContent:'private note',hidden:false}]
   ]);
-  elements.set('workspace',{classList:{remove(){}}});
-  elements.set('shell',{classList:{remove(){}}});
-  elements.set('worker-editor',{hidden:false});
   let saved=0,discarded=0;
   const context={window:{},state:{noteId:7},editedWorkerField:null,workerPlaceDraftRestorePending:false,
     saveWorkerParcelDraft(){saved++;},clearWorkerLocalParcelDrafts(){discarded++;},
@@ -195,7 +174,6 @@ test('à la perte de session les formulaires et dialogues sont vidés, le brouil
   context.__clear({preserveParcelDraft:true});
   assert.equal(saved,1);
   assert.equal(context.workerPlaceDraftRestorePending,true);
-  assert.equal(elements.get('worker-editor').hidden,true);
   assert.ok([...dialogs.values()].every(dialog=>dialog.closed));
   assert.ok([...forms.values()].every(form=>form.resetCount===1));
   assert.equal(context.state.noteId,null);
