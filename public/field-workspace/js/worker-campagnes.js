@@ -161,13 +161,10 @@ window.agriHandleSessionFailure=handleWorkerSessionFailure;
 
 async function switchWorkerSpace(coopId) {
   if(workerBusy||!workerSessionReady||!workerSession)return;
-  if(!element("worker-editor").hidden){
-    if(editedWorkerField){
-      workerNotice("Enregistrez ou annulez la modification avant de changer d’espace.");
-      renderWorkerIdentity(workerSession);
-      return;
-    }
-    closeWorkerEditor({preserveDraft:true,showEmptyMap:false});
+  if(element("worker-editor").open){
+    workerNotice("Fermez ou enregistrez le formulaire de campagne avant de changer d’espace.");
+    renderWorkerIdentity(workerSession);
+    return;
   }
   const target=workerSession.cooperatives?.find(space=>space.coopId===coopId);
   if(!target||coopId===workerSession.coopId){renderWorkerIdentity(workerSession);return;}
