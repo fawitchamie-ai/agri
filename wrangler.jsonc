@@ -33,7 +33,10 @@
     "binding": "ASSETS",
     "run_worker_first": [
       "/",
-      "/outils"
+      "/outils",
+      "/outils/*",
+      "/champs",
+      "/champs/*"
     ]
   }
 }

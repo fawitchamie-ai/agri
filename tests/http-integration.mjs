@@ -10,7 +10,7 @@ async function request(path,method='GET',data,expected=200){const response=await
 async function check(name,fn){const start=performance.now();await fn();results.push({name,status:'PASS',ms:+(performance.now()-start).toFixed(2)});}
 let member,harvest,collection,simulation,forecast,coopA,cookieA,managerHarvest;
 if(harness)await check('Connexion e-mail: diagnostic explicite quand Access ne transmet aucune session',async()=>{
- const response=await fetchRoute(new URL('https://agri.test/api/auth/login?returnTo=%2Fchamps%2F'),{method:'GET'});
+ const response=await fetchRoute(new URL('https://agri.test/api/auth/login?returnTo=%2Ffield-workspace%2F'),{method:'GET'});
  assert.equal(response.status,503);
  assert.equal(response.headers.get('location'),null);
  assert.match(response.headers.get('cache-control'),/no-store/);

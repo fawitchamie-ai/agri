@@ -65,6 +65,7 @@ test('Access: configuration manquante refuse par défaut, domaine des clés HTTP
 
 test('Access: le retour de connexion conserve l’outil et refuse les destinations étrangères ou récursives',()=>{
  assert.equal(safeAccessReturnPath('/#seasonal?library=1'),'/#seasonal?library=1');
+ assert.equal(safeAccessReturnPath('/field-workspace/?campaign=champ#campaign'),'/field-workspace/?campaign=champ#campaign');
  assert.equal(safeAccessReturnPath('/outils?entry=seasonal&campaign=champ#seasonal?section=images'),'/outils?entry=seasonal&campaign=champ#seasonal?section=images');
  assert.equal(safeAccessReturnPath('/api/seasonal'),'/api/seasonal');
  for(const path of ['https://attacker.test/','//attacker.test/','\\\\attacker.test/','/\\\\attacker.test/','/api/auth/login','/api/workspace','/champs/../api/auth/login'])assert.equal(safeAccessReturnPath(path),'/');

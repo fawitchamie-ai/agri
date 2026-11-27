@@ -7,7 +7,7 @@ type AccessConfiguration = { issuer:string; audience:string };
 const identityContext = new AsyncLocalStorage<AccessIdentity|null>();
 const keySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 const localHosts = new Set(['localhost','127.0.0.1','[::1]','::1']);
-const localPaths = new Set(['/','/outils','/api/health','/api/seasonal','/api/science','/api/demo','/api/workspace','/api/export','/api/import','/api/report','/api/session','/api/access']);
+const localPaths = new Set(['/','/outils','/field-workspace','/field-workspace/','/champs','/champs/','/api/health','/api/seasonal','/api/science','/api/demo','/api/workspace','/api/export','/api/import','/api/report','/api/session','/api/access']);
 const publicDemoApi = new Map<string,Set<string>>([
   ['/api/science',new Set(['GET'])],
   ['/api/demo',new Set(['POST','DELETE'])],
@@ -33,7 +33,7 @@ export function safeAccessReturnPath(value:string|null):string {
   if(!value||!value.startsWith('/')||value.startsWith('//')||value.includes('\\')||/[\u0000-\u001f]/.test(value))return '/';
   try{
     const url=new URL(value,'https://agri.invalid');
-    const destinations=['/','/champs','/champs/','/outils','/api/seasonal'];
+    const destinations=['/','/champs','/champs/','/outils','/field-workspace','/field-workspace/','/api/seasonal'];
     return url.origin==='https://agri.invalid'&&destinations.includes(url.pathname)?url.pathname+url.search+url.hash:'/';
   }catch{return '/';}
 }
