@@ -62,13 +62,20 @@ async function workerInvoke(command, args = {}) {
   if (command === "worker_image" && response.ok && type.startsWith("image/png")) {
     return { mime: "image/png", src: URL.createObjectURL(await response.blob()) };
   }
-  const data = type.includes("application/json") ? await response.json() : {
-    error: "AgriPrévision n’a pas pu charger les données (HTTP " + response.status + ")."
-  };
-  if (response.status === 401) data.code = "SESSION_EXPIRED";
-  else if (response.status === 403) data.code = "FORBIDDEN";
-  else if (response.status === 503) data.code = "SERVICE_UNAVAILABLE";
-  else if (response.status >= 500 && command !== "worker_image") data.code = "SERVICE_UNAVAILABLE";
+  const data = type.includes("application/json") ? await response.json() : {error:""};
+  if (response.status === 401) {
+    data.code = "SESSION_EXPIRED";
+    data.error = "Session Cloudflare Access absente ou expirée. Reconnectez-vous pour vérifier votre compte.";
+  } else if (response.status === 403) {
+    data.code = "FORBIDDEN";
+    data.error = "Accès interdit : votre compte n’est pas autorisé dans cet espace.";
+  } else if (response.status === 503) {
+    data.code = "SERVICE_UNAVAILABLE";
+    data.error = "Service Worker ou configuration d’accès indisponible. Réessayez plus tard.";
+  } else if (response.status >= 500 && command !== "worker_image") {
+    data.code = "SERVICE_UNAVAILABLE";
+    data.error = "Le Worker est temporairement indisponible (HTTP " + response.status + "). Les données affichées ont été effacées.";
+  }
   else if (response.status === 409 && /^L’espace actif a changé/i.test(data.error || "")) data.code = "WORKSPACE_CHANGED";
   if (["SESSION_EXPIRED","FORBIDDEN","SERVICE_UNAVAILABLE","WORKSPACE_CHANGED"].includes(data.code))
     window.agriHandleSessionFailure?.({code:data.code,message:data.error||"La session ou l’espace actif a changé."});
