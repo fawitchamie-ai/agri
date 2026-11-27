@@ -41,7 +41,7 @@ const worker = new Miniflare({
 });
 
 const origin = 'https://agri.example.test';
-const destination = '/outils?entry=seasonal&library=1#seasonal?section=images';
+const destination = '/field-workspace/?entry=seasonal&library=1#seasonal?section=images';
 const loginPath = '/api/auth/login?' + new URLSearchParams({ returnTo: destination });
 async function accessToken(subject, expiresIn = '5m') {
   return new SignJWT({ email: subject + '@example.test' })
@@ -82,8 +82,18 @@ try {
   assert.match(authorizedReturn.headers.get('cache-control'), /no-store/);
   const signedByEdge = await request(loginPath, null, { headers: { 'cf-access-jwt-assertion': user } });
   assert.equal(signedByEdge.status, 302);
-  assert.equal((await request(destination, sessionCookie)).status, 200);
-  assert.match(await (await request('/champs/', sessionCookie)).text(), /Mes champs/);
+  const workspace = await request(destination, sessionCookie);
+  assert.equal(workspace.status, 200);
+  assert.match(await workspace.text(), /Mes champs/);
+  const oldWorkspace = await request('/champs/', sessionCookie);
+  assert.equal(oldWorkspace.status, 302);
+  assert.equal(oldWorkspace.headers.get('location'), origin + '/field-workspace/');
+  const oldTools = await request('/outils?entry=seasonal', sessionCookie);
+  assert.equal(oldTools.status, 302);
+  assert.equal(oldTools.headers.get('location'), origin + '/field-workspace/');
+  const homepage = await request('/', sessionCookie);
+  assert.equal(homepage.status, 302);
+  assert.equal(homepage.headers.get('location'), origin + '/field-workspace/');
 
   const session = await request('/api/workspace', sessionCookie + '; agri_demo=stale');
   assert.equal(session.status, 200);

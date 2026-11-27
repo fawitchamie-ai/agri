@@ -14,5 +14,5 @@ export async function GET(request: Request) {
 <title>Connexion indisponible · AgriPrévision</title>
 <main><h1>La connexion n’a pas abouti</h1>
 <p>Cloudflare Access n’a pas transmis de session à AgriPrévision.</p>
-<a href="/champs/">Retour à Mes champs</a></main></html>`, { status: 503, headers });
+<a href="/field-workspace/">Retour à Mes champs</a></main></html>`, { status: 503, headers });
 }
