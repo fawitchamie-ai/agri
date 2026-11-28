@@ -44,14 +44,26 @@ function ZonesMap({analysis,mode='history',doses}:{analysis:ZoneAnalysis;mode?:'
 }
 function WeatherPanel({config:c,onWeather}:{config:SeasonalConfig;onWeather:()=>void}){
  const today=new Date().toISOString().slice(0,10),[live,setLive]=useState<{weather:WeatherDay[];retrievedAt:string;attribution:string}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
- const days=(live?.weather??c.weather).filter(w=>w.date>=c.asOfDate&&w.availableAt.slice(0,10)<=c.asOfDate).slice(0,16);
- async function refresh(){if(!c.parcelGeometry)return;setBusy(true);setError('');try{const p=parcelMetrics(c.parcelGeometry).point;setLive(await seasonalRequest({action:'weather',latitude:p[1],longitude:p[0],country:c.country}));}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ const request=useRef<AbortController|null>(null);
+ useEffect(()=>()=>request.current?.abort(),[]);
+ const days=(busy||error?[]:live?.weather??c.weather).filter(w=>w.date>=c.asOfDate&&w.availableAt.slice(0,10)<=c.asOfDate).slice(0,16);
+ async function refresh(){
+  if(!c.parcelGeometry||request.current||c.asOfDate!==today)return;
+  const controller=new AbortController();request.current=controller;
+  setBusy(true);setError('');setLive(null);
+  try{
+   const [longitude,latitude]=parcelMetrics(c.parcelGeometry).point;
+   const next=await seasonalRequest<NonNullable<typeof live>>({action:'weather',latitude,longitude,country:c.country},controller.signal);
+   if(!controller.signal.aborted)setLive(next);
+  }catch(e){if(!controller.signal.aborted)setError((e as Error).message);}
+  finally{if(!controller.signal.aborted){request.current=null;setBusy(false);}}
+ }
  return <section className="qs-card monitor-weather"><div className="field-panel-title"><div><span className="product-eyebrow">PLUIE · TEMPÉRATURE · DEMANDE EN EAU</span><h3>Météo du champ</h3></div><button className="btn secondary" disabled={busy||c.asOfDate!==today} onClick={refresh}>{busy?'Actualisation…':'Consulter les prévisions actuelles'}</button></div>
  <p>Prévisions de modèles au voisinage du champ. Les pluies réellement mesurées se conservent dans le carnet d’eau.</p>
- {c.asOfDate!==today&&<p>Cette campagne est consultée à une date passée. Les nouvelles prévisions sont disponibles avec une date d’analyse au jour courant.</p>}
+ {c.asOfDate!==today&&<p>La date d’analyse diffère du jour courant. Mettez-la à jour pour consulter de nouvelles prévisions.</p>}
  {error&&<p role="alert">{error}</p>}
  <div className="monitor-weather-grid">{days.map(w=><article key={w.date}><time>{new Date(w.date+'T12:00:00Z').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})}</time><ProductIcon name="sun"/><strong>{fmt(w.rainMm)} <small>mm</small></strong><span>{fmt(w.temperatureMinC)}° / {fmt(w.temperatureMaxC)}°</span><span>ET0 {fmt(w.et0Mm)} mm</span><small>{weatherLabel(w)}</small></article>)}</div>
- {!days.length&&<p>Aucune météo disponible à cette date. Actualisez les prévisions ou renseignez votre campagne.</p>}
+ {!busy&&!error&&!days.length&&<p>Aucune météo disponible à cette date. Actualisez les prévisions ou renseignez votre campagne.</p>}
  <button className="qs-text-button" onClick={onWeather}>Ouvrir la météo et les mesures de la campagne →</button>
  <details><summary>Sources et disponibilité</summary>{live?<p>{live.attribution} Récupérées le {live.retrievedAt}. Ces prévisions consultées sont à intégrer dans les paramètres météo pour actualiser le calcul.</p>:[...new Set(days.map(w=>w.source))].map(s=><p key={s}>{s}</p>)}<p>Une prévision n’est pas une mesure de pluie sur la parcelle. Les valeurs absentes restent inconnues.</p></details></section>;
 }
@@ -146,7 +158,7 @@ function FieldMonitoringBody({config:c,campaignId,events=[],plan=null,initialVie
  <nav className="monitoring-tabs" aria-label="Outils de suivi du champ">{tabs.map(([id,label,icon])=><button type="button" key={id} aria-pressed={view===id} onClick={()=>{if(id==='notes')setVisit(undefined);setView(id);}}><ProductIcon name={icon} size={17}/>{label}</button>)}</nav>
  {(view==='satellite'||view==='current')&&(analysis?<FieldAnalysis config={c} focus={mapFocus} initialCompare={initialView==='compare'} consent={analysisConsent} onConsent={setAnalysisConsent} onVisit={target=>{setVisit(target);setView('notes');}} onChange={onChange} onMap={onMap} onHistory={()=>setView('history')} onLayers={()=>setView('layers')} onWeather={()=>setView('weather')} onNotes={()=>{setVisit(undefined);setView('notes');}}/>:<section className="qs-card"><h3>Analyse du champ indisponible</h3><p role="alert">{derived.error}</p><button className="btn secondary" onClick={onMap}>Revoir le contour</button></section>)}
  {view==='layers'&&<><ParcelLayers config={c} assessment={c.landAssessment} onMap={onMap} onImages={()=>setView('satellite')}/><SatelliteNowcastPanel config={c} onChange={onChange}/></>}
- {view==='weather'&&<WeatherPanel config={c} onWeather={onWeather}/>}
+ {view==='weather'&&<WeatherPanel key={c.asOfDate} config={c} onWeather={onWeather}/>}
  {view==='notes'&&<FieldNotebook config={c} campaignId={campaignId} visit={visit} onChange={onChange} onOpenMap={focus=>{setMapFocus(focus);setView('satellite');}}/>}
  {view==='campaign'&&<CampaignLayerPanel config={c} campaignId={campaignId} events={events} plan={plan} onOpen={target=>target==='notes'?setView('notes'):onOpenAction(target)}/>}
  {(view==='history'||view==='doses')&&<>

@@ -34,9 +34,13 @@ test('confirming drainage and assumptions runs the real engine and shows the sam
   assert.ok(host.querySelector('#farmer-harvest-card .farmer-harvest-values').textContent.includes(expected));
   assert.ok(host.querySelector('.yield-overview-hero').textContent.includes(expected));
   assert.match(host.querySelector('.yield-overview-hero').textContent,/tonnes/);assert.match(host.textContent,/sans validation prédictive locale/);
-  const stock=[...host.querySelectorAll('.automatic-yield-panel label')].find(l=>l.textContent.includes('Stock initial P accessible')).querySelector('input');
-  const release=[...host.querySelectorAll('.automatic-yield-panel label')].find(l=>l.textContent.includes('Libération P (')).querySelector('input');
-  await change(stock,'0.1');await change(release,'0');await click('Appliquer les fournitures N/P/K au calcul');
+  const soilForm=host.querySelector('.automatic-yield-panel details details');
+  const inputs=[...soilForm.querySelectorAll('input')];
+  assert.ok(inputs.every(input=>input.value===''),'Generic assumptions do not prefill fields for declared supplies');
+  await click('Appliquer les fournitures N/P/K au calcul');
+  assert.equal(config.automaticYield.soilSupply,undefined);
+  for (const [index,value] of ['30','.3','.1','0','40','.2','Source du test'].entries()) await change(inputs[index],value);
+  await click('Appliquer les fournitures N/P/K au calcul');
   assert.equal(config.automaticYield.soilSupply.initialKgHa[1],.1);assert.ok(plan.growth.scenarios.find(s=>s.id==='recorded').yieldKgHa<original.yieldKgHa);
   stale=true;await act(async()=>render());assert.equal(host.querySelector('.yield-overview-hero'),null);assert.match(host.querySelector('#farmer-harvest-card').textContent,/Calcul en cours/);
   stale=false;await act(async()=>host.querySelector('.automatic-yield-panel header input').click());assert.equal(config.automaticYield.enabled,false);assert.equal(plan.growth,undefined);assert.equal(host.querySelector('.yield-overview-hero'),null);
