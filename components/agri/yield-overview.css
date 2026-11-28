@@ -53,3 +53,21 @@
 .yield-guide-expert-options summary{display:flex;align-items:center;min-height:48px;color:#315e8e;font-weight:700;cursor:pointer}
 .yield-guide-expert-options p{font-size:14px}
 @media(max-width:650px){.yield-guide-intro,.yield-guide-limit,.yield-guide-reasons,.yield-guide-next{padding:18px}.yield-guide-intro{gap:10px}.yield-guide-next button{width:100%;margin-right:0}.yield-guide p{font-size:15px}}
+
+.yield-model-choice {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #dce6e0;
+  border-radius: .75rem;
+}
+
+.yield-model-choice h3, .water-yield-model-form h4 {
+  margin-top: 0;
+}
+
+.water-yield-model-form fieldset {
+  margin: 1rem 0;
+  padding: .75rem;
+  border: 1px solid #dce6e0;
+  border-radius: .5rem;
+}

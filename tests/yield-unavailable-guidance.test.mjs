@@ -287,3 +287,52 @@ test('missing independent reference is visible and opening its form does not inv
   assert.equal(changes.length,0,'opening a form must not create a reference or a result');
  } finally {await m.close();}
 });
+
+test('both experimental water models opt in through documented inputs and recalculate with the existing engine',async()=>{
+ let config=fixture();
+ config=declareScenario(migrateInputs({...config,fallback:{label:'Météo synthétique du test',et0MmDay:4,rainMmDay:5}}));
+ config.yieldEstimation={version:'yield-input-1',method:'automatic',areaBasis:'planned',scopeGeometryId:geometryIdentity(config.parcelGeometry),homogeneityAssumption:'Test uniquement',units:[{id:'champ',sownAreaM2:config.landAssessment.candidateAreaM2,harvestedAreaM2:null,areaSource:'Test uniquement',reference:null}]};
+ let plan=planSeason(config), changes=0;
+ const render=()=>React.createElement(YieldSummary,{config,plan,stale:false,onChange:next=>{config=next;changes++;}});
+ const m=await mount(render());
+ const OriginalFormData=globalThis.FormData;globalThis.FormData=window.FormData;
+ const open=async name=>await act(async()=>button(m.host,name).click());
+ const fill=(form,fields)=>{for(const [name,value] of Object.entries(fields))form.elements.namedItem(name).value=value;};
+ const apply=async form=>await act(async()=>form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true})));
+ try {
+  assert.match(m.host.querySelector('.yield-model-choice').textContent,/Expérimental · non validé/);
+  await open(/FAO-56 · Cycle entier/);
+  let form=m.host.querySelector('.water-yield-model-form');
+  assert.equal(form.elements.namedItem('yield').value,'');
+  assert.equal(form.elements.namedItem('availableOn').value,'');
+  await apply(form);
+  assert.equal(changes,0);
+  assert.match(form.querySelector('[role=alert]').textContent,/rendement de référence positif/);
+  fill(form,{yield:'3.2',source:'Source du test',context:'Maïs du test',availableOn:config.asOfDate});
+  form.elements.namedItem('independent').checked=true;
+  await apply(form);
+  assert.equal(changes,1);assert.equal(config.yieldEstimation.method,'fao-seasonal');
+  assert.equal(config.yieldEstimation.units[0].reference.kgHa,3200);
+  plan=planSeason(config);assert.ok(plan.yieldEstimation.scenarios[1]?.totals, [...plan.yieldEstimation.missing,...(plan.yieldEstimation.scenarios[1]?.missing??[])].join(' · '));
+  await act(async()=>m.root.render(render()));
+  assert.match(m.host.querySelector('.yield-overview-status').textContent,/Expérimental · non validé/);
+  const summary=await mount(React.createElement(FieldOverview,{config:{...config,growth:{}},plan:{...plan,growth:{status:'scenario',scenarios:[{id:'recorded',yieldKgHa:99000,productionKg:99000}]}},events:[],stale:false,loading:false,simple:true,onAction:()=>{}}));
+  try {
+   assert.match(summary.host.textContent,/non validée pour votre parcelle/);
+   assert.doesNotMatch(summary.host.querySelector('.farmer-harvest-values').textContent,/99 tonnes|99 t\/ha/);
+  } finally {await summary.close();}
+
+  await open(/FAO-33 · Phases du maïs/);
+  form=m.host.querySelector('.water-yield-model-form');
+  fill(form,{calendarSource:'Calendrier du test',calendarDate:config.asOfDate,establishmentEndDay:'21',floweringStartDay:'20',floweringDays:'12',grainEndDay:'100'});
+  form.elements.namedItem('acceptedPhases').checked=true;
+  await apply(form);assert.equal(changes,1);
+  assert.match(form.querySelector('[role=alert]').textContent,/chevauchantes/);
+  fill(form,{floweringStartDay:'46'});
+  await apply(form);assert.equal(changes,2);
+  assert.equal(config.yieldEstimation.method,'fao-stages');
+  assert.equal(config.yieldEstimation.responseCalendar.floweringStartDay,46);
+  plan=planSeason(config);assert.ok(plan.yieldEstimation.scenarios[1]?.totals, [...plan.yieldEstimation.missing,...(plan.yieldEstimation.scenarios[1]?.missing??[])].join(' · '));
+  assert.equal(plan.yieldEstimation.scenarios[1].units[0].stageResponse.phases.length,5);
+ }finally{globalThis.FormData=OriginalFormData;await m.close();}
+});

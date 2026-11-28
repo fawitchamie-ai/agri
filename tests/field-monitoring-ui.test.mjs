@@ -15,5 +15,30 @@ test('monitoring navigation shows historical data, conditional projection, dose 
   await act(async()=>button('Cartes de doses').click());assert.equal(button('Conserver la carte').disabled,true);assert.match(host.textContent,/Définissez explicitement|Confirmez les doses/);
   await act(async()=>button('Carnet terrain').click());assert.match(host.textContent,/Mon carnet de terrain/);assert.ok(host.querySelector('textarea'));
   assert.equal(calls,0);
- }finally{globalThis.fetch=old;await act(async()=>root.unmount());await window.happyDOM.close();}
+ }finally{globalThis.fetch=old;await act(async()=>root.unmount());}
+});
+
+test('a weather refresh failure clears stale figures and allows a new fetch',async()=>{
+ const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
+ const date=new Date().toISOString().slice(0,10);
+ const day={date,availableAt:date+'T00:00:00Z',rainMm:42,temperatureMinC:20,temperatureMaxC:30,et0Mm:4,source:'Test uniquement',status:'forecast'};
+ const config={...fieldZonesFixture(),asOfDate:date,weather:[day]};
+ const originalFetch=globalThis.fetch;
+ let resolve;
+ globalThis.fetch=()=>new Promise(r=>{resolve=r;});
+ try{
+  await act(async()=>root.render(React.createElement(compiled.exports.default,{config,initialView:'weather',onMap:()=>{},onWeather:()=>{},onChange:()=>{}})));
+  const panel=host.querySelector('.monitor-weather');
+  assert.match(panel.querySelector('article').textContent,/42/);
+  const refresh=panel.querySelector('button');
+  await act(async()=>refresh.click());
+  assert.equal(panel.querySelectorAll('article').length,0);
+  await act(async()=>resolve(Response.json({error:'Prévisions indisponibles'},{status:503})));
+  assert.match(panel.querySelector('[role=alert]').textContent,/Prévisions indisponibles/);
+  assert.equal(panel.querySelectorAll('article').length,0);
+  await act(async()=>refresh.click());
+  await act(async()=>resolve(Response.json({weather:[{...day,rainMm:7}],attribution:'Test uniquement',retrievedAt:date})));
+  assert.match(panel.querySelector('article').textContent,/7/);
+  assert.equal(panel.querySelector('[role=alert]'),null);
+ }finally{globalThis.fetch=originalFetch;await act(async()=>root.unmount());host.remove();await window.happyDOM.close();}
 });
